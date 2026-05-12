@@ -1,15 +1,10 @@
-# Feedback turno 2026-05-12 — instalación inicial
+# Feedback Zavala → Claude Code
 
-## Contexto
-Harness recién instalado. Verificar que Claude Code lo lee y respeta.
+Próximo turno: pendiente decisión de Zavala sobre qué capa arrancar.
 
-## Tareas
-1. Leer CLAUDE.md y AGENTS.md.
-2. Leer .claude/steering/VISION.md.
-3. Reportar: ¿qué entendiste de tu rol? ¿qué doctrina aplica?
-4. NO crear ningún archivo todavía. Solo lectura y reporte.
+Estado al cierre 2026-05-12:
+- F-2 sub-cerrada: repo bbf-web creado, harness validado
+- F-0, F-1, F-3, F-4, F-5: pendientes
+- Promoción Canon v0.1 → v0.2: pendiente
 
-## Reportar al final
-- Resumen de tu rol en 3 líneas.
-- Las 3 reglas que más vas a aplicar.
-- Las 3 cosas que NUNCA harás.
+Esperar instrucciones de Zavala.
