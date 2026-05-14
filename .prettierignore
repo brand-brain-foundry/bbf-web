@@ -1,0 +1,10 @@
+node_modules
+.next
+build
+dist
+public
+*.md
+pnpm-lock.yaml
+payload-types.ts
+.payload
+.vercel
