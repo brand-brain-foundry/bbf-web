@@ -1,20 +1,233 @@
-@import "tailwindcss";
+/* ============================================================
+   BBF Web — globals.css v1.0 (H1-3-A)
+   Brand Brain Foundry — Design System
+
+   Arquitectura 3 capas heredada de Sivar Brains v2.1.0:
+     Capa 1: Primitive tokens (@theme — raw values)
+     Capa 2: Semantic tokens (:root — propósito)
+     Capa 3: Component tokens (:root — específicos)
+
+   Aplicación SB_Law_Construction:
+     A-04 Convenciones, no decisiones
+     B-01 Tokens antes que valores
+     B-02 Single source of truth
+   ============================================================ */
+
+@import 'tailwindcss';
+
+/* ============================================================
+   CAPA 1 — PRIMITIVE TOKENS
+   ============================================================ */
 
 @theme {
-  --color-bbf-cream: #F7F2EB;
-  --color-bbf-black: #000000;
-  --color-bbf-accent-orange: #FF7849;
-  --color-bbf-accent-pink: #E879A3;
-  --color-bbf-accent-violet: #A78BFA;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* ── BBF Brand palette ── */
+  --bbf-blue-50: #eef4ff;
+  --bbf-blue-100: #d9e7ff;
+  --bbf-blue-200: #b3cffe;
+  --bbf-blue-300: #85affd;
+  --bbf-blue-400: #5587fb;
+  --bbf-blue-500: #255ff1;
+  --bbf-blue-600: #1a4fd6;
+  --bbf-blue-700: #1440b0;
+  --bbf-blue-800: #10338a;
+  --bbf-blue-900: #0c2568;
+
+  /* ── BBF Cream (background canon Zavala) ── */
+  --bbf-cream-50: #fefcf8;
+  --bbf-cream-100: #fdf5ed;
+  --bbf-cream-200: #f9ecd9;
+  --bbf-cream-300: #f4dfba;
+
+  /* ── Neutrals ── */
+  --bbf-neutral-0: #ffffff;
+  --bbf-neutral-50: #fafafa;
+  --bbf-neutral-100: #f4f4f5;
+  --bbf-neutral-200: #e4e4e7;
+  --bbf-neutral-300: #d4d4d8;
+  --bbf-neutral-400: #a1a1aa;
+  --bbf-neutral-500: #71717a;
+  --bbf-neutral-600: #52525b;
+  --bbf-neutral-700: #3f3f46;
+  --bbf-neutral-800: #27272a;
+  --bbf-neutral-900: #131414;
+  --bbf-neutral-950: #000000;
+
+  /* ── Type scale (Minor Third 1.2) ── */
+  --bbf-text-xs: 0.75rem;
+  --bbf-text-sm: 0.875rem;
+  --bbf-text-base: 1rem;
+  --bbf-text-lg: 1.125rem;
+  --bbf-text-xl: 1.25rem;
+  --bbf-text-2xl: 1.5rem;
+  --bbf-text-3xl: 1.875rem;
+  --bbf-text-4xl: 2.25rem;
+  --bbf-text-5xl: 3rem;
+  --bbf-text-6xl: 3.75rem;
+  --bbf-text-7xl: 4.5rem;
+
+  /* ── Spacing scale ── */
+  --bbf-space-1: 0.25rem;
+  --bbf-space-2: 0.5rem;
+  --bbf-space-3: 0.75rem;
+  --bbf-space-4: 1rem;
+  --bbf-space-6: 1.5rem;
+  --bbf-space-8: 2rem;
+  --bbf-space-12: 3rem;
+  --bbf-space-16: 4rem;
+  --bbf-space-24: 6rem;
+
+  /* ── Radius ── */
+  --bbf-radius-sm: 0.25rem;
+  --bbf-radius-md: 0.5rem;
+  --bbf-radius-lg: 0.75rem;
+  --bbf-radius-xl: 1rem;
+  --bbf-radius-full: 9999px;
+
+  /* ── Motion ── */
+  --bbf-duration-fast: 150ms;
+  --bbf-duration-normal: 250ms;
+  --bbf-duration-slow: 400ms;
+  --bbf-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --bbf-ease-out: cubic-bezier(0, 0, 0.2, 1);
 }
 
-@layer base {
-  html, body {
-    background-color: var(--color-bbf-cream);
-    color: var(--color-bbf-black);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+/* ============================================================
+   CAPA 2 — SEMANTIC TOKENS
+   ============================================================ */
+
+:root {
+  /* ── Brand ── */
+  --color-brand: var(--bbf-blue-500);
+  --color-brand-hover: var(--bbf-blue-600);
+  --color-brand-subtle: var(--bbf-blue-50);
+
+  /* ── Surface (default home = cream) ── */
+  --color-bg-base: var(--bbf-cream-100);
+  --color-bg-surface: var(--bbf-neutral-0);
+  --color-bg-inverse: var(--bbf-neutral-950);
+
+  /* ── Text ── */
+  --color-text-primary: var(--bbf-neutral-900);
+  --color-text-secondary: var(--bbf-neutral-600);
+  --color-text-muted: var(--bbf-neutral-400);
+  --color-text-inverse: var(--bbf-neutral-0);
+  --color-text-brand: var(--bbf-blue-500);
+
+  /* ── Border ── */
+  --color-border: var(--bbf-neutral-200);
+  --color-border-strong: var(--bbf-neutral-300);
+
+  /* ── Focus ring ── */
+  --color-focus-ring: var(--bbf-blue-500);
+
+  /* ── Typography roles ── */
+  --font-heading: system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --font-body: system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+
+  --tracking-display: -0.02em;
+  --tracking-heading: -0.01em;
+  --tracking-ui: 0em;
+
+  /* ── Semantic radius ── */
+  --radius-btn: var(--bbf-radius-full);
+  --radius-card: var(--bbf-radius-xl);
+  --radius-input: var(--bbf-radius-lg);
+
+  /* ── Transitions ── */
+  --transition-fast: var(--bbf-duration-fast) var(--bbf-ease-default);
+  --transition-normal: var(--bbf-duration-normal) var(--bbf-ease-default);
+  --transition-slow: var(--bbf-duration-slow) var(--bbf-ease-default);
+}
+
+/* ============================================================
+   CAPA 3 — COMPONENT TOKENS
+   ============================================================ */
+
+:root {
+  /* ── Logo ── */
+  --logo-color: var(--bbf-neutral-900);
+  --logo-rotation-speed: 40s;
+  --logo-rotation-easing: linear;
+  --logo-size-hero: 280px;
+  --logo-size-nav: 40px;
+
+  /* ── Button pill (CTA "contactanos") ── */
+  --btn-pill-bg: var(--bbf-neutral-900);
+  --btn-pill-bg-hover: var(--bbf-neutral-800);
+  --btn-pill-text: var(--bbf-neutral-0);
+  --btn-pill-padding-x: var(--bbf-space-8);
+  --btn-pill-padding-y: var(--bbf-space-4);
+  --btn-pill-radius: var(--bbf-radius-full);
+
+  /* ── Headline ── */
+  --headline-size: var(--bbf-text-7xl);
+  --headline-weight: 900;
+  --headline-tracking: var(--tracking-display);
+  --headline-leading: 1;
+
+  /* ── Hero video overlay (sutil, deja ver el video por debajo) ── */
+  --hero-overlay-color: var(--bbf-cream-100);
+  --hero-overlay-opacity: 0.55;
+}
+
+/* ============================================================
+   ANIMACIÓN LOGO — solo path #circle rota
+   ============================================================ */
+
+@keyframes bbf-logo-rotate {
+  from {
+    transform: rotate(0deg);
   }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bbf-logo-stamp #circle {
+  transform-origin: center center;
+  transform-box: fill-box;
+  animation: bbf-logo-rotate var(--logo-rotation-speed) var(--logo-rotation-easing) infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-logo-stamp #circle {
+    animation: none;
+  }
+}
+
+/* ── Asegurar color del logo via tokens (override hex hardcoded en SVG) ── */
+.bbf-logo-stamp path,
+.bbf-logo-stamp .cls-1 {
+  fill: var(--logo-color);
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+
+html {
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--bbf-text-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-base);
+  margin: 0;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--bbf-radius-sm);
+}
+
+::selection {
+  background-color: var(--bbf-blue-100);
+  color: var(--color-text-primary);
 }

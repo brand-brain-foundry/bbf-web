@@ -1,0 +1,33 @@
+# Brand Brain Foundry — brandbrainfoundry.com
+# robots.txt v1.0 — 2026-05-15
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# AI Search Engines (citation crawlers) — PERMITIDOS
+User-agent: GPTBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: anthropic-ai
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-User
+Allow: /
+User-agent: Claude-Web
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://brandbrainfoundry.com/sitemap.xml

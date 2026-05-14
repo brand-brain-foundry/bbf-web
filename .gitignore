@@ -64,3 +64,24 @@ logs/
 
 # Operational
 feedback.md
+
+# ─────────────────────────────────────────────────────────────
+# H1-3-A additions (2026-05-15)
+# ─────────────────────────────────────────────────────────────
+
+# Adobe sidecar metadata files
+*.xmp
+
+# Scripts: temp files generated during development
+scripts/**/*.tmp
+scripts/**/.cache/
+
+# Decisión §3.2 plan v3: favicons generados SÍ se commitean
+# (Vercel no corre pnpm assets:favicons en CI, los necesita pre-built)
+# Para invertir en el futuro, descomentar:
+# public/favicon.ico
+# public/favicon.svg
+# public/apple-touch-icon.png
+# public/icon-192.png
+# public/icon-512.png
+# public/opengraph-image.png
