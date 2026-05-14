@@ -162,12 +162,13 @@
    ============================================================ */
 
 :root {
-  /* ── Logo ── */
+  /* ── Logo (PATCH-3: tamaño áureo) ── */
   --logo-color: var(--bbf-neutral-900);
   --logo-rotation-speed: 40s;
   --logo-rotation-easing: linear;
-  --logo-size-hero: clamp(10rem, 18vw, 15rem); /* 160px → 240px fluid (PATCH-2) */
+  --logo-size-hero: clamp(15rem, 22vw, 20rem); /* 240 → 320px fluid (áureo 1.618² vs headline) */
   --logo-size-nav: 2.5rem; /* 40px — futuro navbar */
+  --logo-hover-scale: 1.02; /* PATCH-3: micro-interaction */
 
   /* ── Button pill (CTA "contactanos") ── */
   --btn-pill-bg: var(--bbf-neutral-900);
@@ -177,26 +178,38 @@
   --btn-pill-padding-y: var(--bbf-space-4);
   --btn-pill-radius: var(--bbf-radius-full);
 
-  /* ── Headline (PATCH-2: firmado Zavala) ── */
-  --headline-size: clamp(2.5rem, 6vw, 4.5rem); /* 40px → 72px fluid */
-  --headline-weight: 600; /* Firmado Zavala: PATCH-2 */
+  /* ── Headline (PATCH-3: weight 700 para presencia sobre blob) ── */
+  --headline-size: clamp(2.5rem, 6vw, 4.5rem); /* 40 → 72px fluid */
+  --headline-weight: 700; /* PATCH-3: era 600, soft sobre gradient */
   --headline-tracking: var(--tracking-display); /* hereda -0.03em */
   --headline-leading: 0.9; /* Firmado Zavala: PATCH-2 */
 
-  /* ── Tagline / Eyebrow ("Próximamente." label) ── */
-  --tagline-size: var(--bbf-text-sm); /* 14px */
-  --tagline-weight: 600;
-  --tagline-tracking: var(--tracking-eyebrow);
+  /* ── Tagline / Eyebrow (PATCH-3: jerarquía áurea, ratio 4:1 con headline) ── */
+  --tagline-size: clamp(1rem, 1.5vw, 1.125rem); /* 16 → 18px fluid (era 14px estático) */
+  --tagline-weight: 700; /* era 600, más presencia */
+  --tagline-tracking: var(--tracking-eyebrow); /* 0.1em */
   --tagline-color: var(--color-text-primary);
   --tagline-transform: uppercase;
 
-  /* ── Hero spacing rhythm (fluid responsive) ── */
-  --hero-gap-logo: clamp(2rem, 5vw, 3rem); /* logo → headline */
-  --hero-gap-tagline: clamp(0.75rem, 2vw, 1.25rem); /* headline → tagline */
-  --hero-gap-cta: clamp(1.5rem, 4vw, 2.5rem); /* tagline → CTA */
+  /* ── Hero spacing rhythm (PATCH-3: áureo + compensación SVG padding) ── */
+  --hero-gap-logo: clamp(0.5rem, 2vw, 1.25rem); /* 8 → 20px (era 32-48, era excesivo) */
+  --hero-gap-tagline: clamp(1rem, 2.5vw, 1.5rem); /* 16 → 24px (era apretado) */
+  --hero-gap-cta: clamp(1.5rem, 4vw, 2.5rem); /* 24 → 40px (sin cambio) */
   --hero-padding-x: clamp(1rem, 4vw, 2rem);
   --hero-padding-y: clamp(2rem, 8vw, 5rem);
-  --hero-max-width: 64rem; /* 1024px cap — evita texto demasiado ancho 4K */
+  --hero-max-width: 64rem; /* 1024px cap */
+
+  /* ── Micro-interactions (PATCH-3: entrance + CTA hover) ── */
+  --motion-entrance-duration: 600ms;
+  --motion-entrance-easing: cubic-bezier(0.16, 1, 0.3, 1); /* easeOutExpo refinado */
+  --motion-stagger-step: 120ms; /* delay entre elementos */
+
+  --motion-cta-duration: 250ms;
+  --motion-cta-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --cta-hover-scale: 1.03;
+  --cta-hover-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.3);
+
+  --motion-logo-duration: 400ms;
 
   /* ── Hero video overlay (sutil, deja ver el video por debajo) ── */
   --hero-overlay-color: var(--bbf-cream-100);
@@ -275,4 +288,92 @@ h3 {
 ::selection {
   background-color: var(--bbf-blue-100);
   color: var(--color-text-primary);
+}
+
+/* ============================================================
+   MICRO-INTERACTIONS (PATCH-3)
+   Entrance animations + CTA hover.
+   Hardware-accelerated (transform + opacity solo).
+   ============================================================ */
+
+@keyframes bbf-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Hero entrance stagger — cada elemento entra con delay incremental */
+.hero-entrance {
+  opacity: 0;
+  animation: bbf-fade-up var(--motion-entrance-duration) var(--motion-entrance-easing) forwards;
+}
+
+.hero-entrance--delay-1 {
+  animation-delay: calc(var(--motion-stagger-step) * 0); /* logo: 0ms */
+}
+.hero-entrance--delay-2 {
+  animation-delay: calc(var(--motion-stagger-step) * 1); /* headline: 120ms */
+}
+.hero-entrance--delay-3 {
+  animation-delay: calc(var(--motion-stagger-step) * 2); /* tagline: 240ms */
+}
+.hero-entrance--delay-4 {
+  animation-delay: calc(var(--motion-stagger-step) * 3); /* CTA: 360ms */
+}
+
+/* CTA hover — scale sutil + shadow lift */
+.bbf-cta-pill {
+  transition:
+    transform var(--motion-cta-duration) var(--motion-cta-easing),
+    box-shadow var(--motion-cta-duration) var(--motion-cta-easing),
+    background-color var(--motion-cta-duration) var(--motion-cta-easing);
+  will-change: transform;
+}
+
+.bbf-cta-pill:hover {
+  transform: scale(var(--cta-hover-scale));
+  box-shadow: var(--cta-hover-shadow);
+  background-color: var(--bbf-neutral-800); /* leve aclarado vs primary 900 */
+}
+
+.bbf-cta-pill:active {
+  transform: scale(0.98);
+  transition-duration: 100ms;
+}
+
+/* Logo hover — scale muy sutil */
+.bbf-logo-stamp {
+  transition: transform var(--motion-logo-duration) var(--motion-cta-easing);
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  a:hover .bbf-logo-stamp,
+  .bbf-logo-stamp:hover {
+    transform: scale(var(--logo-hover-scale));
+  }
+}
+
+/* Respect reduced motion (canon WCAG + 2026) */
+@media (prefers-reduced-motion: reduce) {
+  .hero-entrance,
+  .hero-entrance--delay-1,
+  .hero-entrance--delay-2,
+  .hero-entrance--delay-3,
+  .hero-entrance--delay-4 {
+    animation: none;
+    opacity: 1;
+  }
+  .bbf-cta-pill,
+  .bbf-logo-stamp {
+    transition: none;
+  }
+  .bbf-cta-pill:hover {
+    transform: none;
+  }
 }

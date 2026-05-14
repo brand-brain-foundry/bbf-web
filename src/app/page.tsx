@@ -26,9 +26,12 @@ export default function HomePage() {
           paddingBlock: 'var(--hero-padding-y)',
         }}
       >
-        <BBFLogo />
+        <div className="hero-entrance hero-entrance--delay-1">
+          <BBFLogo />
+        </div>
 
         <h1
+          className="hero-entrance hero-entrance--delay-2"
           style={{
             marginTop: 'var(--hero-gap-logo)',
             fontSize: 'var(--headline-size)',
@@ -44,6 +47,7 @@ export default function HomePage() {
         </h1>
 
         <p
+          className="hero-entrance hero-entrance--delay-3"
           style={{
             marginTop: 'var(--hero-gap-tagline)',
             fontSize: 'var(--tagline-size)',
@@ -58,7 +62,7 @@ export default function HomePage() {
 
         <a
           href="mailto:contacto@brandbrainfoundry.com"
-          className="inline-block transition-opacity hover:opacity-90"
+          className="bbf-cta-pill hero-entrance hero-entrance--delay-4 inline-block"
           style={{
             marginTop: 'var(--hero-gap-cta)',
             backgroundColor: 'var(--btn-pill-bg)',
