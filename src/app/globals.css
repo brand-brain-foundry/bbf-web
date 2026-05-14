@@ -120,9 +120,26 @@
   /* ── Focus ring ── */
   --color-focus-ring: var(--bbf-blue-500);
 
-  /* ── Typography roles ── */
-  --font-heading: system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
-  --font-body: system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  /* ── Fonts ───────────────────────────────────────────────────────────────
+     TWO-FONT SYSTEM — single source of truth for all typography
+
+     --font-display: Outfit (cargado via next/font/google en layout.tsx)
+       → logo wordmark, h1/h2/h3, hero text, section titles
+       → weights: 400, 500, 600, 700, 900
+
+     --font-sans: Mulish (cargado via next/font/google en layout.tsx)
+       → body text, UI labels, nav items, docs, paragraphs
+       → weights: 400, 500, 600, 700
+
+     Rule: headings use --font-heading. Everything else uses --font-body.
+     Patrón heredado de Sivar Brains globals.css v2.1.0
+  ── */
+  --font-display: var(--font-outfit), 'Outfit', system-ui, sans-serif;
+  --font-sans: var(--font-mulish), 'Mulish', system-ui, -apple-system, sans-serif;
+
+  /* ── Typography role tokens — USE THESE in components, not font names ── */
+  --font-heading: var(--font-display); /* h1, h2, h3, hero, wordmark */
+  --font-body: var(--font-sans); /* body, labels, UI, docs     */
 
   --tracking-display: -0.02em;
   --tracking-heading: -0.01em;
@@ -216,8 +233,20 @@ html {
 body {
   font-family: var(--font-body);
   font-size: var(--bbf-text-base);
+  font-weight: 400;
+  line-height: 1.5;
   color: var(--color-text-primary);
   background-color: var(--color-bg-base);
+  margin: 0;
+}
+
+/* ── Headings: tipografía de display automática (patrón Sivar Brains) ── */
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.1;
   margin: 0;
 }
 

@@ -1,5 +1,30 @@
 import type { Metadata } from 'next';
+import { Outfit, Mulish } from 'next/font/google';
 import './globals.css';
+
+/**
+ * Outfit — display font.
+ * Usado para: logo wordmark, h1/h2/h3, hero text, section titles.
+ * Patrón inherited from Sivar Brains globals.css v2.1.0
+ */
+const outfit = Outfit({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '900'],
+  variable: '--font-outfit',
+  display: 'swap',
+});
+
+/**
+ * Mulish — body font.
+ * Usado para: body text, UI labels, nav items, docs, paragraphs.
+ * Patrón inherited from Sivar Brains globals.css v2.1.0
+ */
+const mulish = Mulish({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-mulish',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://brandbrainfoundry.com'),
@@ -108,7 +133,7 @@ const organizationSchema = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es-ES">
+    <html lang="es-ES" className={`${outfit.variable} ${mulish.variable}`}>
       <head>
         <meta name="theme-color" content="#fdf5ed" />
         <script

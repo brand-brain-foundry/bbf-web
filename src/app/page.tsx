@@ -29,8 +29,6 @@ export default function HomePage() {
             letterSpacing: 'var(--headline-tracking)',
             lineHeight: 'var(--headline-leading)',
             color: 'var(--color-text-primary)',
-            fontFamily: 'var(--font-heading)',
-            margin: 0,
           }}
         >
           construimos
@@ -43,7 +41,6 @@ export default function HomePage() {
           style={{
             fontSize: 'var(--bbf-text-base)',
             color: 'var(--color-text-secondary)',
-            margin: 0,
           }}
         >
           Próximamente.
