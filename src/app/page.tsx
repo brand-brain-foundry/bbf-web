@@ -17,13 +17,20 @@ export default function HomePage() {
         aria-hidden="true"
       />
 
-      {/* Contenido principal centrado (z-20) */}
-      <div className="relative z-20 flex min-h-screen flex-col items-center justify-center px-6 py-16">
+      {/* Contenido principal centrado (z-20, fluid responsive) */}
+      <div
+        className="relative z-20 mx-auto flex min-h-screen flex-col items-center justify-center text-center"
+        style={{
+          maxWidth: 'var(--hero-max-width)',
+          paddingInline: 'var(--hero-padding-x)',
+          paddingBlock: 'var(--hero-padding-y)',
+        }}
+      >
         <BBFLogo />
 
         <h1
-          className="mt-12 text-center"
           style={{
+            marginTop: 'var(--hero-gap-logo)',
             fontSize: 'var(--headline-size)',
             fontWeight: 'var(--headline-weight)',
             letterSpacing: 'var(--headline-tracking)',
@@ -37,25 +44,31 @@ export default function HomePage() {
         </h1>
 
         <p
-          className="mt-4 text-center"
           style={{
-            fontSize: 'var(--bbf-text-base)',
-            color: 'var(--color-text-secondary)',
+            marginTop: 'var(--hero-gap-tagline)',
+            fontSize: 'var(--tagline-size)',
+            fontWeight: 'var(--tagline-weight)',
+            letterSpacing: 'var(--tagline-tracking)',
+            color: 'var(--tagline-color)',
+            textTransform: 'uppercase',
           }}
         >
-          Próximamente.
+          Próximamente
         </p>
 
         <a
           href="mailto:contacto@brandbrainfoundry.com"
-          className="mt-8 inline-block transition-colors hover:opacity-90"
+          className="inline-block transition-opacity hover:opacity-90"
           style={{
+            marginTop: 'var(--hero-gap-cta)',
             backgroundColor: 'var(--btn-pill-bg)',
             color: 'var(--btn-pill-text)',
             paddingInline: 'var(--btn-pill-padding-x)',
             paddingBlock: 'var(--btn-pill-padding-y)',
             borderRadius: 'var(--btn-pill-radius)',
             textDecoration: 'none',
+            fontSize: 'var(--bbf-text-base)',
+            fontWeight: 500,
           }}
         >
           contactanos

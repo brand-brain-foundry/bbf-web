@@ -141,9 +141,10 @@
   --font-heading: var(--font-display); /* h1, h2, h3, hero, wordmark */
   --font-body: var(--font-sans); /* body, labels, UI, docs     */
 
-  --tracking-display: -0.02em;
+  --tracking-display: -0.03em; /* Firmado Zavala: PATCH-2 */
   --tracking-heading: -0.01em;
   --tracking-ui: 0em;
+  --tracking-eyebrow: 0.1em; /* NUEVO: para labels/eyebrows tipo "Próximamente." */
 
   /* ── Semantic radius ── */
   --radius-btn: var(--bbf-radius-full);
@@ -165,8 +166,8 @@
   --logo-color: var(--bbf-neutral-900);
   --logo-rotation-speed: 40s;
   --logo-rotation-easing: linear;
-  --logo-size-hero: 280px;
-  --logo-size-nav: 40px;
+  --logo-size-hero: clamp(10rem, 18vw, 15rem); /* 160px → 240px fluid (PATCH-2) */
+  --logo-size-nav: 2.5rem; /* 40px — futuro navbar */
 
   /* ── Button pill (CTA "contactanos") ── */
   --btn-pill-bg: var(--bbf-neutral-900);
@@ -176,11 +177,26 @@
   --btn-pill-padding-y: var(--bbf-space-4);
   --btn-pill-radius: var(--bbf-radius-full);
 
-  /* ── Headline ── */
-  --headline-size: var(--bbf-text-7xl);
-  --headline-weight: 900;
-  --headline-tracking: var(--tracking-display);
-  --headline-leading: 1;
+  /* ── Headline (PATCH-2: firmado Zavala) ── */
+  --headline-size: clamp(2.5rem, 6vw, 4.5rem); /* 40px → 72px fluid */
+  --headline-weight: 600; /* Firmado Zavala: PATCH-2 */
+  --headline-tracking: var(--tracking-display); /* hereda -0.03em */
+  --headline-leading: 0.9; /* Firmado Zavala: PATCH-2 */
+
+  /* ── Tagline / Eyebrow ("Próximamente." label) ── */
+  --tagline-size: var(--bbf-text-sm); /* 14px */
+  --tagline-weight: 600;
+  --tagline-tracking: var(--tracking-eyebrow);
+  --tagline-color: var(--color-text-primary);
+  --tagline-transform: uppercase;
+
+  /* ── Hero spacing rhythm (fluid responsive) ── */
+  --hero-gap-logo: clamp(2rem, 5vw, 3rem); /* logo → headline */
+  --hero-gap-tagline: clamp(0.75rem, 2vw, 1.25rem); /* headline → tagline */
+  --hero-gap-cta: clamp(1.5rem, 4vw, 2.5rem); /* tagline → CTA */
+  --hero-padding-x: clamp(1rem, 4vw, 2rem);
+  --hero-padding-y: clamp(2rem, 8vw, 5rem);
+  --hero-max-width: 64rem; /* 1024px cap — evita texto demasiado ancho 4K */
 
   /* ── Hero video overlay (sutil, deja ver el video por debajo) ── */
   --hero-overlay-color: var(--bbf-cream-100);
