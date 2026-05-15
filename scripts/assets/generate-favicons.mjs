@@ -6,22 +6,20 @@
  *
  * Fuente única de verdad: scripts/assets/generate-favicons.mjs
  *
- * Lee:    public/logos/BBF-Logo-Icon-Favicon.svg  (master único)
+ * Lee:    public/logos/BBF-Logo-Icon-Favicon.png  (master único)
  * Lee:    public/logos/BBF-Logo-Stamp.svg          (para OG image)
  *
  * Genera:
  *   public/favicon.ico             — Legacy 32×32 multi-resolution
- *   public/favicon.svg             — Vector scalable (copy del master)
  *   public/apple-touch-icon.png    — iOS 180×180
  *   public/icon-192.png            — PWA 192×192
  *   public/icon-512.png            — PWA 512×512
  *   public/opengraph-image.png     — Social share 1200×630
  *
- * Para regenerar TODO cuando cambie el SVG master:
+ * Para regenerar TODO cuando cambie el PNG master:
  *   pnpm assets:favicons
  *
  * Para regenerar solo un asset específico:
- *   node scripts/assets/generate-favicons.mjs --only=favicon-svg
  *   node scripts/assets/generate-favicons.mjs --only=favicon-ico
  *   node scripts/assets/generate-favicons.mjs --only=apple-touch-icon
  *   node scripts/assets/generate-favicons.mjs --only=icon-192
@@ -62,7 +60,7 @@ const PUBLIC_DIR = path.join(REPO_ROOT, 'public');
 const LOGOS_DIR = path.join(PUBLIC_DIR, 'logos');
 
 // ── Sources ──
-const SOURCE_FAVICON = path.join(LOGOS_DIR, 'BBF-Logo-Icon-Favicon.svg');
+const SOURCE_FAVICON = path.join(LOGOS_DIR, 'BBF-Logo-Icon-Favicon.png');
 const SOURCE_STAMP = path.join(LOGOS_DIR, 'BBF-Logo-Stamp.svg');
 
 // ── Tokens BBF (sincronizar con globals.css Capa 1) ──
@@ -75,12 +73,6 @@ const TOKENS = {
 
 // ── Targets (todos los outputs) ──
 const TARGETS = [
-  {
-    name: 'favicon-svg',
-    file: 'favicon.svg',
-    type: 'svg-copy',
-    source: SOURCE_FAVICON,
-  },
   {
     name: 'favicon-ico',
     file: 'favicon.ico',
@@ -271,7 +263,7 @@ async function main() {
 
   console.log('► Verificando sources...');
   const sourceChecks = await Promise.all([
-    verifySource(SOURCE_FAVICON, 'BBF-Logo-Icon-Favicon.svg'),
+    verifySource(SOURCE_FAVICON, 'BBF-Logo-Icon-Favicon.png'),
     verifySource(SOURCE_STAMP, 'BBF-Logo-Stamp.svg'),
   ]);
   const missing = sourceChecks.filter((c) => !c.ok);
@@ -310,9 +302,6 @@ async function main() {
 
     try {
       switch (target.type) {
-        case 'svg-copy':
-          buf = await fs.readFile(target.source);
-          break;
         case 'raster-ico':
           buf = await generateIco(faviconSvg, {
             sizes: target.sizes,
