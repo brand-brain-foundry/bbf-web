@@ -15,6 +15,12 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "postbuild": "pnpm payload migrate",
+    "payload": "payload",
+    "generate:types": "payload generate:types",
+    "generate:importmap": "payload generate:importmap",
+    "migrate:create": "payload migrate:create",
+    "migrate:status": "payload migrate:status",
     "assets:favicons": "node scripts/assets/generate-favicons.mjs",
     "assets:favicons:dry": "node scripts/assets/generate-favicons.mjs --dry-run"
   },
@@ -22,11 +28,14 @@
     "@payloadcms/db-postgres": "^3.84.1",
     "@payloadcms/next": "^3.84.1",
     "@payloadcms/richtext-lexical": "^3.84.1",
+    "@payloadcms/storage-vercel-blob": "^3.84.1",
     "next": "^15.5.18",
     "payload": "^3.84.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "sharp": "^0.34.5"
+    "sharp": "^0.34.5",
+    "ulid": "^3.0.2",
+    "zod": "^4.4.3"
   },
   "packageManager": "pnpm@10.32.1",
   "devDependencies": {
