@@ -60,7 +60,7 @@ const PUBLIC_DIR = path.join(REPO_ROOT, 'public');
 const LOGOS_DIR = path.join(PUBLIC_DIR, 'logos');
 
 // ── Sources ──
-const SOURCE_FAVICON = path.join(LOGOS_DIR, 'BBF-Logo-Icon-Favicon.png');
+const SOURCE_FAVICON = path.join(LOGOS_DIR, 'BBF-Logo-Icon-Favicon.svg');
 const SOURCE_STAMP = path.join(LOGOS_DIR, 'BBF-Logo-Stamp.svg');
 
 // ── Tokens BBF (sincronizar con globals.css Capa 1) ──
@@ -73,6 +73,12 @@ const TOKENS = {
 
 // ── Targets (todos los outputs) ──
 const TARGETS = [
+  {
+    name: 'favicon-svg',
+    file: 'favicon.svg',
+    type: 'svg-copy',
+    source: SOURCE_FAVICON,
+  },
   {
     name: 'favicon-ico',
     file: 'favicon.ico',
@@ -263,7 +269,7 @@ async function main() {
 
   console.log('► Verificando sources...');
   const sourceChecks = await Promise.all([
-    verifySource(SOURCE_FAVICON, 'BBF-Logo-Icon-Favicon.png'),
+    verifySource(SOURCE_FAVICON, 'BBF-Logo-Icon-Favicon.svg'),
     verifySource(SOURCE_STAMP, 'BBF-Logo-Stamp.svg'),
   ]);
   const missing = sourceChecks.filter((c) => !c.ok);
@@ -302,6 +308,9 @@ async function main() {
 
     try {
       switch (target.type) {
+        case 'svg-copy':
+          buf = await fs.readFile(target.source);
+          break;
         case 'raster-ico':
           buf = await generateIco(faviconSvg, {
             sizes: target.sizes,
