@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload';
-import { isAdminOrEditor, publicRead } from '@/lib/access';
-import { slugRegex } from '@/lib/utils/ulid';
+import { isAdminOrEditor, publicRead } from '@/payload/lib/access';
+import { slugRegex } from '@/payload/lib/utils/ulid';
 
 export const Topics: CollectionConfig = {
   slug: 'topics',

@@ -4,12 +4,12 @@ import {
   isAdmin,
   isContentWriter,
   publicReadPublished,
-} from '@/lib/access';
+} from '@/payload/lib/access';
 import {
   computeCanonicalUrl,
   triggerSurfaceRegeneration,
   verifyAuditsBeforePublish,
-} from '@/lib/hooks/contentItemHooks';
+} from '@/payload/lib/hooks/contentItemHooks';
 import { contentItemBlocks } from './blocks';
 
 export const ContentItems: CollectionConfig = {

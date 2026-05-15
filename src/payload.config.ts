@@ -5,21 +5,21 @@ import path from 'path';
 import { buildConfig } from 'payload';
 import { fileURLToPath } from 'url';
 
-import { Users } from './collections/users';
-import { Media } from './collections/media';
-import { Entities } from './collections/entities';
-import { Topics } from './collections/topics';
-import { Clusters } from './collections/clusters';
-import { ContentItems } from './collections/contentItems';
-import { Surfaces } from './collections/surfaces';
-import { Signals } from './collections/signals';
-import { Redirects } from './collections/redirects';
+import { Users } from './payload/collections/users';
+import { Media } from './payload/collections/media';
+import { Entities } from './payload/collections/entities';
+import { Topics } from './payload/collections/topics';
+import { Clusters } from './payload/collections/clusters';
+import { ContentItems } from './payload/collections/contentItems';
+import { Surfaces } from './payload/collections/surfaces';
+import { Signals } from './payload/collections/signals';
+import { Redirects } from './payload/collections/redirects';
 
-import { Site } from './globals/Site';
-import { Navigation } from './globals/Navigation';
-import { SocialLinks } from './globals/SocialLinks';
-import { SEO } from './globals/SEO';
-import { BrandSystem } from './globals/BrandSystem';
+import { Site } from './payload/globals/Site';
+import { Navigation } from './payload/globals/Navigation';
+import { SocialLinks } from './payload/globals/SocialLinks';
+import { SEO } from './payload/globals/SEO';
+import { BrandSystem } from './payload/globals/BrandSystem';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -65,22 +65,25 @@ export default buildConfig({
     },
     // push solo en dev — NUNCA en prod (D-BBF-WEB-16)
     push: process.env.NODE_ENV === 'development',
-    migrationDir: path.resolve(dirname, 'migrations'),
+    migrationDir: path.resolve(dirname, 'payload/migrations'),
   }),
 
   secret: process.env.PAYLOAD_SECRET || '',
 
   typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
+    outputFile: path.resolve(dirname, 'payload/payload-types.ts'),
   },
 
   plugins: [
     // D-BBF-WEB-33: Vercel Blob via plugin oficial, solo collection media
-    vercelBlobStorage({
-      collections: {
-        media: true,
-      },
-      token: process.env.BLOB_READ_WRITE_TOKEN || '',
-    }),
+    // Guard: skip when token ausente o inválido (local dev sin provisionar)
+    ...(process.env.BLOB_READ_WRITE_TOKEN?.startsWith('vercel_blob_rw_')
+      ? [
+          vercelBlobStorage({
+            collections: { media: true },
+            token: process.env.BLOB_READ_WRITE_TOKEN,
+          }),
+        ]
+      : []),
   ],
 });

@@ -1,6 +1,7 @@
 {
   "name": "bbf-web",
   "version": "0.2.0",
+  "type": "module",
   "private": true,
   "description": "Brand Brain Foundry — web pública. Next.js 15 + Payload 3.",
   "engines": {

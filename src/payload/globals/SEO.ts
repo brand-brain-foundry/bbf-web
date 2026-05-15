@@ -1,5 +1,5 @@
 import type { GlobalConfig } from 'payload';
-import { isAdmin, publicRead } from '@/lib/access';
+import { isAdmin, publicRead } from '@/payload/lib/access';
 
 export const SEO: GlobalConfig = {
   slug: 'seoDefaults',

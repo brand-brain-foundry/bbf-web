@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { isAdminOrEditor, publicRead } from '@/lib/access';
+import { isAdminOrEditor, publicRead } from '@/payload/lib/access';
 
 export const Media: CollectionConfig = {
   slug: 'media',

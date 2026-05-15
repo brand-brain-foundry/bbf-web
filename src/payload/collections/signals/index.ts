@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { isAdmin, isContentWriter, nobody } from '@/lib/access';
+import { isAdmin, isContentWriter, nobody } from '@/payload/lib/access';
 
 export const Signals: CollectionConfig = {
   slug: 'signals',
