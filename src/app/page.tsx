@@ -7,17 +7,7 @@ export default function HomePage() {
       {/* Background video (z-0) */}
       <HeroVideo />
 
-      {/* Overlay sutil para legibilidad del texto sobre el video (z-10) */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundColor: 'var(--hero-overlay-color)',
-          opacity: 'var(--hero-overlay-opacity)',
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Contenido principal centrado (z-20, fluid responsive) */}
+      {/* Contenido principal centrado (z-20, 8pt grid spacing) */}
       <div
         className="relative z-20 mx-auto flex min-h-screen flex-col items-center justify-center text-center"
         style={{
@@ -62,7 +52,7 @@ export default function HomePage() {
 
         <a
           href="mailto:contacto@brandbrainfoundry.com"
-          className="bbf-cta-pill hero-entrance hero-entrance--delay-4 inline-block"
+          className="bbf-cta-pill hero-entrance hero-entrance--delay-4 inline-flex items-center"
           style={{
             marginTop: 'var(--hero-gap-cta)',
             backgroundColor: 'var(--btn-pill-bg)',
@@ -75,7 +65,10 @@ export default function HomePage() {
             fontWeight: 500,
           }}
         >
-          contactanos
+          <span>contactanos</span>
+          <span className="bbf-cta-arrow" aria-hidden="true">
+            →
+          </span>
         </a>
       </div>
     </main>

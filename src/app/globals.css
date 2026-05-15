@@ -162,13 +162,14 @@
    ============================================================ */
 
 :root {
-  /* ── Logo (PATCH-3: tamaño áureo) ── */
+  /* ── Logo (PATCH-4: tamaño canon minimal) ── */
   --logo-color: var(--bbf-neutral-900);
   --logo-rotation-speed: 40s;
   --logo-rotation-easing: linear;
-  --logo-size-hero: clamp(15rem, 22vw, 20rem); /* 240 → 320px fluid (áureo 1.618² vs headline) */
+  --logo-size-hero: clamp(8rem, 14vw, 14rem); /* 128 → 224px (era 240-320, excesivo) */
   --logo-size-nav: 2.5rem; /* 40px — futuro navbar */
-  --logo-hover-scale: 1.02; /* PATCH-3: micro-interaction */
+  --logo-hover-scale: 1.04; /* PATCH-4: más perceptible (era 1.02) */
+  --logo-rotation-speed-hover: 12s; /* PATCH-4: acelera 3.3× en hover */
 
   /* ── Button pill (CTA "contactanos") ── */
   --btn-pill-bg: var(--bbf-neutral-900);
@@ -178,42 +179,44 @@
   --btn-pill-padding-y: var(--bbf-space-4);
   --btn-pill-radius: var(--bbf-radius-full);
 
-  /* ── Headline (PATCH-3: weight 700 para presencia sobre blob) ── */
-  --headline-size: clamp(2.5rem, 6vw, 4.5rem); /* 40 → 72px fluid */
-  --headline-weight: 700; /* PATCH-3: era 600, soft sobre gradient */
-  --headline-tracking: var(--tracking-display); /* hereda -0.03em */
-  --headline-leading: 0.9; /* Firmado Zavala: PATCH-2 */
+  /* ── Headline (PATCH-4: cap reducido para wide screens) ── */
+  --headline-size: clamp(2.5rem, 5.5vw, 4rem); /* 40 → 64px (era 72, excesivo wide) */
+  --headline-weight: 700;
+  --headline-tracking: var(--tracking-display);
+  --headline-leading: 0.9;
 
-  /* ── Tagline / Eyebrow (PATCH-3: jerarquía áurea, ratio 4:1 con headline) ── */
-  --tagline-size: clamp(1rem, 1.5vw, 1.125rem); /* 16 → 18px fluid (era 14px estático) */
-  --tagline-weight: 700; /* era 600, más presencia */
-  --tagline-tracking: var(--tracking-eyebrow); /* 0.1em */
+  /* ── Tagline / Eyebrow (PATCH-4: 16px fijo + tracking +) ── */
+  --tagline-size: var(--bbf-text-base); /* 16px fijo (era clamp 16-18) */
+  --tagline-weight: 700;
+  --tagline-tracking: 0.15em; /* PATCH-4: más abierto eyebrow (era 0.1) */
   --tagline-color: var(--color-text-primary);
   --tagline-transform: uppercase;
 
-  /* ── Hero spacing rhythm (PATCH-3: áureo + compensación SVG padding) ── */
-  --hero-gap-logo: clamp(0.5rem, 2vw, 1.25rem); /* 8 → 20px (era 32-48, era excesivo) */
-  --hero-gap-tagline: clamp(1rem, 2.5vw, 1.5rem); /* 16 → 24px (era apretado) */
-  --hero-gap-cta: clamp(1.5rem, 4vw, 2.5rem); /* 24 → 40px (sin cambio) */
-  --hero-padding-x: clamp(1rem, 4vw, 2rem);
-  --hero-padding-y: clamp(2rem, 8vw, 5rem);
-  --hero-max-width: 64rem; /* 1024px cap */
+  /* ── Hero spacing rhythm (PATCH-4: 8pt grid canon — Material/Atlassian/IBM) ── */
+  --hero-gap-logo: var(--bbf-space-8); /* 32px fijo — logo → headline */
+  --hero-gap-tagline: var(--bbf-space-6); /* 24px fijo — headline → tagline */
+  --hero-gap-cta: var(--bbf-space-12); /* 48px fijo — tagline → CTA */
+  --hero-padding-x: var(--bbf-space-6); /* 24px */
+  --hero-padding-y: var(--bbf-space-16); /* 64px */
+  --hero-max-width: 56rem; /* 896px cap (era 64rem, más recogido) */
 
-  /* ── Micro-interactions (PATCH-3: entrance + CTA hover) ── */
-  --motion-entrance-duration: 600ms;
-  --motion-entrance-easing: cubic-bezier(0.16, 1, 0.3, 1); /* easeOutExpo refinado */
-  --motion-stagger-step: 120ms; /* delay entre elementos */
+  /* ── Micro-interactions (PATCH-4: perceptibles, no sutiles) ── */
+  --motion-entrance-duration: 800ms; /* era 600 — más cinematográfico */
+  --motion-entrance-easing: cubic-bezier(0.16, 1, 0.3, 1); /* easeOutExpo */
+  --motion-entrance-distance: 2rem; /* PATCH-4: 32px (era 1rem = 16px imperceptible) */
+  --motion-stagger-step: 150ms; /* era 120 — más respiración entre elementos */
 
-  --motion-cta-duration: 250ms;
+  --motion-cta-duration: 300ms;
   --motion-cta-easing: cubic-bezier(0.4, 0, 0.2, 1);
-  --cta-hover-scale: 1.03;
-  --cta-hover-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.3);
+  --cta-hover-scale: 1.05; /* era 1.03 — más perceptible */
+  --cta-hover-shadow: 0 16px 40px -12px rgb(0 0 0 / 0.4);
+  --cta-icon-shift: 0.375rem; /* 6px — flecha se mueve en hover */
 
-  --motion-logo-duration: 400ms;
+  --motion-logo-duration: 500ms;
 
-  /* ── Hero video overlay (sutil, deja ver el video por debajo) ── */
-  --hero-overlay-color: var(--bbf-cream-100);
-  --hero-overlay-opacity: 0.55;
+  /* ── Hero video overlay (PATCH-4: deshabilitado por decisión Zavala — video raw) ── */
+  --hero-overlay-color: transparent;
+  --hero-overlay-opacity: 0;
 }
 
 /* ============================================================
@@ -299,7 +302,7 @@ h3 {
 @keyframes bbf-fade-up {
   from {
     opacity: 0;
-    transform: translate3d(0, 1rem, 0);
+    transform: translate3d(0, var(--motion-entrance-distance), 0);
   }
   to {
     opacity: 1;
@@ -338,7 +341,18 @@ h3 {
 .bbf-cta-pill:hover {
   transform: scale(var(--cta-hover-scale));
   box-shadow: var(--cta-hover-shadow);
-  background-color: var(--bbf-neutral-800); /* leve aclarado vs primary 900 */
+  background-color: var(--bbf-neutral-800);
+}
+
+.bbf-cta-pill .bbf-cta-arrow {
+  display: inline-block;
+  margin-left: 0.5rem;
+  transition: transform var(--motion-cta-duration) var(--motion-cta-easing);
+  will-change: transform;
+}
+
+.bbf-cta-pill:hover .bbf-cta-arrow {
+  transform: translateX(var(--cta-icon-shift));
 }
 
 .bbf-cta-pill:active {
@@ -356,6 +370,12 @@ h3 {
   a:hover .bbf-logo-stamp,
   .bbf-logo-stamp:hover {
     transform: scale(var(--logo-hover-scale));
+  }
+
+  /* Acelera la rotación del círculo del logo en hover (40s → 12s) */
+  a:hover .bbf-logo-stamp #circle,
+  .bbf-logo-stamp:hover #circle {
+    animation-duration: var(--logo-rotation-speed-hover);
   }
 }
 
