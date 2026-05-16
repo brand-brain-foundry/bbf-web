@@ -1,6 +1,7 @@
 import { setRequestLocale } from 'next-intl/server';
 import { BBFLogo } from '@/components/BBFLogo';
 import { HeroVideo } from '@/components/HeroVideo';
+import { LocaleSwitcher } from '@/components/i18n/LocaleSwitcher';
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -13,6 +14,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[--color-bg-base]">
+      <LocaleSwitcher />
       {/* Background video (z-0) */}
       <HeroVideo />
 
