@@ -1,9 +1,20 @@
+import { setRequestLocale } from 'next-intl/server';
 import { BBFLogo } from '@/components/BBFLogo';
 import { HeroVideo } from '@/components/HeroVideo';
+import { LocaleSwitcher } from '@/components/i18n/LocaleSwitcher';
 
-export default function HomePage() {
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
+  const headline = locale === 'es' ? 'construimos' : 'we build';
+  const headline2 = locale === 'es' ? 'cerebros de marca.' : 'brand brains.';
+  const tagline = locale === 'es' ? 'Próximamente' : 'Coming Soon';
+  const cta = locale === 'es' ? 'contactanos' : 'contact us';
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-[--color-bg-base]">
+      <LocaleSwitcher />
       {/* Background video (z-0) */}
       <HeroVideo />
 
@@ -31,9 +42,9 @@ export default function HomePage() {
             color: 'var(--color-text-primary)',
           }}
         >
-          construimos
+          {headline}
           <br />
-          cerebros de marca.
+          {headline2}
         </h1>
 
         <p
@@ -47,7 +58,7 @@ export default function HomePage() {
             textTransform: 'uppercase',
           }}
         >
-          Próximamente
+          {tagline}
         </p>
 
         <a
@@ -65,7 +76,7 @@ export default function HomePage() {
             fontWeight: 500,
           }}
         >
-          <span>contactanos</span>
+          <span>{cta}</span>
           <span className="bbf-cta-arrow" aria-hidden="true">
             →
           </span>

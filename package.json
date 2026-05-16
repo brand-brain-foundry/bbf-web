@@ -31,6 +31,7 @@
     "@payloadcms/richtext-lexical": "^3.84.1",
     "@payloadcms/storage-vercel-blob": "^3.84.1",
     "next": "^15.5.18",
+    "next-intl": "^3.26.5",
     "payload": "^3.84.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
