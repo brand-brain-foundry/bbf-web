@@ -6,3 +6,4 @@
  */
 
 export * from './LocaleSwitcher';
+export * from './HeroVideo';

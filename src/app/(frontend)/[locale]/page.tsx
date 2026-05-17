@@ -1,6 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import { BBFLogo } from '@/components/atoms/BBFLogo';
-import { HeroVideo } from '@/components/HeroVideo';
+import { HeroVideo } from '@/components/molecules/HeroVideo';
 import { LocaleSwitcher } from '@/components/molecules/LocaleSwitcher';
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -15,8 +15,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <main className="relative min-h-screen overflow-hidden bg-[--bbf-color-bg-base]">
       <LocaleSwitcher />
-      {/* Background video (z-0) */}
-      <HeroVideo />
+      {/* Background video (z-0) — TD-M5-D3-01: poster pendiente M6+ */}
+      <HeroVideo autoplay muted loop>
+        <HeroVideo.Source src="/assets/media/hero/hero.av1.webm" type="webm-vp9" />
+        <HeroVideo.Source src="/assets/media/hero/hero.h264.mp4" type="mp4-h264" />
+      </HeroVideo>
 
       {/* Contenido principal centrado (z-20, 8pt grid spacing) */}
       <div
