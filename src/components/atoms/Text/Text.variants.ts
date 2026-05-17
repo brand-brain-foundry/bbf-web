@@ -21,6 +21,8 @@ export const textVariants = cva(
         caption: '[font-size:var(--bbf-text-caption)] leading-[var(--bbf-leading-snug)]',
         overline:
           '[font-size:var(--bbf-text-overline)] uppercase tracking-[var(--bbf-tracking-overline)] font-[var(--bbf-weight-bold)]',
+        tagline:
+          '[font-size:var(--bbf-text-base)] uppercase tracking-[0.15em] font-[var(--bbf-weight-bold)]',
       },
       color: {
         primary: 'text-[var(--bbf-text-on-light)]',

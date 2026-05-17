@@ -45,7 +45,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </Heading>
 
         <Text
-          variant="overline"
+          variant="tagline"
           color="primary"
           align="center"
           className="hero-entrance hero-entrance--delay-3"
