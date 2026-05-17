@@ -25,7 +25,7 @@ export function BBFLogo({ size, className }: BBFLogoProps) {
     `<svg class="bbf-logo-stamp ${className ?? ''}" aria-label="Brand Brain Foundry" role="img" `,
   );
 
-  const computedSize = size ?? 'var(--logo-size-hero)';
+  const computedSize = size ?? 'var(--bbf-logo-size-hero)';
 
   return (
     <div
