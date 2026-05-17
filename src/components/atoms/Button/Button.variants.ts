@@ -4,6 +4,15 @@
  * Subordinado a: BBF_M5_D_Plan.md §2
  * Decisiones: D-BBF-WEB-79 (compound NO), D-BBF-WEB-80 (asChild),
  *             D-BBF-WEB-77 (surface-aware), D-BBF-WEB-81 (folder canon)
+ *
+ * D-95 RATIFICADA (M5-D6): Pattern canon BBF prop `intent` (NO `variant`).
+ *   Atoms BBF usan prop `intent` semántica (primary/secondary/ghost/outline),
+ *   NO prop genérica `variant`. Más legible y expresivo.
+ *   Auto-corrección M5-D1 ratificada retroactivamente.
+ *   Pattern aplica también a: Heading.level, Text.variant (rol semántico).
+ *
+ * D-92 (L-BBF-92): Tailwind v4 arbitrary properties canon BBF.
+ *   [property:var(--token)] preferido sobre utility-class[var(--token)].
  */
 
 import { cva, type VariantProps } from 'class-variance-authority';

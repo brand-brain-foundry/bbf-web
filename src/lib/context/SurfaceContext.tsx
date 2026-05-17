@@ -2,7 +2,18 @@
  * BBF Design System — Surface Context (programmatic override)
  *
  * Subordinado a: BBF_M5_D_Plan.md §2
- * Decisión: D-BBF-WEB-77 (surface-awareness híbrido B+C)
+ * Decisiones: D-BBF-WEB-77 (surface-aware), D-94 RATIFICADA (M5-D6)
+ *
+ * D-94 RATIFICADA: Surface type canon BBF — 4 valores canónicos:
+ *   - auto:  contexto heredado (default)
+ *   - dark:  fondos oscuros (hero principal, secciones inversas)
+ *   - sand:  fondos claros canon (superficie principal BBF)
+ *   - glass: superficies translúcidas (backdrop blur, LocaleSwitcher)
+ *
+ * Valores 'sand-elevated' y 'dark-elevated' ELIMINADOS (M5-D6):
+ * eran CSS variable names que se filtraron al type — no son valores
+ * de surface context (sus tokens CSS --bbf-surface-sand-elevated
+ * permanecen en semantic/colors.css).
  *
  * NOTA: el patrón CANON BBF es data-surface attribute en HTML.
  * Este Context es OPCIONAL — solo cuando se requiere override programático
@@ -13,13 +24,16 @@
  *
  * Para override programático:
  *   <SurfaceProvider surface="dark">...</SurfaceProvider>
+ *
+ * D-97 NUEVA (M5-D6): Surface flow ÚNICAMENTE via SurfaceContext.
+ * DOM traversal por ref descartado — incompatible con React 19 + RSC.
  */
 
 'use client';
 
 import { createContext, useContext, type ReactNode } from 'react';
 
-export type Surface = 'sand' | 'dark' | 'glass' | 'sand-elevated' | 'dark-elevated' | 'auto';
+export type Surface = 'auto' | 'dark' | 'sand' | 'glass';
 
 const SurfaceContext = createContext<Surface | undefined>(undefined);
 

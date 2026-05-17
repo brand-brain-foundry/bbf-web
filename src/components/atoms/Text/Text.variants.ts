@@ -6,6 +6,11 @@
  * TD-M5-D4-CRIT-02 fix: text-[var(--token)] → [font-size:var(--token)]
  * Tailwind v4 arbitrary value text-[var()] sin type hint defaultea a color:.
  * L-BBF-92: usar arbitrary property explícita [font-size:var(--token)].
+ *
+ * TD-M5-D4-LATENTE-01 fix (M5-D6): compoundVariants para overline/tagline.
+ * CVA procesa variants en orden de declaración; weight={regular} default
+ * sobreescribía font-bold de overline/tagline via tailwind-merge.
+ * compoundVariants se aplican DESPUÉS del weight default → bold gana. ✓
  */
 
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -20,9 +25,8 @@ export const textVariants = cva(
         'body-sm': '[font-size:var(--bbf-text-body-sm)]',
         caption: '[font-size:var(--bbf-text-caption)] leading-[var(--bbf-leading-snug)]',
         overline:
-          '[font-size:var(--bbf-text-overline)] uppercase tracking-[var(--bbf-tracking-overline)] font-[var(--bbf-weight-bold)]',
-        tagline:
-          '[font-size:var(--bbf-text-base)] uppercase tracking-[0.15em] font-[var(--bbf-weight-bold)]',
+          '[font-size:var(--bbf-text-overline)] uppercase tracking-[var(--bbf-tracking-overline)]',
+        tagline: '[font-size:var(--bbf-text-base)] uppercase tracking-[0.15em]',
       },
       color: {
         primary: 'text-[var(--bbf-text-on-light)]',
@@ -43,6 +47,18 @@ export const textVariants = cva(
         bold: 'font-[var(--bbf-weight-bold)]',
       },
     },
+    compoundVariants: [
+      {
+        variant: 'overline',
+        weight: 'regular',
+        class: 'font-[var(--bbf-weight-bold)]',
+      },
+      {
+        variant: 'tagline',
+        weight: 'regular',
+        class: 'font-[var(--bbf-weight-bold)]',
+      },
+    ],
     defaultVariants: {
       variant: 'body-md',
       color: 'primary',

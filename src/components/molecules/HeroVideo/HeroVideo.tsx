@@ -16,6 +16,8 @@
  * Server Component (sin state interactivo, atributos native HTML video).
  *
  * Auto-corrección §14: import CSSProperties directamente (no React.CSSProperties).
+ * D-96 RATIFICADA (M5-D6): import type { CSSProperties } from 'react' canon BBF.
+ *   Pattern: import directo del módulo react, NO namespace React.CSSProperties.
  * NOTA: codec real de hero.av1.webm es VP9 (encoder fnord plugin Premier 2026).
  */
 
