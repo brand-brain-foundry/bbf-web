@@ -1,7 +1,7 @@
 import { setRequestLocale } from 'next-intl/server';
 import { BBFLogo } from '@/components/atoms/BBFLogo';
 import { HeroVideo } from '@/components/HeroVideo';
-import { LocaleSwitcher } from '@/components/i18n/LocaleSwitcher';
+import { LocaleSwitcher } from '@/components/molecules/LocaleSwitcher';
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
