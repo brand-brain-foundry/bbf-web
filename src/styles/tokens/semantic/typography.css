@@ -1,0 +1,27 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Typography
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §4 (M5-C)
+ * Tier: 2 (SEMANTIC)
+ * Decisiones: D-BBF-WEB-55 (3-tier), D-BBF-WEB-68 (Inter), D-BBF-WEB-68b (Mulish)
+ *
+ * Font roles canon BBF:
+ *   --bbf-font-display  → Inter (headlines, hero, titles, wordmark)
+ *   --bbf-font-body     → Mulish (paragraphs, UI labels, nav, captions)
+ *   --bbf-font-mono     → JetBrains Mono (code, technical content)
+ *
+ * Componentes referencian SOLO estos semantic tokens, NUNCA primitives.
+ */
+
+:root {
+  /* ============================================================
+     FONT ROLES (semantic — propósito)
+     ============================================================ */
+  --bbf-font-display: var(--bbf-font-inter);
+  --bbf-font-body: var(--bbf-font-mulish);
+  --bbf-font-code: var(--bbf-font-mono);
+
+  /* Legacy aliases (compatibility — deprecate in M5-D) */
+  --bbf-font-heading: var(--bbf-font-display); /* alias usado en hero.css + reset.css */
+  --bbf-font-sans: var(--bbf-font-body); /* alias usado en LocaleSwitcher.css */
+}

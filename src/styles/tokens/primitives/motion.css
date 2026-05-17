@@ -1,0 +1,19 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Motion
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §6 (M5-E formalizará completo)
+ * Tier: 1 (PRIMITIVE)
+ * Decisión: D-BBF-WEB-64 (CSS-only base)
+ *
+ * NOTA M5-A: tokens motion actuales heredados Sivar Brains (3 durations + 2 easings).
+ * M5-E expande a sistema canon completo (6 durations + 6 easings) sin romper estos.
+ */
+
+@theme {
+  --bbf-duration-fast: 150ms;
+  --bbf-duration-normal: 250ms;
+  --bbf-duration-slow: 400ms;
+
+  --bbf-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --bbf-ease-out: cubic-bezier(0, 0, 0.2, 1);
+}

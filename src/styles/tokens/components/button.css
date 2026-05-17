@@ -1,0 +1,15 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: Button
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §5 (M5-D crea atom Button)
+ * Tier: 3 (COMPONENT)
+ * Decisión: D-BBF-WEB-55, D-BBF-WEB-63 (CVA en M5-D)
+ *
+ * NOTA M5-A: archivo NUEVO placeholder. M5-D crea atom Button con CVA.
+ * .bbf-cta-pill permanece en hero.css — es hero-specific hasta M5-D.
+ * M5-D generaliza a Button atom reutilizable con variantes (pill, solid, outline).
+ */
+
+:root {
+  /* Empty — populated on-demand in M5-D */
+}

@@ -1,0 +1,30 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: HeroSection
+ *
+ * Subordinado a: B-BBF-WEB-M5-D4-HEROSECTION
+ * Tier: 3 (COMPONENT)
+ *
+ * Tokens y clases específicas de HeroSection.
+ * Los tokens de hero spacing ya están en hero.css.
+ * Este archivo centraliza los layout styles que antes eran inline en page.tsx.
+ */
+
+/* === Content container layout === */
+.bbf-hero-section__content {
+  max-width: var(--bbf-hero-max-width);
+  padding-inline: var(--bbf-hero-padding-x);
+  padding-block: var(--bbf-hero-padding-y);
+}
+
+/* === Spacing entre elementos del content (direct children) === */
+.bbf-hero-section__content > [data-component='bbf-heading'] {
+  margin-top: var(--bbf-hero-gap-logo);
+}
+
+.bbf-hero-section__content > [data-component='bbf-text'] {
+  margin-top: var(--bbf-hero-gap-tagline);
+}
+
+.bbf-hero-section__content > .bbf-cta-pill {
+  margin-top: var(--bbf-hero-gap-cta);
+}

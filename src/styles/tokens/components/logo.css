@@ -1,0 +1,151 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: Logo
+ *
+ * Subordinado a: B-BBF-WEB-M5-D1.5-LOGO-SYSTEM-V2 + B-BBF-WEB-M5-E-MOTION-SYSTEM
+ * Decisiones: D-BBF-WEB-77 (surface-aware), D-BBF-WEB-78 (animated state),
+ *             D-98 (motion tokens canon), D-99 (BBFLogoAnimator WAAPI)
+ *
+ * Sistema canon de logo con 4 variantes.
+ * Color heredado via currentColor (surface-aware).
+ * Animación pertenece SOLO a variant=stamp + data-animated=true.
+ *
+ * M5-E: hover speed change via CSS eliminado — WAAPI updatePlaybackRate en BBFLogoAnimator.
+ * Tokens rotation migrados a semantic/motion.css canon.
+ *
+ * IMPORTANTE: enrichSvg() del atom inyecta la clase directamente al <svg>,
+ * por lo que .bbf-logo-name-circle ES el <svg>, no un wrapper.
+ * Los selectores NO usan descendiente para targetear el SVG.
+ */
+
+/* ============================================================
+   CONTAINER BASE
+   ============================================================ */
+.bbf-logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--bbf-logo-color, currentColor);
+}
+
+/* SVGs internos heredan color via currentColor */
+.bbf-logo svg {
+  display: block;
+  fill: currentColor;
+}
+
+.bbf-logo svg path {
+  fill: currentColor;
+}
+
+/* ============================================================
+   VARIANT: icon (solo flor)
+   ============================================================ */
+.bbf-logo--icon {
+  width: var(--bbf-logo-rendered, 2.5rem);
+  height: var(--bbf-logo-rendered, 2.5rem);
+  aspect-ratio: 1 / 1;
+}
+
+.bbf-logo--icon .bbf-logo-icon {
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================
+   VARIANT: horizontal (icon + name-h)
+   ============================================================ */
+.bbf-logo--horizontal {
+  height: var(--bbf-logo-rendered, 2.5rem);
+  width: auto;
+  gap: var(--bbf-space-3, 0.75rem);
+}
+
+.bbf-logo--horizontal .bbf-logo-icon {
+  height: 100%;
+  width: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.bbf-logo--horizontal .bbf-logo-name-h {
+  height: 55%;
+  width: auto;
+}
+
+/* ============================================================
+   VARIANT: name-only (solo nombre)
+   ============================================================ */
+.bbf-logo--name-only {
+  height: calc(var(--bbf-logo-rendered, 2.5rem) * 0.55);
+  width: auto;
+}
+
+.bbf-logo--name-only .bbf-logo-name-h {
+  height: 100%;
+  width: auto;
+}
+
+/* ============================================================
+   VARIANT: stamp (icon centro + name-circle alrededor)
+   ============================================================ */
+.bbf-logo--stamp {
+  position: relative;
+  width: var(--bbf-logo-rendered, var(--bbf-logo-size-hero));
+  height: var(--bbf-logo-rendered, var(--bbf-logo-size-hero));
+  aspect-ratio: 1 / 1;
+}
+
+/* Nombre circular envuelve todo el container.
+   IMPORTANTE: la clase .bbf-logo-name-circle ES el <svg> mismo
+   (inyectada por enrichSvg()), por lo que NO se usa descendiente. */
+.bbf-logo--stamp .bbf-logo-name-circle {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Icon centrado dentro del círculo */
+.bbf-logo--stamp .bbf-logo-icon {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 50%;
+  height: 50%;
+  z-index: 2;
+}
+
+/* ============================================================
+   ANIMATION (solo stamp + animated=true)
+
+   El <svg> con clase .bbf-logo-name-circle es el target directo.
+   Sin descendiente — la clase está aplicada al svg mismo.
+   ============================================================ */
+.bbf-logo--stamp[data-animated='true'] .bbf-logo-name-circle {
+  animation: bbf-logo-rotate var(--bbf-logo-rotation-duration, 40s)
+    var(--bbf-logo-rotation-easing, linear) infinite;
+  transform-origin: center center;
+  transform-box: fill-box;
+  will-change: transform;
+}
+
+/* Hover scale preservado (transform, no rotation — rotation via WAAPI en BBFLogoAnimator) */
+@media (hover: hover) {
+  .bbf-logo--stamp[data-animated='true']:hover,
+  a:hover .bbf-logo--stamp[data-animated='true'] {
+    transform: scale(var(--bbf-logo-hover-scale, 1.04));
+    transition: var(--bbf-transition-hover);
+  }
+}
+
+/* Reduced motion canon WCAG 2.2 */
+@media (prefers-reduced-motion: reduce) {
+  .bbf-logo--stamp[data-animated='true'] .bbf-logo-name-circle {
+    animation: none;
+  }
+
+  .bbf-logo--stamp[data-animated='true']:hover,
+  a:hover .bbf-logo--stamp[data-animated='true'] {
+    transform: none;
+  }
+}

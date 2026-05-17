@@ -1,0 +1,45 @@
+/**
+ * BBF Design System — Base Reset + Typography Base
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §2
+ * Decisión: D-BBF-WEB-60 (modular por tier)
+ *
+ * Reset canon BBF. Complementa Tailwind v4 preflight.
+ * Incluye: html base, body base, heading base, ::selection.
+ * (No hay reset custom adicional — Tailwind v4 hace preflight.)
+ *
+ * Decisión autónoma M5-A: html/body/headings/selection migrados aquí
+ * desde globals.css. No hay base/typography.css en el plan de 19 archivos.
+ */
+
+html {
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--bbf-font-body);
+  font-size: var(--bbf-text-base);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--bbf-color-text-primary);
+  background-color: var(--bbf-color-bg-base);
+  margin: 0;
+}
+
+/* Headings: tipografía de display automática (patrón Sivar Brains) */
+h1,
+h2,
+h3 {
+  font-family: var(--bbf-font-heading);
+  letter-spacing: var(--bbf-tracking-heading);
+  line-height: 1.1;
+  margin: 0;
+}
+
+::selection {
+  background-color: var(--bbf-color-sand-200);
+  color: var(--bbf-text-on-light);
+}

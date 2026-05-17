@@ -1,7 +1,11 @@
 import { setRequestLocale } from 'next-intl/server';
-import { BBFLogo } from '@/components/BBFLogo';
-import { HeroVideo } from '@/components/HeroVideo';
-import { LocaleSwitcher } from '@/components/i18n/LocaleSwitcher';
+import { BBFLogo, BBFLogoAnimator } from '@/components/atoms/BBFLogo';
+import { Button } from '@/components/atoms/Button';
+import { Heading } from '@/components/atoms/Heading';
+import { Text } from '@/components/atoms/Text';
+import { HeroVideo } from '@/components/molecules/HeroVideo';
+import { LocaleSwitcher } from '@/components/molecules/LocaleSwitcher';
+import { HeroSection } from '@/components/sections/HeroSection';
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -13,75 +17,59 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const cta = locale === 'es' ? 'contactanos' : 'contact us';
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[--color-bg-base]">
+    <HeroSection surface="auto">
       <LocaleSwitcher />
-      {/* Background video (z-0) */}
-      <HeroVideo />
 
-      {/* Contenido principal centrado (z-20, 8pt grid spacing) */}
-      <div
-        className="relative z-20 mx-auto flex min-h-screen flex-col items-center justify-center text-center"
-        style={{
-          maxWidth: 'var(--hero-max-width)',
-          paddingInline: 'var(--hero-padding-x)',
-          paddingBlock: 'var(--hero-padding-y)',
-        }}
-      >
+      {/* Background video (z-0) — TD-M5-D3-01: poster pendiente M6+ */}
+      <HeroVideo autoplay muted loop>
+        <HeroVideo.Source src="/assets/media/hero/hero.av1.webm" type="webm-vp9" />
+        <HeroVideo.Source src="/assets/media/hero/hero.h264.mp4" type="mp4-h264" />
+      </HeroVideo>
+
+      {/* Contenido principal centrado (z-20, 8pt grid via hero-section.css) */}
+      <HeroSection.Content align="center">
         <div className="hero-entrance hero-entrance--delay-1">
-          <BBFLogo />
+          <BBFLogoAnimator>
+            <BBFLogo variant="stamp" size="hero" animated />
+          </BBFLogoAnimator>
         </div>
 
-        <h1
+        <Heading
+          level="display-lg"
+          weight="bold"
+          color="primary"
+          align="center"
           className="hero-entrance hero-entrance--delay-2"
-          style={{
-            marginTop: 'var(--hero-gap-logo)',
-            fontSize: 'var(--headline-size)',
-            fontWeight: 'var(--headline-weight)',
-            letterSpacing: 'var(--headline-tracking)',
-            lineHeight: 'var(--headline-leading)',
-            color: 'var(--color-text-primary)',
-          }}
         >
           {headline}
           <br />
           {headline2}
-        </h1>
+        </Heading>
 
-        <p
+        <Text
+          variant="tagline"
+          color="primary"
+          align="center"
           className="hero-entrance hero-entrance--delay-3"
-          style={{
-            marginTop: 'var(--hero-gap-tagline)',
-            fontSize: 'var(--tagline-size)',
-            fontWeight: 'var(--tagline-weight)',
-            letterSpacing: 'var(--tagline-tracking)',
-            color: 'var(--tagline-color)',
-            textTransform: 'uppercase',
-          }}
         >
           {tagline}
-        </p>
+        </Text>
 
-        <a
-          href="mailto:contacto@brandbrainfoundry.com"
-          className="bbf-cta-pill hero-entrance hero-entrance--delay-4 inline-flex items-center"
-          style={{
-            marginTop: 'var(--hero-gap-cta)',
-            backgroundColor: 'var(--btn-pill-bg)',
-            color: 'var(--btn-pill-text)',
-            paddingInline: 'var(--btn-pill-padding-x)',
-            paddingBlock: 'var(--btn-pill-padding-y)',
-            borderRadius: 'var(--btn-pill-radius)',
-            textDecoration: 'none',
-            fontSize: 'var(--bbf-text-base)',
-            fontWeight: 500,
-          }}
+        {/* TD-M5-D4-01: hero-entrance → migrar a motion system M5-E */}
+        <Button
+          asChild
+          intent="primary"
+          size="lg"
+          className="bbf-cta-pill hero-entrance hero-entrance--delay-4"
         >
-          <span>{cta}</span>
-          <span className="bbf-cta-arrow" aria-hidden="true">
-            →
-          </span>
-        </a>
-      </div>
-    </main>
+          <a href="mailto:contacto@brandbrainfoundry.com">
+            <span>{cta}</span>
+            <span className="bbf-cta-arrow" aria-hidden="true">
+              →
+            </span>
+          </a>
+        </Button>
+      </HeroSection.Content>
+    </HeroSection>
   );
 }

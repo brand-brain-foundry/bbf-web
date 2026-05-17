@@ -1,0 +1,19 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Breakpoints
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §4.4 (M5-C)
+ * Tier: 1 (PRIMITIVE)
+ * Decisiones: D-BBF-WEB-55, D-BBF-WEB-59
+ *
+ * Sistema 6-breakpoint canon Tailwind v4 + industry standard 2026.
+ * Mobile-first: estos breakpoints aplican via `min-width: var(--bbf-breakpoint-X)`.
+ */
+
+@theme {
+  --bbf-breakpoint-xs: 480px; /* mobile landscape */
+  --bbf-breakpoint-sm: 640px; /* small tablet */
+  --bbf-breakpoint-md: 768px; /* tablet */
+  --bbf-breakpoint-lg: 1024px; /* desktop */
+  --bbf-breakpoint-xl: 1280px; /* wide desktop */
+  --bbf-breakpoint-2xl: 1536px; /* ultra wide */
+}

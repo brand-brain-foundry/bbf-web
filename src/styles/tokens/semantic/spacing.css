@@ -1,0 +1,54 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Spacing + Radius + Containers
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §2 (M5-A radius) + §4 (M5-C containers)
+ * Tier: 2 (SEMANTIC)
+ * Decisiones: D-BBF-WEB-55, D-BBF-WEB-71 (container queries futuro)
+ *
+ * NOTA: incluye radius semantic (decisión autónoma M5-A TD-M5-A-03).
+ * M5-F evaluará separar a semantic/radius.css (PATCH-M5-A-RADIUS-SPLIT).
+ *
+ * Containers canon: prose/narrow/default/wide/max/full
+ * Semantic spacing: content gaps, section gaps, component padding
+ */
+
+:root {
+  /* ============================================================
+     SEMANTIC RADIUS (heredado M5-A, decisión autónoma)
+     ============================================================ */
+  --bbf-radius-btn: var(--bbf-radius-full);
+  --bbf-radius-card: var(--bbf-radius-xl);
+  --bbf-radius-input: var(--bbf-radius-lg);
+
+  /* ============================================================
+     CONTAINERS canon BBF
+     ============================================================ */
+  --bbf-container-prose: 65ch; /* lectura óptima 65 caracteres */
+  --bbf-container-narrow: 40rem; /* 640px */
+  --bbf-container-default: 64rem; /* 1024px */
+  --bbf-container-wide: 80rem; /* 1280px */
+  --bbf-container-max: 90rem; /* 1440px */
+  --bbf-container-full: 100%;
+
+  /* ============================================================
+     SEMANTIC SPACING — component padding
+     ============================================================ */
+  --bbf-space-component-padding-sm: var(--bbf-space-2); /* 8px */
+  --bbf-space-component-padding-md: var(--bbf-space-4); /* 16px */
+  --bbf-space-component-padding-lg: var(--bbf-space-6); /* 24px */
+
+  /* ============================================================
+     SEMANTIC SPACING — content gaps
+     ============================================================ */
+  --bbf-space-content-gap-tight: var(--bbf-space-2); /* 8px */
+  --bbf-space-content-gap-normal: var(--bbf-space-4); /* 16px */
+  --bbf-space-content-gap-loose: var(--bbf-space-8); /* 32px */
+
+  /* ============================================================
+     SEMANTIC SPACING — section gaps
+     ============================================================ */
+  --bbf-space-section-gap-sm: var(--bbf-space-12); /* 48px */
+  --bbf-space-section-gap-md: var(--bbf-space-16); /* 64px */
+  --bbf-space-section-gap-lg: var(--bbf-space-24); /* 96px */
+  --bbf-space-section-gap-xl: var(--bbf-space-32); /* 128px */
+}

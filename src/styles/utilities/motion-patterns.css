@@ -1,0 +1,117 @@
+/**
+ * BBF Design System — Motion patterns canon
+ *
+ * Subordinado a: B-BBF-WEB-M5-E-MOTION-SYSTEM
+ * Decisión: D-98 NUEVA (motion canon BBF)
+ *
+ * Patterns reusables canon para futuros components (M6+).
+ * Aplicar con className en JSX o componentes.
+ *
+ * Reglas canon (R-BBF-09 ratificada):
+ *   - Animate solo transform + opacity
+ *   - <300ms para hover/feedback
+ *   - prefers-reduced-motion siempre
+ *   - will-change solo en animation activa
+ */
+
+/* ============================================================
+   PATTERN: fade-in entrance
+   ============================================================ */
+.bbf-fade-in {
+  opacity: 0;
+  animation: bbf-fade-in var(--bbf-motion-slow) var(--bbf-easing-out) forwards;
+}
+
+@keyframes bbf-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   PATTERN: slide-up entrance
+   ============================================================ */
+.bbf-slide-up {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: bbf-slide-up var(--bbf-motion-slow) var(--bbf-easing-entrance) forwards;
+}
+
+@keyframes bbf-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   PATTERN: scale-in entrance (modal, popover)
+   ============================================================ */
+.bbf-scale-in {
+  opacity: 0;
+  transform: scale(0.95);
+  animation: bbf-scale-in var(--bbf-motion-base) var(--bbf-easing-entrance) forwards;
+}
+
+@keyframes bbf-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============================================================
+   PATTERN: hover-lift (cards, interactive elements)
+   ============================================================ */
+.bbf-hover-lift {
+  transition:
+    transform var(--bbf-motion-fast) var(--bbf-easing-hover),
+    box-shadow var(--bbf-motion-fast) var(--bbf-easing-hover);
+}
+
+@media (hover: hover) {
+  .bbf-hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--bbf-shadow-md);
+  }
+}
+
+/* ============================================================
+   PATTERN: focus-ring canon BBF
+   ============================================================ */
+.bbf-focus-ring {
+  transition: outline var(--bbf-motion-fast) var(--bbf-easing-out);
+}
+
+.bbf-focus-ring:focus-visible {
+  outline: 2px solid var(--bbf-color-focus-ring, oklch(0.6 0.22 257.43));
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   REDUCED MOTION canon WCAG 2.2
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .bbf-fade-in,
+  .bbf-slide-up,
+  .bbf-scale-in {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .bbf-hover-lift:hover {
+    transform: none;
+  }
+}

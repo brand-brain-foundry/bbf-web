@@ -1,0 +1,15 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Border Radius
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §2
+ * Tier: 1 (PRIMITIVE)
+ * Decisión: D-BBF-WEB-55 (3-tier), D-BBF-WEB-59 (namespace)
+ */
+
+@theme {
+  --bbf-radius-sm: 0.25rem; /* 4px */
+  --bbf-radius-md: 0.5rem; /* 8px */
+  --bbf-radius-lg: 0.75rem; /* 12px */
+  --bbf-radius-xl: 1rem; /* 16px */
+  --bbf-radius-full: 9999px;
+}

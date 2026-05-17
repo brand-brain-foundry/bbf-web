@@ -1,0 +1,40 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Spacing
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §4.3 (M5-C extension)
+ * Tier: 1 (PRIMITIVE)
+ * Decisiones: D-BBF-WEB-55 (3-tier), D-BBF-WEB-59 (namespace)
+ *
+ * Sistema 4pt base con preferencia 8pt grid.
+ * Canon Material/Atlassian/IBM Carbon.
+ * Extendido en M5-C con gaps (5/7/10/14/20/28/32/40/48/56/64).
+ */
+
+@theme {
+  /* Base */
+  --bbf-space-0: 0;
+  --bbf-space-px: 1px;
+  --bbf-space-0\.5: 0.125rem; /* 2px */
+
+  /* 4pt grid (fine-grain) */
+  --bbf-space-1: 0.25rem; /* 4px */
+  --bbf-space-2: 0.5rem; /* 8px */
+  --bbf-space-3: 0.75rem; /* 12px */
+  --bbf-space-4: 1rem; /* 16px */
+  --bbf-space-5: 1.25rem; /* 20px */
+  --bbf-space-6: 1.5rem; /* 24px */
+  --bbf-space-7: 1.75rem; /* 28px */
+  --bbf-space-8: 2rem; /* 32px */
+  --bbf-space-10: 2.5rem; /* 40px */
+  --bbf-space-12: 3rem; /* 48px */
+  --bbf-space-14: 3.5rem; /* 56px */
+  --bbf-space-16: 4rem; /* 64px */
+  --bbf-space-20: 5rem; /* 80px */
+  --bbf-space-24: 6rem; /* 96px */
+  --bbf-space-28: 7rem; /* 112px */
+  --bbf-space-32: 8rem; /* 128px */
+  --bbf-space-40: 10rem; /* 160px */
+  --bbf-space-48: 12rem; /* 192px */
+  --bbf-space-56: 14rem; /* 224px */
+  --bbf-space-64: 16rem; /* 256px */
+}

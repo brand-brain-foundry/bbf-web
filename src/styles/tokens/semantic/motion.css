@@ -1,0 +1,92 @@
+/**
+ * BBF Design System — SEMANTIC TOKEN: Motion
+ *
+ * Subordinado a: B-BBF-WEB-M5-E-MOTION-SYSTEM
+ * Decisiones: D-98 NUEVA (motion system canon BBF)
+ *
+ * Sistema canon de motion tokens BBF:
+ *   - Durations: 5 niveles (instant, fast, base, slow, slower)
+ *   - Easings: 4 curves canon (linear, in, out, inOut)
+ *   - Custom curves: BBF signature (entrance, exit, hover)
+ *   - Delays: stagger pattern (75ms cascade canon)
+ *
+ * Pattern canon Tailwind v4:
+ *   - CSS: transition: transform var(--bbf-motion-fast) var(--bbf-easing-out);
+ *   - JSX: [transition:transform_var(--bbf-motion-fast)_var(--bbf-easing-out)]
+ *
+ * Reglas canon BBF (R-BBF-09 motion best practices 2026):
+ *   - Target duration: <300ms para hover/feedback (perceived performance)
+ *   - Continuous animations (rotation): pueden ser >300ms (no afecta perceived)
+ *   - Animate ONLY: transform + opacity (no layout properties)
+ *   - prefers-reduced-motion siempre respetar (WCAG 2.2)
+ *   - will-change: sparingly + remove after animation
+ */
+
+:root {
+  /* ============================================================
+     DURATIONS canon (5 niveles)
+     ============================================================ */
+  --bbf-motion-instant: 0ms; /* state changes sin transition */
+  --bbf-motion-fast: 150ms; /* hover, focus, small UI feedback */
+  --bbf-motion-base: 250ms; /* default canon BBF (95% casos) */
+  --bbf-motion-slow: 400ms; /* entrance animations, modals */
+  --bbf-motion-slower: 600ms; /* full transitions, page leaves */
+
+  /* ============================================================
+     EASINGS canon (4 curves estándar + custom BBF)
+     ============================================================ */
+  --bbf-easing-linear: linear;
+  --bbf-easing-in: cubic-bezier(0.4, 0, 1, 1);
+  --bbf-easing-out: cubic-bezier(0, 0, 0.2, 1);
+  --bbf-easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* BBF signature curves (premium feel) */
+  --bbf-easing-entrance: cubic-bezier(0.16, 1, 0.3, 1); /* smooth ease-out premium */
+  --bbf-easing-exit: cubic-bezier(0.7, 0, 0.84, 0); /* ease-in quick */
+  --bbf-easing-hover: cubic-bezier(0.4, 0, 0.2, 1); /* feedback responsivo */
+  --bbf-easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1); /* sutil spring */
+
+  /* ============================================================
+     DELAYS canon (stagger pattern)
+     ============================================================ */
+  --bbf-stagger-base: 75ms; /* stagger entre hijos cascade */
+  --bbf-delay-1: calc(var(--bbf-stagger-base) * 1); /* 75ms */
+  --bbf-delay-2: calc(var(--bbf-stagger-base) * 2); /* 150ms */
+  --bbf-delay-3: calc(var(--bbf-stagger-base) * 3); /* 225ms */
+  --bbf-delay-4: calc(var(--bbf-stagger-base) * 4); /* 300ms */
+  --bbf-delay-5: calc(var(--bbf-stagger-base) * 5); /* 375ms */
+
+  /* ============================================================
+     SEMANTIC ALIASES (uso contextual canon BBF)
+     ============================================================ */
+  --bbf-transition-default: all var(--bbf-motion-base) var(--bbf-easing-in-out);
+  --bbf-transition-hover: transform var(--bbf-motion-fast) var(--bbf-easing-hover);
+  --bbf-transition-color:
+    color var(--bbf-motion-fast) var(--bbf-easing-out),
+    background-color var(--bbf-motion-fast) var(--bbf-easing-out);
+  --bbf-transition-fade: opacity var(--bbf-motion-base) var(--bbf-easing-out);
+  --bbf-transition-entrance:
+    opacity var(--bbf-motion-slow) var(--bbf-easing-entrance),
+    transform var(--bbf-motion-slow) var(--bbf-easing-entrance);
+
+  /* ============================================================
+     LOGO ROTATION canon (continuous animation, override visible)
+     ============================================================ */
+  --bbf-logo-rotation-duration: 40s; /* idle rotation speed */
+  --bbf-logo-rotation-duration-hover: 12s; /* hover acceleration target */
+  --bbf-logo-rotation-easing: var(--bbf-easing-linear); /* rotation NUNCA ease */
+}
+
+/* ============================================================
+   REDUCED MOTION (WCAG 2.2 canon)
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --bbf-motion-fast: 0.01ms;
+    --bbf-motion-base: 0.01ms;
+    --bbf-motion-slow: 0.01ms;
+    --bbf-motion-slower: 0.01ms;
+    --bbf-logo-rotation-duration: 0s;
+    --bbf-logo-rotation-duration-hover: 0s;
+  }
+}

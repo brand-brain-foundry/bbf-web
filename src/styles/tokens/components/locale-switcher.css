@@ -1,0 +1,125 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: LocaleSwitcher
+ *
+ * Subordinado a: B-BBF-WEB-M5-D2-LOCALESWITCHER
+ * Decisiones: D-77 (surface-aware), D-78 (state simple), D-82 (AI-readable)
+ *
+ * Refactor M5-D2: clases canon alineadas con CVA variants.
+ *
+ * Targets:
+ *   .bbf-locale-switcher                  — nav container
+ *   .bbf-locale-switcher__pill            — botón locale
+ *   .bbf-locale-switcher__pill--active    — variant active state
+ *
+ * Data attributes:
+ *   data-component                        — identificador AI-readable
+ *   data-locale                           — código locale del pill
+ *   data-active                           — active state
+ *   data-surface (en container)           — surface override explícito
+ */
+
+/* ============================================================
+   CONTAINER
+   ============================================================ */
+.bbf-locale-switcher {
+  --bbf-locale-bg: var(--bbf-surface-glass-light, rgba(255, 255, 255, 0.6));
+  --bbf-locale-text: var(--bbf-text-on-light, #1a1a1a);
+  --bbf-locale-text-active: var(--bbf-text-on-dark, #ffffff);
+  --bbf-locale-bg-active: var(--bbf-surface-black, #1a1a1a);
+
+  display: inline-flex;
+  align-items: center;
+  position: fixed;
+  top: var(--bbf-space-4, 1rem);
+  right: var(--bbf-space-4, 1rem);
+  z-index: 30;
+  padding: var(--bbf-space-1, 0.25rem);
+  background: var(--bbf-locale-bg);
+  border-radius: var(--bbf-radius-full, 999px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--bbf-shadow-sm);
+}
+
+/* ============================================================
+   PILL (cada botón locale)
+   ============================================================ */
+.bbf-locale-switcher__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bbf-locale-text);
+  background: transparent;
+  border: none;
+  border-radius: var(--bbf-radius-full, 999px);
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
+    transform 200ms ease;
+}
+
+.bbf-locale-switcher__pill:hover:not(:disabled) {
+  background: var(--bbf-surface-sand-elevated, rgba(0, 0, 0, 0.05));
+}
+
+.bbf-locale-switcher__pill:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+/* Active state via class O data-attribute */
+.bbf-locale-switcher__pill--active,
+.bbf-locale-switcher__pill[data-active] {
+  background: var(--bbf-locale-bg-active);
+  color: var(--bbf-locale-text-active);
+  cursor: default;
+}
+
+.bbf-locale-switcher__pill--active:hover,
+.bbf-locale-switcher__pill[data-active]:hover {
+  background: var(--bbf-locale-bg-active); /* no cambia en hover si active */
+}
+
+/* ============================================================
+   SURFACE AWARENESS
+   data-surface en container O en ancestor
+   ============================================================ */
+[data-surface='dark'] .bbf-locale-switcher,
+.bbf-locale-switcher[data-surface='dark'] {
+  --bbf-locale-bg: var(--bbf-surface-glass-dark, rgba(0, 0, 0, 0.4));
+  --bbf-locale-text: var(--bbf-text-on-dark, #ffffff);
+  --bbf-locale-text-active: var(--bbf-text-on-light, #1a1a1a);
+  --bbf-locale-bg-active: var(--bbf-surface-sand, #fdf5ed);
+}
+
+[data-surface='glass'] .bbf-locale-switcher,
+.bbf-locale-switcher[data-surface='glass'] {
+  --bbf-locale-bg: var(--bbf-surface-glass-light, rgba(255, 255, 255, 0.3));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* ============================================================
+   RESPONSIVE — mobile adjust position
+   ============================================================ */
+@media (max-width: 640px) {
+  .bbf-locale-switcher {
+    top: var(--bbf-space-3, 0.75rem);
+    right: var(--bbf-space-3, 0.75rem);
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .bbf-locale-switcher__pill {
+    transition: none;
+  }
+  .bbf-locale-switcher__pill:active:not(:disabled) {
+    transform: none;
+  }
+}

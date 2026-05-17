@@ -1,0 +1,112 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Typography
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §4 (M5-C)
+ * Tier: 1 (PRIMITIVE)
+ * Decisiones: D-BBF-WEB-55 (3-tier), D-BBF-WEB-68 (Inter), D-BBF-WEB-68b (Mulish),
+ *             D-BBF-WEB-74 (Major Third 1.25)
+ *
+ * Sistema tipográfico canon BBF:
+ *   - Display: Inter (variable font, weights 400-900)
+ *   - Body:    Mulish (variable font, weights 400-700)
+ *   - Mono:    JetBrains Mono / system mono (uso futuro)
+ *
+ * Type scale: Major Third 1.25 (editorial confident, coherente enerblock canon)
+ * Base size: 16px (1rem)
+ *
+ * Display tokens usan clamp() responsive (fluid typography).
+ * Headlines usan clamp() para escalado responsive.
+ * Body sizes fijos (no fluid — mantiene legibilidad).
+ *
+ * NO USAR estos tokens directamente en componentes.
+ * Usar tokens semantic de tokens/semantic/typography.css.
+ */
+
+@theme {
+  /* ============================================================
+     FONT FAMILIES (primitives)
+     ============================================================ */
+  --bbf-font-inter: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --bbf-font-mulish: var(--font-mulish), system-ui, -apple-system, sans-serif;
+  --bbf-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Consolas', monospace;
+
+  /* ============================================================
+     TYPE SCALE — Major Third 1.25
+     Base: 16px (1rem)
+     Steps: 1 / 1.25 / 1.5625 / 1.953125 / 2.44140625 / ...
+
+     Display: usan clamp() responsive (fluid)
+     Headlines: usan clamp() responsive (fluid)
+     Body/meta: fijos (legibilidad)
+     ============================================================ */
+
+  /* Display (hero / page openers) */
+  --bbf-text-display-xl: clamp(3rem, 7vw, 6rem); /* 48px → 96px */
+  --bbf-text-display-lg: clamp(2.5rem, 5.5vw, 4.5rem); /* 40px → 72px */
+  --bbf-text-display-md: clamp(2rem, 4vw, 3.5rem); /* 32px → 56px */
+
+  /* Headlines (h1-h6) */
+  --bbf-text-h1: clamp(1.953rem, 3.5vw, 3.052rem); /* 31.25px → 48.83px */
+  --bbf-text-h2: clamp(1.563rem, 2.8vw, 2.441rem); /* 25px → 39.06px */
+  --bbf-text-h3: clamp(1.25rem, 2.2vw, 1.953rem); /* 20px → 31.25px */
+  --bbf-text-h4: 1.25rem; /* 20px */
+  --bbf-text-h5: 1rem; /* 16px */
+  --bbf-text-h6: 0.8rem; /* 12.8px */
+
+  /* Body */
+  --bbf-text-body-lg: 1.25rem; /* 20px lead paragraphs */
+  --bbf-text-body-md: 1rem; /* 16px default */
+  --bbf-text-body-sm: 0.8rem; /* 12.8px secondary */
+
+  /* Meta */
+  --bbf-text-caption: 0.8rem; /* 12.8px */
+  --bbf-text-overline: 0.64rem; /* 10.24px small caps */
+
+  /* Legacy aliases for compatibility (until M5-D refactor)
+     Map old --bbf-text-xs..7xl scale to new system */
+  --bbf-text-xs: 0.64rem; /* 10.24px (was 12px Minor Third) */
+  --bbf-text-sm: 0.8rem; /* 12.8px (was 14px) */
+  --bbf-text-base: 1rem; /* 16px (unchanged) */
+  --bbf-text-lg: 1.25rem; /* 20px (was 18px) */
+  --bbf-text-xl: 1.5625rem; /* 25px (was 20px) */
+  --bbf-text-2xl: 1.953rem; /* 31.25px (was 24px) */
+  --bbf-text-3xl: 2.441rem; /* 39.06px (was 30px) */
+  --bbf-text-4xl: 3.052rem; /* 48.83px (was 36px) */
+  --bbf-text-5xl: 3.815rem; /* 61.04px (was 48px) */
+  --bbf-text-6xl: 4.768rem; /* 76.29px (was 60px) */
+  --bbf-text-7xl: 5.96rem; /* 95.37px (was 72px) */
+
+  /* ============================================================
+     LINE HEIGHTS
+     ============================================================ */
+  --bbf-leading-display: 0.95; /* tight display */
+  --bbf-leading-heading: 1.15; /* tight headlines */
+  --bbf-leading-body: 1.55; /* readable body */
+  --bbf-leading-relaxed: 1.7; /* lead paragraphs */
+  --bbf-leading-tight: 1.1;
+  --bbf-leading-snug: 1.3;
+  --bbf-leading-none: 1;
+
+  /* ============================================================
+     LETTER SPACING (tracking)
+     ============================================================ */
+  --bbf-tracking-display: -0.04em; /* tight display */
+  --bbf-tracking-heading: -0.02em;
+  --bbf-tracking-body: 0;
+  --bbf-tracking-overline: 0.12em; /* spaced caps eyebrow */
+  --bbf-tracking-mono: 0;
+
+  /* Legacy aliases for compatibility */
+  --bbf-tracking-ui: 0;
+  --bbf-tracking-eyebrow: 0.12em;
+
+  /* ============================================================
+     FONT WEIGHTS (canon Inter range)
+     ============================================================ */
+  --bbf-weight-regular: 400;
+  --bbf-weight-medium: 500;
+  --bbf-weight-semibold: 600;
+  --bbf-weight-bold: 700;
+  --bbf-weight-extrabold: 800;
+  --bbf-weight-black: 900;
+}

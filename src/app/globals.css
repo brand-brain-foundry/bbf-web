@@ -1,473 +1,54 @@
-/* ============================================================
-   BBF Web — globals.css v1.0 (H1-3-A)
-   Brand Brain Foundry — Design System
-
-   Arquitectura 3 capas heredada de Sivar Brains v2.1.0:
-     Capa 1: Primitive tokens (@theme — raw values)
-     Capa 2: Semantic tokens (:root — propósito)
-     Capa 3: Component tokens (:root — específicos)
-
-   Aplicación SB_Law_Construction:
-     A-04 Convenciones, no decisiones
-     B-01 Tokens antes que valores
-     B-02 Single source of truth
-   ============================================================ */
+/**
+ * BBF Design System — globals.css Orchestrator
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §2 (M5-A)
+ * Decisiones: D-BBF-WEB-55, D-BBF-WEB-59, D-BBF-WEB-60
+ *
+ * Este archivo es SOLO el conductor de @imports.
+ * NO contiene tokens, NO contiene reglas CSS directas.
+ * Toda definición está en src/styles/ modular por tier.
+ *
+ * Orden canon obligatorio:
+ *   1. Tailwind v4 base
+ *   2. Base layer (reset, focus)
+ *   3. Tier 1 PRIMITIVES (todos los archivos primitives/)
+ *   4. Tier 2 SEMANTIC (todos los archivos semantic/)
+ *   5. Tier 3 COMPONENT (todos los archivos components/)
+ *   6. Utilities (animations, helpers)
+ *
+ * Cambiar este orden ROMPE la cascada DTCG. NO modificar sin firma Strategic.
+ */
 
 @import 'tailwindcss';
 
-/* ============================================================
-   CAPA 1 — PRIMITIVE TOKENS
-   ============================================================ */
-
-@theme {
-  /* ── BBF Brand palette ── */
-  --bbf-blue-50: #eef4ff;
-  --bbf-blue-100: #d9e7ff;
-  --bbf-blue-200: #b3cffe;
-  --bbf-blue-300: #85affd;
-  --bbf-blue-400: #5587fb;
-  --bbf-blue-500: #255ff1;
-  --bbf-blue-600: #1a4fd6;
-  --bbf-blue-700: #1440b0;
-  --bbf-blue-800: #10338a;
-  --bbf-blue-900: #0c2568;
-
-  /* ── BBF Cream (background canon Zavala) ── */
-  --bbf-cream-50: #fefcf8;
-  --bbf-cream-100: #fdf5ed;
-  --bbf-cream-200: #f9ecd9;
-  --bbf-cream-300: #f4dfba;
-
-  /* ── Neutrals ── */
-  --bbf-neutral-0: #ffffff;
-  --bbf-neutral-50: #fafafa;
-  --bbf-neutral-100: #f4f4f5;
-  --bbf-neutral-200: #e4e4e7;
-  --bbf-neutral-300: #d4d4d8;
-  --bbf-neutral-400: #a1a1aa;
-  --bbf-neutral-500: #71717a;
-  --bbf-neutral-600: #52525b;
-  --bbf-neutral-700: #3f3f46;
-  --bbf-neutral-800: #27272a;
-  --bbf-neutral-900: #131414;
-  --bbf-neutral-950: #000000;
-
-  /* ── Type scale (Minor Third 1.2) ── */
-  --bbf-text-xs: 0.75rem;
-  --bbf-text-sm: 0.875rem;
-  --bbf-text-base: 1rem;
-  --bbf-text-lg: 1.125rem;
-  --bbf-text-xl: 1.25rem;
-  --bbf-text-2xl: 1.5rem;
-  --bbf-text-3xl: 1.875rem;
-  --bbf-text-4xl: 2.25rem;
-  --bbf-text-5xl: 3rem;
-  --bbf-text-6xl: 3.75rem;
-  --bbf-text-7xl: 4.5rem;
-
-  /* ── Spacing scale ── */
-  --bbf-space-1: 0.25rem;
-  --bbf-space-2: 0.5rem;
-  --bbf-space-3: 0.75rem;
-  --bbf-space-4: 1rem;
-  --bbf-space-6: 1.5rem;
-  --bbf-space-8: 2rem;
-  --bbf-space-12: 3rem;
-  --bbf-space-16: 4rem;
-  --bbf-space-24: 6rem;
-
-  /* ── Radius ── */
-  --bbf-radius-sm: 0.25rem;
-  --bbf-radius-md: 0.5rem;
-  --bbf-radius-lg: 0.75rem;
-  --bbf-radius-xl: 1rem;
-  --bbf-radius-full: 9999px;
-
-  /* ── Motion ── */
-  --bbf-duration-fast: 150ms;
-  --bbf-duration-normal: 250ms;
-  --bbf-duration-slow: 400ms;
-  --bbf-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
-  --bbf-ease-out: cubic-bezier(0, 0, 0.2, 1);
-}
-
-/* ============================================================
-   CAPA 2 — SEMANTIC TOKENS
-   ============================================================ */
-
-:root {
-  /* ── Brand ── */
-  --color-brand: var(--bbf-blue-500);
-  --color-brand-hover: var(--bbf-blue-600);
-  --color-brand-subtle: var(--bbf-blue-50);
-
-  /* ── Surface (default home = cream) ── */
-  --color-bg-base: var(--bbf-cream-100);
-  --color-bg-surface: var(--bbf-neutral-0);
-  --color-bg-inverse: var(--bbf-neutral-950);
-
-  /* ── Text ── */
-  --color-text-primary: var(--bbf-neutral-900);
-  --color-text-secondary: var(--bbf-neutral-600);
-  --color-text-muted: var(--bbf-neutral-400);
-  --color-text-inverse: var(--bbf-neutral-0);
-  --color-text-brand: var(--bbf-blue-500);
-
-  /* ── Border ── */
-  --color-border: var(--bbf-neutral-200);
-  --color-border-strong: var(--bbf-neutral-300);
-
-  /* ── Focus ring ── */
-  --color-focus-ring: var(--bbf-blue-500);
-
-  /* ── Fonts ───────────────────────────────────────────────────────────────
-     TWO-FONT SYSTEM — single source of truth for all typography
-
-     --font-display: Outfit (cargado via next/font/google en layout.tsx)
-       → logo wordmark, h1/h2/h3, hero text, section titles
-       → weights: 400, 500, 600, 700, 900
-
-     --font-sans: Mulish (cargado via next/font/google en layout.tsx)
-       → body text, UI labels, nav items, docs, paragraphs
-       → weights: 400, 500, 600, 700
-
-     Rule: headings use --font-heading. Everything else uses --font-body.
-     Patrón heredado de Sivar Brains globals.css v2.1.0
-  ── */
-  --font-display: var(--font-outfit), 'Outfit', system-ui, sans-serif;
-  --font-sans: var(--font-mulish), 'Mulish', system-ui, -apple-system, sans-serif;
-
-  /* ── Typography role tokens — USE THESE in components, not font names ── */
-  --font-heading: var(--font-display); /* h1, h2, h3, hero, wordmark */
-  --font-body: var(--font-sans); /* body, labels, UI, docs     */
-
-  --tracking-display: -0.03em; /* Firmado Zavala: PATCH-2 */
-  --tracking-heading: -0.01em;
-  --tracking-ui: 0em;
-  --tracking-eyebrow: 0.1em; /* NUEVO: para labels/eyebrows tipo "Próximamente." */
-
-  /* ── Semantic radius ── */
-  --radius-btn: var(--bbf-radius-full);
-  --radius-card: var(--bbf-radius-xl);
-  --radius-input: var(--bbf-radius-lg);
-
-  /* ── Transitions ── */
-  --transition-fast: var(--bbf-duration-fast) var(--bbf-ease-default);
-  --transition-normal: var(--bbf-duration-normal) var(--bbf-ease-default);
-  --transition-slow: var(--bbf-duration-slow) var(--bbf-ease-default);
-}
-
-/* ============================================================
-   CAPA 3 — COMPONENT TOKENS
-   ============================================================ */
-
-:root {
-  /* ── Logo (PATCH-4: tamaño canon minimal) ── */
-  --logo-color: var(--bbf-neutral-900);
-  --logo-rotation-speed: 40s;
-  --logo-rotation-easing: linear;
-  --logo-size-hero: clamp(8rem, 14vw, 14rem); /* 128 → 224px (era 240-320, excesivo) */
-  --logo-size-nav: 2.5rem; /* 40px — futuro navbar */
-  --logo-hover-scale: 1.04; /* PATCH-4: más perceptible (era 1.02) */
-  --logo-rotation-speed-hover: 12s; /* PATCH-4: acelera 3.3× en hover */
-
-  /* ── Button pill (CTA "contactanos") ── */
-  --btn-pill-bg: var(--bbf-neutral-900);
-  --btn-pill-bg-hover: var(--bbf-neutral-800);
-  --btn-pill-text: var(--bbf-neutral-0);
-  --btn-pill-padding-x: var(--bbf-space-8);
-  --btn-pill-padding-y: var(--bbf-space-4);
-  --btn-pill-radius: var(--bbf-radius-full);
-
-  /* ── Headline (PATCH-4: cap reducido para wide screens) ── */
-  --headline-size: clamp(2.5rem, 5.5vw, 4rem); /* 40 → 64px (era 72, excesivo wide) */
-  --headline-weight: 700;
-  --headline-tracking: var(--tracking-display);
-  --headline-leading: 0.9;
-
-  /* ── Tagline / Eyebrow (PATCH-4: 16px fijo + tracking +) ── */
-  --tagline-size: var(--bbf-text-base); /* 16px fijo (era clamp 16-18) */
-  --tagline-weight: 700;
-  --tagline-tracking: 0.15em; /* PATCH-4: más abierto eyebrow (era 0.1) */
-  --tagline-color: var(--color-text-primary);
-  --tagline-transform: uppercase;
-
-  /* ── Hero spacing rhythm (PATCH-4: 8pt grid canon — Material/Atlassian/IBM) ── */
-  --hero-gap-logo: var(--bbf-space-8); /* 32px fijo — logo → headline */
-  --hero-gap-tagline: var(--bbf-space-6); /* 24px fijo — headline → tagline */
-  --hero-gap-cta: var(--bbf-space-12); /* 48px fijo — tagline → CTA */
-  --hero-padding-x: var(--bbf-space-6); /* 24px */
-  --hero-padding-y: var(--bbf-space-16); /* 64px */
-  --hero-max-width: 56rem; /* 896px cap (era 64rem, más recogido) */
-
-  /* ── Micro-interactions (PATCH-4: perceptibles, no sutiles) ── */
-  --motion-entrance-duration: 800ms; /* era 600 — más cinematográfico */
-  --motion-entrance-easing: cubic-bezier(0.16, 1, 0.3, 1); /* easeOutExpo */
-  --motion-entrance-distance: 2rem; /* PATCH-4: 32px (era 1rem = 16px imperceptible) */
-  --motion-stagger-step: 150ms; /* era 120 — más respiración entre elementos */
-
-  --motion-cta-duration: 300ms;
-  --motion-cta-easing: cubic-bezier(0.4, 0, 0.2, 1);
-  --cta-hover-scale: 1.05; /* era 1.03 — más perceptible */
-  --cta-hover-shadow: 0 16px 40px -12px rgb(0 0 0 / 0.4);
-  --cta-icon-shift: 0.375rem; /* 6px — flecha se mueve en hover */
-
-  --motion-logo-duration: 500ms;
-
-  /* ── Hero video overlay (PATCH-4: deshabilitado por decisión Zavala — video raw) ── */
-  --hero-overlay-color: transparent;
-  --hero-overlay-opacity: 0;
-}
-
-/* ============================================================
-   ANIMACIÓN LOGO — solo path #circle rota
-   ============================================================ */
-
-@keyframes bbf-logo-rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.bbf-logo-stamp #circle {
-  transform-origin: center center;
-  transform-box: fill-box;
-  animation: bbf-logo-rotate var(--logo-rotation-speed) var(--logo-rotation-easing) infinite;
-  will-change: transform;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bbf-logo-stamp #circle {
-    animation: none;
-  }
-}
-
-/* ── Asegurar color del logo via tokens (override hex hardcoded en SVG) ── */
-.bbf-logo-stamp path,
-.bbf-logo-stamp .cls-1 {
-  fill: var(--logo-color);
-}
-
-/* ============================================================
-   BASE STYLES
-   ============================================================ */
-
-html {
-  font-optical-sizing: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-body {
-  font-family: var(--font-body);
-  font-size: var(--bbf-text-base);
-  font-weight: 400;
-  line-height: 1.5;
-  color: var(--color-text-primary);
-  background-color: var(--color-bg-base);
-  margin: 0;
-}
-
-/* ── Headings: tipografía de display automática (patrón Sivar Brains) ── */
-h1,
-h2,
-h3 {
-  font-family: var(--font-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1.1;
-  margin: 0;
-}
-
-*:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-  border-radius: var(--bbf-radius-sm);
-}
-
-::selection {
-  background-color: var(--bbf-blue-100);
-  color: var(--color-text-primary);
-}
-
-/* ============================================================
-   MICRO-INTERACTIONS (PATCH-3)
-   Entrance animations + CTA hover.
-   Hardware-accelerated (transform + opacity solo).
-   ============================================================ */
-
-@keyframes bbf-fade-up {
-  from {
-    opacity: 0;
-    transform: translate3d(0, var(--motion-entrance-distance), 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-/* Hero entrance stagger — cada elemento entra con delay incremental */
-.hero-entrance {
-  opacity: 0;
-  animation: bbf-fade-up var(--motion-entrance-duration) var(--motion-entrance-easing) forwards;
-}
-
-.hero-entrance--delay-1 {
-  animation-delay: calc(var(--motion-stagger-step) * 0); /* logo: 0ms */
-}
-.hero-entrance--delay-2 {
-  animation-delay: calc(var(--motion-stagger-step) * 1); /* headline: 120ms */
-}
-.hero-entrance--delay-3 {
-  animation-delay: calc(var(--motion-stagger-step) * 2); /* tagline: 240ms */
-}
-.hero-entrance--delay-4 {
-  animation-delay: calc(var(--motion-stagger-step) * 3); /* CTA: 360ms */
-}
-
-/* CTA hover — scale sutil + shadow lift */
-.bbf-cta-pill {
-  transition:
-    transform var(--motion-cta-duration) var(--motion-cta-easing),
-    box-shadow var(--motion-cta-duration) var(--motion-cta-easing),
-    background-color var(--motion-cta-duration) var(--motion-cta-easing);
-  will-change: transform;
-}
-
-.bbf-cta-pill:hover {
-  transform: scale(var(--cta-hover-scale));
-  box-shadow: var(--cta-hover-shadow);
-  background-color: var(--bbf-neutral-800);
-}
-
-.bbf-cta-pill .bbf-cta-arrow {
-  display: inline-block;
-  margin-left: 0.5rem;
-  transition: transform var(--motion-cta-duration) var(--motion-cta-easing);
-  will-change: transform;
-}
-
-.bbf-cta-pill:hover .bbf-cta-arrow {
-  transform: translateX(var(--cta-icon-shift));
-}
-
-.bbf-cta-pill:active {
-  transform: scale(0.98);
-  transition-duration: 100ms;
-}
-
-/* Logo hover — scale muy sutil */
-.bbf-logo-stamp {
-  transition: transform var(--motion-logo-duration) var(--motion-cta-easing);
-  will-change: transform;
-}
-
-@media (hover: hover) {
-  a:hover .bbf-logo-stamp,
-  .bbf-logo-stamp:hover {
-    transform: scale(var(--logo-hover-scale));
-  }
-
-  /* Acelera la rotación del círculo del logo en hover (40s → 12s) */
-  a:hover .bbf-logo-stamp #circle,
-  .bbf-logo-stamp:hover #circle {
-    animation-duration: var(--logo-rotation-speed-hover);
-  }
-}
-
-/* Respect reduced motion (canon WCAG + 2026) */
-@media (prefers-reduced-motion: reduce) {
-  .hero-entrance,
-  .hero-entrance--delay-1,
-  .hero-entrance--delay-2,
-  .hero-entrance--delay-3,
-  .hero-entrance--delay-4 {
-    animation: none;
-    opacity: 1;
-  }
-  .bbf-cta-pill,
-  .bbf-logo-stamp {
-    transition: none;
-  }
-  .bbf-cta-pill:hover {
-    transform: none;
-  }
-}
-
-/* ============================================================
-   LocaleSwitcher M4-C
-   Tokens: --bbf-space-* (canon globals.css)
-   z-index: 50 (sobre hero video z-0/z-20)
-   ============================================================ */
-
-.bbf-locale-switcher {
-  position: fixed;
-  top: var(--bbf-space-6);
-  right: var(--bbf-space-6);
-  z-index: 50;
-  display: flex;
-  gap: 0;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 999px;
-  padding: 4px;
-}
-
-.bbf-locale-switcher__btn {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  padding: 6px 12px;
-  font-family: var(--font-mulish), system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: rgba(0, 0, 0, 0.5);
-  cursor: pointer;
-  border-radius: 999px;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  min-width: 36px;
-}
-
-.bbf-locale-switcher__btn:hover:not(:disabled) {
-  color: rgba(0, 0, 0, 0.85);
-  background: rgba(0, 0, 0, 0.04);
-}
-
-.bbf-locale-switcher__btn--active {
-  background: rgba(0, 0, 0, 0.9);
-  color: rgba(255, 255, 255, 0.95);
-  cursor: default;
-}
-
-.bbf-locale-switcher__btn--active:disabled {
-  cursor: default;
-  opacity: 1;
-}
-
-@media (max-width: 640px) {
-  .bbf-locale-switcher {
-    top: var(--bbf-space-4);
-    right: var(--bbf-space-4);
-    padding: 3px;
-  }
-
-  .bbf-locale-switcher__btn {
-    padding: 5px 10px;
-    font-size: 11px;
-    min-width: 32px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bbf-locale-switcher__btn {
-    transition: none;
-  }
-}
+/* === BASE LAYER === */
+@import '../styles/base/reset.css';
+@import '../styles/base/focus.css';
+
+/* === TIER 1: PRIMITIVES === */
+@import '../styles/tokens/primitives/colors.css';
+@import '../styles/tokens/primitives/spacing.css';
+@import '../styles/tokens/primitives/typography.css';
+@import '../styles/tokens/primitives/motion.css';
+@import '../styles/tokens/primitives/radius.css';
+@import '../styles/tokens/primitives/shadows.css';
+@import '../styles/tokens/primitives/breakpoints.css';
+@import '../styles/tokens/primitives/z-index.css';
+
+/* === TIER 2: SEMANTIC === */
+@import '../styles/tokens/semantic/colors.css';
+@import '../styles/tokens/semantic/typography.css';
+@import '../styles/tokens/semantic/spacing.css';
+@import '../styles/tokens/semantic/motion.css';
+@import '../styles/tokens/semantic/shadows.css';
+
+/* === TIER 3: COMPONENT === */
+@import '../styles/tokens/components/hero.css';
+@import '../styles/tokens/components/logo.css';
+@import '../styles/tokens/components/locale-switcher.css';
+@import '../styles/tokens/components/button.css';
+@import '../styles/tokens/components/hero-section.css';
+
+/* === UTILITIES === */
+@import '../styles/utilities/animations.css';
+@import '../styles/utilities/motion-patterns.css';

@@ -1,15 +1,15 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale, getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { Outfit, Mulish } from 'next/font/google';
+import { Inter, Mulish } from 'next/font/google';
 import { routing } from '@/i18n/routing';
 import type { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
 
-const outfit = Outfit({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '900'],
-  variable: '--font-outfit',
+  variable: '--font-inter',
+  weight: ['400', '500', '600', '700', '800', '900'],
   display: 'swap',
 });
 
@@ -106,7 +106,7 @@ export async function generateMetadata({
       description: descriptions[currentLocale],
       images: [
         {
-          url: '/opengraph-image.png',
+          url: '/assets/media/images/og/og-default.png',
           width: 1200,
           height: 630,
           alt: titles[currentLocale],
@@ -117,7 +117,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: titles[currentLocale],
       description: descriptions[currentLocale],
-      images: ['/opengraph-image.png'],
+      images: ['/assets/media/images/og/og-default.png'],
     },
     other: {
       'apple-mobile-web-app-title': 'BBF',
@@ -154,7 +154,7 @@ export default async function LocaleLayout({
       width: 512,
       height: 512,
     },
-    image: 'https://brandbrainfoundry.com/opengraph-image.png',
+    image: 'https://brandbrainfoundry.com/assets/media/images/og/og-default.png',
     description:
       'Foundry de cerebros de marca. Asesoramos, diseñamos, construimos y mantenemos sistemas de inteligencia de marca para empresas que escalan.',
     slogan: 'Construimos cerebros de marca',
@@ -178,7 +178,7 @@ export default async function LocaleLayout({
   };
 
   return (
-    <html lang={locale} className={`${outfit.variable} ${mulish.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${mulish.variable}`}>
       <body>
         <NextIntlClientProvider messages={messages} locale={locale}>
           {children}

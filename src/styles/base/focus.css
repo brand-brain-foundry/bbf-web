@@ -1,0 +1,20 @@
+/**
+ * BBF Design System — Focus States Canon WCAG 2.2
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §2
+ * WCAG 2.2 Success Criterion 2.4.7 (Focus Visible)
+ *
+ * Focus ring canon BBF aplicado globalmente.
+ * Token --bbf-color-focus-ring definido en semantic/colors.css.
+ */
+
+*:focus-visible {
+  outline: var(--bbf-focus-ring-width, 2px) solid var(--bbf-color-focus-ring, currentColor);
+  outline-offset: var(--bbf-focus-ring-offset, 2px);
+  border-radius: var(--bbf-radius-sm, 4px);
+}
+
+/* No focus ring para elementos no interactivos */
+*:focus:not(:focus-visible) {
+  outline: none;
+}

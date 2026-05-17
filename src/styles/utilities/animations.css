@@ -1,0 +1,58 @@
+/**
+ * BBF Design System — Utilities: Animations
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §6 + B-BBF-WEB-M5-E-MOTION-SYSTEM
+ * Decisión: D-BBF-WEB-64 (CSS-only base), D-98 (motion canon)
+ *
+ * NOTA M5-A: @keyframes migrados desde globals.css.
+ * Las clases que usan estos keyframes (.hero-entrance, .bbf-logo-stamp)
+ * viven en tokens/components/hero.css (hero-specific).
+ *
+ * M5-E: global reduced-motion canon WCAG 2.2 completo (5 delay slots).
+ * Nota: semantic/motion.css reduce durations a 0.01ms — este bloque es
+ * fallback explícito para clases con animation property directa.
+ */
+
+/* === Keyframes canon BBF === */
+
+@keyframes bbf-logo-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bbf-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--bbf-motion-entrance-distance), 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* === Reduced motion canon WCAG 2.2 — hero animations === */
+@media (prefers-reduced-motion: reduce) {
+  .hero-entrance,
+  .hero-entrance--delay-1,
+  .hero-entrance--delay-2,
+  .hero-entrance--delay-3,
+  .hero-entrance--delay-4,
+  .hero-entrance--delay-5 {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .bbf-cta-pill {
+    transition: none;
+  }
+
+  .bbf-cta-pill:hover {
+    transform: none;
+  }
+}
