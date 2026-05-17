@@ -2,6 +2,10 @@
  * BBF Design System — Text atom variants
  *
  * Subordinado a: BBF_M5_D_Plan.md §2
+ *
+ * TD-M5-D4-CRIT-02 fix: text-[var(--token)] → [font-size:var(--token)]
+ * Tailwind v4 arbitrary value text-[var()] sin type hint defaultea a color:.
+ * L-BBF-92: usar arbitrary property explícita [font-size:var(--token)].
  */
 
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -11,12 +15,12 @@ export const textVariants = cva(
   {
     variants: {
       variant: {
-        'body-lg': 'text-[var(--bbf-text-body-lg)]',
-        'body-md': 'text-[var(--bbf-text-body-md)]',
-        'body-sm': 'text-[var(--bbf-text-body-sm)]',
-        caption: 'text-[var(--bbf-text-caption)] leading-[var(--bbf-leading-snug)]',
+        'body-lg': '[font-size:var(--bbf-text-body-lg)]',
+        'body-md': '[font-size:var(--bbf-text-body-md)]',
+        'body-sm': '[font-size:var(--bbf-text-body-sm)]',
+        caption: '[font-size:var(--bbf-text-caption)] leading-[var(--bbf-leading-snug)]',
         overline:
-          'text-[var(--bbf-text-overline)] uppercase tracking-[var(--bbf-tracking-overline)] font-[var(--bbf-weight-bold)]',
+          '[font-size:var(--bbf-text-overline)] uppercase tracking-[var(--bbf-tracking-overline)] font-[var(--bbf-weight-bold)]',
       },
       color: {
         primary: 'text-[var(--bbf-text-on-light)]',
