@@ -3,45 +3,83 @@
  *
  * Subordinado a: BBF_M5_Framework_Plan.md §3 (M5-B)
  * Tier: 1 (PRIMITIVE)
- * Decisión: D-BBF-WEB-55 (3-tier DTCG), D-BBF-WEB-56 (OKLCH M5-B), D-BBF-WEB-59 (namespace)
+ * Decisiones: D-BBF-WEB-55 (3-tier DTCG), D-BBF-WEB-56 (OKLCH),
+ *             D-BBF-WEB-57 (dark mode preparado), D-BBF-WEB-69 (paleta Zavala)
  *
- * NOTA M5-A: valores actuales heredados de Sivar Brains v2.1.0 con namespace --bbf-* uniforme.
- * M5-B reemplazará por paleta OKLCH firmada Zavala (black/red/sand/blue + variants).
+ * Paleta OKLCH firmada por Zavala en sesión 2026-05-16:
+ *   - Black:  oklch(0.15 0.01 292.51) — superficie oscura principal
+ *   - Red:    oklch(0.68 0.20 28.96)  — intensidad/accent
+ *   - Sand:   oklch(0.97 0.01 67.52)  — superficie cálida principal (canon)
+ *   - White:  oklch(1 0 0)            — utility highlight sobre sand
+ *   - Blue:   oklch(0.60 0.22 257.43) — casos específicos
  *
- * NO USAR estos tokens directamente en componentes. Usar tokens semantic
- * de tokens/semantic/colors.css.
+ * Rampas 50→950 con lightness step ~0.08 (perceptualmente uniforme).
+ * Compatible con dark mode futuro D-57 (cambia solo primitives via :root.dark).
+ *
+ * NO USAR estos tokens directamente en componentes.
+ * Usar tokens semantic de tokens/semantic/colors.css.
  */
 
 @theme {
-  /* === BBF Brand palette === */
-  --bbf-blue-50: #eef4ff;
-  --bbf-blue-100: #d9e7ff;
-  --bbf-blue-200: #b3cffe;
-  --bbf-blue-300: #85affd;
-  --bbf-blue-400: #5587fb;
-  --bbf-blue-500: #255ff1;
-  --bbf-blue-600: #1a4fd6;
-  --bbf-blue-700: #1440b0;
-  --bbf-blue-800: #10338a;
-  --bbf-blue-900: #0c2568;
+  /* ============================================================
+     BBF BLACK RAMP (warm black, leve tinte púrpura imperceptible)
+     Hue 292.51 (firmada Zavala)
+     ============================================================ */
+  --bbf-color-black-50: oklch(0.97 0.01 292.51);
+  --bbf-color-black-100: oklch(0.92 0.01 292.51);
+  --bbf-color-black-200: oklch(0.83 0.01 292.51);
+  --bbf-color-black-300: oklch(0.72 0.01 292.51);
+  --bbf-color-black-400: oklch(0.55 0.01 292.51);
+  --bbf-color-black-500: oklch(0.4 0.01 292.51);
+  --bbf-color-black-600: oklch(0.3 0.01 292.51);
+  --bbf-color-black-700: oklch(0.22 0.01 292.51);
+  --bbf-color-black-800: oklch(0.18 0.01 292.51);
+  --bbf-color-black-900: oklch(0.15 0.01 292.51); /* canon Zavala */
+  --bbf-color-black-950: oklch(0.08 0.01 292.51);
 
-  /* === BBF Cream (background canon Zavala) === */
-  --bbf-cream-50: #fefcf8;
-  --bbf-cream-100: #fdf5ed;
-  --bbf-cream-200: #f9ecd9;
-  --bbf-cream-300: #f4dfba;
+  /* ============================================================
+     BBF RED RAMP (intensidad / accent)
+     Hue 28.96 (firmada Zavala)
+     ============================================================ */
+  --bbf-color-red-50: oklch(0.97 0.02 28.96);
+  --bbf-color-red-100: oklch(0.92 0.05 28.96);
+  --bbf-color-red-200: oklch(0.84 0.1 28.96);
+  --bbf-color-red-300: oklch(0.78 0.15 28.96);
+  --bbf-color-red-400: oklch(0.73 0.18 28.96);
+  --bbf-color-red-500: oklch(0.68 0.2 28.96); /* canon Zavala */
+  --bbf-color-red-600: oklch(0.62 0.2 28.96);
+  --bbf-color-red-700: oklch(0.55 0.2 28.96); /* WCAG AA texto pequeño */
+  --bbf-color-red-800: oklch(0.45 0.18 28.96);
+  --bbf-color-red-900: oklch(0.35 0.15 28.96);
 
-  /* === Neutrals === */
-  --bbf-neutral-0: #ffffff;
-  --bbf-neutral-50: #fafafa;
-  --bbf-neutral-100: #f4f4f5;
-  --bbf-neutral-200: #e4e4e7;
-  --bbf-neutral-300: #d4d4d8;
-  --bbf-neutral-400: #a1a1aa;
-  --bbf-neutral-500: #71717a;
-  --bbf-neutral-600: #52525b;
-  --bbf-neutral-700: #3f3f46;
-  --bbf-neutral-800: #27272a;
-  --bbf-neutral-900: #131414;
-  --bbf-neutral-950: #000000;
+  /* ============================================================
+     BBF SAND RAMP (warm cream, superficie cálida principal)
+     Hue 67.52 (firmada Zavala)
+     ============================================================ */
+  --bbf-color-sand-50: oklch(0.99 0.01 67.52); /* casi white */
+  --bbf-color-sand-100: oklch(0.97 0.01 67.52); /* canon Zavala */
+  --bbf-color-sand-200: oklch(0.94 0.02 67.52);
+  --bbf-color-sand-300: oklch(0.88 0.03 67.52);
+  --bbf-color-sand-400: oklch(0.78 0.04 67.52);
+  --bbf-color-sand-500: oklch(0.65 0.05 67.52);
+
+  /* ============================================================
+     BBF BLUE RAMP (uso muy específico)
+     Hue 257.43 (firmada Zavala)
+     ============================================================ */
+  --bbf-color-blue-50: oklch(0.97 0.02 257.43);
+  --bbf-color-blue-100: oklch(0.92 0.05 257.43);
+  --bbf-color-blue-200: oklch(0.84 0.1 257.43);
+  --bbf-color-blue-300: oklch(0.74 0.15 257.43);
+  --bbf-color-blue-400: oklch(0.67 0.2 257.43);
+  --bbf-color-blue-500: oklch(0.6 0.22 257.43); /* canon Zavala */
+  --bbf-color-blue-600: oklch(0.52 0.22 257.43);
+  --bbf-color-blue-700: oklch(0.44 0.2 257.43);
+  --bbf-color-blue-800: oklch(0.36 0.18 257.43);
+  --bbf-color-blue-900: oklch(0.28 0.15 257.43);
+
+  /* ============================================================
+     UTILITIES
+     ============================================================ */
+  --bbf-color-white: oklch(1 0 0); /* puro, uso restringido como highlight sobre sand */
 }

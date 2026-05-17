@@ -1,39 +1,111 @@
 /**
- * BBF Design System — TIER 2 SEMANTIC: Colors
+ * BBF Design System — TIER 2 SEMANTIC: Colors (surface-based)
  *
  * Subordinado a: BBF_M5_Framework_Plan.md §3 (M5-B)
  * Tier: 2 (SEMANTIC — surface-based)
- * Decisión: D-BBF-WEB-55 (3-tier), D-BBF-WEB-69 (paleta M5-B)
+ * Decisiones: D-BBF-WEB-55 (3-tier), D-BBF-WEB-69 (paleta firmada),
+ *             D-BBF-WEB-57 (dark mode preparado)
  *
- * NOTA M5-A: semantics actuales con namespace --bbf-* uniforme.
- * M5-B refactoriza a surface-based con paleta OKLCH firmada Zavala.
+ * Surface-based system canon BBF:
+ *   - SAND es la superficie principal cálida (warm base)
+ *   - BLACK es la superficie oscura (para secciones inversas)
+ *   - WHITE es utility para destacar sobre sand
+ *   - RED es accent (intensidad)
+ *   - BLUE es excepción (casos específicos)
  *
- * NUNCA referenciar primitives directamente desde componentes.
- * Componentes referencian SOLO desde aquí.
+ * Componentes referencian SOLO estos semantic tokens.
+ * NUNCA referencian primitives directamente.
+ *
+ * Arquitectura preparada para dark mode futuro:
+ * cuando se active, solo estos tokens cambian (vía :root.dark).
  */
 
 :root {
-  /* === Brand === */
-  --bbf-color-brand: var(--bbf-blue-500);
-  --bbf-color-brand-hover: var(--bbf-blue-600);
-  --bbf-color-brand-subtle: var(--bbf-blue-50);
+  /* ============================================================
+     SURFACES — sistema canon BBF
+     ============================================================ */
+  --bbf-surface-sand: var(--bbf-color-sand-100); /* superficie principal */
+  --bbf-surface-sand-elevated: var(--bbf-color-sand-50); /* highlight sutil sobre sand */
+  --bbf-surface-white: var(--bbf-color-white); /* utility highlight máximo */
 
-  /* === Surface (default home = cream) === */
-  --bbf-color-bg-base: var(--bbf-cream-100);
-  --bbf-color-bg-surface: var(--bbf-neutral-0);
-  --bbf-color-bg-inverse: var(--bbf-neutral-950);
+  --bbf-surface-black: var(--bbf-color-black-900); /* superficie inversa */
+  --bbf-surface-black-elevated: var(--bbf-color-black-800);
 
-  /* === Text === */
-  --bbf-color-text-primary: var(--bbf-neutral-900);
-  --bbf-color-text-secondary: var(--bbf-neutral-600);
-  --bbf-color-text-muted: var(--bbf-neutral-400);
-  --bbf-color-text-inverse: var(--bbf-neutral-0);
-  --bbf-color-text-brand: var(--bbf-blue-500);
+  /* ============================================================
+     TEXT TOKENS
+     ============================================================ */
+  /* Sobre superficies claras (sand/white) */
+  --bbf-text-on-light: var(--bbf-color-black-900);
+  --bbf-text-on-light-secondary: var(--bbf-color-black-600);
+  --bbf-text-on-light-muted: var(--bbf-color-black-400);
 
-  /* === Border === */
-  --bbf-color-border: var(--bbf-neutral-200);
-  --bbf-color-border-strong: var(--bbf-neutral-300);
+  /* Sobre superficies oscuras (black) */
+  --bbf-text-on-dark: var(--bbf-color-sand-100);
+  --bbf-text-on-dark-secondary: var(--bbf-color-sand-300);
+  --bbf-text-on-dark-muted: var(--bbf-color-sand-400);
 
-  /* === Focus ring === */
-  --bbf-color-focus-ring: var(--bbf-blue-500);
+  /* ============================================================
+     ACCENT TOKENS
+     ============================================================ */
+  --bbf-accent-red: var(--bbf-color-red-500); /* canon intensidad */
+  --bbf-accent-red-hover: var(--bbf-color-red-400);
+  --bbf-accent-red-active: var(--bbf-color-red-600);
+  --bbf-accent-red-accessible: var(--bbf-color-red-700); /* WCAG AA texto pequeño */
+
+  --bbf-accent-blue: var(--bbf-color-blue-500); /* casos específicos */
+  --bbf-accent-blue-hover: var(--bbf-color-blue-400);
+  --bbf-accent-blue-active: var(--bbf-color-blue-600);
+
+  /* ============================================================
+     BORDERS / DIVIDERS
+     ============================================================ */
+  --bbf-border-on-light: var(--bbf-color-sand-300);
+  --bbf-border-on-light-strong: var(--bbf-color-sand-400);
+  --bbf-border-on-dark: var(--bbf-color-black-700);
+  --bbf-border-strong: var(--bbf-color-black-900);
+
+  /* ============================================================
+     FOCUS RING (canon WCAG 2.2 SC 2.4.7)
+     ============================================================ */
+  --bbf-color-focus-ring: var(--bbf-accent-blue);
+
+  /* ============================================================
+     GLASS TOKENS (overlays con color-mix())
+     Usados por LocaleSwitcher y futuros componentes glass.
+     color-mix() soportado en todos browsers canon 2026.
+     ============================================================ */
+  --bbf-surface-glass-light: color-mix(in oklch, var(--bbf-color-white), transparent 40%);
+  --bbf-surface-glass-dark: color-mix(in oklch, var(--bbf-color-black-900), transparent 10%);
+  --bbf-surface-glass-hover: color-mix(in oklch, var(--bbf-color-black-900), transparent 96%);
+  --bbf-border-glass: color-mix(in oklch, var(--bbf-color-black-900), transparent 92%);
+  --bbf-text-on-glass-light: color-mix(in oklch, var(--bbf-color-black-900), transparent 50%);
+  --bbf-text-on-glass-light-hover: color-mix(in oklch, var(--bbf-color-black-900), transparent 15%);
+  --bbf-text-on-glass-dark: color-mix(in oklch, var(--bbf-color-white), transparent 5%);
+
+  /* ============================================================
+     LEGACY ALIASES (compatibilidad transición)
+     ============================================================
+     Estos tokens existen TEMPORALMENTE para que componentes que
+     aún usan nombres viejos (--bbf-color-bg-base, --bbf-color-text-primary)
+     sigan funcionando hasta migración completa.
+
+     M5-D refactor finalizará esta transición y removerá estos alias.
+     Lección L-BBF-80: alias temporales canon en transiciones semantic.
+     ============================================================ */
+  --bbf-color-bg-base: var(--bbf-surface-sand);
+  --bbf-color-bg-surface: var(--bbf-surface-white);
+  --bbf-color-bg-inverse: var(--bbf-surface-black);
+
+  --bbf-color-text-primary: var(--bbf-text-on-light);
+  --bbf-color-text-secondary: var(--bbf-text-on-light-secondary);
+  --bbf-color-text-muted: var(--bbf-text-on-light-muted);
+  --bbf-color-text-inverse: var(--bbf-text-on-dark);
+
+  --bbf-color-border: var(--bbf-border-on-light);
+  --bbf-color-border-strong: var(--bbf-border-on-light-strong);
+
+  /* Legacy brand → ahora blue accent */
+  --bbf-color-brand: var(--bbf-accent-blue);
+  --bbf-color-brand-hover: var(--bbf-accent-blue-hover);
+  --bbf-color-brand-subtle: var(--bbf-color-blue-50);
 }

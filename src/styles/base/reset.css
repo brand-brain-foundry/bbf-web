@@ -40,6 +40,6 @@ h3 {
 }
 
 ::selection {
-  background-color: var(--bbf-blue-100);
-  color: var(--bbf-color-text-primary);
+  background-color: var(--bbf-color-sand-200);
+  color: var(--bbf-text-on-light);
 }

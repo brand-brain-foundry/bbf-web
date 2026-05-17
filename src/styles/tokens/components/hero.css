@@ -16,7 +16,7 @@
 
 :root {
   /* === Logo (PATCH-4: tamaño canon minimal) === */
-  --bbf-logo-color: var(--bbf-neutral-900);
+  --bbf-logo-color: var(--bbf-color-black-900);
   --bbf-logo-rotation-speed: 40s;
   --bbf-logo-rotation-easing: linear;
   --bbf-logo-size-hero: clamp(8rem, 14vw, 14rem); /* 128 → 224px */
@@ -25,9 +25,9 @@
   --bbf-logo-rotation-speed-hover: 12s; /* PATCH-4: acelera 3.3× en hover */
 
   /* === Button pill (CTA "contáctanos") === */
-  --bbf-btn-pill-bg: var(--bbf-neutral-900);
-  --bbf-btn-pill-bg-hover: var(--bbf-neutral-800);
-  --bbf-btn-pill-text: var(--bbf-neutral-0);
+  --bbf-btn-pill-bg: var(--bbf-surface-black);
+  --bbf-btn-pill-bg-hover: var(--bbf-surface-black-elevated);
+  --bbf-btn-pill-text: var(--bbf-color-white);
   --bbf-btn-pill-padding-x: var(--bbf-space-8);
   --bbf-btn-pill-padding-y: var(--bbf-space-4);
   --bbf-btn-pill-radius: var(--bbf-radius-full);
@@ -137,7 +137,7 @@
 .bbf-cta-pill:hover {
   transform: scale(var(--bbf-cta-hover-scale));
   box-shadow: var(--bbf-cta-hover-shadow);
-  background-color: var(--bbf-neutral-800);
+  background-color: var(--bbf-surface-black-elevated);
 }
 
 .bbf-cta-pill .bbf-cta-arrow {
