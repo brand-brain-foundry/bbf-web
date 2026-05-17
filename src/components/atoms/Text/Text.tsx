@@ -1,44 +1,77 @@
+/**
+ * BBF Design System — Text atom
+ *
+ * Subordinado a: BBF_M5_D_Plan.md §2
+ */
+
+import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
-import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
+import { textVariants, type TextVariants } from './Text.variants';
 
-const textVariants = cva('font-body', {
-  variants: {
-    variant: {
-      body: 'text-[var(--bbf-text-base)] leading-[var(--bbf-leading-relaxed)]',
-      caption: 'text-[var(--bbf-text-sm)] leading-[var(--bbf-leading-normal)]',
-      overline: [
-        'text-[var(--bbf-text-xs)] leading-[var(--bbf-leading-normal)]',
-        'uppercase tracking-[var(--bbf-tracking-eyebrow)] font-semibold',
-      ],
-      label: 'text-[var(--bbf-text-sm)] leading-[var(--bbf-leading-tight)] font-medium',
-    },
-    color: {
-      default: 'text-[var(--bbf-text-on-light)]',
-      muted: 'text-[var(--bbf-text-on-light-muted)]',
-      onDark: 'text-[var(--bbf-text-on-dark)]',
-      onDarkMuted: 'text-[var(--bbf-text-on-dark-secondary)]',
-    },
-  },
-  defaultVariants: {
-    variant: 'body',
-    color: 'default',
-  },
-});
+type TextElement = 'p' | 'span' | 'div';
 
-const variantToTag: Record<NonNullable<VariantProps<typeof textVariants>['variant']>, string> = {
-  body: 'p',
-  caption: 'span',
-  overline: 'span',
-  label: 'label',
-};
-
-interface TextProps
-  extends Omit<React.HTMLAttributes<HTMLElement>, 'color'>, VariantProps<typeof textVariants> {
+export interface TextProps extends Omit<React.HTMLAttributes<HTMLElement>, 'color'>, TextVariants {
+  /**
+   * Semantic HTML element. Default: 'p' for body, 'span' for caption/overline.
+   */
+  as?: TextElement;
+  /**
+   * Render as different element via Slot.
+   */
   asChild?: boolean;
 }
 
-export function Text({ variant = 'body', color, asChild, className, ...props }: TextProps) {
-  const Comp = asChild ? Slot : variantToTag[variant ?? 'body'];
-  return <Comp className={cn(textVariants({ variant, color }), className)} {...props} />;
+function inferElement(variant: TextVariants['variant']): TextElement {
+  if (variant === 'caption' || variant === 'overline') return 'span';
+  return 'p';
 }
+
+/**
+ * BBF Text atom — Atomic Design canon
+ *
+ * @description
+ * Text body/caption/overline canon BBF.
+ * Auto-inferir element (p for body, span for caption/overline).
+ *
+ * @example Body
+ * ```tsx
+ * <Text variant="body-md">Lorem ipsum dolor sit amet.</Text>
+ * ```
+ *
+ * @example Overline (eyebrow)
+ * ```tsx
+ * <Text variant="overline">PRÓXIMAMENTE</Text>
+ * ```
+ *
+ * @example Caption
+ * ```tsx
+ * <Text variant="caption" color="muted">Disclaimer text</Text>
+ * ```
+ */
+export function Text({
+  className,
+  variant,
+  color,
+  align,
+  weight,
+  as,
+  asChild = false,
+  children,
+  ...props
+}: TextProps) {
+  const Element = asChild ? Slot : (as ?? inferElement(variant));
+
+  return (
+    <Element
+      data-component="bbf-text"
+      data-variant={variant}
+      className={cn(textVariants({ variant, color, align, weight }), className)}
+      {...props}
+    >
+      {children}
+    </Element>
+  );
+}
+
+Text.displayName = 'Text';
