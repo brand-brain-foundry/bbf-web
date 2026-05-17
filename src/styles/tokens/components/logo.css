@@ -1,52 +1,48 @@
 /**
  * BBF Design System — TIER 3 COMPONENT: Logo
  *
- * Subordinado a: B-BBF-WEB-M5-D1.5-LOGO-SYSTEM-V2
- * Decisiones: D-BBF-WEB-77, D-BBF-WEB-78, D-BBF-WEB-82, D-BBF-WEB-84
+ * Subordinado a: B-BBF-WEB-M5-D1.5-LOGO-SYSTEM-V2 (patch animation fix)
+ * Decisiones: D-BBF-WEB-77 (surface-aware), D-BBF-WEB-78 (animated state)
  *
- * Tokens viven en hero.css :root (logo vars) hasta que se migre a semantic/logo.css en M5-E.
- * @keyframes bbf-logo-rotate → utilities/animations.css
+ * Sistema canon de logo con 4 variantes.
+ * Color heredado via currentColor (surface-aware).
+ * Animación pertenece SOLO a variant=stamp + data-animated=true.
  *
- * Targets por el atom BBFLogo (Server Component):
- *   .bbf-logo            — wrapper div (via CVA base)
- *   .bbf-logo--icon      — variant: solo flor
- *   .bbf-logo--horizontal — variant: icon + nombre H
- *   .bbf-logo--name-only — variant: solo nombre H
- *   .bbf-logo--stamp     — variant: nombre circular + icon centrado
+ * Tokens viven en hero.css :root (logo vars).
+ * @keyframes bbf-logo-rotate vive en utilities/animations.css.
  *
- *   .bbf-logo-icon       — SVG flor 8-petal (inyectado inline)
- *   .bbf-logo-name-h     — SVG nombre horizontal (inyectado inline)
- *   .bbf-logo-name-circle — SVG nombre circular (inyectado inline)
- *
- * Color: currentColor (hereda del surface-aware container).
- * Tamaño: --bbf-logo-rendered (set por CVA variant size o inline style override).
+ * IMPORTANTE: enrichSvg() del atom inyecta la clase directamente al <svg>,
+ * por lo que .bbf-logo-name-circle ES el <svg>, no un wrapper.
+ * Los selectores NO usan descendiente para targetear el SVG.
  */
 
-/* === BASE WRAPPER === */
-
+/* ============================================================
+   CONTAINER BASE
+   ============================================================ */
 .bbf-logo {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  color: currentColor;
+  color: var(--bbf-logo-color, currentColor);
 }
 
-/* === SVG sub-elements: inherit color via currentColor === */
-
-.bbf-logo svg,
-.bbf-logo-icon,
-.bbf-logo-name-h,
-.bbf-logo-name-circle {
+/* SVGs internos heredan color via currentColor */
+.bbf-logo svg {
   display: block;
-  color: inherit;
   fill: currentColor;
 }
 
-/* === VARIANT: icon (solo flor 8-petal) === */
+.bbf-logo svg path {
+  fill: currentColor;
+}
 
+/* ============================================================
+   VARIANT: icon (solo flor)
+   ============================================================ */
 .bbf-logo--icon {
   width: var(--bbf-logo-rendered, 2.5rem);
   height: var(--bbf-logo-rendered, 2.5rem);
+  aspect-ratio: 1 / 1;
 }
 
 .bbf-logo--icon .bbf-logo-icon {
@@ -54,28 +50,32 @@
   height: 100%;
 }
 
-/* === VARIANT: horizontal (icon + nombre horizontal) === */
-
+/* ============================================================
+   VARIANT: horizontal (icon + name-h)
+   ============================================================ */
 .bbf-logo--horizontal {
-  gap: calc(var(--bbf-logo-rendered, 2.5rem) * 0.3);
   height: var(--bbf-logo-rendered, 2.5rem);
+  width: auto;
+  gap: var(--bbf-space-3, 0.75rem);
 }
 
 .bbf-logo--horizontal .bbf-logo-icon {
-  width: var(--bbf-logo-rendered, 2.5rem);
-  height: var(--bbf-logo-rendered, 2.5rem);
-  flex-shrink: 0;
+  height: 100%;
+  width: auto;
+  aspect-ratio: 1 / 1;
 }
 
 .bbf-logo--horizontal .bbf-logo-name-h {
-  height: var(--bbf-logo-rendered, 2.5rem);
+  height: 55%;
   width: auto;
 }
 
-/* === VARIANT: name-only (solo nombre horizontal) === */
-
+/* ============================================================
+   VARIANT: name-only (solo nombre)
+   ============================================================ */
 .bbf-logo--name-only {
-  height: var(--bbf-logo-rendered, 2.5rem);
+  height: calc(var(--bbf-logo-rendered, 2.5rem) * 0.55);
+  width: auto;
 }
 
 .bbf-logo--name-only .bbf-logo-name-h {
@@ -83,71 +83,72 @@
   width: auto;
 }
 
-/* === VARIANT: stamp (nombre circular + icon centrado) === */
-
+/* ============================================================
+   VARIANT: stamp (icon centro + name-circle alrededor)
+   ============================================================ */
 .bbf-logo--stamp {
   position: relative;
   width: var(--bbf-logo-rendered, var(--bbf-logo-size-hero));
   height: var(--bbf-logo-rendered, var(--bbf-logo-size-hero));
+  aspect-ratio: 1 / 1;
 }
 
+/* Nombre circular envuelve todo el container.
+   IMPORTANTE: la clase .bbf-logo-name-circle ES el <svg> mismo
+   (inyectada por enrichSvg()), por lo que NO se usa descendiente. */
 .bbf-logo--stamp .bbf-logo-name-circle {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  z-index: 1;
 }
 
+/* Icon centrado dentro del círculo */
 .bbf-logo--stamp .bbf-logo-icon {
   position: absolute;
   inset: 0;
   margin: auto;
   width: 50%;
   height: 50%;
+  z-index: 2;
 }
 
-/* === ANIMATION: stamp rotation (solo cuando data-animated presente) === */
+/* ============================================================
+   ANIMATION (solo stamp + animated=true)
 
-.bbf-logo--stamp[data-animated] .bbf-logo-name-circle #BBF-Logo-Name-Circle,
-.bbf-logo--stamp[data-animated] .bbf-logo-name-circle #circle {
+   El <svg> con clase .bbf-logo-name-circle es el target directo.
+   Sin descendiente — la clase está aplicada al svg mismo.
+   ============================================================ */
+.bbf-logo--stamp[data-animated='true'] .bbf-logo-name-circle {
+  animation: bbf-logo-rotate var(--bbf-logo-rotation-speed, 40s) linear infinite;
   transform-origin: center center;
   transform-box: fill-box;
-  animation: bbf-logo-rotate var(--bbf-logo-rotation-speed, 40s)
-    var(--bbf-logo-rotation-easing, linear) infinite;
   will-change: transform;
 }
 
-/* === HOVER: acelera rotación y scale sutil === */
-
-.bbf-logo--stamp {
-  transition: transform var(--bbf-motion-logo-duration, 500ms)
-    var(--bbf-motion-cta-easing, cubic-bezier(0.4, 0, 0.2, 1));
-  will-change: transform;
-}
-
+/* Hover acelera rotación (canon H1-3-A preservado) */
 @media (hover: hover) {
-  a:hover .bbf-logo--stamp,
-  .bbf-logo--stamp:hover {
-    transform: scale(var(--bbf-logo-hover-scale, 1.04));
-  }
-
-  a:hover .bbf-logo--stamp[data-animated] .bbf-logo-name-circle #BBF-Logo-Name-Circle,
-  a:hover .bbf-logo--stamp[data-animated] .bbf-logo-name-circle #circle,
-  .bbf-logo--stamp:hover[data-animated] .bbf-logo-name-circle #BBF-Logo-Name-Circle,
-  .bbf-logo--stamp:hover[data-animated] .bbf-logo-name-circle #circle {
+  .bbf-logo--stamp[data-animated='true']:hover .bbf-logo-name-circle,
+  a:hover .bbf-logo--stamp[data-animated='true'] .bbf-logo-name-circle {
     animation-duration: var(--bbf-logo-rotation-speed-hover, 12s);
   }
+
+  .bbf-logo--stamp[data-animated='true']:hover,
+  a:hover .bbf-logo--stamp[data-animated='true'] {
+    transform: scale(var(--bbf-logo-hover-scale, 1.04));
+    transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
-/* === REDUCED MOTION === */
-
+/* Reduced motion canon WCAG 2.2 */
 @media (prefers-reduced-motion: reduce) {
-  .bbf-logo--stamp[data-animated] .bbf-logo-name-circle #BBF-Logo-Name-Circle,
-  .bbf-logo--stamp[data-animated] .bbf-logo-name-circle #circle {
+  .bbf-logo--stamp[data-animated='true'] .bbf-logo-name-circle {
     animation: none;
   }
 
-  .bbf-logo--stamp {
-    transition: none;
+  .bbf-logo--stamp[data-animated='true']:hover,
+  a:hover .bbf-logo--stamp[data-animated='true'] {
+    transform: none;
   }
 }
