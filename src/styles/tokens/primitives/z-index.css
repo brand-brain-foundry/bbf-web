@@ -1,0 +1,23 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Z-Index Stack
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §2
+ * Tier: 1 (PRIMITIVE)
+ * Decisión: D-BBF-WEB-55
+ *
+ * NOTA M5-A: archivo NUEVO. Sistema z-index canon evita conflictos.
+ * Valores canon iniciales (M5-D puede expandir si componentes necesitan).
+ */
+
+@theme {
+  --bbf-z-base: 0;
+  --bbf-z-dropdown: 10;
+  --bbf-z-sticky: 20;
+  --bbf-z-fixed: 30;
+  --bbf-z-overlay: 40;
+  --bbf-z-modal: 50;
+  --bbf-z-popover: 60;
+  --bbf-z-tooltip: 70;
+  --bbf-z-toast: 80;
+  --bbf-z-max: 9999;
+}

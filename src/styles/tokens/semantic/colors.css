@@ -1,0 +1,39 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Colors
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §3 (M5-B)
+ * Tier: 2 (SEMANTIC — surface-based)
+ * Decisión: D-BBF-WEB-55 (3-tier), D-BBF-WEB-69 (paleta M5-B)
+ *
+ * NOTA M5-A: semantics actuales con namespace --bbf-* uniforme.
+ * M5-B refactoriza a surface-based con paleta OKLCH firmada Zavala.
+ *
+ * NUNCA referenciar primitives directamente desde componentes.
+ * Componentes referencian SOLO desde aquí.
+ */
+
+:root {
+  /* === Brand === */
+  --bbf-color-brand: var(--bbf-blue-500);
+  --bbf-color-brand-hover: var(--bbf-blue-600);
+  --bbf-color-brand-subtle: var(--bbf-blue-50);
+
+  /* === Surface (default home = cream) === */
+  --bbf-color-bg-base: var(--bbf-cream-100);
+  --bbf-color-bg-surface: var(--bbf-neutral-0);
+  --bbf-color-bg-inverse: var(--bbf-neutral-950);
+
+  /* === Text === */
+  --bbf-color-text-primary: var(--bbf-neutral-900);
+  --bbf-color-text-secondary: var(--bbf-neutral-600);
+  --bbf-color-text-muted: var(--bbf-neutral-400);
+  --bbf-color-text-inverse: var(--bbf-neutral-0);
+  --bbf-color-text-brand: var(--bbf-blue-500);
+
+  /* === Border === */
+  --bbf-color-border: var(--bbf-neutral-200);
+  --bbf-color-border-strong: var(--bbf-neutral-300);
+
+  /* === Focus ring === */
+  --bbf-color-focus-ring: var(--bbf-blue-500);
+}

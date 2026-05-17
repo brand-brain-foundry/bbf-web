@@ -1,0 +1,59 @@
+/**
+ * BBF Design System — Utilities: Animations
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §6 (M5-E formaliza)
+ * Decisión: D-BBF-WEB-64 (CSS-only base)
+ *
+ * NOTA M5-A: @keyframes migrados desde globals.css.
+ * Las clases que usan estos keyframes (.hero-entrance, .bbf-logo-stamp)
+ * viven en tokens/components/hero.css (hero-specific).
+ *
+ * M5-E agrega: global reduced-motion canon WCAG 2.2 completo + más keyframes.
+ */
+
+/* === Keyframes canon BBF === */
+
+@keyframes bbf-logo-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bbf-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--bbf-motion-entrance-distance), 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* === Reduced motion — hero animations === */
+@media (prefers-reduced-motion: reduce) {
+  .bbf-logo-stamp #circle {
+    animation: none;
+  }
+
+  .hero-entrance,
+  .hero-entrance--delay-1,
+  .hero-entrance--delay-2,
+  .hero-entrance--delay-3,
+  .hero-entrance--delay-4 {
+    animation: none;
+    opacity: 1;
+  }
+
+  .bbf-cta-pill,
+  .bbf-logo-stamp {
+    transition: none;
+  }
+
+  .bbf-cta-pill:hover {
+    transform: none;
+  }
+}

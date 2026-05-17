@@ -1,0 +1,16 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Motion
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §6 (M5-E llena)
+ * Tier: 2 (SEMANTIC)
+ * Decisión: D-BBF-WEB-64
+ *
+ * NOTA M5-A: transitions composites migrados con namespace --bbf-*.
+ * M5-E expande con sistema canon completo (motion-duration-ui, motion-easing-enter, etc).
+ */
+
+:root {
+  --bbf-transition-fast: var(--bbf-duration-fast) var(--bbf-ease-default);
+  --bbf-transition-normal: var(--bbf-duration-normal) var(--bbf-ease-default);
+  --bbf-transition-slow: var(--bbf-duration-slow) var(--bbf-ease-default);
+}

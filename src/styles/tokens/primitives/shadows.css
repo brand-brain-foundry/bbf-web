@@ -1,0 +1,15 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Shadows / Elevation
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §2
+ * Tier: 1 (PRIMITIVE)
+ * Decisión: D-BBF-WEB-55 (3-tier)
+ *
+ * NOTA M5-A: archivo NUEVO (no existía en globals.css actual).
+ * Placeholder vacío preparado para M5-D componentes que necesiten elevation.
+ * NO agregar valores arbitrarios. Strategic firmará en M5-D si se necesita.
+ */
+
+@theme {
+  /* Empty — populated on-demand in M5-D when components need elevation */
+}

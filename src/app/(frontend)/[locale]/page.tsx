@@ -13,7 +13,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const cta = locale === 'es' ? 'contactanos' : 'contact us';
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[--color-bg-base]">
+    <main className="relative min-h-screen overflow-hidden bg-[--bbf-color-bg-base]">
       <LocaleSwitcher />
       {/* Background video (z-0) */}
       <HeroVideo />
@@ -22,9 +22,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <div
         className="relative z-20 mx-auto flex min-h-screen flex-col items-center justify-center text-center"
         style={{
-          maxWidth: 'var(--hero-max-width)',
-          paddingInline: 'var(--hero-padding-x)',
-          paddingBlock: 'var(--hero-padding-y)',
+          maxWidth: 'var(--bbf-hero-max-width)',
+          paddingInline: 'var(--bbf-hero-padding-x)',
+          paddingBlock: 'var(--bbf-hero-padding-y)',
         }}
       >
         <div className="hero-entrance hero-entrance--delay-1">
@@ -34,12 +34,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <h1
           className="hero-entrance hero-entrance--delay-2"
           style={{
-            marginTop: 'var(--hero-gap-logo)',
-            fontSize: 'var(--headline-size)',
-            fontWeight: 'var(--headline-weight)',
-            letterSpacing: 'var(--headline-tracking)',
-            lineHeight: 'var(--headline-leading)',
-            color: 'var(--color-text-primary)',
+            marginTop: 'var(--bbf-hero-gap-logo)',
+            fontSize: 'var(--bbf-headline-size)',
+            fontWeight: 'var(--bbf-headline-weight)',
+            letterSpacing: 'var(--bbf-headline-tracking)',
+            lineHeight: 'var(--bbf-headline-leading)',
+            color: 'var(--bbf-color-text-primary)',
           }}
         >
           {headline}
@@ -50,11 +50,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <p
           className="hero-entrance hero-entrance--delay-3"
           style={{
-            marginTop: 'var(--hero-gap-tagline)',
-            fontSize: 'var(--tagline-size)',
-            fontWeight: 'var(--tagline-weight)',
-            letterSpacing: 'var(--tagline-tracking)',
-            color: 'var(--tagline-color)',
+            marginTop: 'var(--bbf-hero-gap-tagline)',
+            fontSize: 'var(--bbf-tagline-size)',
+            fontWeight: 'var(--bbf-tagline-weight)',
+            letterSpacing: 'var(--bbf-tagline-tracking)',
+            color: 'var(--bbf-tagline-color)',
             textTransform: 'uppercase',
           }}
         >
@@ -65,12 +65,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           href="mailto:contacto@brandbrainfoundry.com"
           className="bbf-cta-pill hero-entrance hero-entrance--delay-4 inline-flex items-center"
           style={{
-            marginTop: 'var(--hero-gap-cta)',
-            backgroundColor: 'var(--btn-pill-bg)',
-            color: 'var(--btn-pill-text)',
-            paddingInline: 'var(--btn-pill-padding-x)',
-            paddingBlock: 'var(--btn-pill-padding-y)',
-            borderRadius: 'var(--btn-pill-radius)',
+            marginTop: 'var(--bbf-hero-gap-cta)',
+            backgroundColor: 'var(--bbf-btn-pill-bg)',
+            color: 'var(--bbf-btn-pill-text)',
+            paddingInline: 'var(--bbf-btn-pill-padding-x)',
+            paddingBlock: 'var(--bbf-btn-pill-padding-y)',
+            borderRadius: 'var(--bbf-btn-pill-radius)',
             textDecoration: 'none',
             fontSize: 'var(--bbf-text-base)',
             fontWeight: 500,

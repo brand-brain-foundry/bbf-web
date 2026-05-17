@@ -1,0 +1,25 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Typography
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §4 (M5-C)
+ * Tier: 1 (PRIMITIVE)
+ * Decisión: D-BBF-WEB-68 (Inter en M5-C), D-BBF-WEB-74 (Major Third 1.25 en M5-C)
+ *
+ * NOTA M5-A: type scale actual Minor Third 1.2 heredado Sivar Brains.
+ * M5-C reemplaza por Major Third 1.25 con clamp() responsive + Inter font family.
+ */
+
+@theme {
+  /* === Type scale (Minor Third 1.2) — M5-C reemplaza === */
+  --bbf-text-xs: 0.75rem; /* 12px */
+  --bbf-text-sm: 0.875rem; /* 14px */
+  --bbf-text-base: 1rem; /* 16px */
+  --bbf-text-lg: 1.125rem; /* 18px */
+  --bbf-text-xl: 1.25rem; /* 20px */
+  --bbf-text-2xl: 1.5rem; /* 24px */
+  --bbf-text-3xl: 1.875rem; /* 30px */
+  --bbf-text-4xl: 2.25rem; /* 36px */
+  --bbf-text-5xl: 3rem; /* 48px */
+  --bbf-text-6xl: 3.75rem; /* 60px */
+  --bbf-text-7xl: 4.5rem; /* 72px */
+}

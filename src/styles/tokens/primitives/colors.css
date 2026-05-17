@@ -1,0 +1,47 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Colors
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §3 (M5-B)
+ * Tier: 1 (PRIMITIVE)
+ * Decisión: D-BBF-WEB-55 (3-tier DTCG), D-BBF-WEB-56 (OKLCH M5-B), D-BBF-WEB-59 (namespace)
+ *
+ * NOTA M5-A: valores actuales heredados de Sivar Brains v2.1.0 con namespace --bbf-* uniforme.
+ * M5-B reemplazará por paleta OKLCH firmada Zavala (black/red/sand/blue + variants).
+ *
+ * NO USAR estos tokens directamente en componentes. Usar tokens semantic
+ * de tokens/semantic/colors.css.
+ */
+
+@theme {
+  /* === BBF Brand palette === */
+  --bbf-blue-50: #eef4ff;
+  --bbf-blue-100: #d9e7ff;
+  --bbf-blue-200: #b3cffe;
+  --bbf-blue-300: #85affd;
+  --bbf-blue-400: #5587fb;
+  --bbf-blue-500: #255ff1;
+  --bbf-blue-600: #1a4fd6;
+  --bbf-blue-700: #1440b0;
+  --bbf-blue-800: #10338a;
+  --bbf-blue-900: #0c2568;
+
+  /* === BBF Cream (background canon Zavala) === */
+  --bbf-cream-50: #fefcf8;
+  --bbf-cream-100: #fdf5ed;
+  --bbf-cream-200: #f9ecd9;
+  --bbf-cream-300: #f4dfba;
+
+  /* === Neutrals === */
+  --bbf-neutral-0: #ffffff;
+  --bbf-neutral-50: #fafafa;
+  --bbf-neutral-100: #f4f4f5;
+  --bbf-neutral-200: #e4e4e7;
+  --bbf-neutral-300: #d4d4d8;
+  --bbf-neutral-400: #a1a1aa;
+  --bbf-neutral-500: #71717a;
+  --bbf-neutral-600: #52525b;
+  --bbf-neutral-700: #3f3f46;
+  --bbf-neutral-800: #27272a;
+  --bbf-neutral-900: #131414;
+  --bbf-neutral-950: #000000;
+}

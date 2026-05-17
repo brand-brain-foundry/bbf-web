@@ -1,0 +1,14 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Breakpoints
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §4.4 (M5-C llena)
+ * Tier: 1 (PRIMITIVE)
+ * Decisión: D-BBF-WEB-55, D-BBF-WEB-59
+ *
+ * NOTA M5-A: archivo NUEVO. M5-C llena con sistema 6-breakpoint canon.
+ * Por ahora vacío con header doctrinal.
+ */
+
+@theme {
+  /* Empty — populated in M5-C with 6 breakpoints canon (xs/sm/md/lg/xl/2xl) */
+}

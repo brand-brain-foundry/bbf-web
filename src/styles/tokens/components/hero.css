@@ -1,0 +1,157 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: Hero
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §2
+ * Tier: 3 (COMPONENT)
+ * Decisión: D-BBF-WEB-55, D-BBF-WEB-59
+ *
+ * NOTA M5-A: tokens + clases CSS del hero migrados con namespace --bbf-* uniforme.
+ * Incluye: logo, btn-pill, headline, tagline, hero spacing, micro-interactions.
+ *
+ * Decisión autónoma M5-A:
+ *   - .hero-entrance, .bbf-cta-pill, .bbf-logo-stamp → aquí (hero-specific, M5-D generaliza Button)
+ *   - @keyframes bbf-logo-rotate, bbf-fade-up → utilities/animations.css
+ *   - .bbf-btn-pill permanece en hero.css hasta que M5-D cree el átomo Button con CVA
+ */
+
+:root {
+  /* === Logo (PATCH-4: tamaño canon minimal) === */
+  --bbf-logo-color: var(--bbf-neutral-900);
+  --bbf-logo-rotation-speed: 40s;
+  --bbf-logo-rotation-easing: linear;
+  --bbf-logo-size-hero: clamp(8rem, 14vw, 14rem); /* 128 → 224px */
+  --bbf-logo-size-nav: 2.5rem; /* 40px — futuro navbar */
+  --bbf-logo-hover-scale: 1.04; /* PATCH-4 */
+  --bbf-logo-rotation-speed-hover: 12s; /* PATCH-4: acelera 3.3× en hover */
+
+  /* === Button pill (CTA "contáctanos") === */
+  --bbf-btn-pill-bg: var(--bbf-neutral-900);
+  --bbf-btn-pill-bg-hover: var(--bbf-neutral-800);
+  --bbf-btn-pill-text: var(--bbf-neutral-0);
+  --bbf-btn-pill-padding-x: var(--bbf-space-8);
+  --bbf-btn-pill-padding-y: var(--bbf-space-4);
+  --bbf-btn-pill-radius: var(--bbf-radius-full);
+
+  /* === Headline (PATCH-4: cap reducido para wide screens) === */
+  --bbf-headline-size: clamp(2.5rem, 5.5vw, 4rem); /* 40 → 64px */
+  --bbf-headline-weight: 700;
+  --bbf-headline-tracking: var(--bbf-tracking-display);
+  --bbf-headline-leading: 0.9;
+
+  /* === Tagline / Eyebrow (PATCH-4: 16px fijo + tracking +) === */
+  --bbf-tagline-size: var(--bbf-text-base); /* 16px fijo */
+  --bbf-tagline-weight: 700;
+  --bbf-tagline-tracking: 0.15em; /* PATCH-4 */
+  --bbf-tagline-color: var(--bbf-color-text-primary);
+  --bbf-tagline-transform: uppercase;
+
+  /* === Hero spacing rhythm (PATCH-4: 8pt grid canon) === */
+  --bbf-hero-gap-logo: var(--bbf-space-8); /* 32px — logo → headline */
+  --bbf-hero-gap-tagline: var(--bbf-space-6); /* 24px — headline → tagline */
+  --bbf-hero-gap-cta: var(--bbf-space-12); /* 48px — tagline → CTA */
+  --bbf-hero-padding-x: var(--bbf-space-6); /* 24px */
+  --bbf-hero-padding-y: var(--bbf-space-16); /* 64px */
+  --bbf-hero-max-width: 56rem; /* 896px cap */
+
+  /* === Micro-interactions (PATCH-4: perceptibles, no sutiles) === */
+  --bbf-motion-entrance-duration: 800ms;
+  --bbf-motion-entrance-easing: cubic-bezier(0.16, 1, 0.3, 1); /* easeOutExpo */
+  --bbf-motion-entrance-distance: 2rem; /* PATCH-4: 32px */
+  --bbf-motion-stagger-step: 150ms; /* PATCH-4 */
+
+  --bbf-motion-cta-duration: 300ms;
+  --bbf-motion-cta-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --bbf-cta-hover-scale: 1.05;
+  --bbf-cta-hover-shadow: 0 16px 40px -12px rgb(0 0 0 / 0.4);
+  --bbf-cta-icon-shift: 0.375rem; /* 6px */
+
+  --bbf-motion-logo-duration: 500ms;
+
+  /* === Hero video overlay (deshabilitado — video raw) === */
+  --bbf-hero-overlay-color: transparent;
+  --bbf-hero-overlay-opacity: 0;
+}
+
+/* === Logo circle rotation === */
+.bbf-logo-stamp #circle {
+  transform-origin: center center;
+  transform-box: fill-box;
+  animation: bbf-logo-rotate var(--bbf-logo-rotation-speed) var(--bbf-logo-rotation-easing) infinite;
+  will-change: transform;
+}
+
+/* Override hex hardcoded en SVG via token */
+.bbf-logo-stamp path,
+.bbf-logo-stamp .cls-1 {
+  fill: var(--bbf-logo-color);
+}
+
+/* Logo hover — scale sutil */
+.bbf-logo-stamp {
+  transition: transform var(--bbf-motion-logo-duration) var(--bbf-motion-cta-easing);
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  a:hover .bbf-logo-stamp,
+  .bbf-logo-stamp:hover {
+    transform: scale(var(--bbf-logo-hover-scale));
+  }
+
+  /* Acelera rotación círculo del logo en hover (40s → 12s) */
+  a:hover .bbf-logo-stamp #circle,
+  .bbf-logo-stamp:hover #circle {
+    animation-duration: var(--bbf-logo-rotation-speed-hover);
+  }
+}
+
+/* === Hero entrance stagger — cada elemento entra con delay incremental === */
+.hero-entrance {
+  opacity: 0;
+  animation: bbf-fade-up var(--bbf-motion-entrance-duration) var(--bbf-motion-entrance-easing)
+    forwards;
+}
+
+.hero-entrance--delay-1 {
+  animation-delay: calc(var(--bbf-motion-stagger-step) * 0); /* logo: 0ms */
+}
+.hero-entrance--delay-2 {
+  animation-delay: calc(var(--bbf-motion-stagger-step) * 1); /* headline: 150ms */
+}
+.hero-entrance--delay-3 {
+  animation-delay: calc(var(--bbf-motion-stagger-step) * 2); /* tagline: 300ms */
+}
+.hero-entrance--delay-4 {
+  animation-delay: calc(var(--bbf-motion-stagger-step) * 3); /* CTA: 450ms */
+}
+
+/* === CTA pill — scale + shadow lift === */
+.bbf-cta-pill {
+  transition:
+    transform var(--bbf-motion-cta-duration) var(--bbf-motion-cta-easing),
+    box-shadow var(--bbf-motion-cta-duration) var(--bbf-motion-cta-easing),
+    background-color var(--bbf-motion-cta-duration) var(--bbf-motion-cta-easing);
+  will-change: transform;
+}
+
+.bbf-cta-pill:hover {
+  transform: scale(var(--bbf-cta-hover-scale));
+  box-shadow: var(--bbf-cta-hover-shadow);
+  background-color: var(--bbf-neutral-800);
+}
+
+.bbf-cta-pill .bbf-cta-arrow {
+  display: inline-block;
+  margin-left: 0.5rem;
+  transition: transform var(--bbf-motion-cta-duration) var(--bbf-motion-cta-easing);
+  will-change: transform;
+}
+
+.bbf-cta-pill:hover .bbf-cta-arrow {
+  transform: translateX(var(--bbf-cta-icon-shift));
+}
+
+.bbf-cta-pill:active {
+  transform: scale(0.98);
+  transition-duration: 100ms;
+}

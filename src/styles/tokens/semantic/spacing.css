@@ -1,0 +1,26 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Spacing + Radius
+ *
+ * Subordinado a: BBF_M5_Framework_Plan.md §2
+ * Tier: 2 (SEMANTIC)
+ * Decisión: D-BBF-WEB-55
+ *
+ * NOTA M5-A: incluye semantic radius (--bbf-radius-btn/card/input) migrados
+ * desde globals.css. Decisión autónoma: no existe semantic/radius.css en el
+ * plan de 19 archivos — radius semántico va aquí por proximidad de propósito.
+ *
+ * Spacing semantic vacío preparado para M5-D on-demand.
+ * Patrón canon esperado:
+ *   --bbf-space-component-padding-sm: var(--bbf-space-2);
+ *   --bbf-space-content-gap-normal: var(--bbf-space-4);
+ *   --bbf-space-section-gap-md: var(--bbf-space-16);
+ */
+
+:root {
+  /* === Semantic radius === */
+  --bbf-radius-btn: var(--bbf-radius-full);
+  --bbf-radius-card: var(--bbf-radius-xl);
+  --bbf-radius-input: var(--bbf-radius-lg);
+
+  /* === Semantic spacing — Empty, populated on-demand in M5-D === */
+}
