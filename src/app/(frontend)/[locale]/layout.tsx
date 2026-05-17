@@ -1,15 +1,15 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale, getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { Outfit, Mulish } from 'next/font/google';
+import { Inter, Mulish } from 'next/font/google';
 import { routing } from '@/i18n/routing';
 import type { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
 
-const outfit = Outfit({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '900'],
-  variable: '--font-outfit',
+  variable: '--font-inter',
+  weight: ['400', '500', '600', '700', '800', '900'],
   display: 'swap',
 });
 
@@ -178,7 +178,7 @@ export default async function LocaleLayout({
   };
 
   return (
-    <html lang={locale} className={`${outfit.variable} ${mulish.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${mulish.variable}`}>
       <body>
         <NextIntlClientProvider messages={messages} locale={locale}>
           {children}

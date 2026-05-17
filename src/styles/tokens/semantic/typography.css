@@ -3,27 +3,25 @@
  *
  * Subordinado a: BBF_M5_Framework_Plan.md §4 (M5-C)
  * Tier: 2 (SEMANTIC)
- * Decisión: D-BBF-WEB-55, D-BBF-WEB-68 (Inter M5-C)
+ * Decisiones: D-BBF-WEB-55 (3-tier), D-BBF-WEB-68 (Inter), D-BBF-WEB-68b (Mulish)
  *
- * NOTA M5-A: font roles + tracking semantic actuales con namespace --bbf-*.
- * M5-C reemplaza con Inter + sistema completo.
+ * Font roles canon BBF:
+ *   --bbf-font-display  → Inter (headlines, hero, titles, wordmark)
+ *   --bbf-font-body     → Mulish (paragraphs, UI labels, nav, captions)
+ *   --bbf-font-mono     → JetBrains Mono (code, technical content)
  *
- * --font-outfit y --font-mulish son variables inyectadas por next/font —
- * NO son tokens BBF, no llevan prefix --bbf-*.
+ * Componentes referencian SOLO estos semantic tokens, NUNCA primitives.
  */
 
 :root {
-  /* === Font stacks — TWO-FONT SYSTEM === */
-  --bbf-font-display: var(--font-outfit), 'Outfit', system-ui, sans-serif;
-  --bbf-font-sans: var(--font-mulish), 'Mulish', system-ui, -apple-system, sans-serif;
+  /* ============================================================
+     FONT ROLES (semantic — propósito)
+     ============================================================ */
+  --bbf-font-display: var(--bbf-font-inter);
+  --bbf-font-body: var(--bbf-font-mulish);
+  --bbf-font-code: var(--bbf-font-mono);
 
-  /* === Font role tokens — USE THESE in components, not font names === */
-  --bbf-font-heading: var(--bbf-font-display); /* h1, h2, h3, hero, wordmark */
-  --bbf-font-body: var(--bbf-font-sans); /* body, labels, UI, docs */
-
-  /* === Tracking (letter-spacing) === */
-  --bbf-tracking-display: -0.03em; /* Firmado Zavala: PATCH-2 */
-  --bbf-tracking-heading: -0.01em;
-  --bbf-tracking-ui: 0em;
-  --bbf-tracking-eyebrow: 0.1em; /* para labels/eyebrows tipo "Próximamente." */
+  /* Legacy aliases (compatibility — deprecate in M5-D) */
+  --bbf-font-heading: var(--bbf-font-display); /* alias usado en hero.css + reset.css */
+  --bbf-font-sans: var(--bbf-font-body); /* alias usado en LocaleSwitcher.css */
 }
