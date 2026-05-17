@@ -1,15 +1,16 @@
 /**
  * BBF Design System — TIER 3 COMPONENT: Logo
  *
- * Subordinado a: B-BBF-WEB-M5-D1.5-LOGO-SYSTEM-V2 (patch animation fix)
- * Decisiones: D-BBF-WEB-77 (surface-aware), D-BBF-WEB-78 (animated state)
+ * Subordinado a: B-BBF-WEB-M5-D1.5-LOGO-SYSTEM-V2 + B-BBF-WEB-M5-E-MOTION-SYSTEM
+ * Decisiones: D-BBF-WEB-77 (surface-aware), D-BBF-WEB-78 (animated state),
+ *             D-98 (motion tokens canon), D-99 (BBFLogoAnimator WAAPI)
  *
  * Sistema canon de logo con 4 variantes.
  * Color heredado via currentColor (surface-aware).
  * Animación pertenece SOLO a variant=stamp + data-animated=true.
  *
- * Tokens viven en hero.css :root (logo vars).
- * @keyframes bbf-logo-rotate vive en utilities/animations.css.
+ * M5-E: hover speed change via CSS eliminado — WAAPI updatePlaybackRate en BBFLogoAnimator.
+ * Tokens rotation migrados a semantic/motion.css canon.
  *
  * IMPORTANTE: enrichSvg() del atom inyecta la clase directamente al <svg>,
  * por lo que .bbf-logo-name-circle ES el <svg>, no un wrapper.
@@ -121,23 +122,19 @@
    Sin descendiente — la clase está aplicada al svg mismo.
    ============================================================ */
 .bbf-logo--stamp[data-animated='true'] .bbf-logo-name-circle {
-  animation: bbf-logo-rotate var(--bbf-logo-rotation-speed, 40s) linear infinite;
+  animation: bbf-logo-rotate var(--bbf-logo-rotation-duration, 40s)
+    var(--bbf-logo-rotation-easing, linear) infinite;
   transform-origin: center center;
   transform-box: fill-box;
   will-change: transform;
 }
 
-/* Hover acelera rotación (canon H1-3-A preservado) */
+/* Hover scale preservado (transform, no rotation — rotation via WAAPI en BBFLogoAnimator) */
 @media (hover: hover) {
-  .bbf-logo--stamp[data-animated='true']:hover .bbf-logo-name-circle,
-  a:hover .bbf-logo--stamp[data-animated='true'] .bbf-logo-name-circle {
-    animation-duration: var(--bbf-logo-rotation-speed-hover, 12s);
-  }
-
   .bbf-logo--stamp[data-animated='true']:hover,
   a:hover .bbf-logo--stamp[data-animated='true'] {
     transform: scale(var(--bbf-logo-hover-scale, 1.04));
-    transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--bbf-transition-hover);
   }
 }
 

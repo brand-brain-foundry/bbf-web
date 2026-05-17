@@ -1,5 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
-import { BBFLogo } from '@/components/atoms/BBFLogo';
+import { BBFLogo, BBFLogoAnimator } from '@/components/atoms/BBFLogo';
 import { Button } from '@/components/atoms/Button';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
@@ -29,7 +29,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       {/* Contenido principal centrado (z-20, 8pt grid via hero-section.css) */}
       <HeroSection.Content align="center">
         <div className="hero-entrance hero-entrance--delay-1">
-          <BBFLogo variant="stamp" size="hero" animated />
+          <BBFLogoAnimator>
+            <BBFLogo variant="stamp" size="hero" animated />
+          </BBFLogoAnimator>
         </div>
 
         <Heading

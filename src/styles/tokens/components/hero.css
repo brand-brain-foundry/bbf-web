@@ -1,12 +1,16 @@
 /**
  * BBF Design System — TIER 3 COMPONENT: Hero
  *
- * Subordinado a: BBF_M5_Framework_Plan.md §2
+ * Subordinado a: BBF_M5_Framework_Plan.md §2 + B-BBF-WEB-M5-E-MOTION-SYSTEM
  * Tier: 3 (COMPONENT)
- * Decisión: D-BBF-WEB-55, D-BBF-WEB-59
+ * Decisión: D-BBF-WEB-55, D-BBF-WEB-59, D-98 (motion tokens canon), D-99 (WAAPI)
  *
  * NOTA M5-A: tokens + clases CSS del hero migrados con namespace --bbf-* uniforme.
  * Incluye: logo, btn-pill, headline, tagline, hero spacing, micro-interactions.
+ *
+ * NOTA M5-E: motion vars logo rotation eliminadas → semantic/motion.css (canon).
+ *   hero-entrance migradas a tokens canon: --bbf-motion-slow + --bbf-easing-entrance.
+ *   Stagger migrado a --bbf-delay-1..5 (75ms base).
  *
  * Decisión autónoma M5-A:
  *   - .hero-entrance, .bbf-cta-pill, .bbf-logo-stamp → aquí (hero-specific, M5-D generaliza Button)
@@ -17,12 +21,10 @@
 :root {
   /* === Logo (PATCH-4: tamaño canon minimal) === */
   --bbf-logo-color: var(--bbf-color-black-900);
-  --bbf-logo-rotation-speed: 40s;
-  --bbf-logo-rotation-easing: linear;
+  /* Rotation speed + easing → semantic/motion.css (--bbf-logo-rotation-duration/easing) */
   --bbf-logo-size-hero: clamp(8rem, 14vw, 14rem); /* 128 → 224px */
   --bbf-logo-size-nav: 2.5rem; /* 40px — futuro navbar */
   --bbf-logo-hover-scale: 1.04; /* PATCH-4 */
-  --bbf-logo-rotation-speed-hover: 12s; /* PATCH-4: acelera 3.3× en hover */
 
   /* === Button pill (CTA "contáctanos") === */
   --bbf-btn-pill-bg: var(--bbf-surface-black);
@@ -53,43 +55,50 @@
   --bbf-hero-padding-y: var(--bbf-space-16); /* 64px */
   --bbf-hero-max-width: 56rem; /* 896px cap */
 
-  /* === Micro-interactions (PATCH-4: perceptibles, no sutiles) === */
-  --bbf-motion-entrance-duration: 800ms;
-  --bbf-motion-entrance-easing: cubic-bezier(0.16, 1, 0.3, 1); /* easeOutExpo */
-  --bbf-motion-entrance-distance: 2rem; /* PATCH-4: 32px */
-  --bbf-motion-stagger-step: 150ms; /* PATCH-4 */
+  /* === Micro-interactions (M5-E: migrado a tokens canon) === */
+  /* Entrance duration + easing → --bbf-motion-slow + --bbf-easing-entrance (semantic/motion.css) */
+  /* Stagger delays → --bbf-delay-1..5 (75ms base, semantic/motion.css) */
+  --bbf-motion-entrance-distance: 2rem; /* PATCH-4: 32px — keyframe bbf-fade-up */
 
-  --bbf-motion-cta-duration: 300ms;
-  --bbf-motion-cta-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --bbf-motion-cta-duration: var(--bbf-motion-base); /* 250ms canon */
+  --bbf-motion-cta-easing: var(--bbf-easing-in-out); /* cubic-bezier(0.4, 0, 0.2, 1) */
   --bbf-cta-hover-scale: 1.05;
   --bbf-cta-hover-shadow: var(--bbf-shadow-cta-hover);
   --bbf-cta-icon-shift: 0.375rem; /* 6px */
-
-  --bbf-motion-logo-duration: 500ms;
 
   /* === Hero video overlay (deshabilitado — video raw) === */
   --bbf-hero-overlay-color: transparent;
   --bbf-hero-overlay-opacity: 0;
 }
 
-/* === Hero entrance stagger — cada elemento entra con delay incremental === */
+/* === Hero entrance stagger — M5-E: tokens canon motion (D-98, TD-M5-D4-01 resuelta) === */
 .hero-entrance {
   opacity: 0;
-  animation: bbf-fade-up var(--bbf-motion-entrance-duration) var(--bbf-motion-entrance-easing)
-    forwards;
+  animation: bbf-fade-up var(--bbf-motion-slow, 400ms)
+    var(--bbf-easing-entrance, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+  will-change: opacity, transform;
 }
 
+/* Stagger delays canon (75ms base — semantic/motion.css) */
 .hero-entrance--delay-1 {
-  animation-delay: calc(var(--bbf-motion-stagger-step) * 0); /* logo: 0ms */
+  animation-delay: var(--bbf-delay-1, 75ms); /* logo: 75ms */
 }
 .hero-entrance--delay-2 {
-  animation-delay: calc(var(--bbf-motion-stagger-step) * 1); /* headline: 150ms */
+  animation-delay: var(--bbf-delay-2, 150ms); /* headline: 150ms */
 }
 .hero-entrance--delay-3 {
-  animation-delay: calc(var(--bbf-motion-stagger-step) * 2); /* tagline: 300ms */
+  animation-delay: var(--bbf-delay-3, 225ms); /* tagline: 225ms */
 }
 .hero-entrance--delay-4 {
-  animation-delay: calc(var(--bbf-motion-stagger-step) * 3); /* CTA: 450ms */
+  animation-delay: var(--bbf-delay-4, 300ms); /* CTA: 300ms */
+}
+.hero-entrance--delay-5 {
+  animation-delay: var(--bbf-delay-5, 375ms); /* extra: 375ms */
+}
+
+/* Remove will-change post-animation (canon performance) */
+.hero-entrance.is-complete {
+  will-change: auto;
 }
 
 /* === CTA pill — scale + shadow lift === */
