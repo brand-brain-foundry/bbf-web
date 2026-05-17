@@ -40,6 +40,7 @@
 @import '../styles/tokens/semantic/typography.css';
 @import '../styles/tokens/semantic/spacing.css';
 @import '../styles/tokens/semantic/motion.css';
+@import '../styles/tokens/semantic/shadows.css';
 
 /* === TIER 3: COMPONENT === */
 @import '../styles/tokens/components/hero.css';

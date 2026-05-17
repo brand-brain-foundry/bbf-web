@@ -62,7 +62,7 @@
   --bbf-motion-cta-duration: 300ms;
   --bbf-motion-cta-easing: cubic-bezier(0.4, 0, 0.2, 1);
   --bbf-cta-hover-scale: 1.05;
-  --bbf-cta-hover-shadow: 0 16px 40px -12px rgb(0 0 0 / 0.4);
+  --bbf-cta-hover-shadow: var(--bbf-shadow-cta-hover);
   --bbf-cta-icon-shift: 0.375rem; /* 6px */
 
   --bbf-motion-logo-duration: 500ms;

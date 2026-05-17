@@ -1,0 +1,44 @@
+/**
+ * BBF Design System — SEMANTIC TOKEN: Shadows
+ *
+ * Subordinado a: B-BBF-WEB-M5-D5-SHADOW-TOKENS
+ * Decisiones: D-69 (OKLCH paleta), D-93 (shadow tokens semantic)
+ *
+ * Sistema canon de elevación BBF: 5 niveles de profundidad.
+ * Color base OKLCH alineado con paleta canon (D-69).
+ *
+ * Pattern canon Tailwind v4:
+ *   - Usar var(--bbf-shadow-{size}) directamente en CSS
+ *   - En Tailwind: [box-shadow:var(--bbf-shadow-sm)] arbitrary property
+ *
+ * Tokens:
+ *   --bbf-shadow-xs   subtle (1px 2px / 0.04 alpha)
+ *   --bbf-shadow-sm   default (2px 8px / 0.06 alpha)
+ *   --bbf-shadow-md   elevated (4px 16px / 0.10 alpha)
+ *   --bbf-shadow-lg   floating (8px 30px / 0.15 alpha)
+ *   --bbf-shadow-xl   modal (16px 48px / 0.20 alpha)
+ */
+
+:root {
+  /* ============================================================
+     ELEVATION SCALE (5 niveles canon BBF)
+     ============================================================ */
+  --bbf-shadow-xs: 0 1px 2px 0 oklch(0 0 0 / 0.04);
+  --bbf-shadow-sm: 0 2px 8px 0 oklch(0 0 0 / 0.06);
+  --bbf-shadow-md: 0 4px 16px 0 oklch(0 0 0 / 0.1);
+  --bbf-shadow-lg: 0 8px 30px 0 oklch(0 0 0 / 0.15);
+  --bbf-shadow-xl: 0 16px 48px 0 oklch(0 0 0 / 0.2);
+
+  /* ============================================================
+     SEMANTIC ALIASES (uso contextual)
+     ============================================================ */
+  --bbf-shadow-card: var(--bbf-shadow-sm);
+  --bbf-shadow-floating: var(--bbf-shadow-lg);
+  --bbf-shadow-modal: var(--bbf-shadow-xl);
+  --bbf-shadow-button-hover: var(--bbf-shadow-md);
+
+  /* §14 auto-corrección: CTA hero shadow fuera del scale estándar
+     (alpha 0.4 + spread negativo — efecto depth específico del hero CTA).
+     Token semántico preserva valor exacto en OKLCH. */
+  --bbf-shadow-cta-hover: 0 16px 40px -12px oklch(0 0 0 / 0.4);
+}
