@@ -28,7 +28,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         }}
       >
         <div className="hero-entrance hero-entrance--delay-1">
-          <BBFLogo />
+          <BBFLogo variant="stamp" size="hero" animated />
         </div>
 
         <h1

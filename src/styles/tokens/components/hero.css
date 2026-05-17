@@ -72,39 +72,6 @@
   --bbf-hero-overlay-opacity: 0;
 }
 
-/* === Logo circle rotation === */
-.bbf-logo-stamp #circle {
-  transform-origin: center center;
-  transform-box: fill-box;
-  animation: bbf-logo-rotate var(--bbf-logo-rotation-speed) var(--bbf-logo-rotation-easing) infinite;
-  will-change: transform;
-}
-
-/* Override hex hardcoded en SVG via token */
-.bbf-logo-stamp path,
-.bbf-logo-stamp .cls-1 {
-  fill: var(--bbf-logo-color);
-}
-
-/* Logo hover — scale sutil */
-.bbf-logo-stamp {
-  transition: transform var(--bbf-motion-logo-duration) var(--bbf-motion-cta-easing);
-  will-change: transform;
-}
-
-@media (hover: hover) {
-  a:hover .bbf-logo-stamp,
-  .bbf-logo-stamp:hover {
-    transform: scale(var(--bbf-logo-hover-scale));
-  }
-
-  /* Acelera rotación círculo del logo en hover (40s → 12s) */
-  a:hover .bbf-logo-stamp #circle,
-  .bbf-logo-stamp:hover #circle {
-    animation-duration: var(--bbf-logo-rotation-speed-hover);
-  }
-}
-
 /* === Hero entrance stagger — cada elemento entra con delay incremental === */
 .hero-entrance {
   opacity: 0;

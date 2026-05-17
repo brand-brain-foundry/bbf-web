@@ -35,10 +35,6 @@
 
 /* === Reduced motion — hero animations === */
 @media (prefers-reduced-motion: reduce) {
-  .bbf-logo-stamp #circle {
-    animation: none;
-  }
-
   .hero-entrance,
   .hero-entrance--delay-1,
   .hero-entrance--delay-2,
@@ -48,8 +44,7 @@
     opacity: 1;
   }
 
-  .bbf-cta-pill,
-  .bbf-logo-stamp {
+  .bbf-cta-pill {
     transition: none;
   }
 

@@ -106,7 +106,7 @@ export async function generateMetadata({
       description: descriptions[currentLocale],
       images: [
         {
-          url: '/opengraph-image.png',
+          url: '/assets/media/images/og/og-default.png',
           width: 1200,
           height: 630,
           alt: titles[currentLocale],
@@ -117,7 +117,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: titles[currentLocale],
       description: descriptions[currentLocale],
-      images: ['/opengraph-image.png'],
+      images: ['/assets/media/images/og/og-default.png'],
     },
     other: {
       'apple-mobile-web-app-title': 'BBF',
@@ -154,7 +154,7 @@ export default async function LocaleLayout({
       width: 512,
       height: 512,
     },
-    image: 'https://brandbrainfoundry.com/opengraph-image.png',
+    image: 'https://brandbrainfoundry.com/assets/media/images/og/og-default.png',
     description:
       'Foundry de cerebros de marca. Asesoramos, diseñamos, construimos y mantenemos sistemas de inteligencia de marca para empresas que escalan.',
     slogan: 'Construimos cerebros de marca',

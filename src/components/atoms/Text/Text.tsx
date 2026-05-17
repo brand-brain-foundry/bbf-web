@@ -60,18 +60,19 @@ export function Text({
   children,
   ...props
 }: TextProps) {
-  const Element = asChild ? Slot : (as ?? inferElement(variant));
+  const sharedProps = {
+    'data-component': 'bbf-text' as const,
+    'data-variant': variant,
+    className: cn(textVariants({ variant, color, align, weight }), className),
+    ...props,
+  };
 
-  return (
-    <Element
-      data-component="bbf-text"
-      data-variant={variant}
-      className={cn(textVariants({ variant, color, align, weight }), className)}
-      {...props}
-    >
-      {children}
-    </Element>
-  );
+  if (asChild) {
+    return <Slot {...sharedProps}>{children}</Slot>;
+  }
+
+  const tag = as ?? inferElement(variant);
+  return React.createElement(tag, sharedProps, children);
 }
 
 Text.displayName = 'Text';
