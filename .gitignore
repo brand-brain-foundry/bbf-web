@@ -65,6 +65,11 @@ logs/
 # Operational
 feedback.md
 
+# === Claude Code (cliente local) — D-BBF-WEB-101 canon ===
+# .claude/ es directorio del cliente Claude Code, no source.
+# Contiene feedback archive con despachos Strategic internos.
+.claude/
+
 # ─────────────────────────────────────────────────────────────
 # H1-3-A additions (2026-05-15)
 # ─────────────────────────────────────────────────────────────
