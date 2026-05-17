@@ -46,6 +46,7 @@
 @import '../styles/tokens/components/logo.css';
 @import '../styles/tokens/components/locale-switcher.css';
 @import '../styles/tokens/components/button.css';
+@import '../styles/tokens/components/hero-section.css';
 
 /* === UTILITIES === */
 @import '../styles/utilities/animations.css';
