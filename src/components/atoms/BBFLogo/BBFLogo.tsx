@@ -19,7 +19,6 @@ export function BBFLogo({ size, className }: BBFLogoProps) {
   const svgPath = path.join(process.cwd(), 'public', 'logos', 'BBF-Logo-Stamp.svg');
   const svgContent = fs.readFileSync(svgPath, 'utf-8');
 
-  // Inyectar clase + atributos a11y en el <svg>
   const enrichedSvg = svgContent.replace(
     /<svg\s/i,
     `<svg class="bbf-logo-stamp ${className ?? ''}" aria-label="Brand Brain Foundry" role="img" `,
@@ -29,10 +28,8 @@ export function BBFLogo({ size, className }: BBFLogoProps) {
 
   return (
     <div
-      style={{
-        width: computedSize,
-        height: computedSize,
-      }}
+      style={{ width: computedSize, height: computedSize }}
+      // SVG injected inline to enable CSS animation access to #circle id
       dangerouslySetInnerHTML={{ __html: enrichedSvg }}
     />
   );

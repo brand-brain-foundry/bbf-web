@@ -1,0 +1,1 @@
+export { BBFLogo } from './BBFLogo';

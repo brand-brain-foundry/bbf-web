@@ -1,5 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
-import { BBFLogo } from '@/components/BBFLogo';
+import { BBFLogo } from '@/components/atoms/BBFLogo';
 import { HeroVideo } from '@/components/HeroVideo';
 import { LocaleSwitcher } from '@/components/i18n/LocaleSwitcher';
 
