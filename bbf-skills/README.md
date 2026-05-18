@@ -2,7 +2,7 @@
 
 **Skills BBF — Proceso canon BBF para construcción de software**
 
-> Versión: 1.0 (M5-F3, 2026-05-18)
+> Versión: 1.1 (M5-ADMIN-1, 2026-05-18)
 > Reusable: M6+ + cerebros clientes BBF
 
 ---
@@ -26,12 +26,14 @@ AI agentes (Claude Code, MCP, agentic browsers) y desarrolladores humanos pueden
 | `create-atom/SKILL.md` | Crear nuevo atom (primitive UI element) |
 | `create-molecule/SKILL.md` | Crear nueva molecule (atoms compuestos) |
 | `create-section/SKILL.md` | Crear nueva section (page section compound) |
+| `create-template/SKILL.md` | Crear template Tier 4 (composition de sections) |
 
-### Trabajar con tokens
+### Trabajar con tokens y surfaces
 
 | Skill | Cuándo usar |
 |-------|-------------|
 | `use-tokens/SKILL.md` | Aplicar tokens canon BBF en componentes |
+| `cross-surface/SKILL.md` | Aplicar UI element en múltiples surfaces (light/dark/sand) |
 
 ---
 
@@ -68,7 +70,6 @@ Skills NO son tutoriales generales. Son **procesos canon BBF específicos** que:
 
 Conforme el sistema canon BBF crece:
 
-- `create-template/SKILL.md` — Crear template (composition de sections)
 - `create-page/SKILL.md` — Crear page (composition de templates)
 - `add-token-category/SKILL.md` — Agregar nueva categoría tokens canon
 - `migrate-legacy/SKILL.md` — Migrar código legacy a canon BBF
@@ -81,6 +82,9 @@ Conforme el sistema canon BBF crece:
 - **D-103** Template canon CLAUDE.md por componente
 - **D-104** Skills BBF en bbf-skills/ (root versionado)
 - **D-105** Template canon SKILL.md por proceso
+- **D-106** Templates Tier 4 canon BBF
+- **D-107** Cross-surface fuente de verdad única
+- **D-108** Icon registry centralizado
 
 ---
 

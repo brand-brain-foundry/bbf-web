@@ -28,6 +28,7 @@ components/
 │   ├── Icon/
 │   │   ├── Icon.tsx
 │   │   ├── Icon.variants.ts
+│   │   ├── registry.ts        Icon registry canon (D-108)
 │   │   └── index.ts
 │   ├── Text/
 │   │   ├── Text.tsx
@@ -44,12 +45,14 @@ components/
 │   │   ├── LocaleSwitcher.variants.ts
 │   │   └── index.ts
 │   └── index.ts               Barrel export molecules
-└── sections/                  Page sections (compound)
-    ├── HeroSection/           Section + Content compound (D-89)
-    │   ├── HeroSection.tsx
-    │   ├── HeroSection.variants.ts
-    │   └── index.ts
-    └── index.ts               Barrel export sections
+├── sections/                  Page sections (compound)
+│   ├── HeroSection/           Section + Content compound (D-89)
+│   │   ├── HeroSection.tsx
+│   │   ├── HeroSection.variants.ts
+│   │   └── index.ts
+│   └── index.ts               Barrel export sections
+└── templates/                 Tier 4 — composition de sections (D-106)
+    └── CLAUDE.md              Documentación tier (sin implementaciones aún)
 ```
 
 ---
@@ -105,6 +108,15 @@ export type AtomVariants = VariantProps<typeof atomVariants>;
 - Folder: `sections/{Name}/` — NO organisms/
 - Compound pattern preferido
 - API: `<Section surface="..."><Section.Content>...</Section.Content></Section>`
+
+### Templates (Tier 4 — D-106)
+
+**Pattern canon:**
+- Folder: `templates/{Name}Template/`
+- Thin wrappers que orquestan sections con slots ReactNode
+- Server Components — 0 lógica de negocio
+- Cuando ≥2 pages comparten composition de sections
+- Ver `templates/CLAUDE.md` para documentación completa
 
 ---
 
@@ -201,6 +213,8 @@ Permite a AI agentes identificar componentes BBF por HTML inspection.
 - **D-95** Atoms prop semántica canon (intent, level, variant)
 - **D-96** CSSProperties import directo canon
 - **D-99** Server + Client split canon
+- **D-106** Templates Tier 4 canon
+- **D-108** Icon registry centralizado
 
 ---
 

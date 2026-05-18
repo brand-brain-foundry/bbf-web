@@ -47,6 +47,7 @@ bbf-web/
 │   │   ├── atoms/             5 atoms (BBFLogo, Button, Heading, Icon, Text)
 │   │   ├── molecules/         2 molecules (HeroVideo, LocaleSwitcher)
 │   │   ├── sections/          1 section (HeroSection)
+│   │   ├── templates/         Tier 4 (pendiente implementación)
 │   │   └── CLAUDE.md
 │   └── app/                    ← Next.js App Router
 │       ├── (frontend)/        Public-facing locale
@@ -128,6 +129,15 @@ bbf-web/
 |---------|---------|---------|
 | HeroSection | Compound (D-89) | `HeroSection.tsx` + `.variants.ts` |
 
+### 4.4 Templates (pendiente — Tier 4)
+
+Templates son thin wrappers que orquestan sections para reutilización entre pages.
+Se implementan cuando ≥2 pages comparten la misma composition de sections.
+
+Primer templates a crear (M6+): `CaseTemplate`, `BlogTemplate`.
+
+Ver `src/components/templates/CLAUDE.md` — documentación del tier.
+
 ---
 
 ## 5. Patterns canon BBF
@@ -177,6 +187,33 @@ Evitar:   text-[var(--bbf-text-*)]          → color: var(...) (bug v4)
 Razón:    Tailwind v4 sin type hint defaultea a color.
 ```
 
+### 5.6 Cross-surface (D-107)
+
+```
+Una fuente de verdad por elemento UI cross-surface.
+Propagación via data-surface attribute (NO prop drilling).
+SurfaceContext solo para override programático JS (raro).
+
+Token map:
+  surface="auto"        → --bbf-text-on-light + --bbf-color-bg-base
+  surface="dark"        → --bbf-text-on-dark + --bbf-surface-black
+  surface="sand"        → --bbf-text-on-light + --bbf-surface-sand
+  surface="transparent" → hereda del padre
+```
+
+### 5.7 Icon registry canon (D-108)
+
+```typescript
+// Acceso via registry (D-108) — NO importar Lucide directamente en pages
+import { Icons, Icon } from '@/components/atoms/Icon';
+
+<Icon icon={Icons.arrowRight} size="md" />
+<Icon icon={Icons.close} size="sm" color="inverse" />
+
+// 57 íconos en 7 categorías:
+// Navigation · Actions · Status · Communication · Content · User · Brand/Decorative
+```
+
 ### 5.5 CVA compoundVariants
 
 ```typescript
@@ -217,6 +254,9 @@ Sistema de 100+ decisiones doctrinales acumuladas durante construcción.
 - **D-100** Merge saga M5 a main canon
 - **D-101** .gitignore canon (.claude/ excluded)
 - **D-102** M5-F fragmentado en 3 fases iterativas
+- **D-106** Templates Tier 4 canon BBF
+- **D-107** Cross-surface fuente de verdad única
+- **D-108** Icon registry centralizado con nombres semánticos
 
 Index completo: ver `docs/D-BBF-WEB.md` (M5-F2 generará).
 
@@ -280,7 +320,16 @@ Pattern canon BBF:
 2. Compound pattern preferido (D-88)
 3. Export barrel en `sections/index.ts`
 
-### 9.4 Usar tokens canon
+### 9.4 Crear nuevo template
+
+1. Verificar que ≥2 pages lo usarán
+2. Crear sections necesarias primero (si no existen)
+3. Folder: `components/templates/{Name}Template/`
+4. Thin wrapper con slots ReactNode (sin lógica ni tokens)
+5. Export barrel en `templates/index.ts`
+6. Usar skill: `bbf-skills/create-template/SKILL.md`
+
+### 9.5 Usar tokens canon
 
 ```tsx
 // ✅ CANON
@@ -291,6 +340,21 @@ style={{ '--bbf-custom': value } as CSSProperties}
 style={{ fontSize: '3rem' }}
 ```
 
+### 9.6 Usar icons BBF
+
+```tsx
+// ✅ CANON — vía registry (D-108)
+import { Icons, Icon } from '@/components/atoms/Icon';
+<Icon icon={Icons.arrowRight} size="md" />
+
+// ✅ También válido — import directo Lucide si icon no está en registry
+import { ArrowRight } from 'lucide-react';
+<Icon icon={ArrowRight} size="md" />
+
+// ❌ NO — string name (no existe esta API)
+<Icon name="ArrowRight" />
+```
+
 ---
 
 ## 10. Sistema vivo
@@ -298,4 +362,4 @@ style={{ fontSize: '3rem' }}
 Este documento se actualiza con cada nueva decisión doctrinal canon BBF.
 Fuente de verdad: `/Volumes/PK/BBF/Repos/bbf-web/` + commits trazables.
 
-**Last updated:** 2026-05-18 (M5-F1)
+**Last updated:** 2026-05-18 (M5-ADMIN-1)

@@ -53,12 +53,43 @@ interface IconProps extends Omit<LucideProps, 'size' | 'color'>, IconVariants {
 
 ---
 
+## Icon registry canon (D-108)
+
+`registry.ts` — registro centralizado con ~57 íconos Lucide en 7 categorías con nombres semánticos:
+
+```typescript
+import { Icons, Icon } from '@/components/atoms/Icon';
+
+// Acceso semántico (D-108)
+<Icon icon={Icons.arrowRight} size="md" />
+<Icon icon={Icons.close} size="sm" color="inverse" />
+<Icon icon={Icons.checkCircle} size="lg" color="accent" />
+
+// Categorías disponibles:
+// Navigation: arrowRight, arrowLeft, arrowUp, arrowDown, chevronRight,
+//             chevronLeft, chevronDown, chevronUp, menu, close, externalLink, home
+// Actions:    search, plus, minus, edit, trash, download, upload,
+//             share, copy, check, refresh, filter
+// Status:     checkCircle, error, warning, alert, info, loading, eye, eyeOff
+// Communication: mail, phone, message, send, bell
+// Content:    file, image, video, play, pause, bookOpen, calendar,
+//             clock, star, bookmark, link
+// User:       user, users, settings, logout, login, globe
+// Brand/Decorative: sparkles, zap, building, briefcase, target,
+//                   layers, award, trending, heart
+```
+
+`IconCanon` type = `keyof typeof Icons` — type-safe icon names del registry.
+
+---
+
 ## Decisiones aplicables
 
 - **D-77** Surface-aware (color hereda o explícito semántico)
 - **D-81** Folder structure canon
 - **D-82** AI-readable canon
 - **D-83** Lucide icon library canon BBF (NO Heroicons, NO Feather, NO Phosphor)
+- **D-108** Icon registry centralizado con nombres semánticos
 
 ---
 
@@ -104,7 +135,7 @@ import { Search } from 'lucide-react';
 
 ## NO usar
 
-- `name="ArrowRight"` string — pasar el componente directamente: `icon={ArrowRight}`
+- `name="ArrowRight"` string — pasar el componente directamente: `icon={ArrowRight}` o `icon={Icons.arrowRight}`
 - Otros icon libraries (D-83 canon BBF es Lucide)
 - Sizes fuera de las 5 variantes (si necesitas size custom, considera si justifica nuevo variant)
 - Icons sin `aria-label` ni `aria-hidden` (accesibilidad WCAG)
@@ -115,7 +146,8 @@ import { Search } from 'lucide-react';
 
 - `Icon.tsx` — Server Component + forwardRef
 - `Icon.variants.ts` — CVA size × color
-- `index.ts` — Barrel export
+- `registry.ts` — Icon registry canon (D-108) — `Icons` const + `IconCanon` type
+- `index.ts` — Barrel export (re-exporta Icon, iconVariants, Icons, IconCanon)
 
 ---
 
