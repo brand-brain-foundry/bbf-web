@@ -341,34 +341,84 @@ BBF como foundry:
 
 ---
 
-## 12. Hotfix M5-ADMIN-4 (Post-cierre formal)
+## 12. Hotfixes post-cierre formal (M5-ADMIN-4 + M5-ADMIN-5)
 
-**Hallazgo:** H-BBF-WEB-001 — Admin canon BBF NO se aplicaba visualmente
-post cierre formal saga M5 (4173940).
+### 12.1 H-BBF-WEB-001 (M5-ADMIN-4)
 
-**Causa raíz:** `custom.scss` usaba `@import './styles/admin.css'` que NO
-procesaba correctamente. Pattern canon Payload 2026 es override DIRECTO
-en `custom.scss`. Además: `globals.css` (tokens `--bbf-*`) NO se carga
-en ruta `/admin` — layouts son independientes por route group.
+**Hallazgo:** Admin canon BBF NO se aplicaba visualmente post cierre saga M5.
 
-**Resolución (M5-ADMIN-4 hotfix):**
+**Causa raíz:** `custom.scss` usaba `@import './styles/admin.css'` que NO procesaba correctamente. Además: `globals.css` (tokens `--bbf-*`) NO se carga en ruta `/admin` — layouts son independientes por route group.
+
+**Resolución parcial (M5-ADMIN-4):**
 - D-114 FIRMADA: `custom.scss` canon BBF (reemplaza D-112)
 - Mover canon `admin.css` → `custom.scss` directo con fallbacks OKLCH completos
-- Eliminar `admin.css` obsoleto + `styles/` folder
-- `(payload)/CLAUDE.md` actualizado con canal correcto y nota tokens
+- ⚠️ Override agresivo (~30 Payload variables) — causa H-BBF-WEB-002
 
-**Lecciones nuevas:**
-- L-BBF-113: Verificación visual obligatoria post-customization estética
-- L-BBF-109 EXPANDIDA: Auto-corrección §14 atrapa errores de tipos,
-  no siempre errores funcionales (CSS declarado vs efectivo)
+**Resultado:** Visual aplicado pero sistema Payload ROTO (H-BBF-WEB-002).
 
-**Research adicional:**
-- R-BBF-12: Payload 3 Admin CSS Customization REAL (community 2026)
-  Pattern canon: override directo en `custom.scss`
-  Hallazgo crítico: tokens frontend NO disponibles en admin context
+### 12.2 H-BBF-WEB-002 CRITICAL (M5-ADMIN-5)
 
-**Commit hotfix:** ver `fix(m5-admin-4)` en git log
-**Re-tag canon:** `bbf-web-m5-saga-complete-2026-05-18-v2`
+**Hallazgo:** Admin Payload visual sistema ROTO post M5-ADMIN-4.
+
+**Causa raíz doctrinal:**
+- Strategic asumió `canon BBF cross-surface = REEMPLAZAR sistema host`
+- Realidad doctrinal correcta = `COMPLEMENTAR brand identity sutil`
+- Override agresivo destruyó relationships internos Payload:
+  - 21 niveles elevation calibrados
+  - Text contrast hierarchy
+  - Input visual system
+  - Status colors auto-dark-mode
+  - Spacing relationships armónicas
+
+**Resolución definitiva (M5-ADMIN-5):**
+- D-BBF-WEB-115 FIRMADA: Admin canon BBF MINIMAL override pattern
+- D-115 REEMPLAZA D-114
+- `custom.scss` minimal: solo `--font-body` + `--font-serif` + `--font-mono`
+- Preserve TODOS los Payload defaults (sistema visual calibrado)
+- AdminLogo + AdminIcon components preserved (brand identity sutil)
+
+**Lecciones nuevas críticas:**
+- **L-BBF-115:** Cross-surface canon ≠ reemplazo sistema host
+  - Canon BBF complementa, NO reemplaza
+  - Aplicable cross-surface futuras (plugins, third-party admins)
+- L-BBF-113 reforzada: verificación visual obligatoria CRÍTICA
+- L-BBF-109 reforzada: research community necesario antes de doctrinal
+
+**Research nueva:**
+- **R-BBF-13:** Payload 3 Admin Brand Override REAL 2026
+  - Pattern community: "minimal changes" = 2-3 variables override
+  - Override agresivo NO canon Payload
+
+**Commits hotfix:**
+- M5-ADMIN-4: `e607356` (deprecated approach — visual roto)
+- M5-ADMIN-5: ver `fix(m5-admin-5)` en git log (CANON BBF correcto)
+
+**Tags canon BBF:**
+- `bbf-web-m5-saga-complete-2026-05-18` (v1 — deprecated)
+- `bbf-web-m5-saga-complete-2026-05-18-v2` (v2 — deprecated, override agresivo)
+- `bbf-web-m5-saga-complete-2026-05-18-v3` (**v3 — CANON DOCTRINAL**)
+
+### 12.3 Pattern canon BBF cross-surface DEFINITIVO (D-115)
+
+```
+Una fuente de verdad por elemento UI BBF:
+  Atoms / Molecules / Sections / Templates canon
+  (replicables y consumidos cross-surface)
+
+Brand identity sutil donde aplica:
+  Fonts canon BBF (Mulish + JetBrains Mono)
+  Logos canon (BBFLogo atom)
+  Opcional: 1-2 accent colors brand BBF
+
+Host system PRESERVED:
+  Payload admin: sistema visual calibrado intacto
+  Frontend BBF: sistema canon BBF nativo
+  Futuras superficies: respect host calibration
+
+PRINCIPIO INVIOLABLE:
+  Canon BBF NUNCA reemplaza sistema host calibrado.
+  Canon BBF aplica brand identity donde brand visible.
+```
 
 ---
 

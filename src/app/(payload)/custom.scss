@@ -1,140 +1,81 @@
 /**
- * BBF Design System — Payload Admin CSS Canon
+ * BBF Design System — Payload Admin CSS Canon (MINIMAL)
  *
- * Subordinado a: B-BBF-WEB-M5-ADMIN-4-HOTFIX
+ * Subordinado a: B-BBF-WEB-M5-ADMIN-5-MINIMAL
  * Decisiones: D-107 (Cross-surface), D-109 (Admin canon),
- *             D-110 (Surface 5 valores), D-111 (Status tokens),
- *             D-114 (custom.scss canon, reemplaza D-112)
+ *             D-115 (Minimal override pattern, reemplaza D-114)
  *
- * Mapping Payload CSS variables → BBF tokens canon.
- * Admin Payload es INSTANCE de canon BBF, NO sistema paralelo.
+ * PATTERN CANON BBF (D-115):
+ *   Admin Payload = Payload sistema visual PRESERVED
+ *                 + BBF brand identity SUTIL aplicada
+ *                 + NO reemplazo sistema host
  *
- * Pattern canon Payload 2026 (R-BBF-12):
- *   custom.scss es entry point canon Payload.
- *   Override directo aquí (NO @import a CSS externo).
+ * Investigación: R-BBF-13 (Payload 3 Admin Brand Override REAL 2026)
+ *   Pattern community: "minimal changes" = override solo 2-3 variables
+ *   Override agresivo destruye relationships internos Payload
  *
- * Auto-corrección §14:
- *   globals.css (--bbf-*) NO se carga en ruta /admin.
- *   Fallbacks OKLCH hardcoded para garantizar valores reales.
- *   sand-100 canon: oklch(0.97 0.01 67.52)
- *   black-900 canon: oklch(0.15 0.01 292.51)
+ * LECCIÓN HISTÓRICA (L-BBF-115):
+ *   M5-ADMIN-3 + M5-ADMIN-4 overridieron ~30 Payload variables
+ *   Resultado: sistema visual admin roto (H-BBF-WEB-002)
+ *   M5-ADMIN-5 forward-fix: minimal override pattern doctrinal
+ *
+ * VARIABLES OVERRIDDEN (mínimo brand identity):
+ *   ✓ --font-body  — Mulish canon BBF
+ *   ✓ --font-mono  — JetBrains Mono canon BBF
+ *
+ * VARIABLES PRESERVED (Payload sistema calibrado):
+ *   ✗ --theme-elevation-* (21 niveles calibrados)
+ *   ✗ --theme-text + --theme-text-faded (contrast hierarchy)
+ *   ✗ --theme-input-* (UX functional)
+ *   ✗ --theme-success/warning/error (auto dark mode)
+ *   ✗ --base + spacing system (relationships armónicas)
  */
 
 /* ==========================================================================
-   PAYLOAD CSS VARIABLES → BBF TOKENS CANON
+   BBF BRAND IDENTITY — FONTS CANON
    ========================================================================== */
 
 [data-theme="light"],
+[data-theme="dark"],
 :root {
-  /* === Elevation / Surfaces canon BBF (sand ramp → neutral ramp) === */
-  --theme-elevation-0:    var(--bbf-surface-sand, oklch(0.97 0.01 67.52));
-  --theme-elevation-50:   var(--bbf-surface-sand, oklch(0.97 0.01 67.52));
-  --theme-elevation-100:  var(--bbf-surface-sand, oklch(0.97 0.01 67.52));
-  --theme-elevation-150:  var(--bbf-surface-sand, oklch(0.97 0.01 67.52));
-  --theme-elevation-200:  var(--bbf-surface-sand, oklch(0.97 0.01 67.52));
-  --theme-elevation-250:  var(--bbf-surface-sand, oklch(0.97 0.01 67.52));
-  --theme-elevation-300:  oklch(0.85 0 0);
-  --theme-elevation-350:  oklch(0.78 0 0);
-  --theme-elevation-400:  oklch(0.70 0 0);
-  --theme-elevation-450:  oklch(0.60 0 0);
-  --theme-elevation-500:  oklch(0.50 0 0);
-  --theme-elevation-550:  oklch(0.40 0 0);
-  --theme-elevation-600:  oklch(0.32 0 0);
-  --theme-elevation-650:  oklch(0.25 0 0);
-  --theme-elevation-700:  oklch(0.20 0 0);
-  --theme-elevation-750:  oklch(0.16 0 0);
-  --theme-elevation-800:  oklch(0.12 0 0);
-  --theme-elevation-850:  oklch(0.08 0 0);
-  --theme-elevation-900:  oklch(0.05 0 0);
-  --theme-elevation-950:  oklch(0.03 0 0);
-  --theme-elevation-1000: oklch(0 0 0);
-
-  /* === Text canon BBF === */
-  --theme-text:       var(--bbf-text-on-light, oklch(0.15 0.01 292.51));
-  --theme-text-faded: var(--bbf-text-on-light-muted, oklch(0.55 0.01 292.51));
-
-  /* === Input canon BBF === */
-  --theme-input-bg:     var(--bbf-surface-sand, oklch(0.97 0.01 67.52));
-  --theme-input-border: oklch(0.85 0 0);
-
-  /* === Status canon BBF (D-111) === */
-  --theme-success-50:  var(--bbf-color-success-50,  oklch(0.97 0.025 145));
-  --theme-success-100: var(--bbf-color-success-100, oklch(0.93 0.05 145));
-  --theme-success-500: var(--bbf-color-success-500, oklch(0.62 0.16 145));
-  --theme-success-750: var(--bbf-color-success-700, oklch(0.45 0.14 145));
-  --theme-success-850: var(--bbf-color-success-900, oklch(0.30 0.10 145));
-
-  --theme-warning-50:  var(--bbf-color-warning-50,  oklch(0.97 0.025 80));
-  --theme-warning-100: var(--bbf-color-warning-100, oklch(0.94 0.05 80));
-  --theme-warning-500: var(--bbf-color-warning-500, oklch(0.72 0.16 80));
-  --theme-warning-750: var(--bbf-color-warning-700, oklch(0.55 0.14 80));
-  --theme-warning-850: var(--bbf-color-warning-900, oklch(0.38 0.10 80));
-
-  --theme-error-50:  var(--bbf-color-error-50,  oklch(0.97 0.02 25));
-  --theme-error-100: var(--bbf-color-error-100, oklch(0.93 0.05 25));
-  --theme-error-500: var(--bbf-color-error-500, oklch(0.58 0.22 25));
-  --theme-error-750: var(--bbf-color-error-700, oklch(0.45 0.18 25));
-  --theme-error-850: var(--bbf-color-error-900, oklch(0.32 0.13 25));
-
-  --theme-info-50:  var(--bbf-color-info-50,  oklch(0.97 0.02 240));
-  --theme-info-100: var(--bbf-color-info-100, oklch(0.93 0.04 240));
-  --theme-info-500: var(--bbf-color-info-500, oklch(0.62 0.15 240));
-  --theme-info-750: var(--bbf-color-info-700, oklch(0.48 0.13 240));
-  --theme-info-850: var(--bbf-color-info-900, oklch(0.32 0.10 240));
-
-  /* === Typography canon BBF === */
-  --font-body:  var(--bbf-font-body, 'Mulish', 'Inter', system-ui, sans-serif);
-  --font-serif: var(--bbf-font-body, 'Mulish', 'Inter', system-ui, sans-serif);
-  --font-mono:  var(--bbf-font-code, 'JetBrains Mono', ui-monospace, monospace);
-
-  /* === Spacing canon BBF (8pt grid) === */
-  --base:           var(--bbf-space-2, 0.5rem);
-  --theme-baseline: var(--bbf-space-2, 0.5rem);
+  /* Override Payload fonts con stack canon BBF */
+  --font-body:  'Mulish', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Mulish', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:  'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
 /* ==========================================================================
-   ADMIN UI REFINEMENTS CANON BBF
+   ADMIN UI BRAND APPLICATION (BBF fonts)
    ========================================================================== */
 
-/* === Font canon BBF en todo admin === */
 body,
 input,
-button,
 textarea,
 select,
+button,
 .payload__app {
-  font-family: var(--bbf-font-body, 'Mulish', 'Inter', system-ui, sans-serif);
+  font-family: var(--font-body);
 }
 
-/* === Headings canon BBF === */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--bbf-font-body, 'Mulish', 'Inter', system-ui, sans-serif);
-  font-weight: var(--bbf-weight-bold, 700);
-  letter-spacing: var(--bbf-tracking-heading, -0.02em);
+/* Code blocks + monospace contexts canon BBF */
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono);
 }
 
-/* === Logo containers canon === */
+/* ==========================================================================
+   ADMIN LOGO + ICON CONTAINERS (custom components BBF)
+   ========================================================================== */
+
 [data-component="bbf-admin-logo"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: var(--bbf-space-4, 1rem);
 }
 
 [data-component="bbf-admin-icon"] {
   display: flex;
   align-items: center;
-}
-
-/* === Smooth transitions canon BBF === */
-button,
-a,
-input,
-.btn {
-  transition: var(
-    --bbf-transition-color,
-    color 200ms ease,
-    background-color 200ms ease,
-    border-color 200ms ease
-  );
 }
