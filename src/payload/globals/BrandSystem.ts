@@ -18,7 +18,7 @@ export const BrandSystem: GlobalConfig = {
       name: 'typography',
       type: 'group',
       fields: [
-        { name: 'displayFamily', type: 'text', defaultValue: 'Outfit' },
+        { name: 'displayFamily', type: 'text', defaultValue: 'Inter' },
         { name: 'bodyFamily', type: 'text', defaultValue: 'Mulish' },
       ],
     },

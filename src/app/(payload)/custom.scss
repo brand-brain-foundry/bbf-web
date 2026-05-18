@@ -1,4 +1,4 @@
-/* Custom admin styles for BBF Payload admin UI */
-/* Add brand-specific overrides here if needed */
+/* BBF Admin — entry point de estilos Payload admin */
+/* D-112: admin.css es el canal canon de overrides BBF → Payload */
 
-/* Por ahora vacío — usar defaults Payload */
+@import './styles/admin.css';

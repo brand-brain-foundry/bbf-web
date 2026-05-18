@@ -82,4 +82,40 @@
      UTILITIES
      ============================================================ */
   --bbf-color-white: oklch(1 0 0); /* puro, uso restringido como highlight sobre sand */
+
+  /* ========================================================================
+     STATUS COLORS PRIMITIVES (D-111 — Calibrados WCAG AA, R-BBF-11)
+
+     4 colors × 5 shades = 20 primitives OKLCH
+     Hues canon: success 145, warning 80, error 25, info 240
+     Calibración para fondos sand BBF + accessibility AA contrast
+     ======================================================================== */
+
+  /* === SUCCESS (green canon balanceado, NO neón) === */
+  --bbf-color-success-50: oklch(0.97 0.025 145); /* fondo muy claro */
+  --bbf-color-success-100: oklch(0.93 0.05 145); /* fondo claro */
+  --bbf-color-success-500: oklch(0.62 0.16 145); /* base canon */
+  --bbf-color-success-700: oklch(0.45 0.14 145); /* dark variant */
+  --bbf-color-success-900: oklch(0.3 0.1 145); /* darkest */
+
+  /* === WARNING (ámbar dorado complementa sand BBF) === */
+  --bbf-color-warning-50: oklch(0.97 0.025 80);
+  --bbf-color-warning-100: oklch(0.94 0.05 80);
+  --bbf-color-warning-500: oklch(0.72 0.16 80); /* base canon */
+  --bbf-color-warning-700: oklch(0.55 0.14 80);
+  --bbf-color-warning-900: oklch(0.38 0.1 80);
+
+  /* === ERROR (rojo cálido, no agresivo) === */
+  --bbf-color-error-50: oklch(0.97 0.02 25);
+  --bbf-color-error-100: oklch(0.93 0.05 25);
+  --bbf-color-error-500: oklch(0.58 0.22 25); /* base canon */
+  --bbf-color-error-700: oklch(0.45 0.18 25);
+  --bbf-color-error-900: oklch(0.32 0.13 25);
+
+  /* === INFO (azul moderado profesional) === */
+  --bbf-color-info-50: oklch(0.97 0.02 240);
+  --bbf-color-info-100: oklch(0.93 0.04 240);
+  --bbf-color-info-500: oklch(0.62 0.15 240); /* base canon */
+  --bbf-color-info-700: oklch(0.48 0.13 240);
+  --bbf-color-info-900: oklch(0.32 0.1 240);
 }

@@ -33,6 +33,12 @@ export default buildConfig({
     meta: {
       titleSuffix: ' — BBF Admin',
     },
+    components: {
+      graphics: {
+        Logo: '@/app/(payload)/components/AdminLogo',
+        Icon: '@/app/(payload)/components/AdminIcon',
+      },
+    },
   },
 
   collections: [

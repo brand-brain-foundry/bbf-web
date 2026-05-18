@@ -108,4 +108,28 @@
   --bbf-color-brand: var(--bbf-accent-blue);
   --bbf-color-brand-hover: var(--bbf-accent-blue-hover);
   --bbf-color-brand-subtle: var(--bbf-color-blue-50);
+
+  /* ========================================================================
+     STATUS SEMANTIC ALIASES (D-111)
+
+     Aliases canon BBF para uso semántico cross-surface (admin + frontend)
+     ======================================================================== */
+
+  /* === Color base aliases === */
+  --bbf-color-success: var(--bbf-color-success-500);
+  --bbf-color-warning: var(--bbf-color-warning-500);
+  --bbf-color-error: var(--bbf-color-error-500);
+  --bbf-color-info: var(--bbf-color-info-500);
+
+  /* === Subtle backgrounds (alerts/banners/admin status indicators) === */
+  --bbf-surface-success-subtle: var(--bbf-color-success-50);
+  --bbf-surface-warning-subtle: var(--bbf-color-warning-50);
+  --bbf-surface-error-subtle: var(--bbf-color-error-50);
+  --bbf-surface-info-subtle: var(--bbf-color-info-50);
+
+  /* === Text on subtle backgrounds === */
+  --bbf-text-success: var(--bbf-color-success-700);
+  --bbf-text-warning: var(--bbf-color-warning-700);
+  --bbf-text-error: var(--bbf-color-error-700);
+  --bbf-text-info: var(--bbf-color-info-700);
 }
