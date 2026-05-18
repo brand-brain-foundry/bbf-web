@@ -187,18 +187,51 @@ Evitar:   text-[var(--bbf-text-*)]          → color: var(...) (bug v4)
 Razón:    Tailwind v4 sin type hint defaultea a color.
 ```
 
-### 5.6 Cross-surface (D-107)
+### 5.6 Cross-surface (D-107 + D-110)
 
-```
 Una fuente de verdad por elemento UI cross-surface.
-Propagación via data-surface attribute (NO prop drilling).
+Propagación via `data-surface` attribute (NO prop drilling).
 SurfaceContext solo para override programático JS (raro).
 
-Token map:
-  surface="auto"        → --bbf-text-on-light + --bbf-color-bg-base
-  surface="dark"        → --bbf-text-on-dark + --bbf-surface-black
-  surface="sand"        → --bbf-text-on-light + --bbf-surface-sand
-  surface="transparent" → hereda del padre
+**Surface canon 5 valores (D-94 + D-110):**
+
+```
+surface="auto"        → defaultea según context (resolved → algún valor)
+                        --bbf-text-on-light + --bbf-color-bg-base
+
+surface="dark"        → fondos oscuros (hero, modals)
+                        --bbf-text-on-dark + --bbf-surface-black
+
+surface="sand"        → fondos claros canon BBF
+                        --bbf-text-on-light + --bbf-surface-sand
+
+surface="glass"       → superficies translúcidas (backdrop blur)
+                        glass effect + heredado context
+
+surface="transparent" → child preserve parent surface (explícito)
+                        sin tokens propios, hereda 100%
+```
+
+**Diferencia canon: auto vs transparent**
+
+```
+auto:        "no tengo opinión, default razonable según context"
+             → resolved a un valor concreto (token específico)
+
+transparent: "explícitamente preserve lo que viene del padre"
+             → NO tokens propios, pure pass-through
+```
+
+**Pattern uso composition cross-surface:**
+
+```tsx
+<HeroSection surface="dark">
+  <CardWrapper surface="transparent"> {/* hereda dark explícito */}
+    <Card surface="auto"> {/* resuelve a default canon */}
+      ...
+    </Card>
+  </CardWrapper>
+</HeroSection>
 ```
 
 ### 5.7 Icon registry canon (D-108)

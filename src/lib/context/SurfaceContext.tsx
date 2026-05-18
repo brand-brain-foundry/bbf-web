@@ -2,18 +2,24 @@
  * BBF Design System — Surface Context (programmatic override)
  *
  * Subordinado a: BBF_M5_D_Plan.md §2
- * Decisiones: D-BBF-WEB-77 (surface-aware), D-94 RATIFICADA (M5-D6)
+ * Decisiones: D-BBF-WEB-77 (surface-aware), D-94 RATIFICADA (M5-D6),
+ *             D-110 RATIFICADA (M5-ADMIN-2)
  *
- * D-94 RATIFICADA: Surface type canon BBF — 4 valores canónicos:
- *   - auto:  contexto heredado (default)
- *   - dark:  fondos oscuros (hero principal, secciones inversas)
- *   - sand:  fondos claros canon (superficie principal BBF)
- *   - glass: superficies translúcidas (backdrop blur, LocaleSwitcher)
+ * D-94 + D-110 RATIFICADAS: Surface type canon BBF — 5 valores:
+ *   - auto:        default según context heredado (resolved → algún valor)
+ *   - dark:        fondos oscuros (hero principal, secciones inversas)
+ *   - sand:        fondos claros canon (superficie principal BBF)
+ *   - glass:       superficies translúcidas (backdrop blur, LocaleSwitcher)
+ *   - transparent: child preserve parent surface (composition cross-surface)
  *
- * Valores 'sand-elevated' y 'dark-elevated' ELIMINADOS (M5-D6):
- * eran CSS variable names que se filtraron al type — no son valores
- * de surface context (sus tokens CSS --bbf-surface-sand-elevated
- * permanecen en semantic/colors.css).
+ * D-110 NUEVA (M5-ADMIN-2): 'transparent' agregado.
+ * Diferencia semántica vs 'auto':
+ *   - auto:        "no tengo opinión, default razonable según context"
+ *                  → resolved a un valor concreto con tokens propios
+ *   - transparent: "explícitamente preserve lo que viene del padre"
+ *                  → sin tokens propios, pure pass-through
+ *
+ * Valores 'sand-elevated' y 'dark-elevated' ELIMINADOS (M5-D6).
  *
  * NOTA: el patrón CANON BBF es data-surface attribute en HTML.
  * Este Context es OPCIONAL — solo cuando se requiere override programático
@@ -21,9 +27,6 @@
  *
  * Para uso normal, declarar surface vía data-attribute:
  *   <section data-surface="dark">...</section>
- *
- * Para override programático:
- *   <SurfaceProvider surface="dark">...</SurfaceProvider>
  *
  * D-97 NUEVA (M5-D6): Surface flow ÚNICAMENTE via SurfaceContext.
  * DOM traversal por ref descartado — incompatible con React 19 + RSC.
@@ -33,7 +36,25 @@
 
 import { createContext, useContext, type ReactNode } from 'react';
 
-export type Surface = 'auto' | 'dark' | 'sand' | 'glass';
+/**
+ * BBF Design System — Surface canon 5 valores (D-94 + D-110)
+ *
+ * Subordinado a: D-94 (ratificada M5-D6), D-110 (ratificada M5-ADMIN-2)
+ *
+ * 5 valores canon BBF:
+ *   - auto:        default según context heredado
+ *   - dark:        fondos oscuros (hero principal, modals dark)
+ *   - sand:        fondos claros canon BBF (default página)
+ *   - glass:       superficies translúcidas (backdrop blur)
+ *   - transparent: child preserve parent surface (composition cross-surface)
+ *
+ * D-110 NUEVA (M5-ADMIN-2):
+ *   'transparent' agregado para composition cross-surface explícita.
+ *   Diferencia semántica vs 'auto':
+ *     - auto: defaultea según context (resolved → algún valor)
+ *     - transparent: explícitamente preserve parent surface
+ */
+export type Surface = 'auto' | 'dark' | 'sand' | 'glass' | 'transparent';
 
 const SurfaceContext = createContext<Surface | undefined>(undefined);
 

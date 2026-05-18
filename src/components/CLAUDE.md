@@ -202,6 +202,25 @@ Permite a AI agentes identificar componentes BBF por HTML inspection.
 
 ---
 
+## Surface canon (D-94 + D-110)
+
+Sistema canon BBF de 5 surfaces para composition cross-surface:
+
+```
+auto         default según context heredado (resuelve a valor concreto)
+dark         fondos oscuros (hero, secciones inversas, modals)
+sand         fondos claros canon BBF
+glass        translúcidas backdrop blur (LocaleSwitcher)
+transparent  child preserve parent surface (composition explícita)
+```
+
+**Pattern canon:** propagación via `data-surface` attribute en HTML.
+**SurfaceContext:** solo override programático JS (raro).
+
+Ver `lib/CLAUDE.md` §Surface canon + `BBF_DESIGN.md` §5.6.
+
+---
+
 ## Decisiones aplicables
 
 - **D-82** AI-readable canon (data-component)
@@ -214,7 +233,9 @@ Permite a AI agentes identificar componentes BBF por HTML inspection.
 - **D-96** CSSProperties import directo canon
 - **D-99** Server + Client split canon
 - **D-106** Templates Tier 4 canon
+- **D-107** Cross-surface fuente de verdad única
 - **D-108** Icon registry centralizado
+- **D-110** Surface canon 5 valores (auto/dark/sand/glass/transparent)
 
 ---
 
