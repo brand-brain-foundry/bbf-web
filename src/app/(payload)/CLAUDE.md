@@ -40,27 +40,51 @@ Los siguientes archivos son generados por Payload y se sobreescriben en cada `pa
 
 ## Customización admin canon
 
-### 1. custom.scss — CSS overrides
+### 1. graphics.Logo + graphics.Icon (D-109)
 
-Archivo `custom.scss` importado en `layout.tsx`. Aquí van overrides de CSS variables de Payload.
+React Components canon BBF registrados en `src/payload.config.ts`:
 
-Payload Admin usa CSS variables que pueden ser sobreescritas:
-
-```scss
-// custom.scss — BBF admin brand overrides
-:root {
-  // Color brand
-  --color-base-1250: oklch(0.1 0 0);    // fondo oscuro admin
-  --color-base-0: oklch(0.98 0 0);      // texto sobre oscuro
-
-  // Accent BBF canon
-  --color-success-500: oklch(0.6 0.2 25); // rojo BBF como accent (si aplica)
+```ts
+admin: {
+  components: {
+    graphics: {
+      Logo: '@/app/(payload)/components/AdminLogo',
+      Icon: '@/app/(payload)/components/AdminIcon',
+    },
+  },
 }
 ```
 
-**Regla D-107:** Los overrides de `custom.scss` son **cosméticos únicamente**. NO afectan lógica Payload.
+Components en `src/app/(payload)/components/`:
+- `AdminLogo/` — BBFLogo variant `horizontal` size `md` (login page)
+- `AdminIcon/` — BBFLogo variant `stamp` size `sm` (nav icon)
 
-### 2. payload.config.ts — admin config
+Reusan BBFLogo atom canon (D-107 cross-surface). NO sistema design paralelo.
+
+### 2. custom.scss canon BBF (D-114 — reemplaza D-112)
+
+Override directo en `src/app/(payload)/custom.scss`. Importado por `layout.tsx`.
+
+```scss
+[data-theme="light"], :root {
+  --theme-elevation-0: var(--bbf-surface-sand, oklch(0.97 0.01 67.52));
+  --theme-text: var(--bbf-text-on-light, oklch(0.15 0.01 292.51));
+  --font-body: var(--bbf-font-body, 'Mulish', 'Inter', system-ui, sans-serif);
+  /* ... mapping completo con fallbacks OKLCH */
+}
+```
+
+**IMPORTANTE — contexto tokens:** `globals.css` (con `--bbf-*` tokens) NO se carga
+en ruta `/admin`. El layout admin es independiente del frontend. Todo `var(--bbf-*)`
+en custom.scss DEBE tener fallback OKLCH hardcoded.
+
+**NOTA HISTÓRICA D-114 (M5-ADMIN-4 hotfix):**
+- D-112 propuso `admin.css` separado con `@import` desde `custom.scss`
+- `@import` NO cargaba correctamente (H-BBF-WEB-001)
+- D-114 ratifica: `custom.scss` es fuente única canon
+- Pattern aligned con Payload community 2026 (R-BBF-12)
+
+### 3. payload.config.ts — admin config
 
 La customización estructural del admin va en `src/payload.config.ts`, sección `admin`:
 
@@ -68,35 +92,18 @@ La customización estructural del admin va en `src/payload.config.ts`, sección 
 admin: {
   user: Users.slug,
   importMap: { baseDir: path.resolve(dirname) },
-  meta: {
-    titleSuffix: '— BBF Admin',
-    favicon: '/favicon.ico',
-    ogImage: '/og-image.png',
-  },
-  // graphics: opcional — logo personalizado en login/nav
-  // components: { beforeNavLinks: [...], afterNavLinks: [...] }
-}
-```
-
-### 3. Custom graphics (futuro — TD pendiente)
-
-Payload permite reemplazar:
-- Logo en sidebar nav
-- Logo en login screen
-
-Pattern canon (cuando se implemente):
-
-```ts
-// payload.config.ts
-admin: {
-  graphics: {
-    Logo: '/src/components/admin/AdminLogo',      // Sidebar logo
-    Icon: '/src/components/admin/AdminIcon',       // Small icon
+  meta: { titleSuffix: '— BBF Admin' },
+  components: {
+    graphics: {
+      Logo: '@/app/(payload)/components/AdminLogo',
+      Icon: '@/app/(payload)/components/AdminIcon',
+    },
   },
 }
 ```
 
-**Estado actual:** TD pendiente — implementar con BBFLogo canon en M6+.
+**Nota:** Payload 3.84.1 NO soporta propiedad `css:` en admin config.
+Canal correcto: `custom.scss` importado en `layout.tsx`.
 
 ---
 
@@ -151,6 +158,8 @@ access: {
 - **D-82** AI-readable canon (aplica también a admin custom components)
 - **D-99** Server + Client split (custom admin components pueden requerir Client)
 - **D-107** Cross-surface fuente de verdad (overrides admin en custom.scss)
+- **D-109** Admin canon BBF (AdminLogo + AdminIcon reusan BBFLogo atom)
+- **D-114** custom.scss canon BBF (reemplaza D-112, override directo)
 
 ---
 

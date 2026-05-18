@@ -341,4 +341,35 @@ BBF como foundry:
 
 ---
 
+## 12. Hotfix M5-ADMIN-4 (Post-cierre formal)
+
+**Hallazgo:** H-BBF-WEB-001 — Admin canon BBF NO se aplicaba visualmente
+post cierre formal saga M5 (4173940).
+
+**Causa raíz:** `custom.scss` usaba `@import './styles/admin.css'` que NO
+procesaba correctamente. Pattern canon Payload 2026 es override DIRECTO
+en `custom.scss`. Además: `globals.css` (tokens `--bbf-*`) NO se carga
+en ruta `/admin` — layouts son independientes por route group.
+
+**Resolución (M5-ADMIN-4 hotfix):**
+- D-114 FIRMADA: `custom.scss` canon BBF (reemplaza D-112)
+- Mover canon `admin.css` → `custom.scss` directo con fallbacks OKLCH completos
+- Eliminar `admin.css` obsoleto + `styles/` folder
+- `(payload)/CLAUDE.md` actualizado con canal correcto y nota tokens
+
+**Lecciones nuevas:**
+- L-BBF-113: Verificación visual obligatoria post-customization estética
+- L-BBF-109 EXPANDIDA: Auto-corrección §14 atrapa errores de tipos,
+  no siempre errores funcionales (CSS declarado vs efectivo)
+
+**Research adicional:**
+- R-BBF-12: Payload 3 Admin CSS Customization REAL (community 2026)
+  Pattern canon: override directo en `custom.scss`
+  Hallazgo crítico: tokens frontend NO disponibles en admin context
+
+**Commit hotfix:** ver `fix(m5-admin-4)` en git log
+**Re-tag canon:** `bbf-web-m5-saga-complete-2026-05-18-v2`
+
+---
+
 **Saga M5 cerrada. M6+ comienza con foundation canon BBF establecida.**
