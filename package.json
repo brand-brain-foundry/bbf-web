@@ -23,7 +23,8 @@
     "migrate:create": "payload migrate:create",
     "migrate:status": "payload migrate:status",
     "assets:favicons": "node scripts/assets/generate-favicons.mjs",
-    "assets:favicons:dry": "node scripts/assets/generate-favicons.mjs --dry-run"
+    "assets:favicons:dry": "node scripts/assets/generate-favicons.mjs --dry-run",
+    "seed:cornerstones": "tsx src/scripts/seed-cornerstones.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.84.1",
