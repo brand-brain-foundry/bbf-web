@@ -43,12 +43,32 @@
   background-position: 100% 50%;
 }
 
+/* Fallback utility for Button primary intent (Tailwind v4 arbitrary property compat) */
+.bbf-btn-gradient-primary {
+  background: var(--bbf-gradient-red);
+  background-size: 200% 200%;
+  background-position: 0% 50%;
+  transition:
+    background-position 600ms cubic-bezier(0.32, 0.72, 0, 1),
+    transform 200ms ease-out,
+    box-shadow 200ms ease-out;
+}
+
+.bbf-btn-gradient-primary:hover {
+  background-position: 100% 50%;
+}
+
+.bbf-btn-gradient-primary:active {
+  background-position: 50% 50%;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bbf-gradient-red-animated {
     animation: none;
   }
 
-  .bbf-gradient-red-hover {
+  .bbf-gradient-red-hover,
+  .bbf-btn-gradient-primary {
     transition: none;
   }
 }

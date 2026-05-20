@@ -105,15 +105,13 @@
 .bbf-cta-pill {
   transition:
     transform var(--bbf-motion-cta-duration) var(--bbf-motion-cta-easing),
-    box-shadow var(--bbf-motion-cta-duration) var(--bbf-motion-cta-easing),
-    background-color var(--bbf-motion-cta-duration) var(--bbf-motion-cta-easing);
+    box-shadow var(--bbf-motion-cta-duration) var(--bbf-motion-cta-easing);
   will-change: transform;
 }
 
 .bbf-cta-pill:hover {
   transform: scale(var(--bbf-cta-hover-scale));
   box-shadow: var(--bbf-cta-hover-shadow);
-  background-color: var(--bbf-surface-black-elevated);
 }
 
 .bbf-cta-pill .bbf-cta-arrow {

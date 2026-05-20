@@ -17,6 +17,8 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
@@ -27,6 +29,7 @@ body {
   color: var(--bbf-color-text-primary);
   background-color: var(--bbf-color-bg-base);
   margin: 0;
+  overflow-x: hidden;
 }
 
 /* Headings: tipografía de display automática (patrón Sivar Brains) */

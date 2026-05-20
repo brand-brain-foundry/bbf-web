@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useLocale } from 'next-intl';
 import { subscribeNewsletter } from '@/lib/actions/newsletter';
+import { Button } from '@/components/atoms/Button';
 import { cn } from '@/lib/utils';
 
 type NewsletterCopy = {
@@ -116,24 +117,15 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
               'disabled:cursor-not-allowed disabled:opacity-60',
             )}
           />
-          <button
+          <Button
             type="submit"
+            intent="primary"
+            size="md"
             disabled={state.kind === 'submitting'}
-            className={cn(
-              'inline-flex h-11 items-center justify-center gap-2 rounded-full px-6',
-              'text-[length:var(--bbf-text-sm)] font-[var(--bbf-weight-semibold)]',
-              'text-[var(--bbf-text-on-gradient-red)]',
-              '[background-size:200%_200%] [background-position:0%_50%] [background:var(--bbf-gradient-red)]',
-              'shadow-sm',
-              'transition-all duration-200 ease-out',
-              'hover:-translate-y-px hover:[background-position:100%_50%] hover:shadow-md',
-              'active:scale-[0.97]',
-              'focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:outline-none',
-              'disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0',
-            )}
+            className="shrink-0"
           >
             {state.kind === 'submitting' ? copy.submittingLabel : copy.submitLabel}
-          </button>
+          </Button>
         </div>
 
         <p className="text-[length:var(--bbf-text-xs)] text-[var(--bbf-text-on-sand-subtle)]">
