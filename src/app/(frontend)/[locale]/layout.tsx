@@ -5,6 +5,7 @@ import { Inter, Mulish } from 'next/font/google';
 import { routing } from '@/i18n/routing';
 import { Header } from '@/components/organisms/Header';
 import { Footer } from '@/components/organisms/Footer';
+import { SkipLink } from '@/components/atoms/SkipLink';
 import type { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
 
@@ -183,8 +184,9 @@ export default async function LocaleLayout({
     <html lang={locale} className={`${inter.variable} ${mulish.variable}`}>
       <body>
         <NextIntlClientProvider messages={messages} locale={locale}>
+          <SkipLink />
           <Header />
-          <main>{children}</main>
+          <main id="main-content">{children}</main>
           <Footer />
         </NextIntlClientProvider>
         <script

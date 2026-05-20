@@ -45,10 +45,10 @@ export default async function ContactoPage({ params }: Props) {
   setRequestLocale(locale);
 
   return (
-    <main className="py-16 md:py-24">
+    <div className="py-16 md:py-24">
       <Container size="prose">
         <ContactForm locale={locale} />
       </Container>
-    </main>
+    </div>
   );
 }
