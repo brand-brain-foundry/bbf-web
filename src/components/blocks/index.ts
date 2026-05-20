@@ -1,3 +1,5 @@
+export { BlockRenderer } from './BlockRenderer';
+export { RichTextRenderer } from './RichTextRenderer';
 export { CalloutBlock } from './Callout';
 export { QuoteBlock } from './Quote';
 export { DividerBlock } from './Divider';

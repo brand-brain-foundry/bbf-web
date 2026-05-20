@@ -49,6 +49,8 @@
 @import '../styles/tokens/components/button.css';
 @import '../styles/tokens/components/hero-section.css';
 
+@import '../styles/tokens/components/prose.css';
+
 /* === UTILITIES === */
 @import '../styles/utilities/animations.css';
 @import '../styles/utilities/motion-patterns.css';
