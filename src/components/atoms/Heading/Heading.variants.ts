@@ -2,11 +2,11 @@
  * BBF Design System — Heading atom variants
  *
  * Subordinado a: BBF_M5_D_Plan.md §2
- * Decisión: D-BBF-WEB-82 (AI-readable)
+ * Decisiones: D-BBF-WEB-82 (AI-readable), D-BBF-KB-105 (golden ratio scale)
  *
  * TD-M5-D4-CRIT-01 fix: text-[var(--token)] → [font-size:var(--token)]
- * Tailwind v4 arbitrary value text-[var()] sin type hint defaultea a color:.
- * L-BBF-92: usar arbitrary property explícita [font-size:var(--token)].
+ * L-BBF-92: Tailwind v4 arbitrary value text-[var()] defaultea a color:.
+ * Usar siempre [font-size:var(--token)] para font-size tokens.
  */
 
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -20,15 +20,45 @@ export const headingVariants = cva(
   {
     variants: {
       level: {
+        // === Golden ratio scale (D-BBF-KB-105) ===
+        'display-1': [
+          '[font-size:var(--bbf-text-display-1)]',
+          'leading-[var(--bbf-leading-tight)]',
+          'tracking-[var(--bbf-tracking-tighter)]',
+          'font-[var(--bbf-weight-semibold)]',
+        ].join(' '),
+        'display-2': [
+          '[font-size:var(--bbf-text-display-2)]',
+          'leading-[var(--bbf-leading-tight)]',
+          'tracking-[var(--bbf-tracking-tighter)]',
+          'font-[var(--bbf-weight-semibold)]',
+        ].join(' '),
+        h1: [
+          '[font-size:var(--bbf-text-h1)]',
+          'leading-[var(--bbf-leading-snug)]',
+          'tracking-[var(--bbf-tracking-tight)]',
+          'font-[var(--bbf-weight-bold)]',
+        ].join(' '),
+        h2: [
+          '[font-size:var(--bbf-text-h2)]',
+          'leading-[var(--bbf-leading-snug)]',
+          'tracking-[var(--bbf-tracking-tight)]',
+          'font-[var(--bbf-weight-bold)]',
+        ].join(' '),
+        h3: [
+          '[font-size:var(--bbf-text-lg)]',
+          'leading-[var(--bbf-leading-snug)]',
+          'tracking-[var(--bbf-tracking-tight)]',
+          'font-[var(--bbf-weight-semibold)]',
+        ].join(' '),
+        h4: '[font-size:var(--bbf-text-base)] leading-[var(--bbf-leading-snug)]',
+        h5: '[font-size:var(--bbf-text-sm)] leading-[var(--bbf-leading-snug)]',
+        h6: '[font-size:var(--bbf-text-xs)] leading-[var(--bbf-leading-snug)]',
+
+        // === Legacy fluid scale (Major Third — compatibilidad) ===
         'display-xl': '[font-size:var(--bbf-text-display-xl)]',
         'display-lg': '[font-size:var(--bbf-text-display-lg)]',
         'display-md': '[font-size:var(--bbf-text-display-md)]',
-        h1: '[font-size:var(--bbf-text-h1)] leading-[var(--bbf-leading-heading)] tracking-[var(--bbf-tracking-heading)]',
-        h2: '[font-size:var(--bbf-text-h2)] leading-[var(--bbf-leading-heading)] tracking-[var(--bbf-tracking-heading)]',
-        h3: '[font-size:var(--bbf-text-h3)] leading-[var(--bbf-leading-heading)] tracking-[var(--bbf-tracking-heading)]',
-        h4: '[font-size:var(--bbf-text-h4)] leading-[var(--bbf-leading-heading)]',
-        h5: '[font-size:var(--bbf-text-h5)] leading-[var(--bbf-leading-heading)]',
-        h6: '[font-size:var(--bbf-text-h6)] leading-[var(--bbf-leading-heading)]',
       },
       weight: {
         regular: 'font-[var(--bbf-weight-regular)]',
@@ -38,6 +68,14 @@ export const headingVariants = cva(
         extrabold: 'font-[var(--bbf-weight-extrabold)]',
         black: 'font-[var(--bbf-weight-black)]',
       },
+      // tone: semántico Wave 5 (D-BBF-KB-104)
+      tone: {
+        default: 'text-[var(--bbf-text-on-sand)]',
+        muted: 'text-[var(--bbf-text-on-sand-muted)]',
+        accent: 'text-[var(--bbf-accent-red)]',
+        'on-black': 'text-[var(--bbf-text-on-black)]',
+      },
+      // color: legacy alias (mantener compat)
       color: {
         primary: 'text-[var(--bbf-text-on-light)]',
         secondary: 'text-[var(--bbf-text-on-light-secondary)]',

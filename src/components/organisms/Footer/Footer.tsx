@@ -9,13 +9,19 @@ type FooterProps = {
   className?: string;
 };
 
+/**
+ * BBF Footer — tokens Wave 5 (D-BBF-KB-104..108)
+ * 3 columnas: Identity / Navigation / Newsletter
+ * Links con flecha animada (matching MobileMenu canon)
+ * Typography golden ratio, spacing áureo
+ */
 export async function Footer({ className }: FooterProps) {
   const locale = await getLocale();
-  const localeKey = locale === 'en' ? 'en' : 'es';
+  const localeKey = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
+  const localePrefix = localeKey === 'en' ? '/en' : '';
   const t = await getTranslations('footer');
 
   const payload = await getPayload({ config });
-
   const [identity, navigation, newsletter] = await Promise.all([
     payload.findGlobal({ slug: 'site-identity', locale: localeKey }),
     payload.findGlobal({ slug: 'site-navigation', locale: localeKey }),
@@ -32,45 +38,63 @@ export async function Footer({ className }: FooterProps) {
     <footer
       data-component="bbf-footer"
       className={cn(
-        'mt-24 border-t border-[var(--bbf-border-on-light)]',
+        'mt-24 lg:mt-32',
         'bg-[var(--bbf-surface-sand)]',
+        'border-t border-[var(--bbf-border-on-sand)]',
         className,
       )}
     >
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3">
-          {/* Brand identity */}
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="mb-10 grid grid-cols-1 gap-10 md:grid-cols-3 lg:mb-12 lg:gap-12">
+          {/* Column 1: Brand Identity */}
           <div className="space-y-3">
-            <div className="text-lg font-bold text-[var(--bbf-text-on-light)]">{siteName}</div>
+            <p className="text-[length:var(--bbf-text-h2)] leading-[var(--bbf-leading-snug)] font-[var(--bbf-font-display)] font-[var(--bbf-weight-bold)] tracking-[var(--bbf-tracking-tight)] text-[var(--bbf-text-on-sand)]">
+              {siteName}
+            </p>
             {tagline && (
-              <p className="text-sm font-medium text-[var(--bbf-text-on-light)]">{tagline}</p>
+              <p className="text-[length:var(--bbf-text-base)] leading-[var(--bbf-leading-base)] font-[var(--bbf-weight-medium)] text-[var(--bbf-text-on-sand)]">
+                {tagline}
+              </p>
             )}
             {shortDescription && (
-              <p className="max-w-xs text-sm text-[var(--bbf-text-on-light)]/70">
+              <p className="max-w-xs text-[length:var(--bbf-text-sm)] leading-[var(--bbf-leading-snug-small)] text-[var(--bbf-text-on-sand-muted)]">
                 {shortDescription}
               </p>
             )}
           </div>
 
-          {/* Footer navigation */}
+          {/* Column 2: Navigation */}
           {footerLinks.length > 0 && (
-            <nav aria-label="Footer navigation" className="flex flex-col gap-2">
-              {footerLinks.map((link, idx) => {
-                const href = localeKey === 'en' ? `/en${link.href}` : link.href;
-                return (
-                  <Link
-                    key={`${link.href}-${idx}`}
-                    href={href}
-                    className="text-sm text-[var(--bbf-text-on-light)] transition-opacity duration-150 ease-out hover:opacity-70 focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-100 focus-visible:outline-none active:opacity-50"
+            <nav className="flex flex-col gap-2.5" aria-label="Footer navigation">
+              <p className="mb-1 text-[length:var(--bbf-text-sm)] font-[var(--bbf-font-display)] font-[var(--bbf-weight-semibold)] tracking-[var(--bbf-tracking-wider)] text-[var(--bbf-text-on-sand-muted)] uppercase">
+                {t('navTitle')}
+              </p>
+              {footerLinks.map((link, idx) => (
+                <Link
+                  key={`${link.href}-${idx}`}
+                  href={`${localePrefix}${link.href}`}
+                  className={cn(
+                    'group inline-flex items-center gap-1.5',
+                    'text-[length:var(--bbf-text-sm)] font-[var(--bbf-weight-medium)]',
+                    'text-[var(--bbf-text-on-sand)]',
+                    'transition-all duration-200 ease-out',
+                    'hover:translate-x-0.5 hover:text-[var(--bbf-accent-red)]',
+                    'focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
+                  )}
+                >
+                  <span>{link.label}</span>
+                  <span
+                    aria-hidden="true"
+                    className="-translate-x-1 opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100"
                   >
-                    {link.label}
-                  </Link>
-                );
-              })}
+                    →
+                  </span>
+                </Link>
+              ))}
             </nav>
           )}
 
-          {/* Newsletter subscription (Wave 4) */}
+          {/* Column 3: Newsletter */}
           <div>
             {newsletter.enabled && (
               <NewsletterBox
@@ -89,8 +113,11 @@ export async function Footer({ className }: FooterProps) {
           </div>
         </div>
 
-        <div className="border-t border-[var(--bbf-border-on-light)] pt-6 text-xs text-[var(--bbf-text-on-light)]/60">
-          © {year} {siteName}. {t('rights')}
+        {/* Bottom bar */}
+        <div className="border-t border-[var(--bbf-border-on-sand)]/40 pt-6">
+          <p className="text-[length:var(--bbf-text-xs)] text-[var(--bbf-text-on-sand-subtle)]">
+            © {year} {siteName}. {t('rights')}
+          </p>
         </div>
       </div>
     </footer>
