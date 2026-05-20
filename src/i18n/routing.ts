@@ -27,6 +27,7 @@ export const routing = defineRouting({
     '/como-construir': { es: '/como-construir', en: '/how-to-build' }, // P2
     '/hub-and-spoke': '/hub-and-spoke', // P3
     '/marca-cognitiva': { es: '/marca-cognitiva', en: '/cognitive-brand' }, // P4
+    '/contacto': { es: '/contacto', en: '/contact' },
   },
 
   localeDetection: true,

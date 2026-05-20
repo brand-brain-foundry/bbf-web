@@ -1,21 +1,8 @@
+import type { ContentItem } from '@/payload/payload-types';
 import { Container } from '@/components/atoms/Container';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { BlockRenderer } from '@/components/blocks/BlockRenderer';
-
-type ContentItemBlock = { blockType: string; id?: string | number; [key: string]: unknown };
-
-type ContentItem = {
-  id: string | number;
-  slug: string;
-  title: string;
-  subtitle?: string | null;
-  excerpt?: string | null;
-  kind: string;
-  blocks: ContentItemBlock[];
-  authors?: Array<{ name?: string; slug?: string }>;
-  publishedAt?: string | null;
-};
 
 type CornerstoneTemplateProps = {
   contentItem: ContentItem;
@@ -23,6 +10,8 @@ type CornerstoneTemplateProps = {
 };
 
 export function CornerstoneTemplate({ contentItem }: CornerstoneTemplateProps) {
+  const blocks = contentItem.blocks ?? [];
+
   return (
     <article data-component="bbf-cornerstone-template" className="cornerstone-page">
       <header className="cornerstone-hero py-16 md:py-24">
@@ -46,10 +35,10 @@ export function CornerstoneTemplate({ contentItem }: CornerstoneTemplateProps) {
       </header>
 
       <Container size="prose" className="cornerstone-body">
-        {contentItem.blocks.map((block, idx) => (
+        {blocks.map((block, idx) => (
           <BlockRenderer
             key={(block.id as string | undefined) ?? idx}
-            block={block}
+            block={block as { blockType: string; id?: string | number; [key: string]: unknown }}
             contentItemTitle={contentItem.title}
           />
         ))}
