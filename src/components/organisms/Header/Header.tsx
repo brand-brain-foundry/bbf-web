@@ -3,6 +3,7 @@ import { getLocale } from 'next-intl/server';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
 import { LanguageSwitcher } from '@/components/molecules/LanguageSwitcher';
+import { MobileMenu } from '@/components/molecules/MobileMenu';
 import { Button } from '@/components/atoms/Button';
 import { cn } from '@/lib/utils';
 
@@ -78,7 +79,19 @@ export async function Header({ className }: HeaderProps) {
               </Button>
             )}
             <LanguageSwitcher />
-            {/* TODO Wave 3: mobile hamburger menu */}
+            <MobileMenu
+              links={headerLinks.map((l) => ({ label: l.label ?? '', href: l.href }))}
+              cta={
+                headerCta?.label
+                  ? {
+                      label: headerCta.label,
+                      href: headerCta.href,
+                      intent: headerCta.intent ?? 'primary',
+                    }
+                  : undefined
+              }
+              localePrefix={localeKey === 'en' ? '/en' : ''}
+            />
           </div>
         </div>
       </div>

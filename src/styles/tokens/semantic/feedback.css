@@ -1,0 +1,20 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Feedback states
+ *
+ * Maps success/error primitive color scales to semantic intent tokens.
+ * Used by form feedback states (ContactForm), alerts, toasts.
+ *
+ * Depends on: tokens/primitives/colors.css (--bbf-color-success-*, --bbf-color-error-*)
+ */
+
+:root {
+  /* Success state */
+  --bbf-color-success-bg: var(--bbf-color-success-100);
+  --bbf-color-success-text: var(--bbf-color-success-700);
+  --bbf-color-success-border: var(--bbf-color-success-500);
+
+  /* Error state */
+  --bbf-color-error-bg: var(--bbf-color-error-100);
+  --bbf-color-error-text: var(--bbf-color-red-base);
+  --bbf-color-error-border: var(--bbf-color-error-500);
+}

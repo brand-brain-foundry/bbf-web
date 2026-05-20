@@ -41,11 +41,11 @@
 @import '../styles/tokens/semantic/spacing.css';
 @import '../styles/tokens/semantic/motion.css';
 @import '../styles/tokens/semantic/shadows.css';
+@import '../styles/tokens/semantic/feedback.css';
 
 /* === TIER 3: COMPONENT === */
 @import '../styles/tokens/components/hero.css';
 @import '../styles/tokens/components/logo.css';
-@import '../styles/tokens/components/locale-switcher.css';
 @import '../styles/tokens/components/button.css';
 @import '../styles/tokens/components/hero-section.css';
 

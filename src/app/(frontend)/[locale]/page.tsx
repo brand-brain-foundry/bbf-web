@@ -1,10 +1,11 @@
+import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
 import { BBFLogo, BBFLogoAnimator } from '@/components/atoms/BBFLogo';
 import { Button } from '@/components/atoms/Button';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { HeroVideo } from '@/components/molecules/HeroVideo';
-import { LocaleSwitcher } from '@/components/molecules/LocaleSwitcher';
+import { LanguageSwitcher } from '@/components/molecules/LanguageSwitcher';
 import { HeroSection } from '@/components/sections/HeroSection';
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -15,10 +16,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const headline2 = locale === 'es' ? 'cerebros de marca.' : 'brand brains.';
   const tagline = locale === 'es' ? 'Próximamente' : 'Coming Soon';
   const cta = locale === 'es' ? 'contactanos' : 'contact us';
+  const contactHref = locale === 'en' ? '/en/contacto' : '/contacto';
 
   return (
     <HeroSection surface="auto">
-      <LocaleSwitcher />
+      <LanguageSwitcher />
 
       {/* Background video (z-0) — TD-M5-D3-01: poster pendiente M6+ */}
       <HeroVideo autoplay muted loop>
@@ -62,12 +64,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           size="lg"
           className="bbf-cta-pill hero-entrance hero-entrance--delay-4"
         >
-          <a href="mailto:contacto@brandbrainfoundry.com">
+          <Link href={contactHref}>
             <span>{cta}</span>
             <span className="bbf-cta-arrow" aria-hidden="true">
               →
             </span>
-          </a>
+          </Link>
         </Button>
       </HeroSection.Content>
     </HeroSection>

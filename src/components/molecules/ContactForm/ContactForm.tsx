@@ -195,8 +195,8 @@ export function ContactForm({ locale, className }: ContactFormProps) {
               'rounded-md p-4',
               'transition-all duration-300',
               state.success
-                ? 'bg-[oklch(0.95_0.05_140)] text-[oklch(0.45_0.15_140)]'
-                : 'bg-[oklch(0.95_0.05_25)] text-[var(--bbf-color-red-base)]',
+                ? 'bg-[var(--bbf-color-success-bg)] text-[var(--bbf-color-success-text)]'
+                : 'bg-[var(--bbf-color-error-bg)] text-[var(--bbf-color-error-text)]',
             )}
             role={state.success ? 'status' : 'alert'}
             aria-live="polite"

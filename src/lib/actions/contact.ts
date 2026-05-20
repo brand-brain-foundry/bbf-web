@@ -2,6 +2,8 @@
 
 import { headers } from 'next/headers';
 import { Resend } from 'resend';
+import { getPayload } from 'payload';
+import config from '@/payload-config';
 import { contactRateLimit, getClientIp } from '@/lib/security/rate-limit';
 import { verifyTurnstile } from '@/lib/security/turnstile';
 import { isDisposableEmail } from '@/lib/security/disposable-emails';
@@ -13,9 +15,6 @@ export type ContactFormState = {
   success: boolean;
   message: string;
 };
-
-const CONTACT_EMAIL = 'contacto@brandbrainfoundry.com';
-const FROM_EMAIL = 'web@brandbrainfoundry.com';
 
 // Time threshold: humanos tardan al menos 2 segundos en llenar form
 const MIN_FILL_TIME_MS = 2000;
@@ -122,11 +121,19 @@ export async function submitContact(
     };
   }
 
+  // ===== LEER EMAILS DESDE SITECONTACT (SSOT) =====
+  // Lookup SiteContact runtime — fresh por cada submission
+  // (sin unstable_cache porque form submit es eventual, no hot path)
+  const payload = await getPayload({ config });
+  const siteContact = await payload.findGlobal({ slug: 'site-contact' });
+  const recipientEmail = siteContact.primaryEmail;
+  const fromEmail = siteContact.fromEmail;
+
   // ===== ENVIAR EMAIL =====
   try {
     const { error } = await resend.emails.send({
-      from: `BBF Web <${FROM_EMAIL}>`,
-      to: CONTACT_EMAIL,
+      from: `BBF Web <${fromEmail}>`,
+      to: recipientEmail,
       replyTo: email,
       subject: `Nuevo contacto BBF — ${name}${company ? ` · ${company}` : ''}`,
       text: [
@@ -147,8 +154,8 @@ export async function submitContact(
         success: false,
         message:
           locale === 'es'
-            ? 'Algo falló al enviar. Escribinos a hola@brandbrainfoundry.com.'
-            : 'Sending failed. Write to hola@brandbrainfoundry.com.',
+            ? 'Algo falló al enviar. Por favor intentá de nuevo.'
+            : 'Sending failed. Please try again.',
       };
     }
 
