@@ -29,6 +29,7 @@ export async function Header({ className }: HeaderProps) {
 
   return (
     <header
+      data-component="bbf-header"
       className={cn(
         'sticky top-0 z-50 w-full',
         'bg-[var(--bbf-surface-sand)]/95 backdrop-blur-sm',
