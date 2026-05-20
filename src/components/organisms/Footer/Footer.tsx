@@ -1,33 +1,29 @@
 import Link from 'next/link';
-import { getLocale } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { getPayload } from 'payload';
+import config from '@/payload-config';
 import { cn } from '@/lib/utils';
 
 type FooterProps = {
   className?: string;
 };
 
-const FOOTER_COPY = {
-  es: {
-    tagline: 'Piensa, y que trabaje tu marca.',
-    contact: 'Contacto',
-    privacy: 'Privacidad',
-    contactEmail: 'contacto@brandbrainfoundry.com',
-    rights: 'Todos los derechos reservados.',
-  },
-  en: {
-    tagline: 'Think, and let your brand work.',
-    contact: 'Contact',
-    privacy: 'Privacy',
-    contactEmail: 'contacto@brandbrainfoundry.com',
-    rights: 'All rights reserved.',
-  },
-} as const;
-
 export async function Footer({ className }: FooterProps) {
   const locale = await getLocale();
-  const copy = FOOTER_COPY[locale === 'en' ? 'en' : 'es'];
-  const contactHref = locale === 'en' ? '/en/contact' : '/contacto';
-  const privacyHref = locale === 'en' ? '/en/privacy' : '/privacidad';
+  const localeKey = locale === 'en' ? 'en' : 'es';
+  const t = await getTranslations('footer');
+
+  const payload = await getPayload({ config });
+
+  const [identity, navigation] = await Promise.all([
+    payload.findGlobal({ slug: 'site-identity', locale: localeKey }),
+    payload.findGlobal({ slug: 'site-navigation', locale: localeKey }),
+  ]);
+
+  const siteName = identity.siteName ?? 'Brand Brain Foundry';
+  const tagline = identity.tagline;
+  const shortDescription = identity.shortDescription;
+  const footerLinks = navigation.footerLinks ?? [];
   const year = new Date().getFullYear();
 
   return (
@@ -41,45 +37,43 @@ export async function Footer({ className }: FooterProps) {
     >
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3">
-          {/* Brand */}
-          <div>
-            <div className="mb-2 text-lg font-bold text-[var(--bbf-text-on-light)]">
-              Brand Brain Foundry
-            </div>
-            <p className="max-w-xs text-sm text-[var(--bbf-text-on-light-secondary)]">
-              {copy.tagline}
-            </p>
+          {/* Brand identity */}
+          <div className="space-y-3">
+            <div className="text-lg font-bold text-[var(--bbf-text-on-light)]">{siteName}</div>
+            {tagline && (
+              <p className="text-sm font-medium text-[var(--bbf-text-on-light)]">{tagline}</p>
+            )}
+            {shortDescription && (
+              <p className="max-w-xs text-sm text-[var(--bbf-text-on-light)]/70">
+                {shortDescription}
+              </p>
+            )}
           </div>
 
-          {/* Links */}
-          <nav aria-label="Footer navigation" className="flex flex-col gap-2">
-            <Link
-              href={contactHref}
-              className="text-sm text-[var(--bbf-text-on-light)] transition-opacity duration-150 ease-out hover:opacity-70 focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-100 focus-visible:outline-none active:opacity-50"
-            >
-              {copy.contact}
-            </Link>
-            <Link
-              href={privacyHref}
-              className="text-sm text-[var(--bbf-text-on-light)] transition-opacity duration-150 ease-out hover:opacity-70 focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-100 focus-visible:outline-none active:opacity-50"
-            >
-              {copy.privacy}
-            </Link>
-          </nav>
+          {/* Footer navigation */}
+          {footerLinks.length > 0 && (
+            <nav aria-label="Footer navigation" className="flex flex-col gap-2">
+              {footerLinks.map((link, idx) => {
+                const href = localeKey === 'en' ? `/en${link.href}` : link.href;
+                return (
+                  <Link
+                    key={`${link.href}-${idx}`}
+                    href={href}
+                    className="text-sm text-[var(--bbf-text-on-light)] transition-opacity duration-150 ease-out hover:opacity-70 focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-100 focus-visible:outline-none active:opacity-50"
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
 
-          {/* Contact */}
-          <div className="text-sm">
-            <a
-              href={`mailto:${copy.contactEmail}`}
-              className="text-[var(--bbf-text-on-light)] transition-opacity duration-150 ease-out hover:opacity-70 focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-100 focus-visible:outline-none active:opacity-50"
-            >
-              {copy.contactEmail}
-            </a>
-          </div>
+          {/* Newsletter placeholder (Wave 4) */}
+          <div>{/* Wave 4: NewsletterBox aquí */}</div>
         </div>
 
-        <div className="border-t border-[var(--bbf-border-on-light)] pt-6 text-xs text-[var(--bbf-text-on-light-muted)]">
-          © {year} Brand Brain Foundry. {copy.rights}
+        <div className="border-t border-[var(--bbf-border-on-light)] pt-6 text-xs text-[var(--bbf-text-on-light)]/60">
+          © {year} {siteName}. {t('rights')}
         </div>
       </div>
     </footer>

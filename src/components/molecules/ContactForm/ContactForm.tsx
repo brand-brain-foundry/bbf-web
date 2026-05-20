@@ -4,6 +4,7 @@ import { useActionState, useCallback, useEffect, useState, startTransition } fro
 import { useFormStatus } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { submitContact, type ContactFormState } from '@/lib/actions/contact';
 import { contactSchema, getContactErrorMessage, type ContactFormData } from '@/lib/schemas/contact';
 import { Button } from '@/components/atoms/Button';
@@ -18,39 +19,16 @@ type ContactFormProps = {
   className?: string;
 };
 
-const COPY = {
-  es: {
-    title: 'Sentémonos a pensar',
-    intro: 'Contanos qué necesitás. Te respondemos para coordinar conversación.',
-    name: 'Nombre',
-    email: 'Email',
-    company: 'Empresa (opcional)',
-    message: 'Mensaje',
-    submit: 'Enviar',
-    submitting: 'Enviando…',
-    requiredHint: 'Los campos con * son obligatorios.',
-    verifying: 'Verificando seguridad…',
-  },
-  en: {
-    title: 'Let us think together',
-    intro: 'Tell us what you need. We respond to coordinate a conversation.',
-    name: 'Name',
-    email: 'Email',
-    company: 'Company (optional)',
-    message: 'Message',
-    submit: 'Send',
-    submitting: 'Sending…',
-    requiredHint: 'Fields marked * are required.',
-    verifying: 'Verifying security…',
-  },
-} as const;
-
 function SubmitButton({
-  copy,
+  submit,
+  submitting,
+  verifying,
   turnstileReady,
   isValid,
 }: {
-  copy: (typeof COPY)['es'] | (typeof COPY)['en'];
+  submit: string;
+  submitting: string;
+  verifying: string;
   turnstileReady: boolean;
   isValid: boolean;
 }) {
@@ -65,7 +43,7 @@ function SubmitButton({
       disabled={disabled}
       className="w-full md:w-auto"
     >
-      {pending ? copy.submitting : !turnstileReady ? copy.verifying : copy.submit}
+      {pending ? submitting : !turnstileReady ? verifying : submit}
     </Button>
   );
 }
@@ -78,7 +56,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
   const [formLoadTime] = useState(() => Date.now());
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const [turnstileReady, setTurnstileReady] = useState(false);
-  const copy = COPY[locale];
+  const t = useTranslations('contact');
 
   const {
     register,
@@ -131,11 +109,11 @@ export function ContactForm({ locale, className }: ContactFormProps) {
   return (
     <div data-component="bbf-contact-form" className={cn('contact-form', className)}>
       <Heading level="display-md" weight="bold" className="mb-6">
-        {copy.title}
+        {t('title')}
       </Heading>
 
       <Text variant="body-lg" color="secondary" className="mb-8 max-w-prose">
-        {copy.intro}
+        {t('intro')}
       </Text>
 
       <form id="bbf-contact-form" action={formAction} className="max-w-prose space-y-6" noValidate>
@@ -161,7 +139,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
         </div>
 
         <FormField
-          label={copy.name}
+          label={t('name')}
           required
           maxLength={120}
           autoComplete="name"
@@ -170,7 +148,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
         />
 
         <FormField
-          label={copy.email}
+          label={t('email')}
           type="email"
           required
           maxLength={200}
@@ -180,7 +158,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
         />
 
         <FormField
-          label={copy.company}
+          label={t('company')}
           maxLength={200}
           autoComplete="organization"
           error={errorFor('company')}
@@ -188,7 +166,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
         />
 
         <FormField
-          label={copy.message}
+          label={t('message')}
           type="textarea"
           required
           rows={6}
@@ -198,7 +176,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
         />
 
         <Text variant="caption" color="secondary">
-          {copy.requiredHint}
+          {t('requiredHint')}
         </Text>
 
         {/* Cloudflare Turnstile widget — flexible mode canon 2026 */}
@@ -228,7 +206,9 @@ export function ContactForm({ locale, className }: ContactFormProps) {
         )}
 
         <SubmitButton
-          copy={copy}
+          submit={t('submit')}
+          submitting={t('submitting')}
+          verifying={t('verifying')}
           turnstileReady={turnstileReady}
           isValid={isSubmitted ? isValid : true}
         />

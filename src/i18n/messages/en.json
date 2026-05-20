@@ -1,1 +1,45 @@
-{}
+{
+  "common": {
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "submit": "Send",
+    "sending": "Sending…",
+    "send": "Send",
+    "skipToContent": "Skip to content"
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  },
+  "contact": {
+    "title": "Let us think together",
+    "intro": "Tell us what you need. We respond to coordinate a conversation.",
+    "name": "Name",
+    "email": "Email",
+    "company": "Company (optional)",
+    "message": "Message",
+    "submit": "Send",
+    "submitting": "Sending…",
+    "verifying": "Verifying security…",
+    "requiredHint": "Fields marked * are required.",
+    "successTitle": "Received. We will respond soon.",
+    "errorGeneric": "Something failed. Try again.",
+    "errorRateLimit": "Too many attempts. Wait 10 minutes.",
+    "errorTurnstile": "Security verification failed. Reload the page.",
+    "errorDisposable": "Please use a permanent email.",
+    "errorValidation": "Please review the form data.",
+    "errorBot": "Could not process. Try again."
+  },
+  "errors": {
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you are looking for does not exist or was moved.",
+      "backHome": "Back to home"
+    },
+    "generic": {
+      "title": "Something went wrong",
+      "description": "An unexpected error occurred. Please try again.",
+      "retry": "Retry"
+    }
+  }
+}

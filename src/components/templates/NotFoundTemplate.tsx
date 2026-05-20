@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { Container } from '@/components/atoms/Container';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
@@ -8,23 +9,9 @@ type NotFoundTemplateProps = {
   locale?: 'es' | 'en';
 };
 
-const COPY = {
-  es: {
-    heading: 'Esto no está aquí.',
-    body: 'La página que buscas no existe o se ha movido. Volvé al inicio y desde ahí encontramos qué necesitás.',
-    cta: 'Ir al inicio',
-    href: '/',
-  },
-  en: {
-    heading: 'This is not here.',
-    body: 'The page you are looking for does not exist or has moved. Return home and we will find what you need.',
-    cta: 'Go home',
-    href: '/en',
-  },
-} as const;
-
-export function NotFoundTemplate({ locale = 'es' }: NotFoundTemplateProps) {
-  const copy = COPY[locale];
+export async function NotFoundTemplate({ locale = 'es' }: NotFoundTemplateProps) {
+  const t = await getTranslations('errors.notFound');
+  const href = locale === 'en' ? '/en' : '/';
 
   return (
     <main
@@ -33,13 +20,13 @@ export function NotFoundTemplate({ locale = 'es' }: NotFoundTemplateProps) {
     >
       <Container size="prose" className="text-center">
         <Heading level="display-lg" as="h1" weight="bold" className="mb-6">
-          {copy.heading}
+          {t('title')}
         </Heading>
         <Text variant="body-lg" className="mx-auto mb-8 max-w-prose">
-          {copy.body}
+          {t('description')}
         </Text>
         <Button asChild intent="primary" size="lg">
-          <Link href={copy.href}>{copy.cta}</Link>
+          <Link href={href}>{t('backHome')}</Link>
         </Button>
       </Container>
     </main>

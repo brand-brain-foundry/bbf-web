@@ -1,1 +1,45 @@
-{}
+{
+  "common": {
+    "loading": "Cargando…",
+    "error": "Algo salió mal",
+    "retry": "Reintentar",
+    "submit": "Enviar",
+    "sending": "Enviando…",
+    "send": "Enviar",
+    "skipToContent": "Saltar al contenido"
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados."
+  },
+  "contact": {
+    "title": "Sentémonos a pensar",
+    "intro": "Contanos qué necesitás. Te respondemos para coordinar conversación.",
+    "name": "Nombre",
+    "email": "Email",
+    "company": "Empresa (opcional)",
+    "message": "Mensaje",
+    "submit": "Enviar",
+    "submitting": "Enviando…",
+    "verifying": "Verificando seguridad…",
+    "requiredHint": "Los campos con * son obligatorios.",
+    "successTitle": "Recibido. Te respondemos pronto.",
+    "errorGeneric": "Algo falló. Probá de nuevo.",
+    "errorRateLimit": "Demasiados intentos. Esperá 10 minutos.",
+    "errorTurnstile": "Verificación de seguridad falló. Recargá la página.",
+    "errorDisposable": "Por favor usá un email permanente.",
+    "errorValidation": "Por favor revisá los datos del formulario.",
+    "errorBot": "No se pudo procesar. Probá de nuevo."
+  },
+  "errors": {
+    "notFound": {
+      "title": "Página no encontrada",
+      "description": "La página que buscás no existe o fue movida.",
+      "backHome": "Volver al inicio"
+    },
+    "generic": {
+      "title": "Algo salió mal",
+      "description": "Ocurrió un error inesperado. Por favor intenta de nuevo.",
+      "retry": "Reintentar"
+    }
+  }
+}

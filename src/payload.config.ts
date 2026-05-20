@@ -20,6 +20,9 @@ import { Navigation } from './payload/globals/Navigation';
 import { SocialLinks } from './payload/globals/SocialLinks';
 import { SEO } from './payload/globals/SEO';
 import { BrandSystem } from './payload/globals/BrandSystem';
+import { SiteIdentity } from './payload/globals/SiteIdentity';
+import { SiteNavigation } from './payload/globals/SiteNavigation';
+import { SiteContact } from './payload/globals/SiteContact';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -53,7 +56,16 @@ export default buildConfig({
     Redirects,
   ],
 
-  globals: [Site, Navigation, SocialLinks, SEO, BrandSystem],
+  globals: [
+    Site,
+    Navigation,
+    SocialLinks,
+    SEO,
+    BrandSystem,
+    SiteIdentity,
+    SiteNavigation,
+    SiteContact,
+  ],
 
   // D-BBF-WEB-05: ES default, EN con prefijo /en
   localization: {
