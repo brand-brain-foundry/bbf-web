@@ -78,7 +78,7 @@ styles/
 - Family: Inter (display + body)
 - Scale: Major Third 1.25 (D-72..74)
 - Tokens: display-xl/lg/md, h1-h6, body-lg/md/sm, caption, overline, tagline
-- Pattern Tailwind v4: `[font-size:var(--bbf-text-*)]` (D-92)
+- Pattern Tailwind v4: `[font-size:var(--bbf-text-base)]` (D-92)
 
 ### Spacing
 

@@ -146,7 +146,7 @@ import { Heading } from '@/components/atoms/Heading';
 ## NO usar
 
 - `<Heading size="3rem">` — prop `size` no existe (usar `level`)
-- `text-[var(--bbf-text-*)]` en CVA — bug Tailwind v4 (L-92)
+- `text-[var(--bbf-text-h1)]` sin hint de propiedad en CVA — Tailwind v4 lo interpreta como color (L-92); usar `[font-size:var(--bbf-text-h1)]`
 - Inline styles font-size (tokens canon obligatorio)
 - `color="white"` — usar `color="inverse"` (semántico)
 

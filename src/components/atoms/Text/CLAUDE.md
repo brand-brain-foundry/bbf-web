@@ -161,7 +161,7 @@ import { Text } from '@/components/atoms/Text';
 
 - `<Text variant="overline">` para hero subtitle — usar `variant="tagline"` (D-91)
 - `weight="regular"` en `overline`/`tagline` esperando que aplique (compoundVariants lo overridea siempre)
-- `text-[var(--bbf-text-*)]` — bug Tailwind v4 (L-92)
+- `text-[var(--bbf-text-base)]` sin hint de propiedad — Tailwind v4 lo interpreta como color (L-92); usar `[font-size:var(--bbf-text-base)]`
 - `color="white"` — usar `color="inverse"` (semántico)
 
 ---
