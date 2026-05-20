@@ -3,6 +3,8 @@ import { setRequestLocale, getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Inter, Mulish } from 'next/font/google';
 import { routing } from '@/i18n/routing';
+import { Header } from '@/components/organisms/Header';
+import { Footer } from '@/components/organisms/Footer';
 import type { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
 
@@ -181,7 +183,9 @@ export default async function LocaleLayout({
     <html lang={locale} className={`${inter.variable} ${mulish.variable}`}>
       <body>
         <NextIntlClientProvider messages={messages} locale={locale}>
-          {children}
+          <Header />
+          <main>{children}</main>
+          <Footer />
         </NextIntlClientProvider>
         <script
           type="application/ld+json"
