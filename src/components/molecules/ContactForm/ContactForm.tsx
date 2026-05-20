@@ -1,11 +1,12 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState, useEffect, startTransition } from 'react';
 import { useFormStatus } from 'react-dom';
 import { submitContact, type ContactFormState } from '@/lib/actions/contact';
 import { Button } from '@/components/atoms/Button';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
+import { Turnstile } from '@/components/molecules/Turnstile';
 import { cn } from '@/lib/utils';
 
 type ContactFormProps = {
@@ -24,6 +25,7 @@ const COPY = {
     submit: 'Enviar',
     submitting: 'Enviando…',
     requiredHint: 'Los campos con * son obligatorios.',
+    verifying: 'Verificando seguridad…',
   },
   en: {
     title: 'Let us think together',
@@ -35,21 +37,29 @@ const COPY = {
     submit: 'Send',
     submitting: 'Sending…',
     requiredHint: 'Fields marked * are required.',
+    verifying: 'Verifying security…',
   },
 } as const;
 
-function SubmitButton({ copy }: { copy: (typeof COPY)['es'] | (typeof COPY)['en'] }) {
+function SubmitButton({
+  copy,
+  turnstileReady,
+}: {
+  copy: (typeof COPY)['es'] | (typeof COPY)['en'];
+  turnstileReady: boolean;
+}) {
   const { pending } = useFormStatus();
+  const disabled = pending || !turnstileReady;
 
   return (
     <Button
       type="submit"
       intent="primary"
       size="lg"
-      disabled={pending}
+      disabled={disabled}
       className="w-full md:w-auto"
     >
-      {pending ? copy.submitting : copy.submit}
+      {pending ? copy.submitting : !turnstileReady ? copy.verifying : copy.submit}
     </Button>
   );
 }
@@ -62,7 +72,22 @@ export function ContactForm({ locale, className }: ContactFormProps) {
     submitContact,
     null,
   );
+  const [formLoadTime] = useState(() => Date.now());
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const [turnstileReady, setTurnstileReady] = useState(false);
   const copy = COPY[locale];
+
+  // Reset form on success
+  useEffect(() => {
+    if (state?.success) {
+      const form = document.getElementById('bbf-contact-form') as HTMLFormElement | null;
+      form?.reset();
+      startTransition(() => {
+        setTurnstileToken('');
+        setTurnstileReady(false);
+      });
+    }
+  }, [state?.success]);
 
   return (
     <div data-component="bbf-contact-form" className={cn('contact-form', className)}>
@@ -74,8 +99,27 @@ export function ContactForm({ locale, className }: ContactFormProps) {
         {copy.intro}
       </Text>
 
-      <form action={formAction} className="max-w-prose space-y-6">
+      <form id="bbf-contact-form" action={formAction} className="max-w-prose space-y-6">
+        {/* Hidden fields security */}
         <input type="hidden" name="locale" value={locale} />
+        <input type="hidden" name="formLoadTime" value={formLoadTime} />
+        <input type="hidden" name="cf-turnstile-response" value={turnstileToken} />
+
+        {/* Honeypot field — hidden a humanos, bots lo llenan */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            left: '-9999px',
+            top: 'auto',
+            width: '1px',
+            height: '1px',
+            overflow: 'hidden',
+          }}
+        >
+          <label htmlFor="website">Website (leave blank)</label>
+          <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+        </div>
 
         <div>
           <label htmlFor="name" className="mb-2 block">
@@ -147,6 +191,22 @@ export function ContactForm({ locale, className }: ContactFormProps) {
           {copy.requiredHint}
         </Text>
 
+        {/* Cloudflare Turnstile widget — invisible */}
+        <Turnstile
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''}
+          size="invisible"
+          theme="auto"
+          onSuccess={(token) => {
+            setTurnstileToken(token);
+            setTurnstileReady(true);
+          }}
+          onError={() => setTurnstileReady(false)}
+          onExpire={() => {
+            setTurnstileToken('');
+            setTurnstileReady(false);
+          }}
+        />
+
         {state && (
           <div
             className={cn(
@@ -162,7 +222,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
           </div>
         )}
 
-        <SubmitButton copy={copy} />
+        <SubmitButton copy={copy} turnstileReady={turnstileReady} />
       </form>
     </div>
   );
