@@ -1,5 +1,6 @@
 import type { GlobalConfig } from 'payload';
 import { isAdmin } from '@/payload/lib/access';
+import { revalidateGlobal } from '../hooks/revalidateGlobal';
 
 export const SiteContact: GlobalConfig = {
   slug: 'site-contact',
@@ -47,4 +48,7 @@ export const SiteContact: GlobalConfig = {
       },
     },
   ],
+  hooks: {
+    afterChange: [revalidateGlobal],
+  },
 };

@@ -1,0 +1,29 @@
+import type { GlobalAfterChangeHook } from 'payload';
+import { revalidatePath, revalidateTag } from 'next/cache';
+
+/**
+ * Hook canon BBF para revalidación de Payload Globals.
+ *
+ * Patrón Payload website-cms oficial:
+ * - Tag granular `global_${slug}` para fetches con unstable_cache
+ * - Path layout invalidation para SSG/ISR pages que consumen el global
+ *
+ * Trazable a D-BBF-KB-98, §13.3 audit (propagación automática), SB_Law I-5.
+ *
+ * Uso en cualquier Payload Global:
+ * ```ts
+ * hooks: { afterChange: [revalidateGlobal] }
+ * ```
+ */
+export const revalidateGlobal: GlobalAfterChangeHook = ({ doc, previousDoc, global, req }) => {
+  if (doc?.updatedAt === previousDoc?.updatedAt) {
+    return doc;
+  }
+
+  req.payload.logger.info(`[revalidate] Global ${global.slug} updated — invalidating cache`);
+
+  revalidateTag(`global_${global.slug}`);
+  revalidatePath('/', 'layout');
+
+  return doc;
+};

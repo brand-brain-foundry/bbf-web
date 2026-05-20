@@ -1,5 +1,6 @@
 import type { GlobalConfig } from 'payload';
 import { publicRead, isAdmin } from '@/payload/lib/access';
+import { revalidateGlobal } from '../hooks/revalidateGlobal';
 
 export const SiteNavigation: GlobalConfig = {
   slug: 'site-navigation',
@@ -112,4 +113,7 @@ export const SiteNavigation: GlobalConfig = {
       ],
     },
   ],
+  hooks: {
+    afterChange: [revalidateGlobal],
+  },
 };

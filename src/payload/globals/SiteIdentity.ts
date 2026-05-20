@@ -1,5 +1,6 @@
 import type { GlobalConfig } from 'payload';
 import { publicRead, isAdmin } from '@/payload/lib/access';
+import { revalidateGlobal } from '../hooks/revalidateGlobal';
 
 export const SiteIdentity: GlobalConfig = {
   slug: 'site-identity',
@@ -62,4 +63,7 @@ export const SiteIdentity: GlobalConfig = {
       },
     },
   ],
+  hooks: {
+    afterChange: [revalidateGlobal],
+  },
 };
