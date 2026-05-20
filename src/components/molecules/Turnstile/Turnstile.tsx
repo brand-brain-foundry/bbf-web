@@ -44,6 +44,19 @@ export function Turnstile({
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
 
+  // Latest callbacks pattern — refs stable, no re-render trigger
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
+  const onExpireRef = useRef(onExpire);
+
+  // Keep refs in sync sin disparar re-render del widget
+  useEffect(() => {
+    onSuccessRef.current = onSuccess;
+    onErrorRef.current = onError;
+    onExpireRef.current = onExpire;
+  });
+
+  // Widget render solo cambia cuando siteKey/theme/size cambian
   useEffect(() => {
     function renderWidget() {
       if (!window.turnstile || !containerRef.current) return;
@@ -59,9 +72,9 @@ export function Turnstile({
 
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: siteKey,
-        callback: onSuccess,
-        'error-callback': onError,
-        'expired-callback': onExpire,
+        callback: (token) => onSuccessRef.current?.(token),
+        'error-callback': () => onErrorRef.current?.(),
+        'expired-callback': () => onExpireRef.current?.(),
         theme,
         size,
       });
@@ -83,7 +96,7 @@ export function Turnstile({
         widgetIdRef.current = null;
       }
     };
-  }, [siteKey, onSuccess, onError, onExpire, theme, size]);
+  }, [siteKey, theme, size]);
 
   return (
     <>

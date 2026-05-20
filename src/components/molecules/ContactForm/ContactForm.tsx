@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState, useEffect, startTransition } from 'react';
+import { useActionState, useCallback, useEffect, useState, startTransition } from 'react';
 import { useFormStatus } from 'react-dom';
 import { submitContact, type ContactFormState } from '@/lib/actions/contact';
 import { Button } from '@/components/atoms/Button';
@@ -88,6 +88,21 @@ export function ContactForm({ locale, className }: ContactFormProps) {
       });
     }
   }, [state?.success]);
+
+  // Stable callback refs — evitan re-render loop Turnstile widget
+  const handleTurnstileSuccess = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setTurnstileReady(true);
+  }, []);
+
+  const handleTurnstileError = useCallback(() => {
+    setTurnstileReady(false);
+  }, []);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken('');
+    setTurnstileReady(false);
+  }, []);
 
   return (
     <div data-component="bbf-contact-form" className={cn('contact-form', className)}>
@@ -191,20 +206,14 @@ export function ContactForm({ locale, className }: ContactFormProps) {
           {copy.requiredHint}
         </Text>
 
-        {/* Cloudflare Turnstile widget — invisible */}
+        {/* Cloudflare Turnstile widget — flexible mode canon 2026 */}
         <Turnstile
           siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''}
           size="flexible"
           theme="auto"
-          onSuccess={(token) => {
-            setTurnstileToken(token);
-            setTurnstileReady(true);
-          }}
-          onError={() => setTurnstileReady(false)}
-          onExpire={() => {
-            setTurnstileToken('');
-            setTurnstileReady(false);
-          }}
+          onSuccess={handleTurnstileSuccess}
+          onError={handleTurnstileError}
+          onExpire={handleTurnstileExpire}
         />
 
         {state && (
