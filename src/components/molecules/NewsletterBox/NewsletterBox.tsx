@@ -29,10 +29,17 @@ type State =
   | { kind: 'error'; reason: string };
 
 /**
- * BBF NewsletterBox — canon Wave 5 design system
- * Button submit: gradient red animado (matching Header CTA D-BBF-KB-108)
- * Input + button: h-11 rounded-full (pill canon)
- * Typography: tokens semantic Wave 5
+ * BBF NewsletterBox — mobile-first canon 2026
+ *
+ * MOBILE (default):
+ *   - Stacked vertical: input on top, button below full-width
+ *   - Input h-12 (48px touch target generous WCAG AA)
+ *   - Button full width pill canon
+ *
+ * DESKTOP:
+ *   - Stacked aún (mejor UX que inline en footer columns)
+ *
+ * Single source of truth: usa <Button> atom directamente
  */
 export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
   const locale = useLocale();
@@ -80,7 +87,7 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
     <div
       data-component="bbf-newsletter-box"
       data-state={state.kind}
-      className={cn('flex flex-col gap-3', className)}
+      className={cn('flex flex-col gap-4', className)}
     >
       {/* Heading + description */}
       <div className="space-y-1.5">
@@ -92,9 +99,9 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
         </p>
       </div>
 
-      {/* Form */}
-      <form action={handleSubmit} className="flex flex-col gap-2">
-        <div className="flex flex-col gap-2 sm:flex-row">
+      {/* Form — stacked canon mobile-first */}
+      <form action={handleSubmit} className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2.5">
           <label className="sr-only" htmlFor="newsletter-email">
             Email
           </label>
@@ -107,8 +114,8 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
             disabled={state.kind === 'submitting'}
             aria-invalid={state.kind === 'error' ? 'true' : undefined}
             className={cn(
-              'h-11 flex-1 rounded-full px-4',
-              'text-[length:var(--bbf-text-sm)]',
+              'h-12 w-full rounded-full px-5',
+              'text-[length:var(--bbf-text-base)]',
               'bg-[var(--bbf-color-white)]',
               'border border-[var(--bbf-border-on-sand)]',
               'text-[var(--bbf-text-on-sand)] placeholder:text-[var(--bbf-text-on-sand-subtle)]',
@@ -122,13 +129,13 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
             intent="primary"
             size="md"
             disabled={state.kind === 'submitting'}
-            className="shrink-0"
+            className="w-full"
           >
             {state.kind === 'submitting' ? copy.submittingLabel : copy.submitLabel}
           </Button>
         </div>
 
-        <p className="text-[length:var(--bbf-text-xs)] text-[var(--bbf-text-on-sand-subtle)]">
+        <p className="text-[length:var(--bbf-text-xs)] leading-[var(--bbf-leading-snug-small)] text-[var(--bbf-text-on-sand-subtle)]">
           {copy.privacyNote}
         </p>
 
