@@ -1,41 +1,53 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { Container } from '@/components/atoms/Container';
-import { Heading } from '@/components/atoms/Heading';
-import { Text } from '@/components/atoms/Text';
+import { ContactForm } from '@/components/molecules/ContactForm';
 
-export const revalidate = false;
+type Props = {
+  params: Promise<{ locale: 'es' | 'en' }>;
+};
 
-type Props = { params: Promise<{ locale: 'es' | 'en' }> };
+const META = {
+  es: {
+    title: 'Contacto — Brand Brain Foundry',
+    description: 'Sentémonos a pensar. Contanos qué necesitás y coordinamos conversación.',
+  },
+  en: {
+    title: 'Contact — Brand Brain Foundry',
+    description: 'Let us think together. Tell us what you need and we coordinate a conversation.',
+  },
+} as const;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
+  const meta = META[locale];
+
   return {
-    title: locale === 'es' ? 'Contacto — Brand Brain Foundry' : 'Contact — Brand Brain Foundry',
-    description:
-      locale === 'es'
-        ? 'Habla con nosotros sobre tu proyecto.'
-        : 'Talk with us about your project.',
+    title: meta.title,
+    description: meta.description,
+    openGraph: {
+      title: meta.title,
+      description: meta.description,
+      type: 'website',
+      locale: locale === 'es' ? 'es_ES' : 'en_US',
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
   };
 }
+
+export const dynamic = 'force-dynamic';
 
 export default async function ContactoPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const heading = locale === 'es' ? 'Hablemos' : "Let's talk";
-  const sub = locale === 'es' ? 'Cuéntanos sobre tu proyecto.' : 'Tell us about your project.';
-
   return (
-    <main data-component="bbf-contacto-page" className="py-24">
+    <main className="py-16 md:py-24">
       <Container size="prose">
-        <Heading level="display-xl" as="h1" weight="bold" color="primary" className="mb-6">
-          {heading}
-        </Heading>
-        <Text variant="body-lg" color="secondary">
-          {sub}
-        </Text>
-        {/* ContactForm — M6-A4 TAREA 4: requiere RESEND_API_KEY confirmado */}
+        <ContactForm locale={locale} />
       </Container>
     </main>
   );
