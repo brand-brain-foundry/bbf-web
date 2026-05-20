@@ -7,3 +7,4 @@
 
 export * from './LocaleSwitcher';
 export * from './HeroVideo';
+export * from './FormField';

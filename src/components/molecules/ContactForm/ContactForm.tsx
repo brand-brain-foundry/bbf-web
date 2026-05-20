@@ -2,10 +2,14 @@
 
 import { useActionState, useCallback, useEffect, useState, startTransition } from 'react';
 import { useFormStatus } from 'react-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { submitContact, type ContactFormState } from '@/lib/actions/contact';
+import { contactSchema, getContactErrorMessage, type ContactFormData } from '@/lib/schemas/contact';
 import { Button } from '@/components/atoms/Button';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
+import { FormField } from '@/components/molecules/FormField';
 import { Turnstile } from '@/components/molecules/Turnstile';
 import { cn } from '@/lib/utils';
 
@@ -44,12 +48,14 @@ const COPY = {
 function SubmitButton({
   copy,
   turnstileReady,
+  isValid,
 }: {
   copy: (typeof COPY)['es'] | (typeof COPY)['en'];
   turnstileReady: boolean;
+  isValid: boolean;
 }) {
   const { pending } = useFormStatus();
-  const disabled = pending || !turnstileReady;
+  const disabled = pending || !turnstileReady || !isValid;
 
   return (
     <Button
@@ -64,9 +70,6 @@ function SubmitButton({
   );
 }
 
-const inputClass =
-  'w-full px-4 py-3 border border-[var(--bbf-color-sand-base)] rounded-md bg-white focus:outline-none focus:border-[var(--bbf-color-red-base)] focus:ring-1 focus:ring-[var(--bbf-color-red-base)] transition-colors';
-
 export function ContactForm({ locale, className }: ContactFormProps) {
   const [state, formAction] = useActionState<ContactFormState | null, FormData>(
     submitContact,
@@ -77,9 +80,25 @@ export function ContactForm({ locale, className }: ContactFormProps) {
   const [turnstileReady, setTurnstileReady] = useState(false);
   const copy = COPY[locale];
 
+  const {
+    register,
+    formState: { errors, isValid, isSubmitted },
+    reset,
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      name: '',
+      email: '',
+      company: '',
+      message: '',
+    },
+  });
+
   // Reset form on success
   useEffect(() => {
     if (state?.success) {
+      reset();
       const form = document.getElementById('bbf-contact-form') as HTMLFormElement | null;
       form?.reset();
       startTransition(() => {
@@ -87,7 +106,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
         setTurnstileReady(false);
       });
     }
-  }, [state?.success]);
+  }, [state?.success, reset]);
 
   // Stable callback refs — evitan re-render loop Turnstile widget
   const handleTurnstileSuccess = useCallback((token: string) => {
@@ -104,6 +123,11 @@ export function ContactForm({ locale, className }: ContactFormProps) {
     setTurnstileReady(false);
   }, []);
 
+  const errorFor = (field: keyof ContactFormData) => {
+    const msg = errors[field]?.message;
+    return msg ? getContactErrorMessage(msg, locale) : undefined;
+  };
+
   return (
     <div data-component="bbf-contact-form" className={cn('contact-form', className)}>
       <Heading level="display-md" weight="bold" className="mb-6">
@@ -114,13 +138,13 @@ export function ContactForm({ locale, className }: ContactFormProps) {
         {copy.intro}
       </Text>
 
-      <form id="bbf-contact-form" action={formAction} className="max-w-prose space-y-6">
+      <form id="bbf-contact-form" action={formAction} className="max-w-prose space-y-6" noValidate>
         {/* Hidden fields security */}
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="formLoadTime" value={formLoadTime} />
         <input type="hidden" name="cf-turnstile-response" value={turnstileToken} />
 
-        {/* Honeypot field — hidden a humanos, bots lo llenan */}
+        {/* Honeypot — hidden a humanos, bots lo llenan */}
         <div
           aria-hidden="true"
           style={{
@@ -136,71 +160,42 @@ export function ContactForm({ locale, className }: ContactFormProps) {
           <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
         </div>
 
-        <div>
-          <label htmlFor="name" className="mb-2 block">
-            <Text variant="body-md" weight="medium" as="span">
-              {copy.name} *
-            </Text>
-          </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            required
-            maxLength={120}
-            autoComplete="name"
-            className={inputClass}
-          />
-        </div>
+        <FormField
+          label={copy.name}
+          required
+          maxLength={120}
+          autoComplete="name"
+          error={errorFor('name')}
+          {...register('name')}
+        />
 
-        <div>
-          <label htmlFor="email" className="mb-2 block">
-            <Text variant="body-md" weight="medium" as="span">
-              {copy.email} *
-            </Text>
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            maxLength={200}
-            autoComplete="email"
-            className={inputClass}
-          />
-        </div>
+        <FormField
+          label={copy.email}
+          type="email"
+          required
+          maxLength={200}
+          autoComplete="email"
+          error={errorFor('email')}
+          {...register('email')}
+        />
 
-        <div>
-          <label htmlFor="company" className="mb-2 block">
-            <Text variant="body-md" weight="medium" as="span">
-              {copy.company}
-            </Text>
-          </label>
-          <input
-            id="company"
-            name="company"
-            type="text"
-            maxLength={200}
-            autoComplete="organization"
-            className={inputClass}
-          />
-        </div>
+        <FormField
+          label={copy.company}
+          maxLength={200}
+          autoComplete="organization"
+          error={errorFor('company')}
+          {...register('company')}
+        />
 
-        <div>
-          <label htmlFor="message" className="mb-2 block">
-            <Text variant="body-md" weight="medium" as="span">
-              {copy.message} *
-            </Text>
-          </label>
-          <textarea
-            id="message"
-            name="message"
-            required
-            rows={6}
-            maxLength={5000}
-            className={inputClass}
-          />
-        </div>
+        <FormField
+          label={copy.message}
+          type="textarea"
+          required
+          rows={6}
+          maxLength={5000}
+          error={errorFor('message')}
+          {...register('message')}
+        />
 
         <Text variant="caption" color="secondary">
           {copy.requiredHint}
@@ -220,6 +215,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
           <div
             className={cn(
               'rounded-md p-4',
+              'transition-all duration-300',
               state.success
                 ? 'bg-[oklch(0.95_0.05_140)] text-[oklch(0.45_0.15_140)]'
                 : 'bg-[oklch(0.95_0.05_25)] text-[var(--bbf-color-red-base)]',
@@ -231,7 +227,11 @@ export function ContactForm({ locale, className }: ContactFormProps) {
           </div>
         )}
 
-        <SubmitButton copy={copy} turnstileReady={turnstileReady} />
+        <SubmitButton
+          copy={copy}
+          turnstileReady={turnstileReady}
+          isValid={isSubmitted ? isValid : true}
+        />
       </form>
     </div>
   );

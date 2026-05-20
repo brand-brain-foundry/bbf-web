@@ -5,6 +5,7 @@ import { Resend } from 'resend';
 import { contactRateLimit, getClientIp } from '@/lib/security/rate-limit';
 import { verifyTurnstile } from '@/lib/security/turnstile';
 import { isDisposableEmail } from '@/lib/security/disposable-emails';
+import { contactSchema } from '@/lib/schemas/contact';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -96,28 +97,18 @@ export async function submitContact(
     };
   }
 
-  // ===== VALIDACIÓN CAMPOS =====
-  if (!name || !email || !message) {
+  // ===== VALIDACIÓN ZOD (schema compartido con cliente) =====
+  const parsed = contactSchema.safeParse({ name, email, company, message });
+
+  if (!parsed.success) {
+    const firstError = parsed.error.issues[0];
+    console.warn('[contact] zod validation failed:', firstError?.message);
     return {
       success: false,
       message:
         locale === 'es'
-          ? 'Por favor completá nombre, email y mensaje.'
-          : 'Please complete name, email and message.',
-    };
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return {
-      success: false,
-      message: locale === 'es' ? 'El email no parece válido.' : 'The email does not look valid.',
-    };
-  }
-
-  if (message.length > 5000) {
-    return {
-      success: false,
-      message: locale === 'es' ? 'El mensaje es demasiado largo.' : 'The message is too long.',
+          ? 'Por favor revisá los datos del formulario.'
+          : 'Please review the form data.',
     };
   }
 

@@ -27,6 +27,7 @@
     "seed:cornerstones": "tsx src/scripts/seed-cornerstones.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@payloadcms/db-postgres": "^3.84.1",
     "@payloadcms/next": "^3.84.1",
     "@payloadcms/richtext-lexical": "^3.84.1",
@@ -42,6 +43,7 @@
     "payload": "^3.84.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-hook-form": "^7.76.0",
     "resend": "^6.12.3",
     "sharp": "^0.34.5",
     "svix": "^1.94.0",
