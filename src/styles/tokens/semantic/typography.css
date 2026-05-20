@@ -1,14 +1,14 @@
 /**
  * BBF Design System — TIER 2 SEMANTIC: Typography
  *
- * Subordinado a: BBF_M5_Framework_Plan.md §4 (M5-C)
  * Tier: 2 (SEMANTIC)
- * Decisiones: D-BBF-WEB-55 (3-tier), D-BBF-WEB-68 (Inter), D-BBF-WEB-68b (Mulish)
+ * Decisiones: D-BBF-WEB-55 (3-tier), D-BBF-WEB-68 (Inter), D-BBF-WEB-68b (Mulish),
+ *             D-BBF-KB-105 (golden ratio scale — tokens propósito)
  *
  * Font roles canon BBF:
- *   --bbf-font-display  → Inter (headlines, hero, titles, wordmark)
- *   --bbf-font-body     → Mulish (paragraphs, UI labels, nav, captions)
- *   --bbf-font-mono     → JetBrains Mono (code, technical content)
+ *   --bbf-font-display → Inter (headlines, hero, titles, wordmark)
+ *   --bbf-font-body    → Mulish (paragraphs, UI labels, nav, captions)
+ *   --bbf-font-code    → JetBrains Mono (code, technical content)
  *
  * Componentes referencian SOLO estos semantic tokens, NUNCA primitives.
  */
@@ -21,7 +21,77 @@
   --bbf-font-body: var(--bbf-font-mulish);
   --bbf-font-code: var(--bbf-font-mono);
 
-  /* Legacy aliases (compatibility — deprecate in M5-D) */
-  --bbf-font-heading: var(--bbf-font-display); /* alias usado en hero.css + reset.css */
-  --bbf-font-sans: var(--bbf-font-body); /* alias usado en LocaleSwitcher.css */
+  /* Legacy aliases (compatibilidad — deprecar en M5-D) */
+  --bbf-font-heading: var(--bbf-font-display);
+  --bbf-font-sans: var(--bbf-font-body);
+
+  /* ============================================================
+     SEMANTIC TYPOGRAPHY TOKENS (D-BBF-KB-105)
+     Mapean propósito a primitivos — mobile overrides via @media
+     ============================================================ */
+
+  /* Display 1 (hero, marquee, large impact) */
+  --bbf-typography-display-1-font: var(--bbf-font-display);
+  --bbf-typography-display-1-size: var(--bbf-text-display-1);
+  --bbf-typography-display-1-line: var(--bbf-leading-tight);
+  --bbf-typography-display-1-tracking: var(--bbf-tracking-tighter);
+  --bbf-typography-display-1-weight: var(--bbf-weight-semibold);
+
+  /* Display 2 (section heroes, sub-heroes) */
+  --bbf-typography-display-2-font: var(--bbf-font-display);
+  --bbf-typography-display-2-size: var(--bbf-text-display-2);
+  --bbf-typography-display-2-line: var(--bbf-leading-tight);
+  --bbf-typography-display-2-tracking: var(--bbf-tracking-tighter);
+  --bbf-typography-display-2-weight: var(--bbf-weight-semibold);
+
+  /* H1 */
+  --bbf-typography-h1-font: var(--bbf-font-display);
+  --bbf-typography-h1-size: var(--bbf-text-h1);
+  --bbf-typography-h1-line: var(--bbf-leading-snug);
+  --bbf-typography-h1-tracking: var(--bbf-tracking-tight);
+  --bbf-typography-h1-weight: var(--bbf-weight-bold);
+
+  /* H2 */
+  --bbf-typography-h2-font: var(--bbf-font-display);
+  --bbf-typography-h2-size: var(--bbf-text-h2);
+  --bbf-typography-h2-line: var(--bbf-leading-snug);
+  --bbf-typography-h2-tracking: var(--bbf-tracking-tight);
+  --bbf-typography-h2-weight: var(--bbf-weight-bold);
+
+  /* Body (default) */
+  --bbf-typography-body-font: var(--bbf-font-body);
+  --bbf-typography-body-size: var(--bbf-text-base);
+  --bbf-typography-body-line: var(--bbf-leading-base);
+  --bbf-typography-body-tracking: var(--bbf-tracking-normal);
+  --bbf-typography-body-weight: var(--bbf-weight-regular);
+
+  /* Lead / large body */
+  --bbf-typography-lead-font: var(--bbf-font-body);
+  --bbf-typography-lead-size: var(--bbf-text-lg);
+  --bbf-typography-lead-line: var(--bbf-leading-base);
+  --bbf-typography-lead-tracking: var(--bbf-tracking-normal);
+  --bbf-typography-lead-weight: var(--bbf-weight-regular);
+
+  /* Small / caption */
+  --bbf-typography-small-font: var(--bbf-font-body);
+  --bbf-typography-small-size: var(--bbf-text-sm);
+  --bbf-typography-small-line: var(--bbf-leading-snug-small);
+  --bbf-typography-small-tracking: var(--bbf-tracking-normal);
+  --bbf-typography-small-weight: var(--bbf-weight-regular);
+
+  /* Micro / footnote */
+  --bbf-typography-micro-font: var(--bbf-font-body);
+  --bbf-typography-micro-size: var(--bbf-text-micro);
+  --bbf-typography-micro-line: var(--bbf-leading-snug-small);
+  --bbf-typography-micro-tracking: var(--bbf-tracking-wide);
+  --bbf-typography-micro-weight: var(--bbf-weight-medium);
+}
+
+/* Mobile typography adjustments (D-BBF-KB-105 — ratio 1.333 < 640px) */
+@media (max-width: 640px) {
+  :root {
+    --bbf-typography-display-1-size: var(--bbf-text-display-1-mobile);
+    --bbf-typography-display-2-size: var(--bbf-text-display-2-mobile);
+    --bbf-typography-h1-size: var(--bbf-text-h1-mobile);
+  }
 }

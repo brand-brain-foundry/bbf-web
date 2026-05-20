@@ -1,20 +1,19 @@
 /**
  * BBF Design System — TIER 1 PRIMITIVE: Colors
  *
- * Subordinado a: BBF_M5_Framework_Plan.md §3 (M5-B)
- * Tier: 1 (PRIMITIVE)
- * Decisiones: D-BBF-WEB-55 (3-tier DTCG), D-BBF-WEB-56 (OKLCH),
- *             D-BBF-WEB-57 (dark mode preparado), D-BBF-WEB-69 (paleta Zavala)
+ * Capa 1 del 3-tier token system
+ * Decisiones: D-BBF-WEB-55 (3-tier DTCG), D-BBF-KB-104 (paleta canon hex firmada)
  *
- * Paleta OKLCH firmada por Zavala en sesión 2026-05-16:
- *   - Black:  oklch(0.15 0.01 292.51) — superficie oscura principal
- *   - Red:    oklch(0.68 0.20 28.96)  — intensidad/accent
- *   - Sand:   oklch(0.97 0.01 67.52)  — superficie cálida principal (canon)
- *   - White:  oklch(1 0 0)            — utility highlight sobre sand
- *   - Blue:   oklch(0.60 0.22 257.43) — casos específicos
+ * Paleta canon BBF (D-BBF-KB-104):
+ *   - black:  #000000 (superficie oscura principal)
+ *   - sand:   #fdf5ed (superficie cálida principal)
+ *   - red:    #ff5949 (accent primary)
+ *   - white:  #ffffff (utility highlight)
+ *   - blue:   #255ff1 (auxiliar — uso restringido)
+ *   - orange: #ff7b49 (solo para gradiente con red, NO standalone)
  *
- * Rampas 50→950 con lightness step ~0.08 (perceptualmente uniforme).
- * Compatible con dark mode futuro D-57 (cambia solo primitives via :root.dark).
+ * Rampas de escala para cada color canon.
+ * Compatible con dark mode futuro (cambia solo primitives via :root.dark).
  *
  * NO USAR estos tokens directamente en componentes.
  * Usar tokens semantic de tokens/semantic/colors.css.
@@ -22,100 +21,125 @@
 
 @theme {
   /* ============================================================
-     BBF BLACK RAMP (warm black, leve tinte púrpura imperceptible)
-     Hue 292.51 (firmada Zavala)
+     BBF BLACK RAMP
      ============================================================ */
-  --bbf-color-black-50: oklch(0.97 0.01 292.51);
-  --bbf-color-black-100: oklch(0.92 0.01 292.51);
-  --bbf-color-black-200: oklch(0.83 0.01 292.51);
-  --bbf-color-black-300: oklch(0.72 0.01 292.51);
-  --bbf-color-black-400: oklch(0.55 0.01 292.51);
-  --bbf-color-black-500: oklch(0.4 0.01 292.51);
-  --bbf-color-black-600: oklch(0.3 0.01 292.51);
-  --bbf-color-black-700: oklch(0.22 0.01 292.51);
-  --bbf-color-black-800: oklch(0.18 0.01 292.51);
-  --bbf-color-black-900: oklch(0.15 0.01 292.51); /* canon Zavala */
-  --bbf-color-black-950: oklch(0.08 0.01 292.51);
+  --bbf-color-black-50: #f5f5f5;
+  --bbf-color-black-100: #e6e6e6;
+  --bbf-color-black-200: #cccccc;
+  --bbf-color-black-300: #999999;
+  --bbf-color-black-400: #666666;
+  --bbf-color-black-500: #333333;
+  --bbf-color-black-600: #1a1a1a;
+  --bbf-color-black-700: #0d0d0d;
+  --bbf-color-black-800: #060606;
+  --bbf-color-black-900: #000000; /* canon black D-BBF-KB-104 */
+  --bbf-color-black-950: #000000;
 
   /* ============================================================
-     BBF RED RAMP (intensidad / accent)
-     Hue 28.96 (firmada Zavala)
+     BBF SAND RAMP (warm cream — superficie cálida principal)
      ============================================================ */
-  --bbf-color-red-50: oklch(0.97 0.02 28.96);
-  --bbf-color-red-100: oklch(0.92 0.05 28.96);
-  --bbf-color-red-200: oklch(0.84 0.1 28.96);
-  --bbf-color-red-300: oklch(0.78 0.15 28.96);
-  --bbf-color-red-400: oklch(0.73 0.18 28.96);
-  --bbf-color-red-500: oklch(0.68 0.2 28.96); /* canon Zavala */
-  --bbf-color-red-600: oklch(0.62 0.2 28.96);
-  --bbf-color-red-700: oklch(0.55 0.2 28.96); /* WCAG AA texto pequeño */
-  --bbf-color-red-800: oklch(0.45 0.18 28.96);
-  --bbf-color-red-900: oklch(0.35 0.15 28.96);
+  --bbf-color-sand-50: #fffcf6;
+  --bbf-color-sand-100: #fdf5ed; /* canon sand D-BBF-KB-104 */
+  --bbf-color-sand-200: #f7e8d2;
+  --bbf-color-sand-300: #ecd4a9;
+  --bbf-color-sand-400: #d9b87c;
+  --bbf-color-sand-500: #bf954f;
+  --bbf-color-sand-600: #997535;
 
   /* ============================================================
-     BBF SAND RAMP (warm cream, superficie cálida principal)
-     Hue 67.52 (firmada Zavala)
+     BBF RED RAMP (accent primary)
      ============================================================ */
-  --bbf-color-sand-50: oklch(0.99 0.01 67.52); /* casi white */
-  --bbf-color-sand-100: oklch(0.97 0.01 67.52); /* canon Zavala */
-  --bbf-color-sand-200: oklch(0.94 0.02 67.52);
-  --bbf-color-sand-300: oklch(0.88 0.03 67.52);
-  --bbf-color-sand-400: oklch(0.78 0.04 67.52);
-  --bbf-color-sand-500: oklch(0.65 0.05 67.52);
+  --bbf-color-red-50: #fff0ed;
+  --bbf-color-red-100: #ffd9d1;
+  --bbf-color-red-200: #ffb3a3;
+  --bbf-color-red-300: #ff8d75;
+  --bbf-color-red-400: #ff7159;
+  --bbf-color-red-500: #ff5949; /* canon red D-BBF-KB-104 */
+  --bbf-color-red-600: #e84531;
+  --bbf-color-red-700: #c0341d;
+  --bbf-color-red-800: #962614;
+  --bbf-color-red-900: #6b1a0c;
+
+  /* Legacy alias — referenciado en feedback.css y FormField */
+  --bbf-color-red-base: #ff5949; /* = red-500 canon */
 
   /* ============================================================
-     BBF BLUE RAMP (uso muy específico)
-     Hue 257.43 (firmada Zavala)
+     BBF WHITE
      ============================================================ */
-  --bbf-color-blue-50: oklch(0.97 0.02 257.43);
-  --bbf-color-blue-100: oklch(0.92 0.05 257.43);
-  --bbf-color-blue-200: oklch(0.84 0.1 257.43);
-  --bbf-color-blue-300: oklch(0.74 0.15 257.43);
-  --bbf-color-blue-400: oklch(0.67 0.2 257.43);
-  --bbf-color-blue-500: oklch(0.6 0.22 257.43); /* canon Zavala */
-  --bbf-color-blue-600: oklch(0.52 0.22 257.43);
-  --bbf-color-blue-700: oklch(0.44 0.2 257.43);
-  --bbf-color-blue-800: oklch(0.36 0.18 257.43);
-  --bbf-color-blue-900: oklch(0.28 0.15 257.43);
+  --bbf-color-white: #ffffff; /* canon white D-BBF-KB-104 */
 
   /* ============================================================
-     UTILITIES
+     BBF ORANGE (solo para gradiente con red, NO standalone)
      ============================================================ */
-  --bbf-color-white: oklch(1 0 0); /* puro, uso restringido como highlight sobre sand */
+  --bbf-color-orange-500: #ff7b49; /* canon gradient end D-BBF-KB-104 */
 
-  /* ========================================================================
-     STATUS COLORS PRIMITIVES (D-111 — Calibrados WCAG AA, R-BBF-11)
+  /* ============================================================
+     BBF BLUE RAMP (auxiliar — uso restringido)
+     ============================================================ */
+  --bbf-color-blue-50: #eef4ff;
+  --bbf-color-blue-100: #d9e7ff;
+  --bbf-color-blue-200: #b3cfff;
+  --bbf-color-blue-300: #7aa8fb;
+  --bbf-color-blue-400: #5587fb;
+  --bbf-color-blue-500: #255ff1; /* canon blue auxiliar D-BBF-KB-104 */
+  --bbf-color-blue-600: #1a4fd6;
+  --bbf-color-blue-700: #1440b0;
+  --bbf-color-blue-800: #0f3289;
+  --bbf-color-blue-900: #0a2466;
 
-     4 colors × 5 shades = 20 primitives OKLCH
-     Hues canon: success 145, warning 80, error 25, info 240
-     Calibración para fondos sand BBF + accessibility AA contrast
-     ======================================================================== */
+  /* ============================================================
+     GRADIENT TOKENS (D-BBF-KB-104)
+     Gradient red: red predomina (21% start, no 0%)
+     Animado via background-position shift en hover
+     ============================================================ */
+  --bbf-gradient-red: linear-gradient(
+    135deg,
+    var(--bbf-color-red-500) 21%,
+    var(--bbf-color-orange-500) 100%
+  );
+  --bbf-gradient-red-reverse: linear-gradient(
+    135deg,
+    var(--bbf-color-orange-500) 0%,
+    var(--bbf-color-red-500) 79%
+  );
+  --bbf-gradient-sand: linear-gradient(
+    180deg,
+    var(--bbf-color-sand-50) 0%,
+    var(--bbf-color-sand-100) 100%
+  );
 
-  /* === SUCCESS (green canon balanceado, NO neón) === */
-  --bbf-color-success-50: oklch(0.97 0.025 145); /* fondo muy claro */
-  --bbf-color-success-100: oklch(0.93 0.05 145); /* fondo claro */
-  --bbf-color-success-500: oklch(0.62 0.16 145); /* base canon */
-  --bbf-color-success-700: oklch(0.45 0.14 145); /* dark variant */
-  --bbf-color-success-900: oklch(0.3 0.1 145); /* darkest */
+  /* ============================================================
+     STATUS COLOR PRIMITIVES (D-111)
+     OKLCH calibrados WCAG AA sobre fondos sand BBF
+     4 estados × 5 shades = 20 primitives
+     Referenciados por semantic/feedback.css y componentes form
+     ============================================================ */
 
-  /* === WARNING (ámbar dorado complementa sand BBF) === */
+  /* Success (green balanceado, NO neón) */
+  --bbf-color-success-50: oklch(0.97 0.025 145);
+  --bbf-color-success-100: oklch(0.93 0.05 145);
+  --bbf-color-success-500: oklch(0.62 0.16 145);
+  --bbf-color-success-700: oklch(0.45 0.14 145);
+  --bbf-color-success-900: oklch(0.3 0.1 145);
+
+  /* Warning (ámbar dorado complementa sand BBF) */
   --bbf-color-warning-50: oklch(0.97 0.025 80);
   --bbf-color-warning-100: oklch(0.94 0.05 80);
-  --bbf-color-warning-500: oklch(0.72 0.16 80); /* base canon */
+  --bbf-color-warning-500: oklch(0.72 0.16 80);
   --bbf-color-warning-700: oklch(0.55 0.14 80);
   --bbf-color-warning-900: oklch(0.38 0.1 80);
 
-  /* === ERROR (rojo cálido, no agresivo) === */
+  /* Error (rojo cálido alineado con red canon) */
   --bbf-color-error-50: oklch(0.97 0.02 25);
   --bbf-color-error-100: oklch(0.93 0.05 25);
-  --bbf-color-error-500: oklch(0.58 0.22 25); /* base canon */
+  --bbf-color-error-500: oklch(0.58 0.22 25);
   --bbf-color-error-700: oklch(0.45 0.18 25);
   --bbf-color-error-900: oklch(0.32 0.13 25);
 
-  /* === INFO (azul moderado profesional) === */
+  /* Info (azul moderado profesional) */
   --bbf-color-info-50: oklch(0.97 0.02 240);
   --bbf-color-info-100: oklch(0.93 0.04 240);
-  --bbf-color-info-500: oklch(0.62 0.15 240); /* base canon */
+  --bbf-color-info-500: oklch(0.62 0.15 240);
   --bbf-color-info-700: oklch(0.48 0.13 240);
   --bbf-color-info-900: oklch(0.32 0.1 240);
 }

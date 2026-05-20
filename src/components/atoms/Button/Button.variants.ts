@@ -1,80 +1,79 @@
 /**
- * BBF Design System — Button atom variants
+ * BBF Button — pill canon (D-BBF-KB-108)
  *
- * Subordinado a: BBF_M5_D_Plan.md §2
- * Decisiones: D-BBF-WEB-79 (compound NO), D-BBF-WEB-80 (asChild),
- *             D-BBF-WEB-77 (surface-aware), D-BBF-WEB-81 (folder canon)
+ * Sigue 3+ señales perceptibles L-BBF-21 para hover:
+ *   1. gradient position shift (Tailwindflex 2026 canon)
+ *   2. translate-y(-1px) lift
+ *   3. shadow-md elevation
  *
- * D-95 RATIFICADA (M5-D6): Pattern canon BBF prop `intent` (NO `variant`).
- *   Atoms BBF usan prop `intent` semántica (primary/secondary/ghost/outline),
- *   NO prop genérica `variant`. Más legible y expresivo.
- *   Auto-corrección M5-D1 ratificada retroactivamente.
- *   Pattern aplica también a: Heading.level, Text.variant (rol semántico).
- *
- * D-92 (L-BBF-92): Tailwind v4 arbitrary properties canon BBF.
- *   [property:var(--token)] preferido sobre utility-class[var(--token)].
+ * Intents: primary (gradient red), secondary (black), outline (red border), ghost
+ * Shape: rounded-full (pill canon)
  */
 
 import { cva, type VariantProps } from 'class-variance-authority';
 
-/**
- * Button variants canon BBF.
- *
- * Variants:
- * - intent: visual purpose (primary | secondary | ghost | outline)
- * - size: dimension (sm | md | lg | icon)
- * - surface: contexto visual (auto | sand | dark | glass)
- * - loading: estado loading (true | false)
- */
 export const buttonVariants = cva(
-  // Base classes — siempre aplicadas
   [
-    'inline-flex items-center justify-center',
-    'font-medium',
-    'transition-all duration-150 ease-out',
-    'disabled:pointer-events-none disabled:opacity-50',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2',
-    'cursor-pointer',
-  ],
+    'relative inline-flex items-center justify-center gap-2',
+    'font-semibold whitespace-nowrap',
+    'rounded-full',
+    'transition-all duration-200 ease-out',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+    'disabled:pointer-events-none disabled:opacity-60',
+    'select-none cursor-pointer',
+    'will-change-transform',
+  ].join(' '),
   {
     variants: {
       intent: {
         primary: [
-          'bg-[var(--bbf-surface-black)]',
-          'text-[var(--bbf-text-on-dark)]',
-          'hover:bg-[var(--bbf-surface-black-elevated)] hover:scale-[1.02]',
-          'active:scale-[0.98]',
-        ],
+          'text-[var(--bbf-text-on-gradient-red)]',
+          '[background:var(--bbf-gradient-red)]',
+          '[background-size:200%_200%]',
+          '[background-position:0%_50%]',
+          'shadow-sm',
+          'hover:[background-position:100%_50%] hover:-translate-y-px hover:shadow-md',
+          'active:scale-[0.97] active:[background-position:50%_50%]',
+          'focus-visible:ring-[var(--bbf-color-focus-ring)]',
+        ].join(' '),
         secondary: [
-          'bg-[var(--bbf-accent-red)]',
-          'text-[var(--bbf-text-on-dark)]',
-          'hover:bg-[var(--bbf-accent-red-hover)] hover:scale-[1.02]',
-          'active:scale-[0.98]',
-        ],
-        ghost: [
-          'bg-transparent',
-          'text-[var(--bbf-text-on-light)]',
-          'hover:bg-[var(--bbf-surface-sand-elevated)]',
-          'active:opacity-70',
-        ],
+          'text-[var(--bbf-text-on-black)]',
+          'bg-[var(--bbf-surface-black)]',
+          'shadow-sm',
+          'hover:bg-[var(--bbf-surface-black-elevated)] hover:-translate-y-px hover:shadow-md',
+          'active:scale-[0.97]',
+          'focus-visible:ring-[var(--bbf-color-focus-ring)]',
+        ].join(' '),
         outline: [
-          'border border-[var(--bbf-border-on-light)]',
+          'text-[var(--bbf-accent-red)]',
           'bg-transparent',
-          'text-[var(--bbf-text-on-light)]',
-          'hover:bg-[var(--bbf-surface-sand-elevated)]',
-          'active:opacity-70',
-        ],
+          'border-2 border-[var(--bbf-accent-red)]',
+          'hover:bg-[var(--bbf-accent-red)] hover:text-[var(--bbf-text-on-red)] hover:-translate-y-px',
+          'active:scale-[0.97]',
+          'focus-visible:ring-[var(--bbf-color-focus-ring)]',
+        ].join(' '),
+        ghost: [
+          'text-[var(--bbf-text-on-sand)]',
+          'bg-transparent',
+          'hover:bg-[var(--bbf-color-black-100)] hover:-translate-y-px',
+          'active:scale-[0.97]',
+          'focus-visible:ring-[var(--bbf-color-focus-ring)]',
+        ].join(' '),
       },
       size: {
-        sm: 'h-8 px-3 text-sm rounded-md',
-        md: 'h-10 px-4 text-base rounded-lg',
-        lg: 'h-12 px-6 text-lg rounded-full',
-        icon: 'h-10 w-10 rounded-full',
+        xs: 'h-7  px-3  text-xs   gap-1.5',
+        sm: 'h-9  px-4  text-sm   gap-1.5',
+        md: 'h-11 px-5  text-base gap-2',
+        lg: 'h-13 px-7  text-lg   gap-2',
+        xl: 'h-16 px-9  text-xl   gap-2.5',
+        icon: 'h-11 w-11 p-0',
       },
       surface: {
         auto: '',
         sand: '',
-        dark: '',
+        dark: 'focus-visible:ring-offset-[var(--bbf-surface-black)]',
+        black: 'focus-visible:ring-offset-[var(--bbf-surface-black)]',
+        red: 'focus-visible:ring-offset-[var(--bbf-surface-red)]',
         glass: 'backdrop-blur-md',
       },
       loading: {
@@ -83,13 +82,16 @@ export const buttonVariants = cva(
       },
     },
     compoundVariants: [
-      // Ghost en surface dark
       {
         intent: 'ghost',
         surface: 'dark',
-        class: 'text-[var(--bbf-text-on-dark)] hover:bg-[var(--bbf-surface-black-elevated)]',
+        class: 'text-[var(--bbf-text-on-black)] hover:bg-[var(--bbf-surface-black-elevated)]',
       },
-      // Outline en surface dark
+      {
+        intent: 'ghost',
+        surface: 'black',
+        class: 'text-[var(--bbf-text-on-black)] hover:bg-[var(--bbf-surface-black-elevated)]',
+      },
       {
         intent: 'outline',
         surface: 'dark',

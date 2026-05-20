@@ -1,0 +1,54 @@
+/**
+ * BBF — Gradient animations canon (D-BBF-KB-108)
+ * Hover: background-position shift sobre gradient 200% size
+ * Idle: slow auto-shift para elementos siempre visibles
+ */
+
+@keyframes bbf-gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes bbf-gradient-pulse {
+  0%,
+  100% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+}
+
+.bbf-gradient-red-animated {
+  background: var(--bbf-gradient-red);
+  background-size: 200% 200%;
+  animation: bbf-gradient-shift 8s ease infinite;
+}
+
+.bbf-gradient-red-hover {
+  background: var(--bbf-gradient-red);
+  background-size: 200% 200%;
+  background-position: 0% 50%;
+  transition: background-position 600ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.bbf-gradient-red-hover:hover {
+  background-position: 100% 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-gradient-red-animated {
+    animation: none;
+  }
+
+  .bbf-gradient-red-hover {
+    transition: none;
+  }
+}
