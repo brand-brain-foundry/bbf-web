@@ -22,6 +22,17 @@ export const contactRateLimit = new Ratelimit({
 });
 
 /**
+ * Newsletter: 3 submits / 1 hora / IP
+ * Más permisivo que contact (menor fricción para suscripción)
+ */
+export const newsletterRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(3, '1 h'),
+  prefix: 'ratelimit:bbf:newsletter',
+  analytics: true,
+});
+
+/**
  * Get client IP del request headers
  * Funciona con Vercel x-forwarded-for + Cloudflare CF-Connecting-IP
  */

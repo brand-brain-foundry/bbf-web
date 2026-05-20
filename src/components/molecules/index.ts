@@ -9,3 +9,4 @@ export * from './LanguageSwitcher';
 export * from './HeroVideo';
 export * from './FormField';
 export * from './MobileMenu';
+export * from './NewsletterBox';

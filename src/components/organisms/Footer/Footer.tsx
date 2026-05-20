@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
+import { NewsletterBox } from '@/components/molecules/NewsletterBox';
 import { cn } from '@/lib/utils';
 
 type FooterProps = {
@@ -15,9 +16,10 @@ export async function Footer({ className }: FooterProps) {
 
   const payload = await getPayload({ config });
 
-  const [identity, navigation] = await Promise.all([
+  const [identity, navigation, newsletter] = await Promise.all([
     payload.findGlobal({ slug: 'site-identity', locale: localeKey }),
     payload.findGlobal({ slug: 'site-navigation', locale: localeKey }),
+    payload.findGlobal({ slug: 'site-newsletter', locale: localeKey }),
   ]);
 
   const siteName = identity.siteName ?? 'Brand Brain Foundry';
@@ -68,8 +70,23 @@ export async function Footer({ className }: FooterProps) {
             </nav>
           )}
 
-          {/* Newsletter placeholder (Wave 4) */}
-          <div>{/* Wave 4: NewsletterBox aquí */}</div>
+          {/* Newsletter subscription (Wave 4) */}
+          <div>
+            {newsletter.enabled && (
+              <NewsletterBox
+                copy={{
+                  title: newsletter.title ?? 'Cerebros de marca, cada quince días.',
+                  description: newsletter.description ?? '',
+                  emailPlaceholder: newsletter.emailPlaceholder ?? 'tu@email.com',
+                  submitLabel: newsletter.submitLabel ?? 'Suscribirme',
+                  submittingLabel: newsletter.submittingLabel ?? 'Enviando…',
+                  successTitle: newsletter.successTitle ?? 'Revisá tu email',
+                  successMessage: newsletter.successMessage ?? '',
+                  privacyNote: newsletter.privacyNote ?? '',
+                }}
+              />
+            )}
+          </div>
         </div>
 
         <div className="border-t border-[var(--bbf-border-on-light)] pt-6 text-xs text-[var(--bbf-text-on-light)]/60">
