@@ -1,7 +1,6 @@
 'use client';
 
 import { forwardRef } from 'react';
-import { Text } from '@/components/atoms/Text';
 import { cn } from '@/lib/utils';
 
 type FormFieldProps = {
@@ -40,30 +39,41 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
     const fieldId = `field-${name}`;
     const errorId = `${fieldId}-error`;
 
-    const baseInputClass = cn(
-      'w-full px-4 py-3 border rounded-md bg-white',
+    const baseClass = cn(
+      'w-full border',
+      'text-[length:var(--bbf-text-base)]',
+      'bg-[var(--bbf-color-white)]',
+      'text-[var(--bbf-text-on-sand)] placeholder:text-[var(--bbf-text-on-sand-subtle)]',
       'transition-all duration-200 ease-out',
-      'focus:outline-none focus:ring-2 focus:ring-offset-1',
-      !hasError && [
-        'border-[var(--bbf-border-on-light)]',
-        'hover:border-[var(--bbf-text-on-light)]',
-        'focus:border-[var(--bbf-color-red-base)] focus:ring-[var(--bbf-color-red-base)]/30',
-      ],
-      hasError && [
-        'border-[var(--bbf-color-red-base)]',
-        'focus:border-[var(--bbf-color-red-base)] focus:ring-[var(--bbf-color-red-base)]',
-      ],
-      disabled && 'opacity-60 cursor-not-allowed hover:border-[var(--bbf-border-on-light)]',
+      'focus:outline-none focus:ring-2 focus:ring-[var(--bbf-color-focus-ring)] focus:ring-offset-2 focus:ring-offset-[var(--bbf-surface-sand)]',
+      'disabled:cursor-not-allowed disabled:opacity-60',
+    );
+
+    const borderClass = hasError
+      ? cn('border-[var(--bbf-color-error-border)]', 'focus:border-[var(--bbf-color-error-border)]')
+      : cn(
+          'border-[var(--bbf-border-on-sand)]',
+          !disabled && 'hover:border-[var(--bbf-text-on-sand)]',
+          'focus:border-[var(--bbf-accent-red)]',
+        );
+
+    const inputClass = cn(baseClass, borderClass, 'h-12 rounded-full px-5', inputClassName);
+
+    const textareaClass = cn(
+      baseClass,
+      borderClass,
+      'min-h-[120px] resize-none rounded-2xl px-5 py-4',
       inputClassName,
     );
 
     return (
-      <div data-component="bbf-form-field" className={cn('form-field', className)}>
-        <label htmlFor={fieldId} className="mb-2 block">
-          <Text variant="body-md" weight="medium" as="span">
-            {label}
-            {required && <span aria-hidden="true"> *</span>}
-          </Text>
+      <div data-component="bbf-form-field" className={cn('flex flex-col', className)}>
+        <label
+          htmlFor={fieldId}
+          className="mb-2 block text-[length:var(--bbf-text-sm)] font-[var(--bbf-weight-medium)] text-[var(--bbf-text-on-sand)]"
+        >
+          {label}
+          {required && <span aria-hidden="true"> *</span>}
         </label>
 
         {type === 'textarea' ? (
@@ -78,7 +88,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
             disabled={disabled}
             aria-invalid={hasError}
             aria-describedby={hasError ? errorId : undefined}
-            className={baseInputClass}
+            className={textareaClass}
             {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
           />
         ) : (
@@ -94,13 +104,17 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
             disabled={disabled}
             aria-invalid={hasError}
             aria-describedby={hasError ? errorId : undefined}
-            className={baseInputClass}
+            className={inputClass}
             {...props}
           />
         )}
 
         {hasError && (
-          <p id={errorId} role="alert" className="mt-2 text-sm text-[var(--bbf-color-red-base)]">
+          <p
+            id={errorId}
+            role="alert"
+            className="mt-2 text-[length:var(--bbf-text-sm)] text-[var(--bbf-color-error-text)]"
+          >
             {error}
           </p>
         )}

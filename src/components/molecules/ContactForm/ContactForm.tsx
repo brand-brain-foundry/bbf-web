@@ -8,7 +8,6 @@ import { useTranslations } from 'next-intl';
 import { submitContact, type ContactFormState } from '@/lib/actions/contact';
 import { contactSchema, getContactErrorMessage, type ContactFormData } from '@/lib/schemas/contact';
 import { Button } from '@/components/atoms/Button';
-import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { FormField } from '@/components/molecules/FormField';
 import { Turnstile } from '@/components/molecules/Turnstile';
@@ -107,16 +106,13 @@ export function ContactForm({ locale, className }: ContactFormProps) {
   };
 
   return (
-    <div data-component="bbf-contact-form" className={cn('contact-form', className)}>
-      <Heading level="display-md" weight="bold" className="mb-6">
-        {t('title')}
-      </Heading>
-
-      <Text variant="body-lg" color="secondary" className="mb-8 max-w-prose">
-        {t('intro')}
-      </Text>
-
-      <form id="bbf-contact-form" action={formAction} className="max-w-prose space-y-6" noValidate>
+    <div data-component="bbf-contact-form" className={cn('w-full', className)}>
+      <form
+        id="bbf-contact-form"
+        action={formAction}
+        className="flex flex-col gap-5 lg:gap-6"
+        noValidate
+      >
         {/* Hidden fields security */}
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="formLoadTime" value={formLoadTime} />
@@ -192,7 +188,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
         {state && (
           <div
             className={cn(
-              'rounded-md p-4',
+              'rounded-2xl p-6',
               'transition-all duration-300',
               state.success
                 ? 'bg-[var(--bbf-color-success-bg)] text-[var(--bbf-color-success-text)]'

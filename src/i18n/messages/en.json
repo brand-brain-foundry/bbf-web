@@ -13,8 +13,11 @@
     "navTitle": "Navigation"
   },
   "contact": {
-    "title": "Let us think together",
-    "intro": "Tell us what you need. We respond to coordinate a conversation.",
+    "title": "Let's think this through",
+    "subtitle": "No urgency. There's method.",
+    "intro": "Tell us where your brand stands. We listen, we ask. If there's something to build together, we say so. If not, we say so too.",
+    "metaTitle": "Contact — Brand Brain Foundry",
+    "metaDescription": "Let's think this through. No urgency. There's method.",
     "name": "Name",
     "email": "Email",
     "company": "Company (optional)",

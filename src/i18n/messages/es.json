@@ -14,7 +14,10 @@
   },
   "contact": {
     "title": "Sentémonos a pensar",
-    "intro": "Contanos qué necesitás. Te respondemos para coordinar conversación.",
+    "subtitle": "Sin urgencia. Hay método.",
+    "intro": "Contanos dónde está tu marca. Escuchamos, preguntamos. Si hay algo que construir juntos, lo decimos. Si no, también lo decimos.",
+    "metaTitle": "Contacto — Brand Brain Foundry",
+    "metaDescription": "Sentémonos a pensar. Sin urgencia. Hay método.",
     "name": "Nombre",
     "email": "Email",
     "company": "Empresa (opcional)",
