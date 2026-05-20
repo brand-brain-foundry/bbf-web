@@ -42,12 +42,18 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
 
     const baseInputClass = cn(
       'w-full px-4 py-3 border rounded-md bg-white',
-      'transition-colors duration-150',
-      'focus:outline-none focus:ring-1',
-      hasError
-        ? 'border-[var(--bbf-color-red-base)] focus:border-[var(--bbf-color-red-base)] focus:ring-[var(--bbf-color-red-base)]'
-        : 'border-[var(--bbf-border-on-light)] focus:border-[var(--bbf-color-red-base)] focus:ring-[var(--bbf-color-red-base)]',
-      disabled && 'opacity-60 cursor-not-allowed',
+      'transition-all duration-200 ease-out',
+      'focus:outline-none focus:ring-2 focus:ring-offset-1',
+      !hasError && [
+        'border-[var(--bbf-border-on-light)]',
+        'hover:border-[var(--bbf-text-on-light)]',
+        'focus:border-[var(--bbf-color-red-base)] focus:ring-[var(--bbf-color-red-base)]/30',
+      ],
+      hasError && [
+        'border-[var(--bbf-color-red-base)]',
+        'focus:border-[var(--bbf-color-red-base)] focus:ring-[var(--bbf-color-red-base)]',
+      ],
+      disabled && 'opacity-60 cursor-not-allowed hover:border-[var(--bbf-border-on-light)]',
       inputClassName,
     );
 

@@ -10,12 +10,25 @@ export interface LinkProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorEle
   external?: boolean;
 }
 
+const focusVisibleClasses =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:rounded-sm';
+
 const variants: Record<LinkVariant, string> = {
-  default:
+  default: [
     'text-[var(--bbf-text-on-light)] hover:text-[var(--bbf-accent-red)] hover:underline underline-offset-4',
-  subtle: 'text-[var(--bbf-text-on-light-secondary)] hover:text-[var(--bbf-text-on-light)]',
-  underline:
+    'active:opacity-70',
+    focusVisibleClasses,
+  ].join(' '),
+  subtle: [
+    'text-[var(--bbf-text-on-light-secondary)] hover:text-[var(--bbf-text-on-light)]',
+    'active:opacity-70',
+    focusVisibleClasses,
+  ].join(' '),
+  underline: [
     'underline underline-offset-4 text-[var(--bbf-text-on-light)] hover:text-[var(--bbf-accent-red)]',
+    'active:opacity-70',
+    focusVisibleClasses,
+  ].join(' '),
 };
 
 export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(

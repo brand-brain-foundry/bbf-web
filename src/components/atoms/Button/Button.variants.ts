@@ -31,7 +31,7 @@ export const buttonVariants = cva(
   [
     'inline-flex items-center justify-center',
     'font-medium',
-    'transition-all',
+    'transition-all duration-150 ease-out',
     'disabled:pointer-events-none disabled:opacity-50',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2',
     'cursor-pointer',
@@ -42,25 +42,27 @@ export const buttonVariants = cva(
         primary: [
           'bg-[var(--bbf-surface-black)]',
           'text-[var(--bbf-text-on-dark)]',
-          'hover:bg-[var(--bbf-surface-black-elevated)]',
+          'hover:bg-[var(--bbf-surface-black-elevated)] hover:scale-[1.02]',
           'active:scale-[0.98]',
         ],
         secondary: [
           'bg-[var(--bbf-accent-red)]',
           'text-[var(--bbf-text-on-dark)]',
-          'hover:bg-[var(--bbf-accent-red-hover)]',
+          'hover:bg-[var(--bbf-accent-red-hover)] hover:scale-[1.02]',
           'active:scale-[0.98]',
         ],
         ghost: [
           'bg-transparent',
           'text-[var(--bbf-text-on-light)]',
           'hover:bg-[var(--bbf-surface-sand-elevated)]',
+          'active:opacity-70',
         ],
         outline: [
           'border border-[var(--bbf-border-on-light)]',
           'bg-transparent',
           'text-[var(--bbf-text-on-light)]',
           'hover:bg-[var(--bbf-surface-sand-elevated)]',
+          'active:opacity-70',
         ],
       },
       size: {

@@ -41,7 +41,7 @@ export async function Header({ className }: HeaderProps) {
           {/* Logo / Home link */}
           <Link
             href={homeHref}
-            className="font-bold tracking-tight text-[var(--bbf-text-on-light)] transition-opacity hover:opacity-80"
+            className="font-bold tracking-tight text-[var(--bbf-text-on-light)] transition-opacity duration-150 ease-out hover:opacity-80 focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-80 focus-visible:outline-none active:opacity-60"
             aria-label="Brand Brain Foundry — Home"
           >
             <span className="text-lg sm:text-xl">Brand Brain Foundry</span>
@@ -53,7 +53,7 @@ export async function Header({ className }: HeaderProps) {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-[var(--bbf-text-on-light)] transition-opacity hover:opacity-70"
+                className="text-sm text-[var(--bbf-text-on-light)] transition-opacity duration-150 ease-out hover:opacity-70 focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-100 focus-visible:outline-none active:opacity-50"
               >
                 {link.label}
               </Link>

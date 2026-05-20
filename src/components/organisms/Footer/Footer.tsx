@@ -54,13 +54,13 @@ export async function Footer({ className }: FooterProps) {
           <nav aria-label="Footer navigation" className="flex flex-col gap-2">
             <Link
               href={contactHref}
-              className="text-sm text-[var(--bbf-text-on-light)] transition-opacity hover:opacity-70"
+              className="text-sm text-[var(--bbf-text-on-light)] transition-opacity duration-150 ease-out hover:opacity-70 focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-100 focus-visible:outline-none active:opacity-50"
             >
               {copy.contact}
             </Link>
             <Link
               href={privacyHref}
-              className="text-sm text-[var(--bbf-text-on-light)] transition-opacity hover:opacity-70"
+              className="text-sm text-[var(--bbf-text-on-light)] transition-opacity duration-150 ease-out hover:opacity-70 focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-100 focus-visible:outline-none active:opacity-50"
             >
               {copy.privacy}
             </Link>
@@ -70,7 +70,7 @@ export async function Footer({ className }: FooterProps) {
           <div className="text-sm">
             <a
               href={`mailto:${copy.contactEmail}`}
-              className="text-[var(--bbf-text-on-light)] transition-opacity hover:opacity-70"
+              className="text-[var(--bbf-text-on-light)] transition-opacity duration-150 ease-out hover:opacity-70 focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-100 focus-visible:outline-none active:opacity-50"
             >
               {copy.contactEmail}
             </a>
