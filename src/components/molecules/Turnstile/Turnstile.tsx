@@ -9,7 +9,7 @@ type TurnstileProps = {
   onError?: () => void;
   onExpire?: () => void;
   theme?: 'light' | 'dark' | 'auto';
-  size?: 'normal' | 'compact' | 'invisible';
+  size?: 'normal' | 'compact' | 'flexible';
 };
 
 declare global {
@@ -39,7 +39,7 @@ export function Turnstile({
   onError,
   onExpire,
   theme = 'auto',
-  size = 'invisible',
+  size = 'flexible',
 }: TurnstileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);

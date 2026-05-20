@@ -194,7 +194,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
         {/* Cloudflare Turnstile widget — invisible */}
         <Turnstile
           siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''}
-          size="invisible"
+          size="flexible"
           theme="auto"
           onSuccess={(token) => {
             setTurnstileToken(token);
