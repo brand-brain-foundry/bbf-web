@@ -13,7 +13,7 @@ export type ContactFormState = {
   message: string;
 };
 
-const CONTACT_EMAIL = 'hola@brandbrainfoundry.com';
+const CONTACT_EMAIL = 'contacto@brandbrainfoundry.com';
 const FROM_EMAIL = 'web@brandbrainfoundry.com';
 
 // Time threshold: humanos tardan al menos 2 segundos en llenar form
