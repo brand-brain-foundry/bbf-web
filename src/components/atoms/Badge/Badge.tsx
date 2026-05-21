@@ -41,7 +41,7 @@ export function Badge({
   };
 
   const sizeClasses: Record<BadgeSize, string> = {
-    xs: 'text-[length:var(--bbf-text-micro)] px-1 py-px',
+    xs: 'text-[9px] leading-none px-1 py-[2px]',
     sm: 'text-[length:var(--bbf-text-xs)] px-1.5 py-0.5',
     md: 'text-[length:var(--bbf-text-sm)] px-2 py-1',
   };
@@ -55,8 +55,8 @@ export function Badge({
         'border border-solid',
         'rounded-md',
         'font-[var(--bbf-weight-medium)]',
-        'tracking-wider uppercase',
-        'leading-none',
+        'uppercase',
+        size === 'xs' ? 'tracking-normal' : 'tracking-wider',
         'whitespace-nowrap',
         intentClasses[intent],
         sizeClasses[size],

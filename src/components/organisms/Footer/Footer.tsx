@@ -75,7 +75,7 @@ export async function Footer({ className }: FooterProps) {
         <div
           className={cn(
             'mb-10 grid lg:mb-12',
-            'grid-cols-1 gap-10',
+            'grid-cols-1 gap-12',
             'md:grid-cols-[1.4fr_repeat(var(--footer-cols),1fr)_1.4fr]',
             'md:gap-8 lg:gap-10',
           )}
@@ -84,7 +84,7 @@ export async function Footer({ className }: FooterProps) {
           }}
         >
           {/* Col 1: Brand identity */}
-          <div className="order-1 flex flex-col gap-4">
+          <div className="order-2 flex flex-col gap-3 md:order-1 md:gap-4">
             <div className="flex items-center gap-3">
               <BBFLogo variant="icon" size="sm" aria-hidden="true" />
               <p
@@ -128,7 +128,7 @@ export async function Footer({ className }: FooterProps) {
 
           {/* Newsletter — order-2 mobile, last desktop */}
           {newsletter.enabled && (
-            <div className="order-2 md:order-last">
+            <div className="order-1 md:order-last">
               <NewsletterBox
                 copy={{
                   title: newsletter.title ?? 'Cerebros de marca, cada quince días.',
@@ -148,7 +148,7 @@ export async function Footer({ className }: FooterProps) {
           {footerGroups.map((group, idx) => (
             <nav
               key={`${group.groupTitle}-${idx}`}
-              className="order-3 flex flex-col gap-3"
+              className="order-3 flex flex-col gap-3 md:order-2"
               aria-label={group.groupTitle}
             >
               <p
