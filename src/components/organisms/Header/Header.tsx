@@ -57,12 +57,13 @@ export async function Header({ className }: HeaderProps) {
       data-component="bbf-header"
       className={cn(
         'fixed top-0 right-0 left-0',
+        'w-full',
         'z-[var(--bbf-z-header)]',
         'pointer-events-none',
         className,
       )}
     >
-      <div className="pointer-events-auto mx-auto max-w-7xl px-3 pt-3 sm:px-4 sm:pt-4 lg:px-6">
+      <div className="pointer-events-auto mx-auto box-border max-w-7xl px-3 pt-3 sm:px-4 sm:pt-4 lg:px-6">
         <div
           className={cn(
             'mx-auto rounded-2xl',

@@ -57,7 +57,7 @@ export function MegaMenuPanel({
       onMouseLeave={onMouseLeave}
       data-component="bbf-mega-menu-panel"
       className={cn(
-        'absolute top-full right-0 left-0 mt-2',
+        'absolute top-[calc(100%+0.5rem)] right-0 left-0',
         'z-[var(--bbf-z-mega-menu)]',
         'rounded-2xl',
         'bg-[var(--bbf-surface-sand)]',

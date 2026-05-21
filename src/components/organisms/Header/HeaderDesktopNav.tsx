@@ -33,11 +33,13 @@ type HeaderDesktopNavProps = {
 };
 
 /**
- * BBF HeaderDesktopNav — client component nav desktop con mega-menu.
+ * BBF HeaderDesktopNav — Wave 8.1 hotfix (B-2 fix)
  *
- * Hover sobre link con hasSubMenu abre MegaMenuPanel.
- * Solo un panel abierto a la vez. ESC + click-outside cierran.
- * 150ms delay-close evita cierre accidental al mover cursor al panel.
+ * Panel hoisted: MegaMenuPanel se renderiza UNA SOLA VEZ al final del nav,
+ * posicionado absolute relativo al nav (que ocupa flex-1 del header card).
+ * Esto hace que el panel tenga el ancho del nav, no del item parent.
+ *
+ * onMouseLeave en el nav completo (no por item) evita cierre accidental.
  */
 export function HeaderDesktopNav({ links, localePrefix, className }: HeaderDesktopNavProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -81,12 +83,18 @@ export function HeaderDesktopNav({ links, localePrefix, className }: HeaderDeskt
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [openIndex, closeAll]);
 
+  const activeLink = openIndex !== null ? links[openIndex] : null;
+  const hasActiveSubMenu = Boolean(
+    activeLink?.hasSubMenu && activeLink?.subLinks && activeLink.subLinks.length > 0,
+  );
+
   return (
     <nav
       ref={navRef}
       aria-label="Main navigation"
       data-component="bbf-header-desktop-nav"
       className={cn('relative items-center gap-6', className)}
+      onMouseLeave={scheduleClose}
     >
       {links.map((link, idx) => {
         const hasSub = Boolean(link.hasSubMenu && link.subLinks && link.subLinks.length > 0);
@@ -96,15 +104,9 @@ export function HeaderDesktopNav({ links, localePrefix, className }: HeaderDeskt
         return (
           <div
             key={`${link.href}-${idx}`}
-            className="relative"
             onMouseEnter={() => {
-              if (hasSub) {
-                cancelClose();
-                setOpenIndex(idx);
-              }
-            }}
-            onMouseLeave={() => {
-              if (hasSub) scheduleClose();
+              cancelClose();
+              setOpenIndex(hasSub ? idx : null);
             }}
           >
             <NavLink
@@ -122,21 +124,22 @@ export function HeaderDesktopNav({ links, localePrefix, className }: HeaderDeskt
             >
               {link.label}
             </NavLink>
-
-            {hasSub && (
-              <MegaMenuPanel
-                id={panelId}
-                isOpen={isOpen}
-                subLinks={link.subLinks!}
-                localePrefix={localePrefix}
-                onClose={closeAll}
-                onMouseEnter={cancelClose}
-                onMouseLeave={scheduleClose}
-              />
-            )}
           </div>
         );
       })}
+
+      {/* Mega-menu panel — una sola instancia, ancho del nav completo */}
+      {hasActiveSubMenu && activeLink && (
+        <MegaMenuPanel
+          id={`bbf-mega-menu-${openIndex}`}
+          isOpen={true}
+          subLinks={activeLink.subLinks!}
+          localePrefix={localePrefix}
+          onClose={closeAll}
+          onMouseEnter={cancelClose}
+          onMouseLeave={scheduleClose}
+        />
+      )}
     </nav>
   );
 }
