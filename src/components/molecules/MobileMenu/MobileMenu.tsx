@@ -125,12 +125,10 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
             'fixed top-0 right-0 z-[var(--bbf-z-drawer-panel)] lg:hidden',
             'h-[100dvh] w-[85vw] max-w-[380px]',
             'bg-[var(--bbf-surface-sand)]',
-            'border-l border-[var(--bbf-border-on-sand)]',
-            'shadow-2xl',
             'flex flex-col',
             'overflow-y-auto overscroll-contain',
             'transition-transform duration-[280ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
-            isOpen ? 'translate-x-0' : 'translate-x-full',
+            isOpen ? 'translate-x-0 shadow-2xl' : 'translate-x-[101%] shadow-none',
           )}
         >
           {/* Panel header */}
