@@ -69,7 +69,7 @@
   --bbf-text-overline: 0.625rem; /* 10px small caps */
 
   /* Legacy scale aliases (compatibilidad — actualizado a golden ratio values) */
-  --bbf-text-xs: 0.625rem; /* 10px — micro/footnote */
+  --bbf-text-xs: 0.75rem; /* 12px — badge, caption, microcopy */
   --bbf-text-sm: 0.875rem; /* 14px — small body */
   --bbf-text-base: 1rem; /* 16px — body */
   --bbf-text-lg: 1.125rem; /* 18px — lead/large body */

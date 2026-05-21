@@ -153,28 +153,81 @@ export const SiteNavigation: GlobalConfig = {
       ],
     },
     {
-      name: 'footerLinks',
+      name: 'footerGroups',
       type: 'array',
       label: {
-        en: 'Footer Navigation Links',
-        es: 'Links Navegación Footer',
+        en: 'Footer Link Groups',
+        es: 'Grupos de Links del Footer',
       },
-      maxRows: 8,
+      maxRows: 5,
       labels: {
-        singular: { en: 'Link', es: 'Link' },
-        plural: { en: 'Links', es: 'Links' },
+        singular: { en: 'Footer Group', es: 'Grupo de Footer' },
+        plural: { en: 'Footer Groups', es: 'Grupos de Footer' },
+      },
+      admin: {
+        description: {
+          en: 'Footer link groups (e.g. Navigation, Resources, Company)',
+          es: 'Grupos de links del footer (e.g. Navegación, Recursos, Empresa)',
+        },
       },
       fields: [
         {
-          name: 'label',
+          name: 'groupTitle',
           type: 'text',
           localized: true,
           required: true,
+          admin: {
+            description: 'Title of the group (e.g. "Navigation"). Shown in uppercase canon.',
+          },
         },
         {
-          name: 'href',
-          type: 'text',
-          required: true,
+          name: 'links',
+          type: 'array',
+          minRows: 1,
+          maxRows: 10,
+          labels: {
+            singular: { en: 'Link', es: 'Link' },
+            plural: { en: 'Links', es: 'Links' },
+          },
+          fields: [
+            {
+              name: 'label',
+              type: 'text',
+              localized: true,
+              required: true,
+            },
+            {
+              name: 'href',
+              type: 'text',
+              required: true,
+              admin: {
+                description: 'Relative path (e.g. /metodo). No locale prefix.',
+              },
+            },
+            {
+              name: 'flag',
+              type: 'text',
+              localized: true,
+              admin: {
+                description: 'Optional badge text (e.g. "New", "Beta", "Soon"). Empty = no badge.',
+              },
+            },
+            {
+              name: 'flagVariant',
+              type: 'select',
+              defaultValue: 'default',
+              options: [
+                { label: { en: 'Default', es: 'Default' }, value: 'default' },
+                { label: { en: 'Accent (red)', es: 'Accent (rojo)' }, value: 'accent' },
+                { label: { en: 'Success (green)', es: 'Éxito (verde)' }, value: 'success' },
+                { label: { en: 'Beta (blue)', es: 'Beta (azul)' }, value: 'beta' },
+              ],
+              admin: {
+                description: 'Badge color variant (visible only if flag has text).',
+                condition: (_, siblingData) => Boolean(siblingData?.flag),
+              },
+            },
+          ],
         },
       ],
     },

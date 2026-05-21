@@ -14,3 +14,4 @@ export * from './Text';
 export * from './BBFLogo';
 export * from './MenuIcon';
 export * from './NavLink';
+export * from './Badge';
