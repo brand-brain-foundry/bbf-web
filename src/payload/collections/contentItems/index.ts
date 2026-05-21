@@ -289,11 +289,10 @@ export const ContentItems: CollectionConfig = {
       name: 'pageBlocks',
       type: 'blocks',
       blocks: pageBlocks,
-      // localized:false canon — campos internos de cada block localizan
-      // individualmente. Estructura visual compartida ES/EN.
+      localized: true,
       admin: {
         description:
-          'Bloques de composición visual de la página. Estructura compartida ES/EN; el contenido de cada bloque (título, texto, etc.) sí se localiza por idioma.',
+          'Bloques de composición visual de la página (Hero, TextVisual, FeatureGrid, etc.)',
       },
     },
     {
