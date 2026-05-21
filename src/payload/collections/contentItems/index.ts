@@ -11,7 +11,6 @@ import {
   verifyAuditsBeforePublish,
 } from '@/payload/lib/hooks/contentItemHooks';
 import { contentItemBlocks } from './blocks';
-import { pageBlocks } from '@/blocks/page';
 
 export const ContentItems: CollectionConfig = {
   slug: 'contentItems',
@@ -268,90 +267,6 @@ export const ContentItems: CollectionConfig = {
       name: 'featuredImage',
       type: 'upload',
       relationTo: 'media',
-    },
-    // ─── Wave 10b1 — Page Builder extension ───────────────────────────────────
-    {
-      name: 'pageLayout',
-      type: 'select',
-      defaultValue: 'standard',
-      options: [
-        { label: 'Standard (genérico)', value: 'standard' },
-        { label: 'Cornerstone (CS-01..04)', value: 'cornerstone' },
-        { label: 'Pillar Page (P1..P6)', value: 'pillar' },
-        { label: 'Landing Page', value: 'landing' },
-      ],
-      admin: {
-        position: 'sidebar',
-        description: 'Template de composición visual de la página',
-      },
-    },
-    {
-      name: 'pageBlocks',
-      type: 'blocks',
-      blocks: pageBlocks,
-      localized: true,
-      admin: {
-        description:
-          'Bloques de composición visual de la página (Hero, TextVisual, FeatureGrid, etc.)',
-      },
-    },
-    {
-      name: 'answerCapsule',
-      type: 'text',
-      localized: true,
-      maxLength: 500,
-      validate: (value: unknown) => {
-        if (!value || typeof value !== 'string' || value.trim() === '') return true;
-        const words = value.trim().split(/\s+/).filter(Boolean).length;
-        if (words < 40)
-          return `Answer Capsule debe tener mínimo 40 palabras. Actualmente: ${words}.`;
-        if (words > 60)
-          return `Answer Capsule debe tener máximo 60 palabras. Actualmente: ${words}.`;
-        return true;
-      },
-      admin: {
-        description:
-          'Resumen GEO ultra-conciso (40-60 palabras). Optimizado para citación en LLMs.',
-      },
-    },
-    {
-      name: 'faqEntries',
-      type: 'array',
-      maxRows: 12,
-      fields: [
-        {
-          name: 'question',
-          type: 'text',
-          required: true,
-          localized: true,
-        },
-        {
-          name: 'answer',
-          type: 'richText',
-          required: true,
-          localized: true,
-        },
-      ],
-      admin: {
-        description: 'Si tiene 2+ preguntas, se emite FAQPage JSON-LD automáticamente.',
-      },
-    },
-    {
-      name: 'ogImage',
-      type: 'upload',
-      relationTo: 'media',
-      admin: {
-        description: 'OG Image custom. Si vacío: usa imagen OG por defecto del sitio.',
-      },
-    },
-    {
-      name: 'noindex',
-      type: 'checkbox',
-      defaultValue: false,
-      admin: {
-        position: 'sidebar',
-        description: 'Excluye la página de indexación (para drafts públicos o utility pages).',
-      },
     },
   ],
 };
