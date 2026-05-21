@@ -73,17 +73,20 @@ export async function Footer({ className }: FooterProps) {
       <div className="mx-auto max-w-7xl px-6 py-12 sm:px-8 lg:px-10 lg:py-16">
         {/* Main grid: brand + groups + newsletter */}
         <div
-          className="mb-10 grid grid-cols-1 gap-10 md:mb-12 md:gap-8 lg:gap-12"
+          className={cn(
+            'mb-10 grid lg:mb-12',
+            'grid-cols-1 gap-10',
+            'md:grid-cols-[1.4fr_repeat(var(--footer-cols),1fr)_1.4fr]',
+            'md:gap-8 lg:gap-10',
+          )}
           style={{
             ['--footer-cols' as string]: String(Math.max(groupsCount, 1)),
-            gridTemplateColumns:
-              groupsCount > 0 ? `2fr repeat(${groupsCount}, 1fr) 1.5fr` : undefined,
           }}
         >
           {/* Col 1: Brand identity */}
           <div className="order-1 flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <BBFLogo variant="stamp" size="sm" animated aria-hidden="true" />
+              <BBFLogo variant="icon" size="sm" aria-hidden="true" />
               <p
                 className={cn(
                   'font-[var(--bbf-font-display)]',
@@ -178,7 +181,7 @@ export async function Footer({ className }: FooterProps) {
                     >
                       <span>{link.label}</span>
                       {link.flag && (
-                        <Badge intent={(link.flagVariant ?? 'default') as FlagVariant} size="sm">
+                        <Badge intent={(link.flagVariant ?? 'default') as FlagVariant} size="xs">
                           {link.flag}
                         </Badge>
                       )}

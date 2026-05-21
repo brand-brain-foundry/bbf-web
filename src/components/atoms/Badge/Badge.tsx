@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import type { HTMLAttributes } from 'react';
 
 type BadgeIntent = 'default' | 'accent' | 'success' | 'beta';
-type BadgeSize = 'sm' | 'md';
+type BadgeSize = 'xs' | 'sm' | 'md';
 
 type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
   intent?: BadgeIntent;
@@ -41,6 +41,7 @@ export function Badge({
   };
 
   const sizeClasses: Record<BadgeSize, string> = {
+    xs: 'text-[length:var(--bbf-text-micro)] px-1 py-px',
     sm: 'text-[length:var(--bbf-text-xs)] px-1.5 py-0.5',
     md: 'text-[length:var(--bbf-text-sm)] px-2 py-1',
   };
