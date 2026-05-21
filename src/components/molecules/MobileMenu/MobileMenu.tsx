@@ -11,7 +11,19 @@ type MobileMenuLink = {
   label: string;
   href: string;
   hasSubMenu?: boolean;
-  subLinks?: Array<{ label: string; href: string }>;
+  subLinks?: Array<{
+    label: string;
+    href: string;
+    description?: string | null;
+    mediaType?: 'none' | 'image' | 'video';
+    media?: {
+      url?: string;
+      alt?: string;
+      width?: number;
+      height?: number;
+      mimeType?: string;
+    } | null;
+  }>;
 };
 
 type MobileMenuCta = {
@@ -128,7 +140,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
             'flex flex-col',
             'overflow-y-auto overscroll-contain',
             'transition-transform duration-[280ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
-            isOpen ? 'translate-x-0 shadow-2xl' : 'translate-x-[101%] shadow-none',
+            isOpen ? 'translate-x-0 shadow-2xl' : 'translate-x-[105%] shadow-none',
           )}
         >
           {/* Panel header */}

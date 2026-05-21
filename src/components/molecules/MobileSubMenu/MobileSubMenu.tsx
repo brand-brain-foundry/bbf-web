@@ -2,12 +2,24 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+type SubLinkMedia = {
+  url?: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+  mimeType?: string;
+};
 
 type SubLink = {
   label: string;
   href: string;
+  description?: string | null;
+  mediaType?: 'none' | 'image' | 'video';
+  media?: SubLinkMedia | null;
 };
 
 type MobileSubMenuProps = {
@@ -20,10 +32,13 @@ type MobileSubMenuProps = {
 };
 
 /**
- * BBF MobileSubMenu — accordion mobile canon Wave 8 (D-BBF-KB-113)
+ * BBF MobileSubMenu — Wave 8.4 (D-BBF-KB-115)
  *
- * Tap parent → expande sub-links inline (acordeón).
- * Chevron rotate + smooth height transition.
+ * Accordion vertical mobile.
+ * Cada sub-link:
+ *   - Solo label: row simple con chevron
+ *   - Con media: imagen CUADRADA 64x64 izquierda + label/description derecha
+ *
  * Touch targets ≥ 44px (WCAG AA).
  */
 export function MobileSubMenu({
@@ -37,18 +52,16 @@ export function MobileSubMenu({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div
-      data-component="bbf-mobile-sub-menu"
-      className="border-b border-[var(--bbf-border-on-sand)]/40"
-    >
+    <div className="border-b border-[var(--bbf-border-on-sand)]/40">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         tabIndex={tabIndex}
         className={cn(
-          'group flex min-h-[44px] w-full items-center justify-between',
-          'px-2 py-4',
+          'group w-full',
+          'flex items-center justify-between',
+          'min-h-[44px] px-2 py-4',
           'text-lg font-medium text-[var(--bbf-text-on-sand)]',
           'transition-all duration-200 ease-out',
           'hover:text-[var(--bbf-accent-red)]',
@@ -68,10 +81,10 @@ export function MobileSubMenu({
       <div
         className={cn(
           'overflow-hidden transition-all duration-[280ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
-          isOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0',
+          isOpen ? 'max-h-[1200px] opacity-100' : 'max-h-0 opacity-0',
         )}
       >
-        <div className="flex flex-col pb-3 pl-6">
+        <div className="flex flex-col gap-1 pb-3 pl-2">
           <Link
             href={`${localePrefix}${href}`}
             onClick={onLinkClick}
@@ -79,6 +92,7 @@ export function MobileSubMenu({
             className={cn(
               'block min-h-[44px] px-2 py-3',
               'text-sm font-medium text-[var(--bbf-text-on-sand-muted)]',
+              'border-b border-[var(--bbf-border-on-sand)]/30',
               'transition-colors duration-150 ease-out',
               'hover:text-[var(--bbf-accent-red)]',
               'focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
@@ -87,23 +101,70 @@ export function MobileSubMenu({
             ↗ {label} (general)
           </Link>
 
-          {subLinks.map((sub, idx) => (
-            <Link
-              key={`${sub.href}-${idx}`}
-              href={`${localePrefix}${sub.href}`}
-              onClick={onLinkClick}
-              tabIndex={isOpen ? 0 : -1}
-              className={cn(
-                'block min-h-[44px] px-2 py-3',
-                'text-base font-medium text-[var(--bbf-text-on-sand)]',
-                'transition-all duration-150 ease-out',
-                'hover:translate-x-1 hover:text-[var(--bbf-accent-red)]',
-                'focus-visible:translate-x-1 focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
-              )}
-            >
-              {sub.label}
-            </Link>
-          ))}
+          {subLinks.map((sub, idx) => {
+            const hasMedia =
+              (sub.mediaType === 'image' || sub.mediaType === 'video') && sub.media?.url;
+
+            return (
+              <Link
+                key={`${sub.href}-${idx}`}
+                href={`${localePrefix}${sub.href}`}
+                onClick={onLinkClick}
+                tabIndex={isOpen ? 0 : -1}
+                className={cn(
+                  'group flex items-center gap-3',
+                  'min-h-[44px] px-2 py-3',
+                  'rounded-xl',
+                  'transition-all duration-150 ease-out',
+                  'hover:bg-[var(--bbf-color-black-50)]',
+                  'focus-visible:bg-[var(--bbf-color-black-50)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
+                )}
+              >
+                {hasMedia && sub.mediaType === 'image' && (
+                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-[var(--bbf-color-black-100)]">
+                    <Image
+                      src={sub.media!.url!}
+                      alt={sub.media!.alt ?? sub.label}
+                      width={64}
+                      height={64}
+                      className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                    />
+                  </div>
+                )}
+                {hasMedia && sub.mediaType === 'video' && (
+                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-[var(--bbf-color-black-100)]">
+                    <video
+                      src={sub.media!.url!}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                )}
+
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <span
+                    className={cn(
+                      'text-base font-medium',
+                      'text-[var(--bbf-text-on-sand)]',
+                      'transition-colors duration-150 ease-out',
+                      'group-hover:text-[var(--bbf-accent-red)] group-focus-visible:text-[var(--bbf-accent-red)]',
+                      sub.description ? 'mb-0.5' : '',
+                    )}
+                  >
+                    {sub.label}
+                  </span>
+                  {sub.description && (
+                    <span className="text-xs leading-snug text-[var(--bbf-text-on-sand-muted)]">
+                      {sub.description}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -31,11 +31,20 @@ type MegaMenuPanelProps = {
 };
 
 /**
- * BBF MegaMenuPanel — desktop mega-menu canon Wave 8 (D-BBF-KB-113)
+ * BBF MegaMenuPanel desktop — Wave 8.4 research-aligned (D-BBF-KB-114)
  *
- * Grid responsive auto-fit según contenido (1/2/3 cols).
- * Cards con preview media image/video o solo label+description.
- * Animación fade+slide canon. A11y: role=menu, aria-hidden, ESC via parent.
+ * Grid responsive con CSS Grid auto-fit:
+ *   - Solo label: minmax(200px, 1fr) → más columnas, cards estrechos
+ *   - Con media: minmax(280px, 1fr) → menos columnas, cards amplios
+ *
+ * Cards adaptan según mediaType:
+ *   - 'none': solo label + description (compact)
+ *   - 'image'/'video': preview 16:9 + label + description
+ *
+ * Posicionado absolute desde el nav parent (hereda ancho header).
+ * Microinteracciones canon: hover bg shift + image scale + label accent.
+ *
+ * Research: Notion compact, Adobe 3-col parallel, Stripe contained width.
  */
 export function MegaMenuPanel({
   id,
@@ -46,7 +55,11 @@ export function MegaMenuPanel({
   onMouseEnter,
   onMouseLeave,
 }: MegaMenuPanelProps) {
-  const hasAnyMedia = subLinks.some((s) => s.mediaType !== 'none' && s.media);
+  const hasAnyMedia = subLinks.some(
+    (s) => (s.mediaType === 'image' || s.mediaType === 'video') && s.media?.url,
+  );
+
+  const gridMinColumn = hasAnyMedia ? '280px' : '200px';
 
   return (
     <div
@@ -71,71 +84,75 @@ export function MegaMenuPanel({
       )}
     >
       <div
-        className={cn(
-          'p-4 lg:p-6',
-          'grid gap-3 lg:gap-4',
-          hasAnyMedia ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2',
-        )}
+        className="grid gap-3 p-4 lg:gap-4 lg:p-6"
+        style={{
+          gridTemplateColumns: `repeat(auto-fit, minmax(${gridMinColumn}, 1fr))`,
+        }}
       >
-        {subLinks.map((sub, idx) => (
-          <Link
-            key={`${sub.href}-${idx}`}
-            href={`${localePrefix}${sub.href}`}
-            onClick={onClose}
-            role="menuitem"
-            tabIndex={isOpen ? 0 : -1}
-            className={cn(
-              'group block p-4',
-              'rounded-xl',
-              'transition-all duration-200 ease-out',
-              'hover:bg-[var(--bbf-color-black-50)]',
-              'focus-visible:bg-[var(--bbf-color-black-50)] focus-visible:outline-none',
-              'focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1',
-            )}
-          >
-            {sub.mediaType === 'image' && sub.media?.url && (
-              <div className="mb-3 overflow-hidden rounded-lg bg-[var(--bbf-color-black-100)]">
-                <Image
-                  src={sub.media.url}
-                  alt={sub.media.alt ?? sub.label}
-                  width={sub.media.width ?? 320}
-                  height={sub.media.height ?? 180}
-                  className="aspect-[16/9] h-auto w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
-                />
-              </div>
-            )}
+        {subLinks.map((sub, idx) => {
+          const hasMedia =
+            (sub.mediaType === 'image' || sub.mediaType === 'video') && sub.media?.url;
 
-            {sub.mediaType === 'video' && sub.media?.url && (
-              <div className="mb-3 overflow-hidden rounded-lg bg-[var(--bbf-color-black-100)]">
-                <video
-                  src={sub.media.url}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="aspect-[16/9] h-auto w-full object-cover"
-                />
-              </div>
-            )}
-
-            <p
+          return (
+            <Link
+              key={`${sub.href}-${idx}`}
+              href={`${localePrefix}${sub.href}`}
+              onClick={onClose}
+              role="menuitem"
+              tabIndex={isOpen ? 0 : -1}
               className={cn(
-                'mb-1 text-sm font-semibold',
-                'text-[var(--bbf-text-on-sand)]',
-                'transition-colors duration-200 ease-out',
-                'group-hover:text-[var(--bbf-accent-red)] group-focus-visible:text-[var(--bbf-accent-red)]',
+                'group block p-4',
+                'rounded-xl',
+                'bg-transparent',
+                'transition-all duration-200 ease-out',
+                'hover:bg-[var(--bbf-color-black-50)]',
+                'focus-visible:bg-[var(--bbf-color-black-50)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
               )}
             >
-              {sub.label}
-            </p>
+              {hasMedia && sub.mediaType === 'image' && (
+                <div className="mb-3 aspect-[16/9] overflow-hidden rounded-lg bg-[var(--bbf-color-black-100)]">
+                  <Image
+                    src={sub.media!.url!}
+                    alt={sub.media!.alt ?? sub.label}
+                    width={sub.media!.width ?? 320}
+                    height={sub.media!.height ?? 180}
+                    className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                  />
+                </div>
+              )}
+              {hasMedia && sub.mediaType === 'video' && (
+                <div className="mb-3 aspect-[16/9] overflow-hidden rounded-lg bg-[var(--bbf-color-black-100)]">
+                  <video
+                    src={sub.media!.url!}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              )}
 
-            {sub.description && (
-              <p className="text-xs leading-snug text-[var(--bbf-text-on-sand-muted)]">
-                {sub.description}
+              <p
+                className={cn(
+                  'text-sm font-semibold',
+                  'text-[var(--bbf-text-on-sand)]',
+                  'transition-colors duration-200 ease-out',
+                  'group-hover:text-[var(--bbf-accent-red)] group-focus-visible:text-[var(--bbf-accent-red)]',
+                  sub.description ? 'mb-1' : '',
+                )}
+              >
+                {sub.label}
               </p>
-            )}
-          </Link>
-        ))}
+
+              {sub.description && (
+                <p className="text-xs leading-snug text-[var(--bbf-text-on-sand-muted)]">
+                  {sub.description}
+                </p>
+              )}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

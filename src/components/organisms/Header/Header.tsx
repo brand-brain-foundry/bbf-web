@@ -123,6 +123,9 @@ export async function Header({ className }: HeaderProps) {
                   subLinks: l.subLinks?.map((s) => ({
                     label: s.label,
                     href: s.href,
+                    description: s.description,
+                    mediaType: s.mediaType,
+                    media: s.media,
                   })),
                 }))}
                 cta={
