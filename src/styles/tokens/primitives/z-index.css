@@ -20,4 +20,10 @@
   --bbf-z-tooltip: 70;
   --bbf-z-toast: 80;
   --bbf-z-max: 9999;
+
+  /* === Wave 8: floating header + drawer === */
+  --bbf-z-mega-menu: 35; /* mega-menu panel desktop (debajo del header) */
+  --bbf-z-header: 40; /* header floating card sobre hero */
+  --bbf-z-drawer: 90; /* MobileMenu backdrop */
+  --bbf-z-drawer-panel: 100; /* MobileMenu panel */
 }

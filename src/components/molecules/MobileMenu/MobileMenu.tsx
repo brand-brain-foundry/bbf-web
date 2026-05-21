@@ -4,11 +4,14 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { MenuIcon } from '@/components/atoms/MenuIcon';
 import { Button } from '@/components/atoms/Button';
+import { MobileSubMenu } from '@/components/molecules/MobileSubMenu';
 import { cn } from '@/lib/utils';
 
 type MobileMenuLink = {
   label: string;
   href: string;
+  hasSubMenu?: boolean;
+  subLinks?: Array<{ label: string; href: string }>;
 };
 
 type MobileMenuCta = {
@@ -103,7 +106,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
           onClick={close}
           aria-hidden="true"
           className={cn(
-            'fixed inset-0 z-[90] lg:hidden',
+            'fixed inset-0 z-[var(--bbf-z-drawer)] lg:hidden',
             'bg-black/40 backdrop-blur-sm',
             'transition-opacity duration-[280ms] ease-out',
             isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
@@ -119,7 +122,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
           aria-label="Menú móvil"
           aria-hidden={!isOpen}
           className={cn(
-            'fixed top-0 right-0 z-[100] lg:hidden',
+            'fixed top-0 right-0 z-[var(--bbf-z-drawer-panel)] lg:hidden',
             'h-[100dvh] w-[85vw] max-w-[380px]',
             'bg-[var(--bbf-surface-sand)]',
             'border-l border-[var(--bbf-border-on-sand)]',
@@ -153,32 +156,48 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
           </div>
 
           {/* Nav links */}
-          <nav className="flex flex-1 flex-col gap-1 px-6 py-6" aria-label="Mobile navigation">
-            {links.map((link, idx) => (
-              <Link
-                key={`${link.href}-${idx}`}
-                href={`${localePrefix}${link.href}`}
-                onClick={close}
-                tabIndex={isOpen ? 0 : -1}
-                className={cn(
-                  'group block border-b border-[var(--bbf-border-on-sand)]/40 px-2 py-4',
-                  'text-lg font-medium text-[var(--bbf-text-on-sand)]',
-                  'transition-all duration-150 ease-out',
-                  'hover:translate-x-1 hover:text-[var(--bbf-accent-red)]',
-                  'focus-visible:translate-x-1 focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
-                )}
-              >
-                <span className="inline-flex items-center gap-3">
-                  <span>{link.label}</span>
-                  <span
-                    aria-hidden="true"
-                    className="-translate-x-2 opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100"
-                  >
-                    →
+          <nav className="flex flex-1 flex-col px-6 py-6" aria-label="Mobile navigation">
+            {links.map((link, idx) => {
+              if (link.hasSubMenu && link.subLinks && link.subLinks.length > 0) {
+                return (
+                  <MobileSubMenu
+                    key={`${link.href}-${idx}`}
+                    label={link.label}
+                    href={link.href}
+                    subLinks={link.subLinks}
+                    localePrefix={localePrefix}
+                    onLinkClick={close}
+                    tabIndex={isOpen ? 0 : -1}
+                  />
+                );
+              }
+
+              return (
+                <Link
+                  key={`${link.href}-${idx}`}
+                  href={`${localePrefix}${link.href}`}
+                  onClick={close}
+                  tabIndex={isOpen ? 0 : -1}
+                  className={cn(
+                    'group block min-h-[44px] border-b border-[var(--bbf-border-on-sand)]/40 px-2 py-4',
+                    'text-lg font-medium text-[var(--bbf-text-on-sand)]',
+                    'transition-all duration-150 ease-out',
+                    'hover:translate-x-1 hover:text-[var(--bbf-accent-red)]',
+                    'focus-visible:translate-x-1 focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
+                  )}
+                >
+                  <span className="inline-flex items-center gap-3">
+                    <span>{link.label}</span>
+                    <span
+                      aria-hidden="true"
+                      className="-translate-x-2 opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100"
+                    >
+                      →
+                    </span>
                   </span>
-                </span>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* CTA al pie */}

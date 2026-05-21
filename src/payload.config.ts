@@ -16,7 +16,6 @@ import { Signals } from './payload/collections/signals';
 import { Redirects } from './payload/collections/redirects';
 
 import { Site } from './payload/globals/Site';
-import { Navigation } from './payload/globals/Navigation';
 import { SocialLinks } from './payload/globals/SocialLinks';
 import { SEO } from './payload/globals/SEO';
 import { BrandSystem } from './payload/globals/BrandSystem';
@@ -59,7 +58,6 @@ export default buildConfig({
 
   globals: [
     Site,
-    Navigation,
     SocialLinks,
     SEO,
     BrandSystem,

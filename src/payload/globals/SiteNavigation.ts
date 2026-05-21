@@ -48,6 +48,72 @@ export const SiteNavigation: GlobalConfig = {
             description: 'Path relativo (ej. /metodo o /casos). NO incluir locale prefix.',
           },
         },
+        // === Wave 8: mega-menu sub-links ===
+        {
+          name: 'hasSubMenu',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            description: 'Si está activo, al hacer hover/click se abre mega-menu con sub-links.',
+          },
+        },
+        {
+          name: 'subLinks',
+          type: 'array',
+          maxRows: 8,
+          admin: {
+            condition: (_, siblingData) => Boolean(siblingData?.hasSubMenu),
+            description: 'Sub-links del mega-menu (visibles al hacer hover/click en desktop).',
+          },
+          labels: {
+            singular: { en: 'Sub-link', es: 'Sub-link' },
+            plural: { en: 'Sub-links', es: 'Sub-links' },
+          },
+          fields: [
+            {
+              name: 'label',
+              type: 'text',
+              localized: true,
+              required: true,
+            },
+            {
+              name: 'href',
+              type: 'text',
+              required: true,
+            },
+            {
+              name: 'description',
+              type: 'textarea',
+              localized: true,
+              maxLength: 120,
+              admin: {
+                description: 'Descripción corta opcional (ej: "El proceso paso a paso").',
+              },
+            },
+            {
+              name: 'mediaType',
+              type: 'select',
+              defaultValue: 'none',
+              required: true,
+              options: [
+                { label: { en: 'None (label only)', es: 'Solo label' }, value: 'none' },
+                { label: { en: 'Image', es: 'Imagen' }, value: 'image' },
+                { label: { en: 'Video', es: 'Video' }, value: 'video' },
+              ],
+            },
+            {
+              name: 'media',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                condition: (_, siblingData) =>
+                  siblingData?.mediaType === 'image' || siblingData?.mediaType === 'video',
+                description: 'Imagen o video preview (solo si mediaType ≠ none).',
+              },
+            },
+          ],
+        },
+        // === END Wave 8 ===
       ],
     },
     {

@@ -13,3 +13,4 @@ export * from './Link';
 export * from './Text';
 export * from './BBFLogo';
 export * from './MenuIcon';
+export * from './NavLink';
