@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Container } from '@/components/atoms/Container';
 import { ContactForm } from '@/components/molecules/ContactForm';
 import { cn } from '@/lib/utils';
+import { buildHreflang } from '@/lib/seo/hreflang';
 
 type Props = {
   params: Promise<{ locale: 'es' | 'en' }>;
@@ -12,9 +13,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'contact' });
 
+  const alternates = buildHreflang('/contacto', locale);
+
   return {
     title: t('metaTitle'),
     description: t('metaDescription'),
+    alternates,
     openGraph: {
       title: t('metaTitle'),
       description: t('metaDescription'),

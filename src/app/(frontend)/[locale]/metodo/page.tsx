@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import { fetchCornerstoneBySlug } from '@/lib/payload/fetchContent';
 import { CornerstoneTemplate } from '@/components/templates/CornerstoneTemplate';
+import { buildHreflangBySlugMap } from '@/lib/seo/hreflang';
+import { buildWebPageSchema } from '@/lib/seo/jsonld';
 
 export const revalidate = 3600;
 
@@ -10,14 +12,23 @@ type Props = { params: Promise<{ locale: 'es' | 'en' }> };
 
 const SLUG_BY_LOCALE = { es: 'metodo', en: 'method' } as const;
 
+const PAGE_URL: Record<'es' | 'en', string> = {
+  es: 'https://brandbrainfoundry.com/metodo',
+  en: 'https://brandbrainfoundry.com/en/method',
+};
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const slug = SLUG_BY_LOCALE[locale];
   const item = await fetchCornerstoneBySlug(slug, locale);
   if (!item) return {};
+
+  const alternates = buildHreflangBySlugMap(locale, SLUG_BY_LOCALE);
+
   return {
     title: item.title,
     description: item.excerpt,
+    alternates,
   };
 }
 
@@ -30,5 +41,22 @@ export default async function MetodoPage({ params }: Props) {
 
   if (!item) notFound();
 
-  return <CornerstoneTemplate contentItem={item} locale={locale} />;
+  const webPageSchema = buildWebPageSchema({
+    locale,
+    title: item.title,
+    description: item.excerpt ?? '',
+    url: PAGE_URL[locale],
+    datePublished: item.createdAt,
+    dateModified: item.updatedAt,
+  });
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
+      <CornerstoneTemplate contentItem={item} locale={locale} />
+    </>
+  );
 }

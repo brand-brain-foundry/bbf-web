@@ -195,6 +195,23 @@ export default async function LocaleLayout({
             __html: JSON.stringify(organizationSchema),
           }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              '@id': 'https://brandbrainfoundry.com/#website',
+              name: 'Brand Brain Foundry',
+              alternateName: 'BBF',
+              url: 'https://brandbrainfoundry.com',
+              inLanguage: ['es', 'en'],
+              publisher: {
+                '@id': 'https://brandbrainfoundry.com/#organization',
+              },
+            }),
+          }}
+        />
       </body>
     </html>
   );
