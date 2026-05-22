@@ -35,9 +35,9 @@ export function Badge({
 }: BadgeProps) {
   const intentClasses: Record<BadgeIntent, string> = {
     default: 'border-[var(--bbf-border-on-sand)] text-[var(--bbf-text-on-sand-muted)]',
-    accent: 'border-[var(--bbf-color-red-500)] text-[var(--bbf-color-red-600)]',
+    accent: 'border-[var(--bbf-accent-red)] text-[var(--bbf-accent-red-hover)]',
     success: 'border-[var(--bbf-color-success-border)] text-[var(--bbf-color-success-text)]',
-    beta: 'border-[var(--bbf-color-blue-500)] text-[var(--bbf-color-blue-600)]',
+    beta: 'border-[var(--bbf-accent-blue)] text-[var(--bbf-accent-blue-active)]',
   };
 
   const sizeClasses: Record<BadgeSize, string> = {

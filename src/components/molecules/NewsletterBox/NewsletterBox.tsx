@@ -101,7 +101,7 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
 
       {/* Form — stacked canon mobile-first */}
       <form action={handleSubmit} className="flex flex-col gap-3">
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col [gap:var(--bbf-space-2\.5)]">
           <label className="sr-only" htmlFor="newsletter-email">
             Email
           </label>
@@ -116,7 +116,7 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
             className={cn(
               'h-12 w-full rounded-full px-5',
               'text-[length:var(--bbf-text-base)]',
-              'bg-[var(--bbf-color-white)]',
+              'bg-[var(--bbf-surface-white)]',
               'border border-[var(--bbf-border-on-sand)]',
               'text-[var(--bbf-text-on-sand)] placeholder:text-[var(--bbf-text-on-sand-subtle)]',
               'transition-all duration-200 ease-out',

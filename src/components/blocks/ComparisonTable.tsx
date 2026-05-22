@@ -23,14 +23,14 @@ export function ComparisonTableBlock({ title, columns, rows, className }: Compar
       <table className="w-full border-collapse text-left">
         <thead>
           <tr>
-            <th className="border-b border-[var(--bbf-color-sand-300)] py-3 pr-4" />
+            <th className="border-b border-[var(--bbf-border-subtle-on-sand)] py-3 pr-4" />
             {columns.map((col, i) => (
               <th
                 key={i}
                 className={cn(
-                  'border-b border-[var(--bbf-color-sand-300)] px-4 py-3',
+                  'border-b border-[var(--bbf-border-subtle-on-sand)] px-4 py-3',
                   col.highlight &&
-                    'bg-[var(--bbf-color-sand-100)] font-bold text-[var(--bbf-accent-red)]',
+                    'bg-[var(--bbf-surface-sand)] font-bold text-[var(--bbf-accent-red)]',
                 )}
               >
                 <Text variant="body-sm" className="font-semibold">
@@ -53,7 +53,7 @@ export function ComparisonTableBlock({ title, columns, rows, className }: Compar
                   key={vi}
                   className={cn(
                     'px-4 py-3',
-                    columns[vi]?.highlight && 'bg-[var(--bbf-color-sand-100)]',
+                    columns[vi]?.highlight && 'bg-[var(--bbf-surface-sand)]',
                   )}
                 >
                   <Text variant="body-sm">{val.value ?? '—'}</Text>

@@ -25,7 +25,7 @@ export function TableOfContentsBlock({
       data-component="bbf-toc"
       aria-label="Table of contents"
       className={cn(
-        'my-8 rounded-md border border-[var(--bbf-color-sand-300)] bg-[var(--bbf-color-sand-50)] p-6',
+        'my-8 rounded-md border border-[var(--bbf-border-subtle-on-sand)] bg-[var(--bbf-surface-sand-elevated)] p-6',
         className,
       )}
     >

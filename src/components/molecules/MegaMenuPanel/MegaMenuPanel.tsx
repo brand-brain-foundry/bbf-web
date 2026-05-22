@@ -105,12 +105,12 @@ export function MegaMenuPanel({
                 'rounded-xl',
                 'bg-transparent',
                 'transition-all duration-200 ease-out',
-                'hover:bg-[var(--bbf-color-black-50)]',
-                'focus-visible:bg-[var(--bbf-color-black-50)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
+                'hover:bg-[var(--bbf-surface-hover-subtle-on-sand)]',
+                'focus-visible:bg-[var(--bbf-surface-hover-subtle-on-sand)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
               )}
             >
               {hasMedia && sub.mediaType === 'image' && (
-                <div className="mb-3 aspect-[16/9] overflow-hidden rounded-lg bg-[var(--bbf-color-black-100)]">
+                <div className="mb-3 aspect-[16/9] overflow-hidden rounded-lg bg-[var(--bbf-surface-hover-on-sand)]">
                   <Image
                     src={sub.media!.url!}
                     alt={sub.media!.alt ?? sub.label}
@@ -121,7 +121,7 @@ export function MegaMenuPanel({
                 </div>
               )}
               {hasMedia && sub.mediaType === 'video' && (
-                <div className="mb-3 aspect-[16/9] overflow-hidden rounded-lg bg-[var(--bbf-color-black-100)]">
+                <div className="mb-3 aspect-[16/9] overflow-hidden rounded-lg bg-[var(--bbf-surface-hover-on-sand)]">
                   <video
                     src={sub.media!.url!}
                     autoPlay

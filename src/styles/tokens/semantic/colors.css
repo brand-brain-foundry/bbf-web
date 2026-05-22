@@ -99,6 +99,21 @@
   --bbf-color-focus-ring-on-red: var(--bbf-color-black-900);
 
   /* ============================================================
+     INTERACTIVE STATES — hover/focus backgrounds on sand surface
+     ============================================================ */
+  --bbf-surface-hover-on-sand: var(--bbf-color-black-100); /* button/trigger hover on sand bg */
+  --bbf-surface-hover-subtle-on-sand: var(
+    --bbf-color-black-50
+  ); /* card/link hover on sand (subtle) */
+
+  /* ============================================================
+     EDITORIAL BLOCKS — prose/content borders on sand surface
+     ============================================================ */
+  --bbf-border-subtle-on-sand: var(
+    --bbf-color-sand-300
+  ); /* dividers, table borders, card borders */
+
+  /* ============================================================
      GLASS TOKENS — overlays con color-mix() (LocaleSwitcher etc)
      Mantenidos para compatibilidad transitoria
      ============================================================ */

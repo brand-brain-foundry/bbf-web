@@ -103,7 +103,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
           'h-11 w-11 rounded-full',
           'text-[var(--bbf-text-on-sand)]',
           'transition-all duration-200 ease-out',
-          'hover:bg-[var(--bbf-color-black-100)]',
+          'hover:bg-[var(--bbf-surface-hover-on-sand)]',
           'active:scale-95',
           'focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:outline-none',
         )}
@@ -156,7 +156,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
                 'h-9 w-9 rounded-full',
                 'text-[var(--bbf-text-on-sand)]',
                 'transition-all duration-200 ease-out',
-                'hover:bg-[var(--bbf-color-black-100)]',
+                'hover:bg-[var(--bbf-surface-hover-on-sand)]',
                 'active:scale-95',
                 'focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:outline-none',
               )}

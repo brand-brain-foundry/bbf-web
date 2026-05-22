@@ -47,7 +47,7 @@ export function EmbedBlock({ provider, url, caption, className }: EmbedProps) {
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block rounded-md border border-[var(--bbf-color-sand-300)] p-4 transition-colors hover:border-[var(--bbf-accent-red)]"
+          className="block rounded-md border border-[var(--bbf-border-subtle-on-sand)] p-4 transition-colors hover:border-[var(--bbf-accent-red)]"
         >
           <Text variant="body-sm">{url}</Text>
         </a>
