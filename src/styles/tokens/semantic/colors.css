@@ -21,6 +21,61 @@
  */
 
 :root {
+  /* ============================================================================
+   * SURFACES — SET CERRADO (D-BBF-KB-145 §3.1 + D-BBF-KB-144)
+   * ============================================================================
+   *
+   * SURFACES AUTORIZADOS (4):
+   *   --bbf-surface-sand          → contenido sobre fondo cálido (PRIMARIO)
+   *   --bbf-surface-white         → forms, cards limpios
+   *   --bbf-surface-black         → CTAs, contrast, hero pages dark
+   *   --bbf-surface-gradient-red  → acento, accent surface (CONTINGENTE — ver §RED-GRADIENT abajo)
+   *
+   * AUTHORIZED PAIRS (combinaciones canónicas — D-145 §3.4):
+   *
+   *   PAIR-A (sand):
+   *     bg: surface-sand
+   *     text: text-on-sand
+   *     border: border-on-sand  (opcional — usar SIN border en cards limpios)
+   *
+   *   PAIR-B (black):
+   *     bg: surface-black
+   *     text: text-on-black
+   *     border: sin border canónico
+   *
+   *   PAIR-C (white):
+   *     bg: surface-white
+   *     text: text-on-sand
+   *     border: sin border canónico (forms usan FormField border)
+   *
+   *   PAIR-D (red-gradient):
+   *     bg: surface-gradient-red
+   *     text: text-on-black  O  text-on-sand  (según contraste del contexto)
+   *     border: sin border
+   *
+   * PROHIBIDO:
+   *   - Combinaciones fuera de los 4 PAIRs (ej. bg-sand + text-on-black sin justificación).
+   *   - Agregar surface nuevo sin decisión D-BBF nueva.
+   *   - Agregar token "por si acaso" sin consumidor real (D-145 §3.6).
+   *
+   * VARIANTS DE INTERACCIÓN (preservadas — consumidas):
+   *   --bbf-surface-hover-on-sand
+   *   --bbf-surface-hover-subtle-on-sand
+   *   --bbf-surface-black-elevated  (Button hover)
+   *   --bbf-surface-sand-elevated   (TableOfContents)
+   *   --bbf-surface-red             (Button focus ring-offset)
+   *
+   * ----- RED-GRADIENT (CONTINGENTE) -----
+   *
+   * --bbf-surface-gradient-red  →  NO CREADO AÚN (D-145 §3.6)
+   *
+   * Set cerrado autoriza este surface, pero el token concreto solo se
+   * crea cuando aparezca el primer consumidor real (Wave 11.4+ esperado).
+   * Tier 1 --bbf-gradient-red ya existe en primitives/colors.css.
+   * TD-11-37 registra la pendiente.
+   *
+   * ========================================================================= */
+
   /* ============================================================
      SURFACES — sistema canon BBF (D-BBF-KB-104)
      ============================================================ */
@@ -30,7 +85,6 @@
   --bbf-surface-black: var(--bbf-color-black-900);
   --bbf-surface-black-elevated: var(--bbf-color-black-800);
   --bbf-surface-red: var(--bbf-color-red-500);
-  --bbf-surface-gradient-red: var(--bbf-gradient-red);
 
   /* ============================================================
      TEXT TOKENS — por superficie (D-BBF-KB-104)
@@ -113,18 +167,6 @@
     --bbf-color-sand-300
   ); /* dividers, table borders, card borders */
 
-  /* ============================================================
-     GLASS TOKENS — overlays con color-mix() (LocaleSwitcher etc)
-     Mantenidos para compatibilidad transitoria
-     ============================================================ */
-  --bbf-surface-glass-light: color-mix(in oklch, var(--bbf-color-white), transparent 40%);
-  --bbf-surface-glass-dark: color-mix(in oklch, var(--bbf-color-black-900), transparent 10%);
-  --bbf-surface-glass-hover: color-mix(in oklch, var(--bbf-color-black-900), transparent 96%);
-  --bbf-border-glass: color-mix(in oklch, var(--bbf-color-black-900), transparent 92%);
-  --bbf-text-on-glass-light: color-mix(in oklch, var(--bbf-color-black-900), transparent 50%);
-  --bbf-text-on-glass-light-hover: color-mix(in oklch, var(--bbf-color-black-900), transparent 15%);
-  --bbf-text-on-glass-dark: color-mix(in oklch, var(--bbf-color-white), transparent 5%);
-
   /* ============================================================================
    * LEGACY ALIASES — @deprecated since Wave 11.1 (TD-11-17)
    * ============================================================================
@@ -148,8 +190,6 @@
    *
    * ========================================================================= */
   --bbf-color-bg-base: var(--bbf-surface-sand);
-  --bbf-color-bg-surface: var(--bbf-surface-white);
-  --bbf-color-bg-inverse: var(--bbf-surface-black);
 
   --bbf-color-text-primary: var(--bbf-text-on-light);
   --bbf-color-text-secondary: var(--bbf-text-on-light-secondary);
@@ -172,11 +212,6 @@
   --bbf-color-warning: var(--bbf-color-warning-500);
   --bbf-color-error: var(--bbf-color-error-500);
   --bbf-color-info: var(--bbf-color-info-500);
-
-  --bbf-surface-success-subtle: var(--bbf-color-success-50);
-  --bbf-surface-warning-subtle: var(--bbf-color-warning-50);
-  --bbf-surface-error-subtle: var(--bbf-color-error-50);
-  --bbf-surface-info-subtle: var(--bbf-color-info-50);
 
   --bbf-text-success: var(--bbf-color-success-700);
   --bbf-text-warning: var(--bbf-color-warning-700);
