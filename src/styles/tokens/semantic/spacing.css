@@ -51,4 +51,7 @@
   --bbf-space-section-gap-md: var(--bbf-space-16); /* 64px */
   --bbf-space-section-gap-lg: var(--bbf-space-24); /* 96px */
   --bbf-space-section-gap-xl: var(--bbf-space-32); /* 128px */
+
+  /* Navigation */
+  --bbf-nav-underline-offset: 0.25rem; /* 4px — underline offset bajo baseline */
 }

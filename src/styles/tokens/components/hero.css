@@ -1,3 +1,24 @@
+/* ============================================================================
+ * hero.css — Tier 3 component tokens
+ * ============================================================================
+ *
+ * INTENTIONAL DEVIATIONS FROM CANON (documented per TD-11-05, TD-11-06):
+ *
+ * --bbf-headline-leading: 0.9
+ *   Razón: display tight para headlines hero. No mapear a --bbf-leading-*
+ *   semantic (líneas semantic son para body/copy, no display). Justificación:
+ *   BBF_TokensCanon.md §10, hero display = caso especial visual.
+ *
+ * --bbf-hero-max-width: 56rem
+ *   Razón: hero copy más estrecho que --bbf-container-default (64rem) para
+ *   mejor legibilidad de headline + tagline. No mapear a --bbf-container-*
+ *   porque hero usa width prop intencional, no container token.
+ *   Justificación: hero es el único caso de container-width custom en el
+ *   sistema. Si en Wave 11.3 surge segundo caso, formalizar como
+ *   --bbf-container-hero.
+ *
+ * ========================================================================= */
+
 /**
  * BBF Design System — TIER 3 COMPONENT: Hero
  *
@@ -64,7 +85,7 @@
   --bbf-motion-cta-easing: var(--bbf-easing-in-out); /* cubic-bezier(0.4, 0, 0.2, 1) */
   --bbf-cta-hover-scale: 1.05;
   --bbf-cta-hover-shadow: var(--bbf-shadow-cta-hover);
-  --bbf-cta-icon-shift: 0.375rem; /* 6px */
+  --bbf-cta-icon-shift: var(--bbf-space-1\.5); /* 6px — TD-11-07: mapped to Tier 1 spacing token */
 
   /* === Hero video overlay (deshabilitado — video raw) === */
   --bbf-hero-overlay-color: transparent;

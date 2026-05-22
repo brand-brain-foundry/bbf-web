@@ -125,9 +125,28 @@
   --bbf-text-on-glass-light-hover: color-mix(in oklch, var(--bbf-color-black-900), transparent 15%);
   --bbf-text-on-glass-dark: color-mix(in oklch, var(--bbf-color-white), transparent 5%);
 
-  /* ============================================================
-     LEGACY ALIASES — compatibilidad transición (deprecar en M5-D)
-     ============================================================ */
+  /* ============================================================================
+   * LEGACY ALIASES — @deprecated since Wave 11.1 (TD-11-17)
+   * ============================================================================
+   *
+   * Los siguientes tokens están deprecados. NO usar en componentes nuevos.
+   * Migrar consumidores existentes a tokens semánticos canónicos:
+   *
+   *   --bbf-color-bg-*   →  --bbf-surface-*
+   *   --bbf-color-text-* →  --bbf-text-*
+   *
+   * Plan de remoción: Wave 12 (post-Contact refactor).
+   * Referencia: BBF_TokensCanon.md §10, BBF_DesignSystemInventory_v0.md §8 TD-11-17.
+   *
+   * Consumidores conocidos (migrar antes de Wave 12):
+   *   src/components/sections/HeroSection/HeroSection.variants.ts:13 → --bbf-color-bg-base
+   *   src/styles/base/reset.css:29-30 → --bbf-color-text-primary + --bbf-color-bg-base
+   *   src/styles/tokens/components/hero.css:47 → --bbf-color-text-primary
+   *
+   * Si ves un componente consumiendo estos tokens, abrir TD nuevo para migrarlo
+   * antes de Wave 12.
+   *
+   * ========================================================================= */
   --bbf-color-bg-base: var(--bbf-surface-sand);
   --bbf-color-bg-surface: var(--bbf-surface-white);
   --bbf-color-bg-inverse: var(--bbf-surface-black);

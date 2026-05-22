@@ -59,8 +59,9 @@ export const NavLink = forwardRef<HTMLAnchorElement | HTMLButtonElement, NavLink
     const underline = (
       <span
         aria-hidden="true"
+        style={{ bottom: 'calc(-1 * var(--bbf-nav-underline-offset))' }}
         className={cn(
-          'absolute -bottom-1 left-0 h-px',
+          'absolute left-0 h-px',
           'bg-[var(--bbf-accent-red)]',
           'transition-all duration-300 ease-out',
           isActive ? 'w-full' : 'w-0 group-hover:w-full group-focus-visible:w-full',
