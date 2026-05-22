@@ -11,5 +11,6 @@
   --bbf-radius-md: 0.5rem; /* 8px */
   --bbf-radius-lg: 0.75rem; /* 12px */
   --bbf-radius-xl: 1rem; /* 16px */
+  --bbf-radius-2xl: 1.5rem; /* 24px */
   --bbf-radius-full: 9999px;
 }

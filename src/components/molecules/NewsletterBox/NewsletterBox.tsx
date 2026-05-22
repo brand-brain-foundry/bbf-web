@@ -65,7 +65,7 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
         data-component="bbf-newsletter-box"
         data-state="success"
         className={cn(
-          'rounded-2xl p-5',
+          '[border-radius:var(--bbf-radius-2xl)] p-5',
           'bg-[var(--bbf-color-success-bg)]',
           'border border-[var(--bbf-color-success-border)]',
           className,
