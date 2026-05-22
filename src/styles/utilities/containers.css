@@ -1,0 +1,39 @@
+/* ============================================================================
+ * containers.css — Container width utilities (Tier 2 consumption)
+ * ============================================================================
+ *
+ * SET CERRADO DE CONTAINER SIZES (D-BBF-KB-145 inline):
+ * Solo estos 6 sizes están autorizados. Nuevos sizes requieren decisión D-BBF.
+ *
+ *   .bbf-container-prose     →  65ch     (artículos, texto largo, blog posts)
+ *   .bbf-container-narrow    →  40rem    (forms compactos, dialogs, focus content)
+ *   .bbf-container-default   →  64rem    (default — secciones balanced)
+ *   .bbf-container-wide      →  80rem    (hero sections, layouts amplios)
+ *   .bbf-container-max       →  90rem    (full-width layouts con padding lateral)
+ *   .bbf-container-full      →  100%     (full-bleed sin restricción)
+ *
+ * Default cuando no se especifica size: 'default' (D-144 firmada).
+ *
+ * Uso preferido: <Container size="..."> del atom.
+ * Uso directo (utility class): solo en casos sin acceso a Container component.
+ *
+ * ========================================================================= */
+
+.bbf-container-prose {
+  max-width: var(--bbf-container-prose);
+}
+.bbf-container-narrow {
+  max-width: var(--bbf-container-narrow);
+}
+.bbf-container-default {
+  max-width: var(--bbf-container-default);
+}
+.bbf-container-wide {
+  max-width: var(--bbf-container-wide);
+}
+.bbf-container-max {
+  max-width: var(--bbf-container-max);
+}
+.bbf-container-full {
+  max-width: var(--bbf-container-full);
+}

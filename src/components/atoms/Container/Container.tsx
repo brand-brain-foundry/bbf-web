@@ -3,13 +3,14 @@
  *
  * @description
  * Container atom que controla max-width + padding horizontal canon.
- * Sizes: sm (640px), md (768px), lg (1024px), xl (1280px, default),
- * 2xl (1440px), prose (70ch para artículos largos).
+ * Sizes: prose (65ch), narrow (40rem/640px), default (64rem/1024px),
+ * wide (80rem/1280px), max (90rem/1440px), full (100%).
+ * Consume utility classes bbf-container-* que referencian semantic tokens.
  *
- * @example Default (xl)
+ * @example Default (64rem)
  * ```tsx
  * <Container>
- *   <p>Contenido con max-width 1280px</p>
+ *   <p>Contenido con max-width 1024px</p>
  * </Container>
  * ```
  *
@@ -22,42 +23,42 @@
  *
  * @example Custom element via `as`
  * ```tsx
- * <Container as="section" size="lg">
+ * <Container as="section" size="wide">
  *   <p>Renderiza como section en el DOM</p>
  * </Container>
  * ```
  *
- * @param size - 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'prose' (default: 'xl')
+ * @param size - 'prose' | 'narrow' | 'default' | 'wide' | 'max' | 'full' (default: 'default')
  * @param as - elemento HTML a renderizar (default: 'div')
  * @param className - clases adicionales mergeadas con cn()
  */
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
-type ContainerSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'prose';
+type ContainerSize = 'prose' | 'narrow' | 'default' | 'wide' | 'max' | 'full';
 
 export interface ContainerProps extends React.HTMLAttributes<HTMLElement> {
   size?: ContainerSize;
   as?: React.ElementType;
 }
 
-const sizeMap: Record<ContainerSize, string> = {
-  sm: 'max-w-[640px]',
-  md: 'max-w-[768px]',
-  lg: 'max-w-[1024px]',
-  xl: 'max-w-[1280px]',
-  '2xl': 'max-w-[1440px]',
-  prose: 'max-w-[70ch]',
+const containerClass: Record<ContainerSize, string> = {
+  prose: 'bbf-container-prose',
+  narrow: 'bbf-container-narrow',
+  default: 'bbf-container-default',
+  wide: 'bbf-container-wide',
+  max: 'bbf-container-max',
+  full: 'bbf-container-full',
 };
 
 export const Container = React.forwardRef<HTMLElement, ContainerProps>(
-  ({ className, size = 'xl', as: Tag = 'div', children, ...props }, ref) => {
+  ({ className, size = 'default', as: Tag = 'div', children, ...props }, ref) => {
     return (
       <Tag
         ref={ref}
         data-component="bbf-container"
         data-size={size}
-        className={cn('mx-auto px-4 md:px-8', sizeMap[size], className)}
+        className={cn('mx-auto px-4 md:px-8', containerClass[size], className)}
         {...props}
       >
         {children}
