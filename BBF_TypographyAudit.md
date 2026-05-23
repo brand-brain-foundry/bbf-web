@@ -848,8 +848,77 @@ Wave 11.4-C migrará:
 
 ---
 
+## §Y — CIERRE Wave 11.4-C1 (Tier 2 Cascade Activation)
+
+**Despacho:** B-BBF-WEB-WAVE-11-4-C1
+**Fecha cierre:** 2026-05-24
+**Commit:** [pendiente Zavala stage+commit]
+
+### Cambios aplicados (componentes-only)
+
+**Archivos modificados (2):**
+- `src/components/atoms/Heading/Heading.variants.ts`
+- `src/components/atoms/Text/Text.variants.ts`
+
+**Variants migrados de Tier 1 → Tier 2 (11 total):**
+
+Heading (6 variants):
+- `display-1`, `display-2`: ahora consumen `--bbf-typography-display-{1,2}-{size/line/tracking/weight/font}`
+- `h1`, `h2`, `h3`, `h4`: ahora consumen `--bbf-typography-h{1,2,3,4}-{size/line/tracking/weight/font}`
+- **h3 FIX (TD-11-48):** antes consumía `--bbf-text-lg` (18px) → ahora `--bbf-typography-h3-size` → `--bbf-text-h3` (20px). +2px visual.
+
+Text (5 variants):
+- `body-lg`, `body-md`, `body-sm`: ahora consumen `--bbf-typography-body{,-lg,-sm}-{size/line/tracking/weight/font}`
+- `caption`: ahora consume `--bbf-typography-caption-*`
+- `tagline`: ahora consume `--bbf-typography-tagline-*` (incluye `--bbf-tracking-tagline` 0.15em)
+
+**Variants NO migrados (preservados para Wave 11.4-C2):**
+- Heading: `display-md`, `display-lg`, `display-xl`, `h5`, `h6`
+- Text: `overline` (sin Tier 2 group), `size.lead`, `size.base`, `size.small`, `size.micro`
+
+### TDs cerradas
+- ✅ TD-11-41 CRITICAL — Tier 2 cascade ACTIVADA (cierre completo)
+- ✅ TD-11-48 h3 mapping fix (activado en componente)
+
+### Cambios visuales — §10 Anomalías
+
+Cambios visuales más allá de los declarados en el despacho:
+
+| Elemento | Antes | Después | Tipo |
+|---|---|---|---|
+| h3 size | 18px (text-lg) | 20px (typography-h3) | Fix declarado |
+| h4 size | 16px (text-base) | 18px (typography-h4) | Fix implícito — h4 estaba con tamaño de body |
+| h4 tracking | ninguno | -0.02em (tight) | Corrección heading tracking |
+| h4 weight | ninguno (hereda base bold) | semibold (600) | Ajuste sub-jerarquía |
+| caption leading | 1.15 (snug) | 1.45 (snug-small) | Corrección — 1.15 era muy compacto |
+| caption weight | ninguno (regular) | medium (500) | Apropiado para labels |
+| tagline leading | 1.55 (base) | 1.15 (snug) | Corrección — tagline corto, snug correcto |
+| body-sm leading | 1.55 (base) | 1.45 (snug-small) | Apropiado para texto secundario |
+| tagline tracking | 0.15em (hardcoded) | var(--bbf-tracking-tagline) | Mismo valor, ahora token |
+
+Todos los cambios son fixes de alineación tipográfica, no regresiones. Zavala valida visualmente.
+
+### Próximo paso — Wave 11.4-C2
+
+Wave 11.4-C2 (cleanup masivo):
+- Eliminar variants legacy Heading (`display-md/lg/xl`, `h5`, `h6`)
+- Eliminar variants legacy Text (`size.lead`, `size.base`, `size.small`, `size.micro`)
+- Migrar 7 tokens Tier 1 preservados Wave 11.4-B → eliminar cuando componentes usen solo Tier 2
+- Migrar 4 consumidores display fluid (`Heading display-md/lg/xl` + `Stat.tsx`)
+- Migrar Nav/MegaMenu/MobileSubMenu `leading-snug` → token canon (TD-11-42)
+- Migrar HeroSection tagline `hero.css --bbf-tagline-tracking: 0.15em` → `var(--bbf-tracking-tagline)`
+- Migrar Footer `mt-20` → `.bbf-section-mt-default`
+- Migrar `contacto/page.tsx` raw `<h1>` → Heading atom (TD-11-43)
+- Migrar `Stat.tsx`, `NewsletterBox.tsx` raw paragraphs (TD-11-44, TD-11-45)
+- Eliminar `--bbf-text-xl` alias divergente (TD-11-50)
+- Eliminar aliases legacy Tier 2 (`lead`, `small`)
+
+---
+
 *Fin BBF_TypographyAudit.md*
 *Wave 11.4-A — READ-ONLY — sin modificaciones de código*
 *AUD-BBF-019 input*
 *Wave 11.4-B — WRITE — tokens normalization*
 *AUD-BBF-020 input*
+*Wave 11.4-C1 — WRITE — Tier 2 cascade activation*
+*AUD-BBF-021 input*
