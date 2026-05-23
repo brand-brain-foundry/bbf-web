@@ -12,8 +12,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const headline = locale === 'es' ? 'construimos' : 'we build';
-  const headline2 = locale === 'es' ? 'cerebros de marca.' : 'brand brains.';
+  const headline = locale === 'es' ? 'Tú diriges.' : 'You drive.';
+  const headline2 = locale === 'es' ? 'Tu marca ejecuta.' : 'Your brand runs.';
   const tagline = locale === 'es' ? 'Próximamente' : 'Coming Soon';
   const cta = locale === 'es' ? 'contactanos' : 'contact us';
   const contactHref = locale === 'en' ? '/en/contacto' : '/contacto';
