@@ -22,13 +22,47 @@ export const textVariants = cva(
     variants: {
       // === variant: semántico existente (MANTENER — usado en homepage + hero) ===
       variant: {
-        'body-lg': '[font-size:var(--bbf-text-body-lg)]',
-        'body-md': '[font-size:var(--bbf-text-body-md)]',
-        'body-sm': '[font-size:var(--bbf-text-body-sm)]',
-        caption: '[font-size:var(--bbf-text-caption)] leading-[var(--bbf-leading-snug)]',
+        // Tier 2 cascade activated — Wave 11.4-C1
+        'body-lg': [
+          '[font-size:var(--bbf-typography-body-lg-size)]',
+          'leading-[var(--bbf-typography-body-lg-line)]',
+          'tracking-[var(--bbf-typography-body-lg-tracking)]',
+          'font-[var(--bbf-typography-body-lg-weight)]',
+          'font-[var(--bbf-typography-body-lg-font)]',
+        ].join(' '),
+        'body-md': [
+          '[font-size:var(--bbf-typography-body-size)]',
+          'leading-[var(--bbf-typography-body-line)]',
+          'tracking-[var(--bbf-typography-body-tracking)]',
+          'font-[var(--bbf-typography-body-weight)]',
+          'font-[var(--bbf-typography-body-font)]',
+        ].join(' '),
+        'body-sm': [
+          '[font-size:var(--bbf-typography-body-sm-size)]',
+          'leading-[var(--bbf-typography-body-sm-line)]',
+          'tracking-[var(--bbf-typography-body-sm-tracking)]',
+          'font-[var(--bbf-typography-body-sm-weight)]',
+          'font-[var(--bbf-typography-body-sm-font)]',
+        ].join(' '),
+        // NOTE: leading 1.15→1.45 (snug-small more appropriate for caption), gains weight-medium
+        caption: [
+          '[font-size:var(--bbf-typography-caption-size)]',
+          'leading-[var(--bbf-typography-caption-line)]',
+          'tracking-[var(--bbf-typography-caption-tracking)]',
+          'font-[var(--bbf-typography-caption-weight)]',
+          'font-[var(--bbf-typography-caption-font)]',
+        ].join(' '),
+        // overline: no Tier 2 group — Wave 11.4-C2 handles
         overline:
           '[font-size:var(--bbf-text-overline)] uppercase tracking-[var(--bbf-tracking-overline)]',
-        tagline: '[font-size:var(--bbf-text-base)] uppercase tracking-[0.15em]',
+        // NOTE: leading 1.55→1.15 (appropriate for short tagline), tracking now via token
+        tagline: [
+          '[font-size:var(--bbf-typography-tagline-size)]',
+          'uppercase',
+          'tracking-[var(--bbf-typography-tagline-tracking)]',
+          'font-[var(--bbf-typography-tagline-weight)]',
+          'font-[var(--bbf-typography-tagline-font)]',
+        ].join(' '),
       },
       // === size: Wave 5 golden ratio scale (D-BBF-KB-105) ===
       size: {
