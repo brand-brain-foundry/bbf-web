@@ -49,6 +49,12 @@
      ============================================================ */
   --bbf-space-section-gap-sm: var(--bbf-space-12); /* 48px */
   --bbf-space-section-gap-md: var(--bbf-space-16); /* 64px */
+  --bbf-space-section-gap-default: var(
+    --bbf-space-20
+  ); /* 5rem / 80px
+                                                           √(4×6) ≈ 4.9rem ≈ 5rem — media geométrica entre sm y lg.
+                                                           Consumer: Footer mt-20 (Wave 11.4-C migra).
+                                                           R-BBF-12 §1.2. Cierra TD-11-39. */
   --bbf-space-section-gap-lg: var(--bbf-space-24); /* 96px */
   --bbf-space-section-gap-xl: var(--bbf-space-32); /* 128px */
 

@@ -13,6 +13,76 @@
  * Componentes referencian SOLO estos semantic tokens, NUNCA primitives.
  */
 
+/* ============================================================================
+ * TYPOGRAPHY — SET CERRADO (D-BBF-KB-145 §3.1 + R-BBF-12 industria 2026)
+ * ============================================================================
+ *
+ * ESCALA ÁUREA φ (display, ratio 1.618):
+ *   display-1   →  68px  →  hero principal, máximo impacto
+ *   display-2   →  42px  →  section heroes
+ *   h1          →  26px  →  page titles
+ *   body / h5   →  16px  →  base
+ *   micro       →  10px  →  legal, overline
+ *
+ * SUB-JERARQUÍA HEADING (ratio Major Third 1.1, alineado Material 3):
+ *   h2  →  22px  (1.375rem)  Material 3 Title Large
+ *   h3  →  20px  (1.25rem)
+ *   h4  →  18px  (1.125rem)
+ *
+ * BODY (3 niveles):
+ *   body-lg  →  18px  →  lead paragraphs
+ *   body-md  →  16px  →  default (= body)
+ *   body-sm  →  14px  →  secondary
+ *
+ * UI/META:
+ *   caption  →  14px  →  labels, metadata
+ *   tagline  →  16px uppercase + tracking 0.15em  →  hero subtitle BBF pattern
+ *
+ * 4 PESOS CANÓNICOS (D-3 firmada — R-BBF-12 §1.4):
+ *   regular (400)   →  body, caption
+ *   medium (500)    →  labels, nav, caption con énfasis
+ *   semibold (600)  →  display, headings (default heading weight)
+ *   bold (700)      →  h1, CTAs, emphasis máximo
+ *
+ * 6 LINE-HEIGHTS:
+ *   none (1.0)         →  UI tight, números
+ *   tight (1.05)       →  display
+ *   snug (1.15)        →  headings (alineado industria 2026, no Tailwind 1.375)
+ *   snug-small (1.45)  →  captions, small body
+ *   base (1.55)        →  body (WCAG compliant ≥1.5)
+ *   relaxed (1.65)     →  prose long-form
+ *
+ * 5 LETTER-SPACINGS + 1 TAGLINE:
+ *   tighter (-0.03em)  →  display
+ *   tight (-0.02em)    →  headings
+ *   normal (0)         →  body
+ *   wide (0.02em)      →  small caps, eyebrow
+ *   wider (0.04em)     →  uppercase amplio
+ *   tagline (0.15em)   →  hero tagline BBF pattern (NUEVO Wave 11.4-B)
+ *
+ * ESTRATEGIA DE IMPACTO COPY (R-BBF-12 §1.4, D-7):
+ *   Para máximo impacto SIN proliferar pesos:
+ *     1. Display size + bold (700)       → hero primary, headline máximo
+ *     2. Display size + semibold (600)   → default hero BBF (más sofisticado)
+ *     3. Heading size + tracking-tight   → densidad sin agrandar
+ *     4. All-caps + tagline tracking     → énfasis textual (BBF tagline pattern)
+ *     5. Color accent (red) sub-keyword  → emphasis cromática (no peso)
+ *
+ * PROHIBIDO (D-145 §3.4):
+ *   - Combinaciones fuera del set autorizado.
+ *   - Agregar level/peso/leading nuevo sin decisión D-BBF.
+ *   - Agregar token "por si acaso" sin consumidor real.
+ *
+ * LEGACY @deprecated (Wave 11.5 eliminación):
+ *   --bbf-text-display-md/lg/xl (fluid clamp) — ver header @deprecated en primitives.
+ *
+ * PENDING (R-BBF-12 §1.2):
+ *   --bbf-leading-loose (2.0) — NO creado hasta primer consumidor real (TD-11-49).
+ *
+ * Referencias: R-BBF-12, D-BBF-KB-145, BBF_TypographyAudit.md
+ *
+ * ============================================================================ */
+
 :root {
   /* ============================================================
      FONT ROLES (semantic — propósito)
@@ -58,6 +128,20 @@
   --bbf-typography-h2-tracking: var(--bbf-tracking-tight);
   --bbf-typography-h2-weight: var(--bbf-weight-bold);
 
+  /* H3 */
+  --bbf-typography-h3-font: var(--bbf-font-display);
+  --bbf-typography-h3-size: var(--bbf-text-h3); /* 1.25rem / 20px */
+  --bbf-typography-h3-line: var(--bbf-leading-snug); /* 1.15 */
+  --bbf-typography-h3-tracking: var(--bbf-tracking-tight); /* -0.02em */
+  --bbf-typography-h3-weight: var(--bbf-weight-semibold); /* 600 */
+
+  /* H4 */
+  --bbf-typography-h4-font: var(--bbf-font-display);
+  --bbf-typography-h4-size: var(--bbf-text-h4); /* 1.125rem / 18px */
+  --bbf-typography-h4-line: var(--bbf-leading-snug); /* 1.15 */
+  --bbf-typography-h4-tracking: var(--bbf-tracking-tight); /* -0.02em */
+  --bbf-typography-h4-weight: var(--bbf-weight-semibold); /* 600 */
+
   /* Body (default) */
   --bbf-typography-body-font: var(--bbf-font-body);
   --bbf-typography-body-size: var(--bbf-text-base);
@@ -65,14 +149,43 @@
   --bbf-typography-body-tracking: var(--bbf-tracking-normal);
   --bbf-typography-body-weight: var(--bbf-weight-regular);
 
-  /* Lead / large body */
+  /* Body LG — lead paragraphs */
+  --bbf-typography-body-lg-font: var(--bbf-font-body);
+  --bbf-typography-body-lg-size: var(--bbf-text-body-lg); /* 1.125rem / 18px */
+  --bbf-typography-body-lg-line: var(--bbf-leading-base); /* 1.55 */
+  --bbf-typography-body-lg-tracking: var(--bbf-tracking-normal);
+  --bbf-typography-body-lg-weight: var(--bbf-weight-regular);
+
+  /* Body SM — secondary body */
+  --bbf-typography-body-sm-font: var(--bbf-font-body);
+  --bbf-typography-body-sm-size: var(--bbf-text-body-sm); /* 0.875rem / 14px */
+  --bbf-typography-body-sm-line: var(--bbf-leading-snug-small); /* 1.45 */
+  --bbf-typography-body-sm-tracking: var(--bbf-tracking-normal);
+  --bbf-typography-body-sm-weight: var(--bbf-weight-regular);
+
+  /* Caption — UI captions, labels */
+  --bbf-typography-caption-font: var(--bbf-font-body);
+  --bbf-typography-caption-size: var(--bbf-text-caption); /* 0.875rem / 14px */
+  --bbf-typography-caption-line: var(--bbf-leading-snug-small); /* 1.45 */
+  --bbf-typography-caption-tracking: var(--bbf-tracking-normal);
+  --bbf-typography-caption-weight: var(--bbf-weight-medium); /* 500 */
+
+  /* Tagline — all-caps hero subtitle pattern BBF */
+  --bbf-typography-tagline-font: var(--bbf-font-body);
+  --bbf-typography-tagline-size: var(--bbf-text-base); /* 1rem / 16px */
+  --bbf-typography-tagline-line: var(--bbf-leading-snug); /* 1.15 */
+  --bbf-typography-tagline-tracking: var(--bbf-tracking-tagline); /* 0.15em */
+  --bbf-typography-tagline-weight: var(--bbf-weight-semibold); /* 600 */
+  /* Note: text-transform uppercase aplicado en el componente, no en token */
+
+  /* Lead / large body (legacy alias → usar body-lg) */
   --bbf-typography-lead-font: var(--bbf-font-body);
   --bbf-typography-lead-size: var(--bbf-text-lg);
   --bbf-typography-lead-line: var(--bbf-leading-base);
   --bbf-typography-lead-tracking: var(--bbf-tracking-normal);
   --bbf-typography-lead-weight: var(--bbf-weight-regular);
 
-  /* Small / caption */
+  /* Small / caption (legacy alias → usar body-sm o caption) */
   --bbf-typography-small-font: var(--bbf-font-body);
   --bbf-typography-small-size: var(--bbf-text-sm);
   --bbf-typography-small-line: var(--bbf-leading-snug-small);
