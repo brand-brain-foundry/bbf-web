@@ -65,7 +65,7 @@
   --bbf-tagline-size: var(--bbf-text-base); /* 16px fijo */
   --bbf-tagline-weight: 700;
   --bbf-tagline-tracking: 0.15em; /* PATCH-4 */
-  --bbf-tagline-color: var(--bbf-color-text-primary);
+  --bbf-tagline-color: var(--bbf-text-on-sand);
   --bbf-tagline-transform: uppercase;
 
   /* === Hero spacing rhythm (PATCH-4: 8pt grid canon) === */

@@ -63,7 +63,7 @@ export async function Header({ className }: HeaderProps) {
         className,
       )}
     >
-      <div className="pointer-events-auto mx-auto box-border max-w-7xl px-3 pt-3 sm:px-4 sm:pt-4 lg:px-6">
+      <div className="bbf-container-wide pointer-events-auto mx-auto box-border px-3 pt-3 sm:px-4 sm:pt-4 lg:px-6">
         <div
           className={cn(
             'mx-auto rounded-2xl',

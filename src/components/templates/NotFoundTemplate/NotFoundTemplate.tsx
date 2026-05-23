@@ -16,7 +16,7 @@ export async function NotFoundTemplate({ locale = 'es' }: NotFoundTemplateProps)
   return (
     <main
       data-component="bbf-not-found-template"
-      className="flex min-h-[60vh] items-center justify-center py-16"
+      className="bbf-section-py-md flex min-h-[60vh] items-center justify-center"
     >
       <Container size="prose" className="text-center">
         <Heading level="display-lg" as="h1" weight="bold" className="mb-6">

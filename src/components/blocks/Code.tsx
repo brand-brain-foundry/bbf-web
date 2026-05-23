@@ -19,18 +19,20 @@ export function CodeBlock({
   return (
     <figure data-component="bbf-code" className={cn('my-6', className)}>
       {filename && (
-        <figcaption className="flex items-center gap-2 rounded-t-md bg-[var(--bbf-color-black-800)] px-4 py-2">
-          <Text variant="body-sm" className="font-mono text-[var(--bbf-color-sand-200)]">
+        <figcaption className="flex items-center gap-2 rounded-t-md bg-[var(--bbf-surface-black-elevated)] px-4 py-2">
+          <Text variant="body-sm" className="font-mono text-[var(--bbf-text-on-black-muted)]">
             {filename}
           </Text>
           {language && (
-            <span className="ml-auto text-xs text-[var(--bbf-color-sand-400)]">{language}</span>
+            <span className="ml-auto text-xs text-[var(--bbf-text-on-black-subtle)]">
+              {language}
+            </span>
           )}
         </figcaption>
       )}
       <pre
         className={cn(
-          'overflow-x-auto bg-[var(--bbf-color-black-900)] p-4 text-[var(--bbf-color-sand-100)]',
+          'overflow-x-auto bg-[var(--bbf-surface-black)] p-4 text-[var(--bbf-text-on-black)]',
           filename ? 'rounded-b-md' : 'rounded-md',
           lineNumbers && 'counter-reset-[line]',
         )}

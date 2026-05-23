@@ -70,7 +70,7 @@ export async function Footer({ className }: FooterProps) {
         className,
       )}
     >
-      <div className="mx-auto max-w-7xl px-6 py-12 sm:px-8 lg:px-10 lg:py-16">
+      <div className="bbf-container-wide mx-auto px-6 py-[var(--bbf-space-section-gap-sm)] sm:px-8 lg:px-10 lg:py-[var(--bbf-space-section-gap-md)]">
         {/* Main grid: brand + groups + newsletter */}
         <div
           className={cn(

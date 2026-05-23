@@ -14,7 +14,7 @@ export function CornerstoneTemplate({ contentItem }: CornerstoneTemplateProps) {
 
   return (
     <article data-component="bbf-cornerstone-template" className="cornerstone-page">
-      <header className="cornerstone-hero py-16 md:py-24">
+      <header className="cornerstone-hero py-[var(--bbf-space-section-gap-md)] md:py-[var(--bbf-space-section-gap-lg)]">
         <Container size="prose">
           <Heading level="display-xl" as="h1" weight="bold" color="primary" className="mb-6">
             {contentItem.title}
@@ -44,7 +44,7 @@ export function CornerstoneTemplate({ contentItem }: CornerstoneTemplateProps) {
         ))}
       </Container>
 
-      <aside className="cornerstone-cta mt-16 border-t border-[var(--bbf-color-sand-300)] py-12">
+      <aside className="cornerstone-cta bbf-section-py-sm mt-16 border-t border-[var(--bbf-color-sand-300)]">
         <Container size="prose">{/* CTAs canon BBF — M6-A4 */}</Container>
       </aside>
     </article>

@@ -58,7 +58,7 @@ export const Container = React.forwardRef<HTMLElement, ContainerProps>(
         ref={ref}
         data-component="bbf-container"
         data-size={size}
-        className={cn('mx-auto px-4 md:px-8', containerClass[size], className)}
+        className={cn('bbf-container-px mx-auto', containerClass[size], className)}
         {...props}
       >
         {children}

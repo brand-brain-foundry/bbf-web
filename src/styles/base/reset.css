@@ -26,8 +26,8 @@ body {
   font-size: var(--bbf-text-base);
   font-weight: 400;
   line-height: 1.5;
-  color: var(--bbf-color-text-primary);
-  background-color: var(--bbf-color-bg-base);
+  color: var(--bbf-text-on-sand);
+  background-color: var(--bbf-surface-sand);
   margin: 0;
   overflow-x: hidden;
 }

@@ -10,7 +10,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const heroSectionVariants = cva(['bbf-hero-section', 'relative', 'overflow-hidden'], {
   variants: {
     surface: {
-      auto: 'bg-[var(--bbf-color-bg-base)]',
+      auto: 'bg-[var(--bbf-surface-sand)]',
       dark: 'bg-[var(--bbf-surface-black)]',
       sand: 'bg-[var(--bbf-surface-sand)]',
       transparent: '',

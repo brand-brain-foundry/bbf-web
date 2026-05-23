@@ -1,0 +1,43 @@
+/* ============================================================================
+ * section-paddings.css — Section padding/margin utilities (Tier 2 consumption)
+ * ============================================================================
+ *
+ * SET CERRADO DE SECTION PADDINGS (D-BBF-KB-145 §3.5):
+ * Consumen --bbf-space-section-gap-* (Tier 2 semantic/spacing.css).
+ * Nuevos tamaños requieren decisión D-BBF.
+ *
+ *   sm  →  --bbf-space-section-gap-sm  (48px / 3rem)
+ *   md  →  --bbf-space-section-gap-md  (64px / 4rem)
+ *   lg  →  --bbf-space-section-gap-lg  (96px / 6rem)
+ *   xl  →  --bbf-space-section-gap-xl  (128px / 8rem)
+ *
+ * Uso: clases no-responsivas. Para responsive, usar Tailwind arbitrary:
+ *   py-[var(--bbf-space-section-gap-md)] md:py-[var(--bbf-space-section-gap-lg)]
+ *
+ * ========================================================================= */
+
+.bbf-section-py-sm {
+  padding-block: var(--bbf-space-section-gap-sm);
+}
+.bbf-section-py-md {
+  padding-block: var(--bbf-space-section-gap-md);
+}
+.bbf-section-py-lg {
+  padding-block: var(--bbf-space-section-gap-lg);
+}
+.bbf-section-py-xl {
+  padding-block: var(--bbf-space-section-gap-xl);
+}
+
+.bbf-section-mt-sm {
+  margin-block-start: var(--bbf-space-section-gap-sm);
+}
+.bbf-section-mt-md {
+  margin-block-start: var(--bbf-space-section-gap-md);
+}
+.bbf-section-mt-lg {
+  margin-block-start: var(--bbf-space-section-gap-lg);
+}
+.bbf-section-mt-xl {
+  margin-block-start: var(--bbf-space-section-gap-xl);
+}
