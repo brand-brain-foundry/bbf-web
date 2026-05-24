@@ -40,7 +40,7 @@ pnpm-debug.log*
 .vercel
 
 # Payload
-payload-types.ts
+
 .payload/
 
 # Typescript
