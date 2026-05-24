@@ -1,4 +1,7 @@
 {
+  "Header": {
+    "logoAriaLabel": "Inicio"
+  },
   "common": {
     "loading": "Cargando…",
     "error": "Algo salió mal",
@@ -9,7 +12,13 @@
     "skipToContent": "Saltar al contenido"
   },
   "footer": {
-    "rights": "Todos los derechos reservados."
+    "rights": "Todos los derechos reservados.",
+    "newsletter": {
+      "title": "Cerebros de marca, cada quince días.",
+      "submitLabel": "Suscribirme",
+      "submittingLabel": "Enviando…",
+      "successTitle": "Revisá tu email"
+    }
   },
   "contact": {
     "title": "Sentémonos a pensar",

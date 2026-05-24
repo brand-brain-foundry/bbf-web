@@ -1,7 +1,8 @@
-import { getLocale } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
 import Link from 'next/link';
+import { SkipLink } from '@/components/atoms/SkipLink';
 import { LanguageSwitcher } from '@/components/molecules/LanguageSwitcher';
 import { MobileMenu } from '@/components/molecules/MobileMenu';
 import { Button } from '@/components/atoms/Button';
@@ -20,7 +21,7 @@ type HeaderProps = {
  * Layout: logo izq → nav izq (HeaderDesktopNav) → LangSwitch+CTA+Mobile der
  */
 export async function Header({ className }: HeaderProps) {
-  const locale = await getLocale();
+  const [locale, t] = await Promise.all([getLocale(), getTranslations('Header')]);
   const localeKey = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
   const localePrefix = localeKey === 'en' ? '/en' : '';
 
@@ -63,6 +64,7 @@ export async function Header({ className }: HeaderProps) {
         className,
       )}
     >
+      <SkipLink />
       <div className="bbf-container-wide pointer-events-auto mx-auto box-border px-3 pt-3 sm:px-4 sm:pt-4 lg:px-6">
         <div
           className={cn(
@@ -76,14 +78,14 @@ export async function Header({ className }: HeaderProps) {
             {/* Logo */}
             <Link
               href={homeHref}
-              aria-label={`${siteName} — Home`}
+              aria-label={`${siteName} — ${t('logoAriaLabel')}`}
               className={cn(
                 'inline-flex shrink-0 items-center',
                 'font-bold tracking-tight',
                 'text-sm sm:text-base',
                 'text-[var(--bbf-text-on-sand)]',
                 'transition-all duration-200 ease-out',
-                'hover:text-[var(--bbf-accent-red)]',
+                '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
                 'focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
               )}
             >

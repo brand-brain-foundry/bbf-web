@@ -89,11 +89,11 @@ export async function Footer({ className }: FooterProps) {
               <BBFLogo variant="icon" size="sm" aria-hidden="true" />
               <p
                 className={cn(
-                  'font-[var(--bbf-font-display)]',
+                  '[font-family:var(--bbf-font-display)]',
                   'text-[length:var(--bbf-text-base)]',
                   'leading-[var(--bbf-leading-snug)]',
                   'tracking-[var(--bbf-tracking-tight)]',
-                  'font-[var(--bbf-weight-bold)]',
+                  '[font-weight:var(--bbf-weight-bold)]',
                   'text-[var(--bbf-text-on-sand)]',
                 )}
               >
@@ -105,7 +105,7 @@ export async function Footer({ className }: FooterProps) {
                 className={cn(
                   'text-[length:var(--bbf-text-sm)]',
                   'leading-[var(--bbf-leading-base)]',
-                  'font-[var(--bbf-weight-medium)]',
+                  '[font-weight:var(--bbf-weight-medium)]',
                   'text-[var(--bbf-text-on-sand)]',
                 )}
               >
@@ -131,12 +131,12 @@ export async function Footer({ className }: FooterProps) {
             <div className="order-1 md:order-last">
               <NewsletterBox
                 copy={{
-                  title: newsletter.title ?? 'Cerebros de marca, cada quince días.',
+                  title: newsletter.title ?? t('newsletter.title'),
                   description: newsletter.description ?? '',
                   emailPlaceholder: newsletter.emailPlaceholder ?? 'tu@email.com',
-                  submitLabel: newsletter.submitLabel ?? 'Suscribirme',
-                  submittingLabel: newsletter.submittingLabel ?? 'Enviando…',
-                  successTitle: newsletter.successTitle ?? 'Revisá tu email',
+                  submitLabel: newsletter.submitLabel ?? t('newsletter.submitLabel'),
+                  submittingLabel: newsletter.submittingLabel ?? t('newsletter.submittingLabel'),
+                  successTitle: newsletter.successTitle ?? t('newsletter.successTitle'),
                   successMessage: newsletter.successMessage ?? '',
                   privacyNote: newsletter.privacyNote ?? '',
                 }}
@@ -153,11 +153,11 @@ export async function Footer({ className }: FooterProps) {
             >
               <p
                 className={cn(
-                  'font-[var(--bbf-font-display)]',
+                  '[font-family:var(--bbf-font-display)]',
                   'text-[length:var(--bbf-text-xs)]',
                   'tracking-[var(--bbf-tracking-wider)]',
                   'uppercase',
-                  'font-[var(--bbf-weight-bold)]',
+                  '[font-weight:var(--bbf-weight-bold)]',
                   'text-[var(--bbf-text-on-sand-muted)]',
                 )}
               >
@@ -172,10 +172,10 @@ export async function Footer({ className }: FooterProps) {
                         'group inline-flex items-center gap-2 py-1',
                         'min-h-[44px] md:min-h-0',
                         'text-[length:var(--bbf-text-sm)]',
-                        'font-[var(--bbf-weight-regular)]',
+                        '[font-weight:var(--bbf-weight-regular)]',
                         'text-[var(--bbf-text-on-sand)]',
                         'transition-all duration-200 ease-out',
-                        'hover:translate-x-0.5 hover:text-[var(--bbf-accent-red)]',
+                        '[@media(hover:hover)]:hover:translate-x-0.5 [@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
                         'focus-visible:translate-x-0.5 focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
                       )}
                     >

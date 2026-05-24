@@ -1,4 +1,7 @@
 {
+  "Header": {
+    "logoAriaLabel": "Home"
+  },
   "common": {
     "loading": "Loading…",
     "error": "Something went wrong",
@@ -9,7 +12,13 @@
     "skipToContent": "Skip to content"
   },
   "footer": {
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "newsletter": {
+      "title": "Brand brains, every two weeks.",
+      "submitLabel": "Subscribe",
+      "submittingLabel": "Sending…",
+      "successTitle": "Check your email"
+    }
   },
   "contact": {
     "title": "Let's think this through",
