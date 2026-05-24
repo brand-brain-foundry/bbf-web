@@ -64,7 +64,7 @@ export async function Footer({ className }: FooterProps) {
     <footer
       data-component="bbf-footer"
       className={cn(
-        'mt-20 lg:mt-32',
+        'bbf-section-mt-default lg:bbf-section-mt-xl',
         'bg-[var(--bbf-surface-sand)]',
         'border-t border-[var(--bbf-border-on-sand)]',
         className,

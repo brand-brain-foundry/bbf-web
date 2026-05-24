@@ -157,7 +157,7 @@ export function MobileSubMenu({
                     {sub.label}
                   </span>
                   {sub.description && (
-                    <span className="text-xs leading-snug text-[var(--bbf-text-on-sand-muted)]">
+                    <span className="text-xs leading-[var(--bbf-leading-snug)] text-[var(--bbf-text-on-sand-muted)]">
                       {sub.description}
                     </span>
                   )}

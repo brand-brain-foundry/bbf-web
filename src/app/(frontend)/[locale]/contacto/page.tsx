@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Container } from '@/components/atoms/Container';
+import { Heading } from '@/components/atoms/Heading';
+import { Text } from '@/components/atoms/Text';
 import { ContactForm } from '@/components/molecules/ContactForm';
 import { cn } from '@/lib/utils';
 import { buildHreflang } from '@/lib/seo/hreflang';
@@ -52,19 +54,14 @@ export default async function ContactoPage({ params }: Props) {
       <Container size="prose">
         {/* Hero */}
         <div className="mb-12 space-y-4 lg:mb-16 lg:space-y-6">
-          <h1
-            className={cn(
-              'font-[var(--bbf-font-display)]',
-              'text-[length:var(--bbf-text-display-2)] md:text-[length:var(--bbf-text-display-1)]',
-              'leading-[var(--bbf-leading-tight)]',
-              'tracking-[var(--bbf-tracking-tight)]',
-              'font-[var(--bbf-weight-semibold)]',
-              'text-[var(--bbf-text-on-sand)]',
-              'text-balance',
-            )}
+          <Heading
+            level="display-2"
+            as="h1"
+            weight="semibold"
+            className="text-balance text-[var(--bbf-text-on-sand)] md:[font-size:var(--bbf-typography-display-1-size)]"
           >
             {t('title')}
-          </h1>
+          </Heading>
 
           <p
             className={cn(
@@ -77,16 +74,12 @@ export default async function ContactoPage({ params }: Props) {
             {t('subtitle')}
           </p>
 
-          <p
-            className={cn(
-              'text-[length:var(--bbf-text-base)]',
-              'leading-[var(--bbf-leading-base)]',
-              'text-[var(--bbf-text-on-sand)]',
-              'max-w-[60ch] text-pretty',
-            )}
+          <Text
+            variant="body-md"
+            className="max-w-[60ch] text-pretty text-[var(--bbf-text-on-sand)]"
           >
             {t('intro')}
-          </p>
+          </Text>
         </div>
 
         {/* Form */}

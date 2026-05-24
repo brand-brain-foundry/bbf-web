@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useLocale } from 'next-intl';
 import { subscribeNewsletter } from '@/lib/actions/newsletter';
 import { Button } from '@/components/atoms/Button';
+import { Text } from '@/components/atoms/Text';
 import { cn } from '@/lib/utils';
 
 type NewsletterCopy = {
@@ -73,12 +74,16 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
         role="status"
         aria-live="polite"
       >
-        <p className="mb-1 text-[length:var(--bbf-text-base)] font-[var(--bbf-weight-semibold)] text-[var(--bbf-color-success-text)]">
+        <Text
+          variant="body-md"
+          weight="semibold"
+          className="mb-1 text-[var(--bbf-color-success-text)]"
+        >
           {copy.successTitle}
-        </p>
-        <p className="text-[length:var(--bbf-text-sm)] text-[var(--bbf-color-success-text)]">
+        </Text>
+        <Text variant="body-sm" className="text-[var(--bbf-color-success-text)]">
           {copy.successMessage}
-        </p>
+        </Text>
       </div>
     );
   }
@@ -94,9 +99,9 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
         <p className="text-[length:var(--bbf-text-h2)] leading-[var(--bbf-leading-snug)] font-[var(--bbf-font-display)] font-[var(--bbf-weight-bold)] tracking-[var(--bbf-tracking-tight)] text-[var(--bbf-text-on-sand)]">
           {copy.title}
         </p>
-        <p className="text-[length:var(--bbf-text-sm)] leading-[var(--bbf-leading-snug-small)] text-[var(--bbf-text-on-sand-muted)]">
+        <Text variant="body-sm" className="text-[var(--bbf-text-on-sand-muted)]">
           {copy.description}
-        </p>
+        </Text>
       </div>
 
       {/* Form — stacked canon mobile-first */}
@@ -135,9 +140,9 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
           </Button>
         </div>
 
-        <p className="text-[length:var(--bbf-text-xs)] leading-[var(--bbf-leading-snug-small)] text-[var(--bbf-text-on-sand-subtle)]">
+        <Text variant="caption" as="p" className="text-[var(--bbf-text-on-sand-subtle)]">
           {copy.privacyNote}
-        </p>
+        </Text>
 
         {state.kind === 'error' && (
           <p

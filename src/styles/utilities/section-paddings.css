@@ -29,6 +29,13 @@
   padding-block: var(--bbf-space-section-gap-xl);
 }
 
+.bbf-section-mt-default {
+  margin-block-start: var(--bbf-space-section-gap-default);
+}
+.bbf-section-py-default {
+  padding-block: var(--bbf-space-section-gap-default);
+}
+
 .bbf-section-mt-sm {
   margin-block-start: var(--bbf-space-section-gap-sm);
 }

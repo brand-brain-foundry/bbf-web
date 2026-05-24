@@ -146,7 +146,7 @@ export function MegaMenuPanel({
               </p>
 
               {sub.description && (
-                <p className="text-xs leading-snug text-[var(--bbf-text-on-sand-muted)]">
+                <p className="text-xs leading-[var(--bbf-leading-snug)] text-[var(--bbf-text-on-sand-muted)]">
                   {sub.description}
                 </p>
               )}
