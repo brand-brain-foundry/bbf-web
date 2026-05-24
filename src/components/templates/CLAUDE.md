@@ -117,7 +117,7 @@ export default function CasePage({ data }) {
 Templates Tier 4 está DOCUMENTADO pero NO hay templates implementados aún.
 
 Las primeras templates se crearán cuando se construyan:
-- `CaseTemplate` — para páginas de casos (B-BBF-WEB-H1-*)
+- `CaseTemplate` — para páginas de casos
 - `BlogTemplate` — para páginas de posts
 - `HomeTemplate` — si la home requiere composition compleja
 

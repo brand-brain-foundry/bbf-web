@@ -30,16 +30,16 @@ Payload admin en `http://localhost:3000/admin` (no operativo hasta F-4 con DB).
 - `pnpm typecheck` — type check sin emit
 - `pnpm format` — Prettier sobre `**/*.{ts,tsx,md,json}`
 
-## Doctrina
+## Arquitectura
 
-Toda construcción técnica respeta `bbf-docs/03-canon/platform/BBF_FoundryCanon_v1_0.md` (identidad BBF) + `bbf-docs/04-strategic/web-public/BBF_WebPublicaTopologiaCanon_v0_3.md` (arquitectura web pública).
+- **Atomic Design** adaptado canon BBF (atoms → molecules → sections → templates).
+- **Surface-aware components** con context propagation.
+- **Token-based** OKLCH colors + semantic abstractions.
+- **AI-readable** data attributes + JSDoc.
+- **RSC-first** + Client wraps selectivos.
+- **Tailwind v4** con arbitrary properties.
 
-Antes de construir features verificar `BBF_WebPublicaRoadmap_v0_1.md` (orden de capas).
-
-## Repos relacionados
-
-- `bbf-docs` — doctrina, research, auditorías (separado intencionalmente)
-- `bbf-web` — este repo
+Ver `BBF_DESIGN.md` para detalles del sistema de diseño.
 
 ## Estado
 
