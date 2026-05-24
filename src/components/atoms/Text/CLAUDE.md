@@ -3,7 +3,6 @@
 **Text atom canon BBF — variant semántico + compoundVariants para weight override**
 
 > Tier: atom
-> Subordinado a: B-BBF-WEB-M5-D1 + M5-D4 + M5-D6
 > Decisiones: D-82 (AI-readable), D-91 (tagline canon), D-92 (Tailwind v4), D-95 (variant semántico)
 
 ---

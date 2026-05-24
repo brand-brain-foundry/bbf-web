@@ -3,7 +3,6 @@
 **Heading atom canon BBF — level semántico API, HTML decoupled**
 
 > Tier: atom
-> Subordinado a: B-BBF-WEB-M5-D1
 > Decisiones: D-80 (asChild), D-82 (AI-readable), D-92 (Tailwind v4 fix), D-95 (level semántico)
 
 ---

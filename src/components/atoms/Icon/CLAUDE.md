@@ -3,7 +3,6 @@
 **Icon atom canon BBF — Lucide React wrapper type-safe**
 
 > Tier: atom
-> Subordinado a: B-BBF-WEB-M5-D1
 > Decisiones: D-77 (surface-aware), D-81 (folder canon), D-82 (AI-readable), D-83 (Lucide canon)
 
 ---

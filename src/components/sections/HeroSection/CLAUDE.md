@@ -3,7 +3,6 @@
 **Hero section canon BBF — compound pattern, renderiza como `<main>`**
 
 > Tier: section
-> Subordinado a: B-BBF-WEB-M5-D4-HEROSECTION
 > Decisiones: D-77 (surface-aware), D-82 (AI-readable), D-88 (sections folder), D-89 (compound API), D-94 (Surface canon)
 
 ---

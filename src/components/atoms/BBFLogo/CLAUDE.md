@@ -3,7 +3,6 @@
 **BBF Logo atom canon — 4 variantes compositional + WAAPI animator**
 
 > Tier: atom (Server + Client split, D-99)
-> Subordinado a: B-BBF-WEB-M5-D1.5-LOGO-SYSTEM-V2 + B-BBF-WEB-M5-E
 > Decisiones: D-77 (surface-aware), D-78 (animated state), D-82 (AI-readable), D-84 (assets), D-99 (split canon)
 
 ---

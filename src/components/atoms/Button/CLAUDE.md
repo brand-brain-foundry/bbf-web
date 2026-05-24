@@ -3,7 +3,6 @@
 **Button atom canon BBF — intent semántico API, Slot polymorphic**
 
 > Tier: atom
-> Subordinado a: B-BBF-WEB-M5-D1-FOUNDATION-ATOMS
 > Decisiones: D-79 (compound NO), D-80 (asChild Slot), D-92 (Tailwind v4), D-95 (intent API)
 
 ---

@@ -3,7 +3,6 @@
 **Hero video molecule canon BBF — compound pattern con Source + Overlay**
 
 > Tier: molecule
-> Subordinado a: B-BBF-WEB-M5-D3-HEROVIDEO
 > Decisiones: D-79 (compound), D-82 (AI-readable), D-86 (compound API), D-87 (assets path), D-96 (CSSProperties)
 
 ---

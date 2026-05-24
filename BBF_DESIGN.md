@@ -291,7 +291,7 @@ Sistema de 100+ decisiones doctrinales acumuladas durante construcción.
 - **D-107** Cross-surface fuente de verdad única
 - **D-108** Icon registry centralizado con nombres semánticos
 
-Index completo: ver `docs/D-BBF-WEB.md` (M5-F2 generará).
+Index completo: ver commits con prefijo `feat(decision):` en historia git.
 
 ---
 
@@ -393,6 +393,6 @@ import { ArrowRight } from 'lucide-react';
 ## 10. Sistema vivo
 
 Este documento se actualiza con cada nueva decisión doctrinal canon BBF.
-Fuente de verdad: `/Volumes/PK/BBF/Repos/bbf-web/` + commits trazables.
+Fuente de verdad: este repositorio + commits trazables.
 
 **Last updated:** 2026-05-18 (M5-ADMIN-1)
