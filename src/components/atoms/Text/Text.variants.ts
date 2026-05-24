@@ -8,10 +8,9 @@
  * TD-M5-D4-CRIT-02 fix: text-[var(--token)] → [font-size:var(--token)]
  * L-BBF-92: Tailwind v4 arbitrary value text-[var()] defaultea a color:.
  *
- * TD-M5-D4-LATENTE-01 fix (M5-D6): compoundVariants para overline/tagline.
- * CVA procesa variants en orden de declaración; weight=regular default
- * sobreescribía font-bold de overline/tagline via tailwind-merge.
- * compoundVariants se aplican DESPUÉS → bold gana. ✓
+ * TD-M5-D4-LATENTE-01 fix (M5-D6): compoundVariant para tagline.
+ * CVA procesa variants en orden; weight=regular default sobreescribía
+ * font-bold de tagline via tailwind-merge. compoundVariant DESPUÉS → bold gana. ✓
  */
 
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -44,7 +43,6 @@ export const textVariants = cva(
           'font-[var(--bbf-typography-body-sm-weight)]',
           'font-[var(--bbf-typography-body-sm-font)]',
         ].join(' '),
-        // NOTE: leading 1.15→1.45 (snug-small more appropriate for caption), gains weight-medium
         caption: [
           '[font-size:var(--bbf-typography-caption-size)]',
           'leading-[var(--bbf-typography-caption-line)]',
@@ -52,10 +50,6 @@ export const textVariants = cva(
           'font-[var(--bbf-typography-caption-weight)]',
           'font-[var(--bbf-typography-caption-font)]',
         ].join(' '),
-        // overline: no Tier 2 group — Wave 11.4-C2 handles
-        overline:
-          '[font-size:var(--bbf-text-overline)] uppercase tracking-[var(--bbf-tracking-wider)]',
-        // NOTE: leading 1.55→1.15 (appropriate for short tagline), tracking now via token
         tagline: [
           '[font-size:var(--bbf-typography-tagline-size)]',
           'uppercase',
@@ -94,11 +88,6 @@ export const textVariants = cva(
       },
     },
     compoundVariants: [
-      {
-        variant: 'overline',
-        weight: 'regular',
-        class: 'font-[var(--bbf-weight-bold)]',
-      },
       {
         variant: 'tagline',
         weight: 'regular',

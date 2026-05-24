@@ -20,7 +20,7 @@ export function PillarTemplate({ contentItem }: PillarTemplateProps) {
   return (
     <article data-component="bbf-pillar-template" className="pillar-page">
       <Container size="prose">
-        <Heading level="display-lg" as="h1">
+        <Heading level="display-2" as="h1">
           {contentItem.title}
         </Heading>
         {contentItem.blocks.map((block, idx) => (

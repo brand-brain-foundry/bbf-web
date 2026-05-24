@@ -11,8 +11,8 @@
  *     <HeroVideo ...>...</HeroVideo>
  *     <HeroSection.Content align="center">
  *       <BBFLogo variant="stamp" size="hero" animated />
- *       <Heading level="display-lg" color="inverse">...</Heading>
- *       <Text variant="overline" color="inverse">...</Text>
+ *       <Heading level="display-2" color="inverse">...</Heading>
+ *       <Text variant="tagline" color="inverse">...</Text>
  *       <Button asChild intent="primary" size="lg">
  *         <a href="mailto:...">contactanos</a>
  *       </Button>
@@ -78,7 +78,7 @@ export interface HeroSectionContentProps extends HeroSectionContentVariants {
  * ```tsx
  * <HeroSection.Content align="center">
  *   <BBFLogo variant="stamp" size="hero" animated />
- *   <Heading level="display-lg" color="inverse" align="center">...</Heading>
+ *   <Heading level="display-2" color="inverse" align="center">...</Heading>
  * </HeroSection.Content>
  * ```
  */

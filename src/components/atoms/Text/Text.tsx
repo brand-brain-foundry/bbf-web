@@ -13,7 +13,7 @@ type TextElement = 'p' | 'span' | 'div';
 
 export interface TextProps extends Omit<React.HTMLAttributes<HTMLElement>, 'color'>, TextVariants {
   /**
-   * Semantic HTML element. Default: 'p' for body, 'span' for caption/overline.
+   * Semantic HTML element. Default: 'p' for body, 'span' for caption.
    */
   as?: TextElement;
   /**
@@ -23,7 +23,7 @@ export interface TextProps extends Omit<React.HTMLAttributes<HTMLElement>, 'colo
 }
 
 function inferElement(variant: TextVariants['variant']): TextElement {
-  if (variant === 'caption' || variant === 'overline') return 'span';
+  if (variant === 'caption') return 'span';
   return 'p';
 }
 
@@ -31,17 +31,17 @@ function inferElement(variant: TextVariants['variant']): TextElement {
  * BBF Text atom — Atomic Design canon
  *
  * @description
- * Text body/caption/overline canon BBF.
- * Auto-inferir element (p for body, span for caption/overline).
+ * Text body/caption/tagline canon BBF.
+ * Auto-inferir element (p for body, span for caption).
  *
  * @example Body
  * ```tsx
  * <Text variant="body-md">Lorem ipsum dolor sit amet.</Text>
  * ```
  *
- * @example Overline (eyebrow)
+ * @example Tagline
  * ```tsx
- * <Text variant="overline">PRÓXIMAMENTE</Text>
+ * <Text variant="tagline">PRÓXIMAMENTE</Text>
  * ```
  *
  * @example Caption

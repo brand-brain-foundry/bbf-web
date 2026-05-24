@@ -37,7 +37,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
 
         <Heading
-          level="display-lg"
+          level="display-1"
           weight="bold"
           color="primary"
           align="center"

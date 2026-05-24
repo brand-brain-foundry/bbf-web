@@ -20,7 +20,7 @@ export function ErrorTemplate({ reset }: ErrorTemplateProps) {
       className="bbf-section-py-md flex min-h-[60vh] items-center justify-center"
     >
       <Container size="prose" className="text-center">
-        <Heading level="display-lg" as="h1" weight="bold" className="mb-6">
+        <Heading level="display-2" as="h1" weight="bold" className="mb-6">
           {t('title')}
         </Heading>
         <Text variant="body-lg" className="mx-auto mb-8 max-w-prose">

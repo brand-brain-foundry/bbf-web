@@ -16,7 +16,7 @@ export function CornerstoneTemplate({ contentItem }: CornerstoneTemplateProps) {
     <article data-component="bbf-cornerstone-template" className="cornerstone-page">
       <header className="cornerstone-hero py-[var(--bbf-space-section-gap-md)] md:py-[var(--bbf-space-section-gap-lg)]">
         <Container size="prose">
-          <Heading level="display-xl" as="h1" weight="bold" color="primary" className="mb-6">
+          <Heading level="display-1" as="h1" weight="bold" color="primary" className="mb-6">
             {contentItem.title}
           </Heading>
 

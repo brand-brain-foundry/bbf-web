@@ -54,36 +54,6 @@
   --bbf-text-display-2-mobile: 2rem; /* 32px */
   --bbf-text-h1-mobile: 1.5rem; /* 24px */
 
-  /* ============================================================================
-   * LEGACY FLUID DISPLAY — @deprecated since Wave 11.4-B (D-2 firmada)
-   * ============================================================================
-   *
-   * Los siguientes tokens están deprecados:
-   *   --bbf-text-display-md  (clamp 32→56px)
-   *   --bbf-text-display-lg  (clamp 40→72px)
-   *   --bbf-text-display-xl  (clamp 48→96px)
-   *
-   * Razón: usan clamp() fluid que no pertenece a la escala áurea φ.
-   * Reemplazo canónico:
-   *   - Usar --bbf-text-display-1 (4.25rem / 68px) para hero principal
-   *   - Usar --bbf-text-display-2 (2.625rem / 42px) para section heroes
-   *   - Para fluid behavior: aplicar clamp() en consumer con tokens canónicos como min/max
-   *
-   * Plan de remoción:
-   *   Wave 11.4-C: migrar 4 consumidores conocidos a display-1/display-2
-   *   Wave 11.5:   eliminar estos 3 tokens
-   *
-   * Consumidores conocidos (Wave 11.4-A audit):
-   *   - src/components/atoms/Heading/Heading.variants.ts (display-xl, display-lg, display-md)
-   *   - src/components/blocks/Stat.tsx (display-lg)
-   *
-   * Si encontrás un consumidor no listado → abrir TD nueva.
-   *
-   * ========================================================================= */
-  --bbf-text-display-xl: clamp(3rem, 7vw, 6rem); /* 48px → 96px */
-  --bbf-text-display-lg: clamp(2.5rem, 5.5vw, 4.5rem); /* 40px → 72px */
-  --bbf-text-display-md: clamp(2rem, 4vw, 3.5rem); /* 32px → 56px */
-
   /* Body */
   --bbf-text-body-lg: 1.125rem; /* 18px lead paragraphs */
   --bbf-text-body-md: 1rem; /* 16px default */
@@ -91,7 +61,6 @@
 
   /* Meta */
   --bbf-text-caption: 0.875rem; /* 14px */
-  --bbf-text-overline: 0.625rem; /* 10px small caps */
 
   /* Legacy scale aliases (compatibilidad — actualizado a golden ratio values) */
   --bbf-text-xs: 0.75rem; /* 12px — badge, caption, microcopy */

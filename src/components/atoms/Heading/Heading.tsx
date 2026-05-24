@@ -29,7 +29,7 @@ export interface HeadingProps
  * Map level variant → HTML element.
  */
 function inferElement(level: HeadingVariants['level']): HeadingElement {
-  if (level === 'display-xl' || level === 'display-lg' || level === 'display-md') return 'h1';
+  if (level === 'display-1' || level === 'display-2') return 'h1';
   return (level ?? 'h1') as HeadingElement;
 }
 
@@ -42,14 +42,14 @@ function inferElement(level: HeadingVariants['level']): HeadingElement {
  *
  * @example Basic h1
  * ```tsx
- * <Heading level="display-lg" weight="bold">
+ * <Heading level="display-1" weight="bold">
  *   we build brand brains.
  * </Heading>
  * ```
  *
  * @example H2 con display visual
  * ```tsx
- * <Heading as="h2" level="display-md">
+ * <Heading as="h2" level="display-2">
  *   Section title (h2 semantically, display visually)
  * </Heading>
  * ```

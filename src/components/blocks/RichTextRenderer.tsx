@@ -28,8 +28,8 @@ export function RichTextRenderer({ body, className }: RichTextRendererProps) {
         converters={({ defaultConverters }) => ({
           ...defaultConverters,
           heading: ({ node, nodesToJSX }) => {
-            const levelMap: Record<string, 'display-md' | 'h2' | 'h3' | 'h4'> = {
-              h1: 'display-md',
+            const levelMap: Record<string, 'display-2' | 'h2' | 'h3' | 'h4'> = {
+              h1: 'display-2',
               h2: 'h2',
               h3: 'h3',
               h4: 'h4',

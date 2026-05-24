@@ -8,7 +8,7 @@ export default function NotFound() {
   return (
     <main data-component="bbf-not-found" className="flex min-h-[60vh] items-center py-24">
       <Container size="prose" className="text-center">
-        <Heading level="display-xl" as="h1" weight="bold" color="primary" className="mb-4">
+        <Heading level="display-1" as="h1" weight="bold" color="primary" className="mb-4">
           404
         </Heading>
         <Heading level="h3" weight="regular" color="secondary" className="mb-6">

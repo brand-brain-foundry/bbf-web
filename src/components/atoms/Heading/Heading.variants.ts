@@ -65,10 +65,6 @@ export const headingVariants = cva(
           'font-[var(--bbf-typography-h4-weight)]',
           'font-[var(--bbf-typography-h4-font)]',
         ].join(' '),
-        // === Legacy fluid scale (@deprecated Wave 11.4-B — Wave 11.4-C2d elimina tokens) ===
-        'display-xl': '[font-size:var(--bbf-text-display-xl)]',
-        'display-lg': '[font-size:var(--bbf-text-display-lg)]',
-        'display-md': '[font-size:var(--bbf-text-display-md)]',
       },
       weight: {
         regular: 'font-[var(--bbf-weight-regular)]',
