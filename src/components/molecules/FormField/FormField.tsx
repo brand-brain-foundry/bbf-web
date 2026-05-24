@@ -2,6 +2,11 @@
 
 import { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
+import {
+  formFieldLabelVariants,
+  formFieldBorderVariants,
+  formFieldMessageVariants,
+} from './FormField.variants';
 
 type FormFieldProps = {
   label: string;
@@ -49,13 +54,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
       'disabled:cursor-not-allowed disabled:opacity-60',
     );
 
-    const borderClass = hasError
-      ? cn('border-[var(--bbf-color-error-border)]', 'focus:border-[var(--bbf-color-error-border)]')
-      : cn(
-          'border-[var(--bbf-border-on-sand)]',
-          !disabled && 'hover:border-[var(--bbf-text-on-sand)]',
-          'focus:border-[var(--bbf-accent-red)]',
-        );
+    const borderClass = formFieldBorderVariants({ error: hasError, disabled: Boolean(disabled) });
 
     const inputClass = cn(baseClass, borderClass, 'h-12 rounded-full px-5', inputClassName);
 
@@ -68,10 +67,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
 
     return (
       <div data-component="bbf-form-field" className={cn('flex flex-col', className)}>
-        <label
-          htmlFor={fieldId}
-          className="mb-2 block text-[length:var(--bbf-text-sm)] font-[var(--bbf-weight-medium)] text-[var(--bbf-text-on-sand)]"
-        >
+        <label htmlFor={fieldId} className={formFieldLabelVariants()}>
           {label}
           {required && <span aria-hidden="true"> *</span>}
         </label>
@@ -110,11 +106,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
         )}
 
         {hasError && (
-          <p
-            id={errorId}
-            role="alert"
-            className="mt-2 text-[length:var(--bbf-text-sm)] text-[var(--bbf-color-error-text)]"
-          >
+          <p id={errorId} role="alert" className={formFieldMessageVariants({ type: 'error' })}>
             {error}
           </p>
         )}

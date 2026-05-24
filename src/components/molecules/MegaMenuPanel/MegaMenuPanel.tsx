@@ -105,7 +105,7 @@ export function MegaMenuPanel({
                 'rounded-xl',
                 'bg-transparent',
                 'transition-all duration-200 ease-out',
-                'hover:bg-[var(--bbf-surface-hover-subtle-on-sand)]',
+                '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-subtle-on-sand)]',
                 'focus-visible:bg-[var(--bbf-surface-hover-subtle-on-sand)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
               )}
             >
@@ -116,7 +116,7 @@ export function MegaMenuPanel({
                     alt={sub.media!.alt ?? sub.label}
                     width={sub.media!.width ?? 320}
                     height={sub.media!.height ?? 180}
-                    className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:scale-105"
                   />
                 </div>
               )}
@@ -138,7 +138,7 @@ export function MegaMenuPanel({
                   'text-sm font-semibold',
                   'text-[var(--bbf-text-on-sand)]',
                   'transition-colors duration-200 ease-out',
-                  'group-hover:text-[var(--bbf-accent-red)] group-focus-visible:text-[var(--bbf-accent-red)]',
+                  'group-focus-visible:text-[var(--bbf-accent-red)] [@media(hover:hover)]:group-hover:text-[var(--bbf-accent-red)]',
                   sub.description ? 'mb-1' : '',
                 )}
               >

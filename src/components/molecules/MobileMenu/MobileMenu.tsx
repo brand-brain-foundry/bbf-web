@@ -103,7 +103,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
           'h-11 w-11 rounded-full',
           'text-[var(--bbf-text-on-sand)]',
           'transition-all duration-200 ease-out',
-          'hover:bg-[var(--bbf-surface-hover-on-sand)]',
+          '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-on-sand)]',
           'active:scale-95',
           'focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:outline-none',
         )}
@@ -156,7 +156,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
                 'h-9 w-9 rounded-full',
                 'text-[var(--bbf-text-on-sand)]',
                 'transition-all duration-200 ease-out',
-                'hover:bg-[var(--bbf-surface-hover-on-sand)]',
+                '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-on-sand)]',
                 'active:scale-95',
                 'focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:outline-none',
               )}
@@ -192,7 +192,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
                     'group block min-h-[44px] border-b border-[var(--bbf-border-on-sand)]/40 px-2 py-4',
                     'text-lg font-medium text-[var(--bbf-text-on-sand)]',
                     'transition-all duration-150 ease-out',
-                    'hover:translate-x-1 hover:text-[var(--bbf-accent-red)]',
+                    '[@media(hover:hover)]:hover:translate-x-1 [@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
                     'focus-visible:translate-x-1 focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
                   )}
                 >
@@ -200,7 +200,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
                     <span>{link.label}</span>
                     <span
                       aria-hidden="true"
-                      className="-translate-x-2 opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100"
+                      className="-translate-x-2 opacity-0 transition-all duration-200 ease-out [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:opacity-100"
                     >
                       →
                     </span>

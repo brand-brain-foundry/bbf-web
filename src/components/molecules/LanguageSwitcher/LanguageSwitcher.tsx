@@ -56,7 +56,7 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
                   ? 'cursor-default font-semibold text-[var(--bbf-text-on-light)]'
                   : [
                       'text-[var(--bbf-text-on-light)] opacity-60',
-                      'hover:opacity-100',
+                      '[@media(hover:hover)]:hover:opacity-100',
                       'focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-100 focus-visible:outline-none',
                     ],
               )}

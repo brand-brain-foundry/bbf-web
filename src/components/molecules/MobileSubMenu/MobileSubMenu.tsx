@@ -64,7 +64,7 @@ export function MobileSubMenu({
           'min-h-[44px] px-2 py-4',
           'text-lg font-medium text-[var(--bbf-text-on-sand)]',
           'transition-all duration-200 ease-out',
-          'hover:text-[var(--bbf-accent-red)]',
+          '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
           'focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
         )}
       >
@@ -94,7 +94,7 @@ export function MobileSubMenu({
               'text-sm font-medium text-[var(--bbf-text-on-sand-muted)]',
               'border-b border-[var(--bbf-border-on-sand)]/30',
               'transition-colors duration-150 ease-out',
-              'hover:text-[var(--bbf-accent-red)]',
+              '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
               'focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
             )}
           >
@@ -116,7 +116,7 @@ export function MobileSubMenu({
                   'min-h-[44px] px-2 py-3',
                   'rounded-xl',
                   'transition-all duration-150 ease-out',
-                  'hover:bg-[var(--bbf-surface-hover-subtle-on-sand)]',
+                  '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-subtle-on-sand)]',
                   'focus-visible:bg-[var(--bbf-surface-hover-subtle-on-sand)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
                 )}
               >
@@ -127,7 +127,7 @@ export function MobileSubMenu({
                       alt={sub.media!.alt ?? sub.label}
                       width={64}
                       height={64}
-                      className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                      className="h-full w-full object-cover transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:scale-105"
                     />
                   </div>
                 )}
@@ -150,7 +150,7 @@ export function MobileSubMenu({
                       'text-base font-medium',
                       'text-[var(--bbf-text-on-sand)]',
                       'transition-colors duration-150 ease-out',
-                      'group-hover:text-[var(--bbf-accent-red)] group-focus-visible:text-[var(--bbf-accent-red)]',
+                      'group-focus-visible:text-[var(--bbf-accent-red)] [@media(hover:hover)]:group-hover:text-[var(--bbf-accent-red)]',
                       sub.description ? 'mb-0.5' : '',
                     )}
                   >
