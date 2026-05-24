@@ -12,6 +12,7 @@ import { Text } from '@/components/atoms/Text';
 import { FormField } from '@/components/molecules/FormField';
 import { Turnstile } from '@/components/molecules/Turnstile';
 import { cn } from '@/lib/utils';
+import { contactFormVariants, contactFormFeedbackVariants } from './ContactForm.variants';
 
 type ContactFormProps = {
   locale: 'es' | 'en';
@@ -106,7 +107,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
   };
 
   return (
-    <div data-component="bbf-contact-form" className={cn('w-full', className)}>
+    <div data-component="bbf-contact-form" className={cn(contactFormVariants(), className)}>
       <form
         id="bbf-contact-form"
         action={formAction}
@@ -187,13 +188,7 @@ export function ContactForm({ locale, className }: ContactFormProps) {
 
         {state && (
           <div
-            className={cn(
-              'rounded-2xl p-6',
-              'transition-all duration-300',
-              state.success
-                ? 'bg-[var(--bbf-color-success-bg)] text-[var(--bbf-color-success-text)]'
-                : 'bg-[var(--bbf-color-error-bg)] text-[var(--bbf-color-error-text)]',
-            )}
+            className={contactFormFeedbackVariants({ success: state.success })}
             role={state.success ? 'status' : 'alert'}
             aria-live="polite"
           >

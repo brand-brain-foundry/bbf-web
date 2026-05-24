@@ -7,6 +7,7 @@ import { Button } from '@/components/atoms/Button';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { cn } from '@/lib/utils';
+import { newsletterBoxVariants } from './NewsletterBox.variants';
 
 type NewsletterCopy = {
   title: string;
@@ -93,7 +94,7 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
     <div
       data-component="bbf-newsletter-box"
       data-state={state.kind}
-      className={cn('flex flex-col gap-4', className)}
+      className={cn(newsletterBoxVariants(), className)}
     >
       {/* Heading + description */}
       <div className="space-y-1.5">

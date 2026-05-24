@@ -2,7 +2,12 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
+import {
+  megaMenuPanelVariants,
+  megaMenuItemVariants,
+  megaMenuTitleVariants,
+  megaMenuDescriptionVariants,
+} from './MegaMenuPanel.variants';
 
 type SubLinkMedia = {
   url?: string;
@@ -69,19 +74,7 @@ export function MegaMenuPanel({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       data-component="bbf-mega-menu-panel"
-      className={cn(
-        'absolute top-[calc(100%+0.5rem)] right-0 left-0',
-        'z-[var(--bbf-z-mega-menu)]',
-        'rounded-2xl',
-        'bg-[var(--bbf-surface-sand)]',
-        'border border-[var(--bbf-border-on-sand)]',
-        '[box-shadow:var(--bbf-shadow-floating)]',
-        'overflow-hidden',
-        'transition-all duration-200 ease-out',
-        isOpen
-          ? 'pointer-events-auto translate-y-0 opacity-100'
-          : 'pointer-events-none -translate-y-2 opacity-0',
-      )}
+      className={megaMenuPanelVariants({ open: isOpen })}
     >
       <div
         className="grid gap-3 p-4 lg:gap-4 lg:p-6"
@@ -100,14 +93,7 @@ export function MegaMenuPanel({
               onClick={onClose}
               role="menuitem"
               tabIndex={isOpen ? 0 : -1}
-              className={cn(
-                'group block p-4',
-                'rounded-xl',
-                'bg-transparent',
-                'transition-all duration-200 ease-out',
-                '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-subtle-on-sand)]',
-                'focus-visible:bg-[var(--bbf-surface-hover-subtle-on-sand)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
-              )}
+              className={megaMenuItemVariants()}
             >
               {hasMedia && sub.mediaType === 'image' && (
                 <div className="mb-3 aspect-[16/9] overflow-hidden rounded-lg bg-[var(--bbf-surface-hover-on-sand)]">
@@ -133,22 +119,12 @@ export function MegaMenuPanel({
                 </div>
               )}
 
-              <p
-                className={cn(
-                  'text-sm font-semibold',
-                  'text-[var(--bbf-text-on-sand)]',
-                  'transition-colors duration-200 ease-out',
-                  'group-focus-visible:text-[var(--bbf-accent-red)] [@media(hover:hover)]:group-hover:text-[var(--bbf-accent-red)]',
-                  sub.description ? 'mb-1' : '',
-                )}
-              >
+              <p className={megaMenuTitleVariants({ hasDescription: Boolean(sub.description) })}>
                 {sub.label}
               </p>
 
               {sub.description && (
-                <p className="text-xs leading-[var(--bbf-leading-snug)] text-[var(--bbf-text-on-sand-muted)]">
-                  {sub.description}
-                </p>
+                <p className={megaMenuDescriptionVariants()}>{sub.description}</p>
               )}
             </Link>
           );

@@ -5,7 +5,12 @@ import Link from 'next/link';
 import { MenuIcon } from '@/components/atoms/MenuIcon';
 import { Button } from '@/components/atoms/Button';
 import { MobileSubMenu } from '@/components/molecules/MobileSubMenu';
-import { cn } from '@/lib/utils';
+import {
+  mobileMenuIconButtonVariants,
+  mobileMenuBackdropVariants,
+  mobileMenuPanelVariants,
+  mobileMenuItemVariants,
+} from './MobileMenu.variants';
 
 type MobileMenuLink = {
   label: string;
@@ -98,15 +103,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
         aria-controls="bbf-mobile-menu-panel"
         aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
         data-component="bbf-mobile-menu-trigger"
-        className={cn(
-          'inline-flex items-center justify-center lg:hidden',
-          'h-11 w-11 rounded-full',
-          'text-[var(--bbf-text-on-sand)]',
-          'transition-all duration-200 ease-out',
-          '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-on-sand)]',
-          'active:scale-95',
-          'focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:outline-none',
-        )}
+        className={mobileMenuIconButtonVariants({ size: 'trigger' })}
       >
         <MenuIcon open={isOpen} />
       </button>
@@ -117,12 +114,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
         <div
           onClick={close}
           aria-hidden="true"
-          className={cn(
-            'fixed inset-0 z-[var(--bbf-z-drawer)] lg:hidden',
-            'bg-black/40 backdrop-blur-sm',
-            'transition-opacity duration-[280ms] ease-out',
-            isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
-          )}
+          className={mobileMenuBackdropVariants({ open: isOpen })}
         />
 
         {/* Panel right-side: z-100, h-[100dvh] para mobile correcto */}
@@ -133,15 +125,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
           aria-modal="true"
           aria-label="Menú móvil"
           aria-hidden={!isOpen}
-          className={cn(
-            'fixed top-0 right-0 z-[var(--bbf-z-drawer-panel)] lg:hidden',
-            'h-[100dvh] w-[85vw] max-w-[380px]',
-            'bg-[var(--bbf-surface-sand)]',
-            'flex flex-col',
-            'overflow-y-auto overscroll-contain',
-            'transition-transform duration-[280ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
-            isOpen ? 'translate-x-0 shadow-2xl' : 'translate-x-[105%] shadow-none',
-          )}
+          className={mobileMenuPanelVariants({ open: isOpen })}
         >
           {/* Panel header */}
           <div className="flex items-center justify-between border-b border-[var(--bbf-border-on-sand)] px-6 py-5">
@@ -151,15 +135,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
               onClick={close}
               aria-label="Cerrar menú"
               tabIndex={isOpen ? 0 : -1}
-              className={cn(
-                'inline-flex items-center justify-center',
-                'h-9 w-9 rounded-full',
-                'text-[var(--bbf-text-on-sand)]',
-                'transition-all duration-200 ease-out',
-                '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-on-sand)]',
-                'active:scale-95',
-                'focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:outline-none',
-              )}
+              className={mobileMenuIconButtonVariants({ size: 'close' })}
             >
               <MenuIcon open={true} />
             </button>
@@ -188,13 +164,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
                   href={`${localePrefix}${link.href}`}
                   onClick={close}
                   tabIndex={isOpen ? 0 : -1}
-                  className={cn(
-                    'group block min-h-[44px] border-b border-[var(--bbf-border-on-sand)]/40 px-2 py-4',
-                    'text-lg font-medium text-[var(--bbf-text-on-sand)]',
-                    'transition-all duration-150 ease-out',
-                    '[@media(hover:hover)]:hover:translate-x-1 [@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
-                    'focus-visible:translate-x-1 focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
-                  )}
+                  className={mobileMenuItemVariants()}
                 >
                   <span className="inline-flex items-center gap-3">
                     <span>{link.label}</span>

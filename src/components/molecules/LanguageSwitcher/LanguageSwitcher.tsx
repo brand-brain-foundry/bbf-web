@@ -4,6 +4,10 @@ import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { useTransition } from 'react';
 import { cn } from '@/lib/utils';
+import {
+  languageSwitcherVariants,
+  languageSwitcherButtonVariants,
+} from './LanguageSwitcher.variants';
 
 type Locale = 'es' | 'en';
 
@@ -32,7 +36,7 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
   return (
     <nav
       aria-label="Language switcher"
-      className={cn('inline-flex items-center gap-1 text-sm', isPending && 'opacity-60', className)}
+      className={cn(languageSwitcherVariants({ pending: isPending }), className)}
     >
       {LOCALES.map((loc, idx) => {
         const isActive = locale === loc.code;
@@ -50,16 +54,7 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
               aria-current={isActive ? 'page' : undefined}
               aria-label={`Switch to ${loc.native}`}
               lang={loc.code}
-              className={cn(
-                'px-1 py-1 transition-opacity duration-150 ease-out',
-                isActive
-                  ? 'cursor-default font-semibold text-[var(--bbf-text-on-light)]'
-                  : [
-                      'text-[var(--bbf-text-on-light)] opacity-60',
-                      '[@media(hover:hover)]:hover:opacity-100',
-                      'focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:opacity-100 focus-visible:outline-none',
-                    ],
-              )}
+              className={languageSwitcherButtonVariants({ active: isActive })}
             >
               {loc.label}
             </button>
