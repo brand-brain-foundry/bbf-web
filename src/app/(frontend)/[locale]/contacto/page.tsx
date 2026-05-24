@@ -4,7 +4,6 @@ import { Container } from '@/components/atoms/Container';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { ContactForm } from '@/components/molecules/ContactForm';
-import { cn } from '@/lib/utils';
 import { buildHreflang } from '@/lib/seo/hreflang';
 
 type Props = {
@@ -63,16 +62,9 @@ export default async function ContactoPage({ params }: Props) {
             {t('title')}
           </Heading>
 
-          <p
-            className={cn(
-              'text-[length:var(--bbf-text-h1)]',
-              'leading-[var(--bbf-leading-snug)]',
-              'font-[var(--bbf-weight-medium)]',
-              'text-[var(--bbf-text-on-sand-muted)]',
-            )}
-          >
-            {t('subtitle')}
-          </p>
+          <Heading level="h1" weight="medium" tone="muted" asChild>
+            <p>{t('subtitle')}</p>
+          </Heading>
 
           <Text
             variant="body-md"

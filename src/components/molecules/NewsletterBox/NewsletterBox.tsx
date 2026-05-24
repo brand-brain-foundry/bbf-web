@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useLocale } from 'next-intl';
 import { subscribeNewsletter } from '@/lib/actions/newsletter';
 import { Button } from '@/components/atoms/Button';
+import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { cn } from '@/lib/utils';
 
@@ -96,9 +97,9 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
     >
       {/* Heading + description */}
       <div className="space-y-1.5">
-        <p className="text-[length:var(--bbf-text-h2)] leading-[var(--bbf-leading-snug)] font-[var(--bbf-font-display)] font-[var(--bbf-weight-bold)] tracking-[var(--bbf-tracking-tight)] text-[var(--bbf-text-on-sand)]">
-          {copy.title}
-        </p>
+        <Heading level="h2" weight="bold" tone="default" asChild>
+          <p>{copy.title}</p>
+        </Heading>
         <Text variant="body-sm" className="text-[var(--bbf-text-on-sand-muted)]">
           {copy.description}
         </Text>

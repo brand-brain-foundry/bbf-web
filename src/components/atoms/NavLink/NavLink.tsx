@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { navLinkBaseVariants, navLinkUnderlineVariants } from './NavLink.variants';
 
 type NavLinkProps = {
   href: string;
@@ -45,29 +46,13 @@ export const NavLink = forwardRef<HTMLAnchorElement | HTMLButtonElement, NavLink
     const isActive =
       pathname === href || pathname === `/en${href}` || (href !== '/' && pathname.startsWith(href));
 
-    const baseClasses = cn(
-      'group relative inline-flex items-center gap-1',
-      'text-sm font-medium',
-      'text-[var(--bbf-text-on-sand)]',
-      'transition-all duration-200 ease-out',
-      '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
-      'focus-visible:outline-none focus-visible:text-[var(--bbf-accent-red)]',
-      isActive && 'text-[var(--bbf-accent-red)]',
-      className,
-    );
+    const baseClasses = cn(navLinkBaseVariants({ active: isActive }), className);
 
     const underline = (
       <span
         aria-hidden="true"
         style={{ bottom: 'calc(-1 * var(--bbf-nav-underline-offset))' }}
-        className={cn(
-          'absolute left-0 h-px',
-          'bg-[var(--bbf-accent-red)]',
-          'transition-all duration-300 ease-out',
-          isActive
-            ? 'w-full'
-            : 'w-0 group-focus-visible:w-full [@media(hover:hover)]:group-hover:w-full',
-        )}
+        className={navLinkUnderlineVariants({ active: isActive })}
       />
     );
 

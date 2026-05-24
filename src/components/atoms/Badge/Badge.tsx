@@ -1,14 +1,11 @@
-import { cn } from '@/lib/utils';
 import type { HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+import { badgeVariants, type BadgeVariants } from './Badge.variants';
 
-type BadgeIntent = 'default' | 'accent' | 'success' | 'beta';
-type BadgeSize = 'xs' | 'sm' | 'md';
-
-type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
-  intent?: BadgeIntent;
-  size?: BadgeSize;
-  children: React.ReactNode;
-};
+type BadgeProps = HTMLAttributes<HTMLSpanElement> &
+  BadgeVariants & {
+    children: React.ReactNode;
+  };
 
 /**
  * BBF Badge atom — canon Vercel-style flag (D-BBF-KB-118)
@@ -20,48 +17,19 @@ type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
  *   - beta:    blue border + blue text
  *
  * Sizes:
+ *   - xs: 9px px-1 py-[2px]
  *   - sm: text-xs (12px) px-1.5 py-0.5
  *   - md: text-sm (14px) px-2 py-1
  *
  * Border 1px, rounded-md (8px), uppercase tracking-wider.
  * Decorativo — sin hover state (label/flag indicator).
  */
-export function Badge({
-  intent = 'default',
-  size = 'sm',
-  className,
-  children,
-  ...rest
-}: BadgeProps) {
-  const intentClasses: Record<BadgeIntent, string> = {
-    default: 'border-[var(--bbf-border-on-sand)] text-[var(--bbf-text-on-sand-muted)]',
-    accent: 'border-[var(--bbf-accent-red)] text-[var(--bbf-accent-red-hover)]',
-    success: 'border-[var(--bbf-color-success-border)] text-[var(--bbf-color-success-text)]',
-    beta: 'border-[var(--bbf-accent-blue)] text-[var(--bbf-accent-blue-active)]',
-  };
-
-  const sizeClasses: Record<BadgeSize, string> = {
-    xs: 'text-[9px] leading-none px-1 py-[2px]',
-    sm: 'text-[length:var(--bbf-text-xs)] px-1.5 py-0.5',
-    md: 'text-[length:var(--bbf-text-sm)] px-2 py-1',
-  };
-
+export function Badge({ intent, size, className, children, ...rest }: BadgeProps) {
   return (
     <span
       data-component="bbf-badge"
-      data-intent={intent}
-      className={cn(
-        'inline-flex items-center justify-center',
-        'border border-solid',
-        'rounded-md',
-        'font-[var(--bbf-weight-medium)]',
-        'uppercase',
-        size === 'xs' ? 'tracking-normal' : 'tracking-wider',
-        'whitespace-nowrap',
-        intentClasses[intent],
-        sizeClasses[size],
-        className,
-      )}
+      data-intent={intent ?? 'default'}
+      className={cn(badgeVariants({ intent, size }), className)}
       {...rest}
     >
       {children}
