@@ -17,7 +17,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
 export const textVariants = cva(
-  ['font-[var(--bbf-font-body)]', 'leading-[var(--bbf-leading-body)]'],
+  ['font-[var(--bbf-font-body)]', 'leading-[var(--bbf-leading-base)]'],
   {
     variants: {
       // === variant: semántico existente (MANTENER — usado en homepage + hero) ===
@@ -54,7 +54,7 @@ export const textVariants = cva(
         ].join(' '),
         // overline: no Tier 2 group — Wave 11.4-C2 handles
         overline:
-          '[font-size:var(--bbf-text-overline)] uppercase tracking-[var(--bbf-tracking-overline)]',
+          '[font-size:var(--bbf-text-overline)] uppercase tracking-[var(--bbf-tracking-wider)]',
         // NOTE: leading 1.55→1.15 (appropriate for short tagline), tracking now via token
         tagline: [
           '[font-size:var(--bbf-typography-tagline-size)]',

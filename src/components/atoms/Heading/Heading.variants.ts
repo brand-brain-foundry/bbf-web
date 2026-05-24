@@ -14,8 +14,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const headingVariants = cva(
   [
     'font-[var(--bbf-font-display)]',
-    'leading-[var(--bbf-leading-display)]',
-    'tracking-[var(--bbf-tracking-display)]',
+    'leading-[var(--bbf-leading-tight)]',
+    'tracking-[var(--bbf-tracking-tighter)]',
   ],
   {
     variants: {
@@ -79,8 +79,6 @@ export const headingVariants = cva(
         medium: 'font-[var(--bbf-weight-medium)]',
         semibold: 'font-[var(--bbf-weight-semibold)]',
         bold: 'font-[var(--bbf-weight-bold)]',
-        extrabold: 'font-[var(--bbf-weight-extrabold)]',
-        black: 'font-[var(--bbf-weight-black)]',
       },
       // tone: semántico Wave 5 (D-BBF-KB-104)
       tone: {

@@ -37,7 +37,7 @@ h1,
 h2,
 h3 {
   font-family: var(--bbf-font-heading);
-  letter-spacing: var(--bbf-tracking-heading);
+  letter-spacing: var(--bbf-tracking-tight);
   line-height: 1.1;
   margin: 0;
 }

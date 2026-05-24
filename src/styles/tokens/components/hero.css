@@ -58,7 +58,7 @@
   /* === Headline (PATCH-4: cap reducido para wide screens) === */
   --bbf-headline-size: clamp(2.5rem, 5.5vw, 4rem); /* 40 → 64px */
   --bbf-headline-weight: 700;
-  --bbf-headline-tracking: var(--bbf-tracking-display);
+  --bbf-headline-tracking: var(--bbf-tracking-tighter);
   --bbf-headline-leading: 0.9;
 
   /* === Tagline / Eyebrow (PATCH-4: 16px fijo + tracking +) === */
