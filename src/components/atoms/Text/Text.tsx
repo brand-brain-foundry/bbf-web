@@ -53,6 +53,7 @@ export function Text({
   className,
   variant,
   color,
+  tone,
   align,
   weight,
   as,
@@ -63,7 +64,7 @@ export function Text({
   const sharedProps = {
     'data-component': 'bbf-text' as const,
     'data-variant': variant,
-    className: cn(textVariants({ variant, color, align, weight }), className),
+    className: cn(textVariants({ variant, color, tone, align, weight }), className),
     ...props,
   };
 

@@ -62,7 +62,10 @@ function inferElement(level: HeadingVariants['level']): HeadingElement {
  * ```
  */
 export const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
-  ({ className, level, weight, color, align, as, asChild = false, children, ...props }, ref) => {
+  (
+    { className, level, weight, color, tone, align, as, asChild = false, children, ...props },
+    ref,
+  ) => {
     const Element = asChild ? Slot : (as ?? inferElement(level));
 
     return (
@@ -70,7 +73,7 @@ export const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
         ref={ref}
         data-component="bbf-heading"
         data-level={level}
-        className={cn(headingVariants({ level, weight, color, align }), className)}
+        className={cn(headingVariants({ level, weight, color, tone, align }), className)}
         {...props}
       >
         {children}

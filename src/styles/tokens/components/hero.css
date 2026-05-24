@@ -130,11 +130,6 @@
   will-change: transform;
 }
 
-.bbf-cta-pill:hover {
-  transform: scale(var(--bbf-cta-hover-scale));
-  box-shadow: var(--bbf-cta-hover-shadow);
-}
-
 .bbf-cta-pill .bbf-cta-arrow {
   display: inline-block;
   margin-left: 0.5rem;
@@ -142,8 +137,15 @@
   will-change: transform;
 }
 
-.bbf-cta-pill:hover .bbf-cta-arrow {
-  transform: translateX(var(--bbf-cta-icon-shift));
+@media (hover: hover) {
+  .bbf-cta-pill:hover {
+    transform: scale(var(--bbf-cta-hover-scale));
+    box-shadow: var(--bbf-cta-hover-shadow);
+  }
+
+  .bbf-cta-pill:hover .bbf-cta-arrow {
+    transform: translateX(var(--bbf-cta-icon-shift));
+  }
 }
 
 .bbf-cta-pill:active {

@@ -47,17 +47,17 @@ const focusVisibleClasses =
 
 const variants: Record<LinkVariant, string> = {
   default: [
-    'text-[var(--bbf-text-on-light)] hover:text-[var(--bbf-accent-red)] hover:underline underline-offset-4',
+    'text-[var(--bbf-text-on-light)] [@media(hover:hover)]:hover:text-[var(--bbf-accent-red)] [@media(hover:hover)]:hover:underline underline-offset-4',
     'active:opacity-70',
     focusVisibleClasses,
   ].join(' '),
   subtle: [
-    'text-[var(--bbf-text-on-light-secondary)] hover:text-[var(--bbf-text-on-light)]',
+    'text-[var(--bbf-text-on-light-secondary)] [@media(hover:hover)]:hover:text-[var(--bbf-text-on-light)]',
     'active:opacity-70',
     focusVisibleClasses,
   ].join(' '),
   underline: [
-    'underline underline-offset-4 text-[var(--bbf-text-on-light)] hover:text-[var(--bbf-accent-red)]',
+    'underline underline-offset-4 text-[var(--bbf-text-on-light)] [@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
     'active:opacity-70',
     focusVisibleClasses,
   ].join(' '),

@@ -32,7 +32,7 @@ export const buttonVariants = cva(
           '[background-size:200%_200%]',
           '[background-position:0%_50%]',
           'shadow-sm',
-          'hover:[background-position:100%_50%] hover:-translate-y-px hover:shadow-md',
+          '[@media(hover:hover)]:hover:[background-position:100%_50%] [@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
           'active:scale-[0.97] active:[background-position:50%_50%]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
@@ -40,7 +40,7 @@ export const buttonVariants = cva(
           'text-[var(--bbf-text-on-black)]',
           'bg-[var(--bbf-surface-black)]',
           'shadow-sm',
-          'hover:bg-[var(--bbf-surface-black-elevated)] hover:-translate-y-px hover:shadow-md',
+          '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-black-elevated)] [@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
           'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
@@ -48,14 +48,14 @@ export const buttonVariants = cva(
           'text-[var(--bbf-accent-red)]',
           'bg-transparent',
           'border-2 border-[var(--bbf-accent-red)]',
-          'hover:bg-[var(--bbf-accent-red)] hover:text-[var(--bbf-text-on-red)] hover:-translate-y-px',
+          '[@media(hover:hover)]:hover:bg-[var(--bbf-accent-red)] [@media(hover:hover)]:hover:text-[var(--bbf-text-on-red)] [@media(hover:hover)]:hover:-translate-y-px',
           'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
         ghost: [
           'text-[var(--bbf-text-on-sand)]',
           'bg-transparent',
-          'hover:bg-[var(--bbf-color-black-100)] hover:-translate-y-px',
+          '[@media(hover:hover)]:hover:bg-[var(--bbf-color-black-100)] [@media(hover:hover)]:hover:-translate-y-px',
           'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
@@ -85,18 +85,20 @@ export const buttonVariants = cva(
       {
         intent: 'ghost',
         surface: 'dark',
-        class: 'text-[var(--bbf-text-on-black)] hover:bg-[var(--bbf-surface-black-elevated)]',
+        class:
+          'text-[var(--bbf-text-on-black)] [@media(hover:hover)]:hover:bg-[var(--bbf-surface-black-elevated)]',
       },
       {
         intent: 'ghost',
         surface: 'black',
-        class: 'text-[var(--bbf-text-on-black)] hover:bg-[var(--bbf-surface-black-elevated)]',
+        class:
+          'text-[var(--bbf-text-on-black)] [@media(hover:hover)]:hover:bg-[var(--bbf-surface-black-elevated)]',
       },
       {
         intent: 'outline',
         surface: 'dark',
         class:
-          'border-[var(--bbf-border-on-dark)] text-[var(--bbf-text-on-dark)] hover:bg-[var(--bbf-surface-black-elevated)]',
+          'border-[var(--bbf-border-on-dark)] text-[var(--bbf-text-on-dark)] [@media(hover:hover)]:hover:bg-[var(--bbf-surface-black-elevated)]',
       },
     ],
     defaultVariants: {

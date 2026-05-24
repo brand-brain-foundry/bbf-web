@@ -5,15 +5,17 @@
  * Decisiones: D-BBF-WEB-82 (AI-readable), D-BBF-KB-105 (golden ratio scale)
  *
  * TD-M5-D4-CRIT-01 fix: text-[var(--token)] → [font-size:var(--token)]
+ * TD-11-30 fix: font-[var(--weight-token)] → [font-weight:var(--token)]
+ *               font-[var(--font-token)] → [font-family:var(--token)]
  * L-BBF-92: Tailwind v4 arbitrary value text-[var()] defaultea a color:.
- * Usar siempre [font-size:var(--token)] para font-size tokens.
+ * L-BBF-AA: Tailwind v4 font-[var()] defaultea a font-family: — usar prop explícita.
  */
 
 import { cva, type VariantProps } from 'class-variance-authority';
 
 export const headingVariants = cva(
   [
-    'font-[var(--bbf-font-display)]',
+    '[font-family:var(--bbf-font-display)]',
     'leading-[var(--bbf-leading-tight)]',
     'tracking-[var(--bbf-tracking-tighter)]',
   ],
@@ -25,52 +27,52 @@ export const headingVariants = cva(
           '[font-size:var(--bbf-typography-display-1-size)]',
           'leading-[var(--bbf-typography-display-1-line)]',
           'tracking-[var(--bbf-typography-display-1-tracking)]',
-          'font-[var(--bbf-typography-display-1-weight)]',
-          'font-[var(--bbf-typography-display-1-font)]',
+          '[font-weight:var(--bbf-typography-display-1-weight)]',
+          '[font-family:var(--bbf-typography-display-1-font)]',
         ].join(' '),
         'display-2': [
           '[font-size:var(--bbf-typography-display-2-size)]',
           'leading-[var(--bbf-typography-display-2-line)]',
           'tracking-[var(--bbf-typography-display-2-tracking)]',
-          'font-[var(--bbf-typography-display-2-weight)]',
-          'font-[var(--bbf-typography-display-2-font)]',
+          '[font-weight:var(--bbf-typography-display-2-weight)]',
+          '[font-family:var(--bbf-typography-display-2-font)]',
         ].join(' '),
         h1: [
           '[font-size:var(--bbf-typography-h1-size)]',
           'leading-[var(--bbf-typography-h1-line)]',
           'tracking-[var(--bbf-typography-h1-tracking)]',
-          'font-[var(--bbf-typography-h1-weight)]',
-          'font-[var(--bbf-typography-h1-font)]',
+          '[font-weight:var(--bbf-typography-h1-weight)]',
+          '[font-family:var(--bbf-typography-h1-font)]',
         ].join(' '),
         h2: [
           '[font-size:var(--bbf-typography-h2-size)]',
           'leading-[var(--bbf-typography-h2-line)]',
           'tracking-[var(--bbf-typography-h2-tracking)]',
-          'font-[var(--bbf-typography-h2-weight)]',
-          'font-[var(--bbf-typography-h2-font)]',
+          '[font-weight:var(--bbf-typography-h2-weight)]',
+          '[font-family:var(--bbf-typography-h2-font)]',
         ].join(' '),
         // FIX TD-11-48: was text-lg (18px) → typography-h3 (20px) via Tier 2
         h3: [
           '[font-size:var(--bbf-typography-h3-size)]',
           'leading-[var(--bbf-typography-h3-line)]',
           'tracking-[var(--bbf-typography-h3-tracking)]',
-          'font-[var(--bbf-typography-h3-weight)]',
-          'font-[var(--bbf-typography-h3-font)]',
+          '[font-weight:var(--bbf-typography-h3-weight)]',
+          '[font-family:var(--bbf-typography-h3-font)]',
         ].join(' '),
         // NOTE: was text-base (16px) → typography-h4 (18px) via Tier 2 — implicit bug fix
         h4: [
           '[font-size:var(--bbf-typography-h4-size)]',
           'leading-[var(--bbf-typography-h4-line)]',
           'tracking-[var(--bbf-typography-h4-tracking)]',
-          'font-[var(--bbf-typography-h4-weight)]',
-          'font-[var(--bbf-typography-h4-font)]',
+          '[font-weight:var(--bbf-typography-h4-weight)]',
+          '[font-family:var(--bbf-typography-h4-font)]',
         ].join(' '),
       },
       weight: {
-        regular: 'font-[var(--bbf-weight-regular)]',
-        medium: 'font-[var(--bbf-weight-medium)]',
-        semibold: 'font-[var(--bbf-weight-semibold)]',
-        bold: 'font-[var(--bbf-weight-bold)]',
+        regular: '[font-weight:var(--bbf-weight-regular)]',
+        medium: '[font-weight:var(--bbf-weight-medium)]',
+        semibold: '[font-weight:var(--bbf-weight-semibold)]',
+        bold: '[font-weight:var(--bbf-weight-bold)]',
       },
       // tone: semántico Wave 5 (D-BBF-KB-104)
       tone: {

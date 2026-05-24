@@ -50,7 +50,7 @@ export const NavLink = forwardRef<HTMLAnchorElement | HTMLButtonElement, NavLink
       'text-sm font-medium',
       'text-[var(--bbf-text-on-sand)]',
       'transition-all duration-200 ease-out',
-      'hover:text-[var(--bbf-accent-red)]',
+      '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
       'focus-visible:outline-none focus-visible:text-[var(--bbf-accent-red)]',
       isActive && 'text-[var(--bbf-accent-red)]',
       className,
@@ -64,7 +64,9 @@ export const NavLink = forwardRef<HTMLAnchorElement | HTMLButtonElement, NavLink
           'absolute left-0 h-px',
           'bg-[var(--bbf-accent-red)]',
           'transition-all duration-300 ease-out',
-          isActive ? 'w-full' : 'w-0 group-hover:w-full group-focus-visible:w-full',
+          isActive
+            ? 'w-full'
+            : 'w-0 group-focus-visible:w-full [@media(hover:hover)]:group-hover:w-full',
         )}
       />
     );
