@@ -33,12 +33,39 @@ jobs:
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Build Project Artifacts
+      - name: Export Vercel env vars to GITHUB_ENV
         run: |
-          set -a
-          source .vercel/.env.production.local
-          set +a
-          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          # Read each line of .vercel/.env.production.local
+          # Skip comments and empty lines
+          # Strip surrounding quotes from values
+          # Write to GITHUB_ENV so subsequent steps inherit
+          while IFS= read -r line || [ -n "$line" ]; do
+            # Skip empty lines and comments
+            if [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]]; then
+              continue
+            fi
+            # Extract var name and value
+            if [[ "$line" =~ ^([A-Z_][A-Z0-9_]*)=(.*)$ ]]; then
+              name="${BASH_REMATCH[1]}"
+              value="${BASH_REMATCH[2]}"
+              # Strip surrounding double quotes if present
+              value="${value%\"}"
+              value="${value#\"}"
+              # Strip surrounding single quotes if present
+              value="${value%\'}"
+              value="${value#\'}"
+              # Write to GITHUB_ENV using multiline delimiter to handle special chars
+              {
+                echo "${name}<<EOF_VERCEL_ENV"
+                echo "${value}"
+                echo "EOF_VERCEL_ENV"
+              } >> "$GITHUB_ENV"
+            fi
+          done < .vercel/.env.production.local
+          echo "Exported $(grep -c '^[A-Z_]' .vercel/.env.production.local) env vars to GITHUB_ENV"
+
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
