@@ -64,14 +64,6 @@ export const textVariants = cva(
           'font-[var(--bbf-typography-tagline-font)]',
         ].join(' '),
       },
-      // === size: Wave 5 golden ratio scale (D-BBF-KB-105) ===
-      size: {
-        lead: '[font-size:var(--bbf-text-lg)] leading-[var(--bbf-leading-base)]',
-        base: '[font-size:var(--bbf-text-base)] leading-[var(--bbf-leading-base)]',
-        small: '[font-size:var(--bbf-text-sm)] leading-[var(--bbf-leading-snug-small)]',
-        micro:
-          '[font-size:var(--bbf-text-micro)] leading-[var(--bbf-leading-snug-small)] tracking-[var(--bbf-tracking-wide)]',
-      },
       // === tone: Wave 5 semantic colors (D-BBF-KB-104) ===
       tone: {
         default: 'text-[var(--bbf-text-on-sand)]',

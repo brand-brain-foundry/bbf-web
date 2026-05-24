@@ -177,21 +177,12 @@
    *   --bbf-color-bg-*   →  --bbf-surface-*
    *   --bbf-color-text-* →  --bbf-text-*
    *
-   * Plan de remoción: Wave 12 (post-Contact refactor).
+   * Plan de remoción progresiva: bg-base/text-primary eliminados Wave 11.4-C2c-bis (TD-11-17 parcial).
    * Referencia: BBF_TokensCanon.md §10, BBF_DesignSystemInventory_v0.md §8 TD-11-17.
    *
-   * Consumidores conocidos (migrar antes de Wave 12):
-   *   src/components/sections/HeroSection/HeroSection.variants.ts:13 → --bbf-color-bg-base
-   *   src/styles/base/reset.css:29-30 → --bbf-color-text-primary + --bbf-color-bg-base
-   *   src/styles/tokens/components/hero.css:47 → --bbf-color-text-primary
-   *
-   * Si ves un componente consumiendo estos tokens, abrir TD nuevo para migrarlo
-   * antes de Wave 12.
+   * Restantes: color-text-secondary/muted/inverse (Wave 11.5+ post-audit de consumers).
    *
    * ========================================================================= */
-  --bbf-color-bg-base: var(--bbf-surface-sand);
-
-  --bbf-color-text-primary: var(--bbf-text-on-light);
   --bbf-color-text-secondary: var(--bbf-text-on-light-secondary);
   --bbf-color-text-muted: var(--bbf-text-on-light-muted);
   --bbf-color-text-inverse: var(--bbf-text-on-dark);

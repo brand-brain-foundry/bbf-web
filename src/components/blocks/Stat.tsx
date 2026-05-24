@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 
 type StatProps = {
@@ -12,10 +13,12 @@ type StatProps = {
 export function StatBlock({ number, unit, label, context, className }: StatProps) {
   return (
     <div data-component="bbf-stat" className={cn('my-6 text-center', className)}>
-      <p className="[font-size:var(--bbf-text-display-2)] leading-none font-bold text-[var(--bbf-accent-red)]">
-        {number}
-        {unit && <span className="ml-1 [font-size:var(--bbf-text-heading-md)]">{unit}</span>}
-      </p>
+      <Heading level="display-2" color="accent" className="leading-none" asChild>
+        <p>
+          {number}
+          {unit && <span className="ml-1 [font-size:var(--bbf-text-heading-md)]">{unit}</span>}
+        </p>
+      </Heading>
       <Text variant="body-md" className="mt-2 font-medium">
         {label}
       </Text>
