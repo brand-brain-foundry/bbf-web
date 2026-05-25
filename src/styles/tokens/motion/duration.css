@@ -1,0 +1,33 @@
+/* ============================================================
+ * BBF Motion Duration Tokens — Wave 11.8-A
+ * ============================================================
+ *
+ * Canon BBF motion durations. Use estas variables en lugar de
+ * hardcoded values (e.g. NO usar "300ms" directo).
+ *
+ * Reference: BBF_MotionArchitectureProposal_v1 §4.1
+ * Decision: D-BBF-WEB-PP:A (stack motion canon)
+ */
+
+:root {
+  /* Instant feedback — toggles, color shifts inmediatos */
+  --bbf-motion-duration-instant: 100ms;
+
+  /* Fast — hover states, focus rings, micro-interactions */
+  --bbf-motion-duration-fast: 180ms;
+
+  /* Base — default transitions, simple reveals */
+  --bbf-motion-duration-base: 240ms;
+
+  /* Medium — mega menu expand, card hover lift */
+  --bbf-motion-duration-medium: 360ms;
+
+  /* Slow — section reveals, hero entrance, page transitions */
+  --bbf-motion-duration-slow: 540ms;
+
+  /* Cinematic — loading complete, success states, special moments */
+  --bbf-motion-duration-cinematic: 800ms;
+
+  /* Ambient — Lissajous loop, background animations sutiles */
+  --bbf-motion-duration-ambient: 1200ms;
+}

@@ -1,0 +1,29 @@
+/* ============================================================
+ * BBF Motion — Reduced Motion Override — Wave 11.8-A
+ * ============================================================
+ *
+ * Respeta prefers-reduced-motion per WCAG 2.3.3 (Level AAA).
+ *
+ * Reference: BBF_MotionArchitectureProposal_v1 §4.4
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --bbf-motion-duration-instant: 0.01ms;
+    --bbf-motion-duration-fast: 0.01ms;
+    --bbf-motion-duration-base: 0.01ms;
+    --bbf-motion-duration-medium: 0.01ms;
+    --bbf-motion-duration-slow: 0.01ms;
+    --bbf-motion-duration-cinematic: 0.01ms;
+    --bbf-motion-duration-ambient: 0.01ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

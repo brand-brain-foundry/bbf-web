@@ -1,0 +1,32 @@
+/* ============================================================
+ * BBF Motion Easing Tokens — Wave 11.8-A
+ * ============================================================
+ *
+ * Canon BBF easing curves. Use estas variables en lugar de
+ * hardcoded cubic-bezier values.
+ *
+ * Reference: BBF_MotionArchitectureProposal_v1 §4.2
+ */
+
+:root {
+  /* Linear — SOLO para loaders continuos. Evitar en interacciones */
+  --bbf-motion-ease-linear: linear;
+
+  /* Out-Expo — decelera fuerte. Entrances, reveals dramáticos */
+  --bbf-motion-ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Out-Quart — decelera suave. Hover states, micro-interactions */
+  --bbf-motion-ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+
+  /* In-Out-Cubic — bidireccional natural. Toggles, state changes */
+  --bbf-motion-ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Spring-Soft — bounce sutil. Success, CTA confirm */
+  --bbf-motion-ease-spring-soft: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Spring-Bold — bounce expresivo. Special moments (parsimonia) */
+  --bbf-motion-ease-spring-bold: cubic-bezier(0.5, -0.5, 0.5, 1.5);
+
+  /* Organic — curve canon BBF default para reveals scroll */
+  --bbf-motion-ease-organic: cubic-bezier(0.42, 0, 0.05, 1);
+}

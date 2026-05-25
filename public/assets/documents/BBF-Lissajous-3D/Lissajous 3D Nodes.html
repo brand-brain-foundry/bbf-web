@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>3D Lissajous · Sphere Chain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #04040c;
+    --ink: #f4efe7;
+    --ink-dim: rgba(244,239,231,0.55);
+    --ink-faint: rgba(244,239,231,0.22);
+    --primary: #7ad7ff;
+    --warm: #ffb066;
+  }
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    background: var(--bg); color: var(--ink);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  #c {
+    position: fixed; inset: 0; display: block;
+    width: 100%; height: 100%;
+  }
+
+  /* ── HUD (top-left) ───────────────────────────────────── */
+  #hud {
+    position: fixed; top: 28px; left: 36px;
+    pointer-events: none;
+    z-index: 10;
+  }
+  #hud .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.42em;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+  }
+  #hud .title {
+    font-size: 42px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    margin: 10px 0 4px;
+    color: var(--ink);
+    line-height: 1;
+  }
+  #hud .formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-dim);
+    margin-top: 10px;
+    letter-spacing: 0.04em;
+    font-feature-settings: "tnum";
+  }
+  #hud .formula span {
+    color: var(--primary);
+  }
+
+  /* ── HUD (top-right: ratio + params) ──────────────────── */
+  #hud-right {
+    position: fixed; top: 28px; right: 36px;
+    pointer-events: none;
+    z-index: 10;
+    text-align: right;
+  }
+  #hud-right .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.42em;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+  }
+  #hud-right .ratio {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 56px;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    margin: 4px 0 2px;
+    color: var(--ink);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  #hud-right .preset-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--warm);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+  }
+
+  /* ── Footer info ──────────────────────────────────────── */
+  #info {
+    position: fixed; bottom: 28px; left: 36px;
+    pointer-events: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.34em;
+    z-index: 10;
+    text-transform: uppercase;
+  }
+
+  /* ── Tweaks panel ─────────────────────────────────────── */
+  #tweaks {
+    position: fixed; bottom: 28px; right: 36px;
+    background: rgba(12,12,26,0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(122,215,255,0.12);
+    border-radius: 12px;
+    padding: 18px 22px 20px;
+    color: var(--ink);
+    font-size: 13px;
+    z-index: 20;
+    width: 280px;
+    display: none;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  #tweaks.visible { display: block; }
+  #tweaks .panel-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  #tweaks h3 {
+    margin: 0;
+    font-size: 10px;
+    letter-spacing: 0.42em;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  #tweaks .close-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-dim); font-size: 18px; padding: 0;
+    line-height: 1;
+  }
+  #tweaks .close-btn:hover { color: var(--ink); }
+
+  .tweak-section { margin: 14px 0 6px; }
+  .tweak-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.42em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .preset-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .preset-btn {
+    padding: 8px 10px;
+    background: rgba(122,215,255,0.04);
+    border: 1px solid rgba(122,215,255,0.18);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink);
+    letter-spacing: 0.06em;
+    text-align: left;
+    transition: background 120ms, border-color 120ms;
+  }
+  .preset-btn:hover { background: rgba(122,215,255,0.10); }
+  .preset-btn.active {
+    background: rgba(122,215,255,0.22);
+    border-color: rgba(122,215,255,0.55);
+  }
+
+  .slider-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin: 9px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .slider-row label {
+    color: var(--ink-dim);
+    letter-spacing: 0.08em;
+    flex: 0 0 64px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .slider-row input[type=range] {
+    flex: 1; margin: 0 10px;
+    height: 4px;
+    -webkit-appearance: none;
+    background: rgba(255,255,255,0.10);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px; height: 12px;
+    border-radius: 6px;
+    background: var(--primary);
+    cursor: pointer;
+  }
+  .slider-row input[type=range]::-moz-range-thumb {
+    width: 12px; height: 12px;
+    border-radius: 6px;
+    background: var(--primary);
+    cursor: pointer;
+    border: none;
+  }
+  .slider-row .val {
+    color: var(--ink);
+    width: 36px; text-align: right;
+    font-feature-settings: "tnum";
+  }
+
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin: 9px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+  }
+  .toggle-row label {
+    color: var(--ink-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .toggle-switch {
+    position: relative;
+    width: 32px; height: 18px;
+    background: rgba(255,255,255,0.10);
+    border-radius: 9px;
+    transition: background 120ms;
+  }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 14px; height: 14px;
+    background: var(--ink-dim);
+    border-radius: 7px;
+    transition: transform 160ms, background 160ms;
+  }
+  .toggle-row.active .toggle-switch {
+    background: rgba(122,215,255,0.4);
+  }
+  .toggle-row.active .toggle-switch::after {
+    transform: translateX(14px);
+    background: var(--primary);
+  }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div id="hud">
+  <div class="eyebrow">3D LISSAJOUS</div>
+  <div class="title">Sphere Chain</div>
+  <div class="formula">
+    <div>x = sin(<span id="f-a">3</span>·t + δₓ)</div>
+    <div>y = sin(<span id="f-b">2</span>·t + δᵧ)</div>
+    <div>z = sin(<span id="f-c">1</span>·t + δ_z)</div>
+  </div>
+</div>
+
+<div id="hud-right">
+  <div class="eyebrow">FREQUENCY RATIO</div>
+  <div class="ratio" id="ratio-display">3 : 2 : 1</div>
+  <div class="preset-name" id="preset-name">TREFOIL KNOT</div>
+</div>
+
+<div id="info">drag · rotate    scroll · zoom    space · pause</div>
+
+<div id="tweaks">
+  <div class="panel-head">
+    <h3>Tweaks</h3>
+    <button class="close-btn" id="tweaks-close" title="Close">×</button>
+  </div>
+
+  <div class="tweak-section">
+    <div class="tweak-section-label">Preset</div>
+    <div class="preset-grid" id="preset-grid"></div>
+  </div>
+
+  <div class="tweak-section">
+    <div class="tweak-section-label">Motion</div>
+    <div class="slider-row">
+      <label>Nodes</label>
+      <input type="range" id="s-nodes" min="6" max="56" step="1">
+      <span class="val" id="v-nodes"></span>
+    </div>
+    <div class="slider-row">
+      <label>Speed</label>
+      <input type="range" id="s-speed" min="0.05" max="2.0" step="0.05">
+      <span class="val" id="v-speed"></span>
+    </div>
+    <div class="slider-row">
+      <label>Size</label>
+      <input type="range" id="s-size" min="0.06" max="0.40" step="0.02">
+      <span class="val" id="v-size"></span>
+    </div>
+    <div class="slider-row">
+      <label>Scale</label>
+      <input type="range" id="s-scale" min="2" max="6" step="0.5">
+      <span class="val" id="v-scale"></span>
+    </div>
+  </div>
+
+  <div class="tweak-section">
+    <div class="tweak-section-label">View</div>
+    <div class="toggle-row" id="t-curve">
+      <label>Curve trace</label>
+      <div class="toggle-switch"></div>
+    </div>
+    <div class="toggle-row" id="t-rotate">
+      <label>Auto-orbit</label>
+      <div class="toggle-switch"></div>
+    </div>
+    <div class="toggle-row" id="t-bloom">
+      <label>Bloom glow</label>
+      <div class="toggle-switch"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+// ── Tweakable defaults ────────────────────────────────────────────────────
+const TWEAKS = /*EDITMODE-BEGIN*/{
+  "preset": "trefoil",
+  "numNodes": 11,
+  "speed": 0.55,
+  "nodeSize": 0.2,
+  "scale": 2.5,
+  "showCurve": true,
+  "autoRotate": true,
+  "bloom": true
+}/*EDITMODE-END*/;
+
+const PRESETS = {
+  trefoil:   { a:3, b:2, c:1, dx: Math.PI/2, dy: Math.PI/3, dz: 0,         label: 'TREFOIL KNOT'   },
+  pretzel:   { a:5, b:3, c:2, dx: Math.PI/4, dy: Math.PI/2, dz: 0,         label: '5:3:2 PRETZEL'  },
+  toroidal:  { a:4, b:3, c:2, dx: Math.PI/3, dy: Math.PI/2, dz: Math.PI/4, label: 'TOROIDAL'       },
+  wave:      { a:1, b:2, c:3, dx: 0,         dy: Math.PI/2, dz: 0,         label: '1:2:3 WAVE'     },
+  ring:      { a:1, b:1, c:1, dx: 0,         dy: Math.PI/2, dz: Math.PI/4, label: 'TILTED RING'   },
+  dense:     { a:7, b:5, c:3, dx: Math.PI/6, dy: Math.PI/3, dz: Math.PI/2, label: '7:5:3 DENSE'    },
+};
+
+// ── Three.js setup ────────────────────────────────────────────────────────
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({canvas, antialias: true, alpha: false});
+renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x04040c);
+scene.fog = new THREE.Fog(0x04040c, 14, 40);
+
+const camera = new THREE.PerspectiveCamera(48, window.innerWidth/window.innerHeight, 0.1, 100);
+camera.position.set(8, 6, 11);
+
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.autoRotate = TWEAKS.autoRotate;
+controls.autoRotateSpeed = 0.65;
+controls.minDistance = 5;
+controls.maxDistance = 28;
+
+// ── Lighting ──────────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x303040, 0.55));
+scene.add(new THREE.HemisphereLight(0x88aaff, 0x331144, 0.45));
+const key = new THREE.DirectionalLight(0xffffff, 0.85);
+key.position.set(6, 12, 6);
+scene.add(key);
+const rim1 = new THREE.PointLight(0x66ccff, 1.2, 35);
+rim1.position.set(-7, -3, -6);
+scene.add(rim1);
+const rim2 = new THREE.PointLight(0xff9966, 1.0, 35);
+rim2.position.set(7, 0, -5);
+scene.add(rim2);
+
+// ── Background starfield ──────────────────────────────────────────────────
+(() => {
+  const starsGeom = new THREE.BufferGeometry();
+  const positions = [];
+  const colors = [];
+  const R = 28;
+  for (let i = 0; i < 700; i++) {
+    // random point on a sphere shell
+    const u = Math.random(), v = Math.random();
+    const θ = u * 2 * Math.PI;
+    const φ = Math.acos(2*v - 1);
+    const r = R * (0.6 + 0.4 * Math.random());
+    positions.push(
+      r * Math.sin(φ) * Math.cos(θ),
+      r * Math.sin(φ) * Math.sin(θ),
+      r * Math.cos(φ),
+    );
+    const b = 0.4 + 0.5 * Math.random();
+    colors.push(b, b, b);
+  }
+  starsGeom.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  starsGeom.setAttribute('color',    new THREE.Float32BufferAttribute(colors, 3));
+  const starsMat = new THREE.PointsMaterial({
+    size: 0.04, sizeAttenuation: true, vertexColors: true,
+    transparent: true, opacity: 0.7,
+  });
+  scene.add(new THREE.Points(starsGeom, starsMat));
+})();
+
+// ── Lissajous 3D math ─────────────────────────────────────────────────────
+function lissajous3D(t, p, scale) {
+  return new THREE.Vector3(
+    scale * Math.sin(p.a * t + p.dx),
+    scale * Math.sin(p.b * t + p.dy),
+    scale * Math.sin(p.c * t + p.dz),
+  );
+}
+
+// Color along the chain (warm → cool gradient)
+function colorAt(f) {
+  // Hue rotates from warm gold (.10) through coral, magenta, to cool cyan (.55)
+  const hue = (0.08 + ((f * 0.6) % 1)) % 1;
+  const sat = 0.75;
+  const lig = 0.55 + 0.10 * Math.sin(f * 2 * Math.PI);
+  return new THREE.Color().setHSL(hue, sat, lig);
+}
+
+// ── Scene objects ─────────────────────────────────────────────────────────
+let curveLine = null;
+let curveBloom = null;
+let nodeGroup = null;
+
+function buildCurve() {
+  if (curveLine) { scene.remove(curveLine); curveLine.geometry.dispose(); }
+  if (curveBloom) { scene.remove(curveBloom); curveBloom.geometry.dispose(); }
+
+  const p = PRESETS[TWEAKS.preset];
+  const N = 1200;
+  const points = new Array(N + 1);
+  const cols = [];
+  for (let i = 0; i <= N; i++) {
+    const t = (i / N) * 2 * Math.PI;
+    points[i] = lissajous3D(t, p, TWEAKS.scale);
+    const c = colorAt(i / N);
+    cols.push(c.r, c.g, c.b);
+  }
+  const geom = new THREE.BufferGeometry().setFromPoints(points);
+  geom.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+
+  // Thin sharp line
+  const mat = new THREE.LineBasicMaterial({
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.55,
+  });
+  curveLine = new THREE.Line(geom, mat);
+  curveLine.visible = TWEAKS.showCurve;
+  scene.add(curveLine);
+
+  // Outer "bloom" wide line for glow feel
+  const bloomMat = new THREE.LineBasicMaterial({
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.15,
+  });
+  curveBloom = new THREE.Line(geom.clone(), bloomMat);
+  curveBloom.scale.set(1.001, 1.001, 1.001);
+  curveBloom.visible = TWEAKS.showCurve && TWEAKS.bloom;
+  scene.add(curveBloom);
+}
+
+function buildNodes() {
+  if (nodeGroup) {
+    scene.remove(nodeGroup);
+    nodeGroup.children.forEach(c => { c.geometry.dispose(); c.material.dispose(); });
+  }
+
+  nodeGroup = new THREE.Group();
+  const sphereGeom = new THREE.SphereGeometry(TWEAKS.nodeSize, 28, 18);
+
+  for (let i = 0; i < TWEAKS.numNodes; i++) {
+    const f = i / TWEAKS.numNodes;
+    const col = colorAt(f);
+    const mat = new THREE.MeshStandardMaterial({
+      color: col,
+      metalness: 0.35,
+      roughness: 0.22,
+      emissive: col.clone().multiplyScalar(0.85),
+      emissiveIntensity: 0.55,
+    });
+    const m = new THREE.Mesh(sphereGeom, mat);
+    nodeGroup.add(m);
+
+    // Halo (bloom illusion)
+    if (TWEAKS.bloom) {
+      const haloGeom = new THREE.SphereGeometry(TWEAKS.nodeSize * 2.0, 16, 12);
+      const haloMat = new THREE.MeshBasicMaterial({
+        color: col,
+        transparent: true,
+        opacity: 0.10,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      });
+      const halo = new THREE.Mesh(haloGeom, haloMat);
+      m.add(halo);
+    }
+  }
+  scene.add(nodeGroup);
+}
+
+function rebuildScene() {
+  buildCurve();
+  buildNodes();
+  updateHUD();
+}
+
+function updateHUD() {
+  const p = PRESETS[TWEAKS.preset];
+  document.getElementById('f-a').textContent = p.a;
+  document.getElementById('f-b').textContent = p.b;
+  document.getElementById('f-c').textContent = p.c;
+  document.getElementById('ratio-display').textContent = `${p.a} : ${p.b} : ${p.c}`;
+  document.getElementById('preset-name').textContent = p.label;
+}
+
+// ── Animation loop ────────────────────────────────────────────────────────
+let paused = false;
+let virtualT = 0;
+let lastTs = performance.now();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const now = performance.now();
+  const dt = Math.min(0.05, (now - lastTs) / 1000);
+  lastTs = now;
+
+  if (!paused) virtualT += dt * TWEAKS.speed;
+
+  const p = PRESETS[TWEAKS.preset];
+  const n = nodeGroup.children.length;
+  for (let i = 0; i < n; i++) {
+    const offset = (i / n) * 2 * Math.PI;
+    const t = virtualT + offset;
+    const pos = lissajous3D(t, p, TWEAKS.scale);
+    nodeGroup.children[i].position.copy(pos);
+  }
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// ── Resize ────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Pause / play with space
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    paused = !paused;
+  }
+});
+
+// ── Tweaks panel wiring ───────────────────────────────────────────────────
+const tweaksPanel = document.getElementById('tweaks');
+
+function setTweak(key, value, opts = {}) {
+  TWEAKS[key] = value;
+  if (!opts.skipPersist) {
+    try {
+      window.parent.postMessage({type: '__edit_mode_set_keys', edits: {[key]: value}}, '*');
+    } catch (e) {}
+  }
+  if (opts.rebuild) rebuildScene();
+}
+
+function buildPresetButtons() {
+  const grid = document.getElementById('preset-grid');
+  grid.innerHTML = '';
+  for (const [id, p] of Object.entries(PRESETS)) {
+    const btn = document.createElement('button');
+    btn.className = 'preset-btn' + (id === TWEAKS.preset ? ' active' : '');
+    btn.textContent = `${p.a}:${p.b}:${p.c}`;
+    btn.title = p.label;
+    btn.addEventListener('click', () => {
+      setTweak('preset', id, {rebuild: true});
+      [...grid.children].forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+    grid.appendChild(btn);
+  }
+}
+
+function setupSlider(sliderId, valId, key, fmt, opts = {}) {
+  const sl = document.getElementById(sliderId);
+  const vl = document.getElementById(valId);
+  sl.value = TWEAKS[key];
+  vl.textContent = fmt(TWEAKS[key]);
+  sl.addEventListener('input', () => {
+    const v = parseFloat(sl.value);
+    vl.textContent = fmt(v);
+    setTweak(key, v, opts);
+  });
+}
+
+function setupToggle(rowId, key, onChange) {
+  const row = document.getElementById(rowId);
+  if (TWEAKS[key]) row.classList.add('active');
+  row.addEventListener('click', () => {
+    const v = !TWEAKS[key];
+    if (v) row.classList.add('active');
+    else row.classList.remove('active');
+    setTweak(key, v);
+    if (onChange) onChange(v);
+  });
+}
+
+buildPresetButtons();
+setupSlider('s-nodes', 'v-nodes', 'numNodes', v => String(Math.round(v)), {rebuild: true});
+setupSlider('s-speed', 'v-speed', 'speed',    v => v.toFixed(2));
+setupSlider('s-size',  'v-size',  'nodeSize', v => v.toFixed(2), {rebuild: true});
+setupSlider('s-scale', 'v-scale', 'scale',    v => v.toFixed(1), {rebuild: true});
+
+setupToggle('t-curve',  'showCurve',  v => {
+  if (curveLine)  curveLine.visible  = v;
+  if (curveBloom) curveBloom.visible = v && TWEAKS.bloom;
+});
+setupToggle('t-rotate', 'autoRotate', v => { controls.autoRotate = v; });
+setupToggle('t-bloom',  'bloom',      v => { rebuildScene(); });
+
+// ── Edit mode protocol ────────────────────────────────────────────────────
+window.addEventListener('message', (e) => {
+  if (!e.data || !e.data.type) return;
+  if (e.data.type === '__activate_edit_mode') {
+    tweaksPanel.classList.add('visible');
+  } else if (e.data.type === '__deactivate_edit_mode') {
+    tweaksPanel.classList.remove('visible');
+  }
+});
+document.getElementById('tweaks-close').addEventListener('click', () => {
+  tweaksPanel.classList.remove('visible');
+  try {
+    window.parent.postMessage({type: '__edit_mode_dismissed'}, '*');
+  } catch (e) {}
+});
+try { window.parent.postMessage({type: '__edit_mode_available'}, '*'); } catch (e) {}
+
+// ── Boot ──────────────────────────────────────────────────────────────────
+rebuildScene();
+animate();
+</script>
+</body>
+</html>

@@ -51,6 +51,9 @@
 
 @import '../styles/tokens/components/prose.css';
 
+/* === MOTION TOKENS (Wave 11.8-A) === */
+@import '../styles/tokens/motion/index.css';
+
 /* === UTILITIES === */
 @import '../styles/utilities/animations.css';
 @import '../styles/utilities/motion-patterns.css';

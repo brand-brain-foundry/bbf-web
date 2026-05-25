@@ -1,0 +1,14 @@
+/* ============================================================
+ * BBF Motion Tokens — Index — Wave 11.8-A
+ * ============================================================
+ *
+ * Single entry point para importar todos los motion tokens canon.
+ *
+ * Cascade order matters: duration → easing → lissajous → reduced
+ * (reduced.css overrides debe ir al final)
+ */
+
+@import './duration.css';
+@import './easing.css';
+@import './lissajous.css';
+@import './reduced.css';

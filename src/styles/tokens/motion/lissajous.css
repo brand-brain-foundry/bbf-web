@@ -1,0 +1,37 @@
+/* ============================================================
+ * BBF Motion — Lissajous Specific Tokens — Wave 11.8-A
+ * ============================================================
+ *
+ * Tokens motion específicos para módulo Lissajous (2D + 3D).
+ * Estos NO son colors generales — son colors motion-context-only.
+ *
+ * Reference: D-BBF-WEB-NN:A (fondo negro plano default)
+ * Reference: BBF_LissajousAudit_2026-05-25 §6.2
+ *
+ * ESCALATION NOTE (Wave 11.8-A):
+ *   Tokens --bbf-surface-ink, --bbf-text-on-ink-* no existen en
+ *   el canon de tokens actual. Se usan fallbacks a --bbf-surface-black
+ *   y --bbf-text-on-black-* (equivalentes semánticos confirmados).
+ *   Pendiente: Wave 11.8-B crea --bbf-surface-ink y --bbf-text-on-ink-*
+ *   como aliases oficiales en semantic/colors.css.
+ *   Ref §9 item 1 — D-BBF-WEB-NN escalation open.
+ */
+
+:root {
+  /* Fondo canon Lissajous — negro plano default per D-BBF-WEB-NN:A */
+  --bbf-motion-lissajous-fondo: var(--bbf-surface-ink, var(--bbf-surface-black));
+
+  /* Curva Lissajous color base */
+  --bbf-motion-lissajous-curva: var(--bbf-text-on-ink-muted, var(--bbf-text-on-black-muted));
+
+  /* Bloom glow para nodos esfera */
+  --bbf-motion-lissajous-bloom: var(--bbf-accent-red);
+
+  /* Starfield background opcional */
+  --bbf-motion-lissajous-stars: var(--bbf-text-on-ink-subtle, var(--bbf-text-on-black-subtle));
+
+  /* Opacidades canon */
+  --bbf-motion-lissajous-curva-opacity: 0.55;
+  --bbf-motion-lissajous-bloom-opacity: 0.15;
+  --bbf-motion-lissajous-stars-opacity: 0.7;
+}

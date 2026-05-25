@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BBF Lissajous Modulares + Floating Point</title>
+    
+    <script src="bbf-config.js"></script>
+    <script src="bbf-motor.js"></script>
+
+    <style>
+        body {
+            background-color: #ffffff;
+            margin: 0;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            min-height: 100vh;
+            align-items: center;
+        }
+        
+        .bbf-celda {
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1 / 1;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bbf-anim-1" class="bbf-celda"></div>
+    <div id="bbf-anim-2" class="bbf-celda"></div>
+    <div id="bbf-anim-3" class="bbf-celda"></div>
+
+    <div id="bbf-anim-4" class="bbf-celda"></div>
+    <div id="bbf-anim-5" class="bbf-celda"></div>
+    <div id="bbf-anim-6" class="bbf-celda"></div>
+
+    <script>
+        // Módulos con la imagen estática png (fondo-1) + Punto Flotante activado
+        window.bbfCrearModulo('bbf-anim-1', { a: 1, b: 1, rate: 0.420, offset: 0.0, fondoId: 'fondo-1', puntoFlotante: true });
+        window.bbfCrearModulo('bbf-anim-2', { a: 2, b: 1, rate: 0.402, offset: 0.4, fondoId: 'fondo-1', puntoFlotante: true });
+        window.bbfCrearModulo('bbf-anim-3', { a: 3, b: 1, rate: 0.384, offset: 0.8, fondoId: 'fondo-1', puntoFlotante: true });
+        
+        // Módulos con el nuevo Aura Dinámica CSS (fondo-2) + Punto Flotante activado
+        window.bbfCrearModulo('bbf-anim-4', { a: 4, b: 3, rate: 0.366, offset: 1.2, fondoId: 'fondo-2', puntoFlotante: true });
+        window.bbfCrearModulo('bbf-anim-5', { a: 5, b: 3, rate: 0.348, offset: 1.6, fondoId: 'fondo-2', puntoFlotante: true });
+        window.bbfCrearModulo('bbf-anim-6', { a: 5, b: 4, rate: 0.330, offset: 2.0, fondoId: 'fondo-2', puntoFlotante: true });
+    </script>
+</body>
+</html>
