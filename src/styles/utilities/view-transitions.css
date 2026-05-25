@@ -1,0 +1,66 @@
+/**
+ * BBF View Transitions API — Wave 11.8-D
+ *
+ * Native browser page transitions (zero JS, GPU-accelerated).
+ * Progressive enhancement: @supports wrapper — older browsers skip entirely.
+ *
+ * Pattern: fade-through + 4px organic lift on enter.
+ * Duration tokens: --bbf-motion-duration-fast (180ms) out + --bbf-motion-duration-base (240ms) in.
+ * Easing token: --bbf-motion-ease-out-quart cubic-bezier(0.25, 1, 0.5, 1).
+ *
+ * Browser support 2026:
+ *   Chrome/Edge 111+  ✓
+ *   Safari 18+        ✓
+ *   Firefox 129+      ✓ (same-document SPA — Next.js client-side navigation)
+ *   Older browsers    → graceful degradation (no transition, app functions normal)
+ *
+ * Refs:
+ *   R-BBF-15 §3.1 (View Transitions API canon 2026)
+ *   BBF_MotionArchitectureProposal_v1 §5 Pattern 2
+ *   D-BBF-WEB-PP:A (stack motion canon native first)
+ */
+
+@supports (view-transition-name: none) {
+  /* Enable native page transitions for same-document (SPA) navigation */
+  @view-transition {
+    navigation: auto;
+  }
+
+  /* Fade out — fast, clean exit */
+  ::view-transition-old(root) {
+    animation: var(--bbf-motion-duration-fast) var(--bbf-motion-ease-out-quart) both bbf-vt-fade-out;
+  }
+
+  /* Fade in — base duration, 4px organic lift */
+  ::view-transition-new(root) {
+    animation: var(--bbf-motion-duration-base) var(--bbf-motion-ease-out-quart) both bbf-vt-fade-in;
+  }
+
+  @keyframes bbf-vt-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes bbf-vt-fade-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 4px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  /* Reduced motion override — WCAG 2.3.3 AAA */
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+    }
+  }
+}
