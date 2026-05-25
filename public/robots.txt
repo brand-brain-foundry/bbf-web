@@ -5,6 +5,9 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+# Lab pages — internal QA visual showcase, NO indexable
+Disallow: /*/lab/
+Disallow: /*/lab/*
 
 # AI Search Engines (citation crawlers) — PERMITIDOS
 User-agent: GPTBot

@@ -167,6 +167,25 @@
     --bbf-color-sand-300
   ); /* dividers, table borders, card borders */
 
+  /* ============================================================
+     INK SURFACE ALIASES — Wave 11.8-C1
+     Aliases para contexto Lissajous / motion sobre surface muy oscura.
+     Ref: D-BBF-WEB-QQ §5.3, Wave 11.8-B CC TD
+     Pattern: simple aliases → surface-black equivalents (no color-mix)
+     ============================================================ */
+
+  /* Base ink surface + text */
+  --bbf-surface-ink: var(--bbf-surface-black);
+  --bbf-surface-ink-elevated: var(--bbf-surface-black-elevated);
+  --bbf-text-on-ink: var(--bbf-text-on-black);
+
+  /* Text hierarchy on ink */
+  --bbf-text-on-ink-muted: var(--bbf-text-on-black-muted);
+  --bbf-text-on-ink-subtle: var(--bbf-text-on-black-subtle);
+
+  /* Border on ink */
+  --bbf-border-on-ink: var(--bbf-border-on-black);
+
   /* ============================================================================
    * LEGACY ALIASES — @deprecated since Wave 11.1 (TD-11-17)
    * ============================================================================
