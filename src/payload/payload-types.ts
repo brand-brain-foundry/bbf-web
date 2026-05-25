@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    pages: Page;
     entities: Entity;
     topics: Topic;
     clusters: Cluster;
@@ -86,6 +87,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     entities: EntitiesSelect<false> | EntitiesSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
     clusters: ClustersSelect<false> | ClustersSelect<true>;
@@ -207,6 +209,43 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * Pages for the public BBF site
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * Page layout blocks (Wave 13 will add available blocks)
+   */
+  layout?: unknown[] | null;
+  /**
+   * URL slug (auto-generated from title, can be edited)
+   */
+  slug: string;
+  /**
+   * Full URL path (auto-computed from slug + parent)
+   */
+  path?: string | null;
+  /**
+   * Parent page (for nested URLs)
+   */
+  parent?: (number | null) | Page;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -973,6 +1012,10 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
         relationTo: 'entities';
         value: number | Entity;
       } | null)
@@ -1088,6 +1131,27 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  layout?: T | {};
+  slug?: T;
+  path?: T;
+  parent?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
