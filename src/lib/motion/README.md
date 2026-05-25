@@ -72,6 +72,7 @@ Todas las variantes son **transparent default** (D-BBF-WEB-QQ §5.1). Adoptan la
 
 ## Referencias
 
+- **`BBF_MotionCanon_v1_0.md`** — Canon doctrinal BBF Motion v1.0 (SIGNED 2026-05-25) — fuente de verdad
 - `D-BBF-WEB-MM` Motion lenguaje canon
 - `D-BBF-WEB-NN` Fondo negro plano default
 - `D-BBF-WEB-OO` Source preservation policy
