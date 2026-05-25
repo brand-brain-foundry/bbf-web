@@ -37,6 +37,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.16.0",
+    "motion": "^12.40.0",
     "next": "^15.5.18",
     "next-intl": "^3.26.5",
     "payload": "^3.84.1",
@@ -47,6 +48,7 @@
     "sharp": "^0.34.5",
     "svix": "^1.94.0",
     "tailwind-merge": "^3.6.0",
+    "three": "^0.184.0",
     "ulid": "^3.0.2",
     "zod": "^4.4.3"
   },
@@ -62,6 +64,7 @@
     "@types/node": "^25.8.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.184.1",
     "autoprefixer": "^10.5.0",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.6",
