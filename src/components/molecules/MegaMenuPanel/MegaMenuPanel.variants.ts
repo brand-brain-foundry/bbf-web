@@ -1,34 +1,13 @@
 /**
- * BBF MegaMenuPanel variants — CVA canon multi-export (Wave 11.6-C)
+ * BBF MegaMenuPanel variants — CVA canon multi-export (Wave 11.6-C, updated Wave 11.8-C2)
  *
- * 4 exports: panel (isOpen state) + item link + title (hasDescription) + description.
+ * 3 exports: item link + title (hasDescription) + description.
+ * Panel show/hide handled by Framer Motion AnimatePresence (Wave 11.8-C2).
  * Hover D-BBF-WEB-ZZ canonical preserved: [@media(hover:hover)]:hover:
  * Image scale inline en MegaMenuPanel.tsx (static, no variant needed).
  */
 
 import { cva, type VariantProps } from 'class-variance-authority';
-
-export const megaMenuPanelVariants = cva(
-  [
-    'absolute top-[calc(100%+0.5rem)] right-0 left-0',
-    'z-[var(--bbf-z-mega-menu)]',
-    'rounded-2xl',
-    'bg-[var(--bbf-surface-sand)]',
-    'border border-[var(--bbf-border-on-sand)]',
-    '[box-shadow:var(--bbf-shadow-floating)]',
-    'overflow-hidden',
-    'transition-all duration-200 ease-out',
-  ],
-  {
-    variants: {
-      open: {
-        true: 'pointer-events-auto translate-y-0 opacity-100',
-        false: 'pointer-events-none -translate-y-2 opacity-0',
-      },
-    },
-    defaultVariants: { open: false },
-  },
-);
 
 export const megaMenuItemVariants = cva([
   'group block p-4',
@@ -63,5 +42,4 @@ export const megaMenuDescriptionVariants = cva([
   'text-[var(--bbf-text-on-sand-muted)]',
 ]);
 
-export type MegaMenuPanelVariants = VariantProps<typeof megaMenuPanelVariants>;
 export type MegaMenuTitleVariants = VariantProps<typeof megaMenuTitleVariants>;

@@ -128,18 +128,17 @@ export function HeaderDesktopNav({ links, localePrefix, className }: HeaderDeskt
         );
       })}
 
-      {/* Mega-menu panel — una sola instancia, ancho del nav completo */}
-      {hasActiveSubMenu && activeLink && (
-        <MegaMenuPanel
-          id={`bbf-mega-menu-${openIndex}`}
-          isOpen={true}
-          subLinks={activeLink.subLinks!}
-          localePrefix={localePrefix}
-          onClose={closeAll}
-          onMouseEnter={cancelClose}
-          onMouseLeave={scheduleClose}
-        />
-      )}
+      {/* Mega-menu panel — siempre montada, morphing Stripe (Wave 11.8-C2) */}
+      <MegaMenuPanel
+        id={`bbf-mega-menu-${openIndex ?? -1}`}
+        isOpen={hasActiveSubMenu}
+        activeKey={String(openIndex ?? -1)}
+        subLinks={activeLink?.subLinks ?? []}
+        localePrefix={localePrefix}
+        onClose={closeAll}
+        onMouseEnter={cancelClose}
+        onMouseLeave={scheduleClose}
+      />
     </nav>
   );
 }
