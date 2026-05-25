@@ -36,7 +36,44 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  // 2. ContentItems published (cornerstones + pages + posts + cases)
+  // 2. Pages collection (Wave 12-A)
+  try {
+    const payload = await getPayload({ config });
+    // @ts-justify: pages pending payload generate:types — Wave 12-A
+    const pagesResult = await (payload.find as Function)({
+      collection: 'pages',
+      locale: 'all',
+      where: { _status: { equals: 'published' } },
+      limit: 500,
+      depth: 0,
+    });
+    for (const page of (pagesResult as { docs: Record<string, unknown>[] }).docs) {
+      const pathRaw = page.path as unknown as Record<string, string> | string;
+      const pathObj =
+        typeof pathRaw === 'object' && pathRaw !== null
+          ? pathRaw
+          : { es: pathRaw as string, en: pathRaw as string };
+      const pathEs = pathObj['es'];
+      const pathEn = pathObj['en'] || pathEs;
+      if (!pathEs) continue;
+      entries.push({
+        url: `${BASE_URL}/es/${pathEs}`,
+        lastModified: typeof page.updatedAt === 'string' ? new Date(page.updatedAt) : new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.7,
+        alternates: {
+          languages: {
+            es: `${BASE_URL}/es/${pathEs}`,
+            en: `${BASE_URL}/en/${pathEn}`,
+          },
+        },
+      });
+    }
+  } catch {
+    // pages table not yet migrated — skip gracefully
+  }
+
+  // 3. ContentItems published (cornerstones + pages + posts + cases)
   try {
     const payload = await getPayload({ config });
 

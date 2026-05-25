@@ -1,25 +1,74 @@
-import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { getPayload } from 'payload';
+import config from '@/payload-config';
+import type { Metadata } from 'next';
+import { setRequestLocale } from 'next-intl/server';
+
+import { generatePageMetadata } from '@/lib/seo/generateMetadata';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { buildWebPageJsonLd } from '@/lib/seo/jsonLd/webPage';
+import { buildBreadcrumbJsonLd } from '@/lib/seo/jsonLd/breadcrumbList';
+import { BlockRenderer } from '@/components/blocks/BlockRenderer';
 import { routing } from '@/i18n/routing';
 
-export function generateStaticParams() {
-  // M4 no pre-genera dynamic paths. M6 lo activará desde Payload.
-  return [];
+type Locale = 'es' | 'en';
+
+interface PageParams {
+  params: Promise<{ locale: string; pathSegments?: string[] }>;
 }
 
-export default async function CatchAllPage({
-  params,
-}: {
-  params: Promise<{ locale: string; pathSegments: string[] }>;
-}) {
-  const { locale } = await params;
+export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
+  const { locale, pathSegments = [] } = await params;
+  const path = pathSegments.join('/');
+  return generatePageMetadata({ locale: locale as Locale, path });
+}
 
-  if (!(routing.locales as readonly string[]).includes(locale)) {
+export default async function DynamicPage({ params }: PageParams) {
+  const { locale, pathSegments = [] } = await params;
+
+  if (!(routing.locales as readonly string[]).includes(locale)) notFound();
+  setRequestLocale(locale);
+
+  const path = pathSegments.join('/');
+  const payload = await getPayload({ config });
+
+  // @ts-justify: pages pending payload generate:types — Wave 12-A
+  const pagesResult = await (payload.find as Function)({
+    collection: 'pages',
+    locale: locale as Locale,
+    where: {
+      and: [{ path: { equals: path } }, { _status: { equals: 'published' } }],
+    },
+    limit: 1,
+    depth: 2,
+  });
+
+  const docs = (pagesResult as { docs: Record<string, unknown>[] }).docs;
+  if (!docs.length) {
     notFound();
   }
 
-  setRequestLocale(locale);
+  const page = docs[0];
+  const webPageJsonLd = buildWebPageJsonLd({ page, locale: locale as Locale });
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd({ page, locale: locale as Locale });
 
-  // M4-B: catch-all retorna 404. M6 lo activará con resolución Payload.
-  notFound();
+  const layout = (page.layout ?? []) as Array<{
+    id?: string;
+    blockType: string;
+    [key: string]: unknown;
+  }>;
+
+  return (
+    <>
+      <JsonLd data={[webPageJsonLd, breadcrumbJsonLd]} />
+      <main>
+        <h1>{page.title as string}</h1>
+        {layout.map((block, index) => (
+          <BlockRenderer key={block.id ?? index} block={block} />
+        ))}
+      </main>
+    </>
+  );
 }
+
+export const revalidate = 3600;

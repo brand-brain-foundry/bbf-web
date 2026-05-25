@@ -1,12 +1,14 @@
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';
+import { seoPlugin } from '@payloadcms/plugin-seo';
 import path from 'path';
 import { buildConfig } from 'payload';
 import { fileURLToPath } from 'url';
 
 import { Users } from './payload/collections/users';
 import { Media } from './payload/collections/media';
+import { Pages } from './payload/collections/Pages';
 import { Entities } from './payload/collections/entities';
 import { Topics } from './payload/collections/topics';
 import { Clusters } from './payload/collections/clusters';
@@ -47,6 +49,7 @@ export default buildConfig({
   collections: [
     Users,
     Media,
+    Pages,
     Entities,
     Topics,
     Clusters,
@@ -93,6 +96,24 @@ export default buildConfig({
   },
 
   plugins: [
+    // Wave 12-A: SEO plugin for Pages collection
+    seoPlugin({
+      collections: ['pages'],
+      uploadsCollection: 'media',
+      generateTitle: ({ doc }) => {
+        const title = (doc as Record<string, unknown>).title;
+        return `${typeof title === 'string' ? title : 'Untitled'} — Brand Brain Foundry`;
+      },
+      generateDescription: ({ doc }) => {
+        const title = (doc as Record<string, unknown>).title;
+        return typeof title === 'string' ? title : '';
+      },
+      generateURL: ({ doc, locale }) => {
+        const path = (doc as Record<string, unknown>).path;
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://brandbrainfoundry.com';
+        return `${siteUrl}/${locale}/${typeof path === 'string' ? path : ''}`;
+      },
+    }),
     // D-BBF-WEB-33: Vercel Blob via plugin oficial, solo collection media
     // Guard: skip when token ausente o inválido (local dev sin provisionar)
     ...(process.env.BLOB_READ_WRITE_TOKEN?.startsWith('vercel_blob_rw_')

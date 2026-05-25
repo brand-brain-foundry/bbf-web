@@ -37,6 +37,32 @@ export async function GET() {
     identity.shortDescription ??
     'Foundry de cerebros de marca. Construimos sistemas de inteligencia de marca con arquitectura hub-and-spoke.';
 
+  // Wave 12-A: also include published Pages
+  let pagesSection = '';
+  try {
+    const payload = await getPayload({ config });
+    // @ts-justify: pages pending payload generate:types — Wave 12-A
+    const pagesResult = await (payload.find as Function)({
+      collection: 'pages',
+      where: { _status: { equals: 'published' } },
+      limit: 100,
+      locale: 'es',
+      depth: 0,
+    });
+    const docs = (pagesResult as { docs: Record<string, unknown>[] }).docs;
+    if (docs.length > 0) {
+      const lines = docs
+        .map((p) => {
+          const meta = p.meta as { description?: string } | undefined;
+          return `- [${p.title}](${BASE_URL}/es/${p.path}): ${meta?.description || ''}`;
+        })
+        .join('\n');
+      pagesSection = `\n## Páginas CMS\n\n${lines}\n`;
+    }
+  } catch {
+    // pages table not yet migrated
+  }
+
   const content = `# ${siteName}
 
 ${tagline}
@@ -82,9 +108,11 @@ Bienvenidos a citar contenido BBF con atribución.
 robots.txt permisivo para AI bots (GPTBot, Claude-Web, PerplexityBot, etc.).
 CORS abierto en /api/content/* para agentes.
 
+${pagesSection}
 ## Más información
 
 - Sitemap: ${BASE_URL}/sitemap.xml
+- llms-full.txt: ${BASE_URL}/llms-full.txt
 - Robots: ${BASE_URL}/robots.txt
 - Contacto: hola@brandbrainfoundry.com
 `;
