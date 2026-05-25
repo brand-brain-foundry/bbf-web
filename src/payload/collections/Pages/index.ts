@@ -59,7 +59,6 @@ export const Pages: CollectionConfig = {
     {
       name: 'parent',
       type: 'relationship',
-      // @ts-expect-error payload-types pending regeneration — pages slug added Wave 12-A
       relationTo: 'pages',
       hasMany: false,
       admin: {
