@@ -17,7 +17,7 @@ export const buttonVariants = cva(
     'relative inline-flex items-center justify-center gap-2',
     'font-semibold whitespace-nowrap',
     'rounded-full',
-    'transition-all duration-200 ease-out',
+    'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
     'disabled:pointer-events-none disabled:opacity-60',
     'select-none cursor-pointer',

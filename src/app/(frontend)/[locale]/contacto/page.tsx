@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Container } from '@/components/atoms/Container';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
+import { Reveal } from '@/components/atoms/Reveal';
 import { ContactForm } from '@/components/molecules/ContactForm';
 import { buildHreflang } from '@/lib/seo/hreflang';
 
@@ -52,30 +53,34 @@ export default async function ContactoPage({ params }: Props) {
     >
       <Container size="prose">
         {/* Hero */}
-        <div className="mb-12 space-y-4 lg:mb-16 lg:space-y-6">
-          <Heading
-            level="display-2"
-            as="h1"
-            weight="semibold"
-            className="text-balance text-[var(--bbf-text-on-sand)] md:[font-size:var(--bbf-typography-display-1-size)]"
-          >
-            {t('title')}
-          </Heading>
+        <Reveal variant="up" as="div">
+          <div className="mb-12 space-y-4 lg:mb-16 lg:space-y-6">
+            <Heading
+              level="display-2"
+              as="h1"
+              weight="semibold"
+              className="text-balance text-[var(--bbf-text-on-sand)] md:[font-size:var(--bbf-typography-display-1-size)]"
+            >
+              {t('title')}
+            </Heading>
 
-          <Heading level="h1" weight="medium" tone="muted" asChild>
-            <p>{t('subtitle')}</p>
-          </Heading>
+            <Heading level="h1" weight="medium" tone="muted" asChild>
+              <p>{t('subtitle')}</p>
+            </Heading>
 
-          <Text
-            variant="body-md"
-            className="max-w-[60ch] text-pretty text-[var(--bbf-text-on-sand)]"
-          >
-            {t('intro')}
-          </Text>
-        </div>
+            <Text
+              variant="body-md"
+              className="max-w-[60ch] text-pretty text-[var(--bbf-text-on-sand)]"
+            >
+              {t('intro')}
+            </Text>
+          </div>
+        </Reveal>
 
         {/* Form */}
-        <ContactForm locale={locale} />
+        <Reveal variant="up" delay={120} as="div">
+          <ContactForm locale={locale} />
+        </Reveal>
       </Container>
     </div>
   );

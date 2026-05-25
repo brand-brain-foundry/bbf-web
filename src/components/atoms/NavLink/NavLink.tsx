@@ -74,7 +74,7 @@ export const NavLink = forwardRef<HTMLAnchorElement | HTMLButtonElement, NavLink
           <ChevronDown
             aria-hidden="true"
             className={cn(
-              'h-3.5 w-3.5 transition-transform duration-200 ease-out',
+              'h-3.5 w-3.5 transition-transform [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
               isOpen && 'rotate-180',
             )}
           />

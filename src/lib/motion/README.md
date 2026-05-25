@@ -6,12 +6,46 @@
 
 ```
 src/lib/motion/
+├── hooks/             ← React hooks motion canon (Wave 11.8-E)
+│   └── useReveal.ts  ← Scroll-triggered reveal (useInView wrapper)
 └── lissajous/         ← Sistema de iconos animados Lissajous (D-BBF-WEB-QQ)
     ├── types.ts       ← Types compartidos
     ├── math.ts        ← Pure math funcs (sin DOM)
     ├── registry.ts    ← Catálogo de variantes name-callable
     ├── 2d/            ← Motor 2D SVG
     └── 3d/            ← Motor 3D Three.js
+```
+
+## Hooks
+
+### useReveal
+
+Scroll-triggered visibility hook. Wraps Framer Motion `useInView` con defaults BBF.
+
+```tsx
+import { useReveal } from '@/lib/motion/hooks';
+
+const { ref, isVisible } = useReveal({
+  once: true,              // trigger once (default)
+  margin: '0px 0px -80px 0px',  // 80px before bottom edge
+  amount: 'some',          // any part visible triggers
+});
+
+<motion.div ref={ref} animate={isVisible ? 'visible' : 'hidden'} />
+```
+
+Preferred: use `<Reveal>` atom (`src/components/atoms/Reveal`) which wraps this hook.
+
+```tsx
+import { Reveal } from '@/components/atoms/Reveal';
+
+<Reveal variant="up" delay={100}>
+  <Card />
+</Reveal>
+
+<Reveal staggerChildren variant="up">
+  <Card />  <Card />  <Card />  // each child staggers 60ms
+</Reveal>
 ```
 
 ## Usage

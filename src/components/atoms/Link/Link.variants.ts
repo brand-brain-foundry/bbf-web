@@ -10,35 +10,38 @@ import { cva, type VariantProps } from 'class-variance-authority';
 const focusVisibleClasses =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:rounded-sm';
 
-export const linkVariants = cva('transition-colors duration-150', {
-  variants: {
-    variant: {
-      default: [
-        'text-[var(--bbf-text-on-light)]',
-        '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
-        '[@media(hover:hover)]:hover:underline',
-        'underline-offset-4',
-        'active:opacity-70',
-        focusVisibleClasses,
-      ].join(' '),
-      subtle: [
-        'text-[var(--bbf-text-on-light-secondary)]',
-        '[@media(hover:hover)]:hover:text-[var(--bbf-text-on-light)]',
-        'active:opacity-70',
-        focusVisibleClasses,
-      ].join(' '),
-      underline: [
-        'underline underline-offset-4',
-        'text-[var(--bbf-text-on-light)]',
-        '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
-        'active:opacity-70',
-        focusVisibleClasses,
-      ].join(' '),
+export const linkVariants = cva(
+  'transition-colors [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
+  {
+    variants: {
+      variant: {
+        default: [
+          'text-[var(--bbf-text-on-light)]',
+          '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
+          '[@media(hover:hover)]:hover:underline',
+          'underline-offset-4',
+          'active:opacity-70',
+          focusVisibleClasses,
+        ].join(' '),
+        subtle: [
+          'text-[var(--bbf-text-on-light-secondary)]',
+          '[@media(hover:hover)]:hover:text-[var(--bbf-text-on-light)]',
+          'active:opacity-70',
+          focusVisibleClasses,
+        ].join(' '),
+        underline: [
+          'underline underline-offset-4',
+          'text-[var(--bbf-text-on-light)]',
+          '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
+          'active:opacity-70',
+          focusVisibleClasses,
+        ].join(' '),
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
     },
   },
-  defaultVariants: {
-    variant: 'default',
-  },
-});
+);
 
 export type LinkVariants = VariantProps<typeof linkVariants>;

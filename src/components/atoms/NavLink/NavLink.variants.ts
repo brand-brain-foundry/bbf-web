@@ -16,7 +16,7 @@ export const navLinkBaseVariants = cva(
     'group relative inline-flex items-center gap-1',
     'text-sm font-medium',
     'text-[var(--bbf-text-on-sand)]',
-    'transition-all duration-200 ease-out',
+    'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
     '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
     'focus-visible:outline-none focus-visible:text-[var(--bbf-accent-red)]',
   ],
@@ -36,7 +36,11 @@ export const navLinkBaseVariants = cva(
 export type NavLinkBaseVariants = VariantProps<typeof navLinkBaseVariants>;
 
 export const navLinkUnderlineVariants = cva(
-  ['absolute left-0 h-px', 'bg-[var(--bbf-accent-red)]', 'transition-all duration-300 ease-out'],
+  [
+    'absolute left-0 h-px',
+    'bg-[var(--bbf-accent-red)]',
+    'transition-all [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
+  ],
   {
     variants: {
       active: {
