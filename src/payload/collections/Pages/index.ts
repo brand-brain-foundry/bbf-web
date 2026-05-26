@@ -45,15 +45,7 @@ export const Pages: CollectionConfig = {
       required: true,
       localized: true,
     },
-    {
-      name: 'layout',
-      type: 'blocks',
-      blocks: [],
-      localized: true,
-      admin: {
-        description: 'Page layout blocks (Wave 13 will add available blocks)',
-      },
-    },
+    // Wave 13 will add layout blocks field (removed until blocks exist)
     slugField,
     pathField,
     {
