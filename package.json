@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "payload generate:types && next build",
+    "build": "payload generate:importmap && payload generate:types && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
