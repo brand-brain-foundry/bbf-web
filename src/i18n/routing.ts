@@ -6,7 +6,7 @@ import { defineRouting } from 'next-intl/routing';
  * Decisiones firmadas:
  * - D-BBF-WEB-49: route group app/(frontend)/[locale]/
  * - D-BBF-WEB-50: next-intl como library
- * - D-BBF-WEB-51: localePrefix 'as-needed' (ES sin prefijo)
+ * - D-BBF-WEB-51: localePrefix 'always' (override Wave 12-A2: AEO/GEO unique URLs per locale)
  * - D-BBF-WEB-52: pathnames híbrido (7 fijos + catch-all dinámico)
  * - D-BBF-WEB-53: detección cookie > path > Accept-Language > default
  * - D-BBF-WEB-54: alternateLinks false (manual desde Payload data)
@@ -17,7 +17,7 @@ import { defineRouting } from 'next-intl/routing';
 export const routing = defineRouting({
   locales: ['es', 'en'],
   defaultLocale: 'es',
-  localePrefix: 'as-needed',
+  localePrefix: 'always',
 
   pathnames: {
     '/': '/',

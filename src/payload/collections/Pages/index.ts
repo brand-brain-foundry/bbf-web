@@ -1,5 +1,4 @@
 import type { CollectionConfig } from 'payload';
-import { lexicalEditor } from '@payloadcms/richtext-lexical';
 
 import { slugField } from './fields/slug';
 import { pathField } from './fields/path';

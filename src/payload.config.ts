@@ -100,6 +100,7 @@ export default buildConfig({
     seoPlugin({
       collections: ['pages'],
       uploadsCollection: 'media',
+      tabbedUI: true,
       generateTitle: ({ doc }) => {
         const title = (doc as Record<string, unknown>).title;
         return `${typeof title === 'string' ? title : 'Untitled'} — Brand Brain Foundry`;
