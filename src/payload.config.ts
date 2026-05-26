@@ -101,6 +101,12 @@ export default buildConfig({
       collections: ['pages'],
       uploadsCollection: 'media',
       tabbedUI: true,
+      fields: ({ defaultFields }) =>
+        defaultFields.map((field) =>
+          'name' in field && ['title', 'description', 'image'].includes(field.name as string)
+            ? { ...field, localized: true }
+            : field,
+        ),
       generateTitle: ({ doc }) => {
         const title = (doc as Record<string, unknown>).title;
         return `${typeof title === 'string' ? title : 'Untitled'} — Brand Brain Foundry`;
