@@ -220,10 +220,6 @@ export interface Page {
   id: number;
   title: string;
   /**
-   * Page layout blocks (Wave 13 will add available blocks)
-   */
-  layout?: unknown[] | null;
-  /**
    * URL slug (auto-generated from title, can be edited)
    */
   slug: string;
@@ -1138,7 +1134,6 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
-  layout?: T | {};
   slug?: T;
   path?: T;
   parent?: T;
