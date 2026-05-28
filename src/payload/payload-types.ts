@@ -114,6 +114,7 @@ export interface Config {
     'site-navigation': SiteNavigation;
     'site-contact': SiteContact;
     'site-newsletter': SiteNewsletter;
+    'site-homepage': SiteHomepage;
   };
   globalsSelect: {
     site: SiteSelect<false> | SiteSelect<true>;
@@ -124,6 +125,7 @@ export interface Config {
     'site-navigation': SiteNavigationSelect<false> | SiteNavigationSelect<true>;
     'site-contact': SiteContactSelect<false> | SiteContactSelect<true>;
     'site-newsletter': SiteNewsletterSelect<false> | SiteNewsletterSelect<true>;
+    'site-homepage': SiteHomepageSelect<false> | SiteHomepageSelect<true>;
   };
   locale: 'es' | 'en';
   widgets: {
@@ -1779,6 +1781,27 @@ export interface SiteIdentity {
    * Descripción larga (max 600 chars). Used para Open Graph + JSON-LD Schema.org.
    */
   longDescription?: string | null;
+  /**
+   * Pill de estado en Nav (ej: "Cerebro activo · Sivar Brains"). Consumer: Header organism (despacho separado).
+   */
+  statusBanner?: {
+    /**
+     * Mostrar u ocultar el banner en Nav.
+     */
+    enabled?: boolean | null;
+    /**
+     * Texto del pill de estado.
+     */
+    label?: string | null;
+    /**
+     * URL opcional al hacer click en el banner.
+     */
+    href?: string | null;
+    /**
+     * Color del dot indicador.
+     */
+    dotColor?: ('active' | 'red' | 'warning') | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1922,6 +1945,101 @@ export interface SiteNewsletter {
   createdAt?: string | null;
 }
 /**
+ * Homepage content: hero, capabilities, method, process. Single source of truth (W-2).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-homepage".
+ */
+export interface SiteHomepage {
+  id: number;
+  hero: {
+    /**
+     * Primera línea del H1 principal (color primario).
+     */
+    h1Line1: string;
+    /**
+     * Segunda línea del H1 (tono suave / muted).
+     */
+    h1Line2Soft: string;
+    /**
+     * Párrafo principal bajo el H1 (max 280 chars).
+     */
+    ledeBody: string;
+    /**
+     * Frase de énfasis al final del lede (peso 500, color primario).
+     */
+    ledeEmphasis: string;
+    ctaPrimary: {
+      /**
+       * Texto del botón primario.
+       */
+      label: string;
+      /**
+       * URL o anchor destino.
+       */
+      href: string;
+    };
+    ctaSecondary: {
+      /**
+       * Texto del botón secundario (ghost).
+       */
+      label: string;
+      /**
+       * URL o anchor destino.
+       */
+      href: string;
+    };
+    media: {
+      /**
+       * Etiqueta decorativa del chrome superior del frame (sintético, hardcoded canon).
+       */
+      chromeLabel?: string | null;
+      /**
+       * Imagen poster del video (se muestra antes de carga).
+       */
+      videoPoster?: (number | null) | Media;
+      /**
+       * Fuentes de video en orden de prioridad (mejor codec primero).
+       */
+      videoSources?:
+        | {
+            /**
+             * Path relativo o URL del archivo de video.
+             */
+            src: string;
+            /**
+             * Codec / contenedor del video.
+             */
+            type: 'webm-av1' | 'webm-vp9' | 'mp4-h264' | 'mp4-h265' | 'mp4-av1' | 'mov';
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Etiqueta del tipo de demostración (muted, bajo el video).
+       */
+      demoLabel: string;
+      /**
+       * Descripción de la demo visible en el footer del frame.
+       */
+      footCaption: string;
+    };
+    /**
+     * Items del ticker marquee decorativo (min 4, max 12). Se duplican automáticamente para el loop.
+     */
+    ticker?:
+      | {
+          /**
+           * Texto del item (ej: "WhatsApp Business · activo").
+           */
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site_select".
  */
@@ -1993,6 +2111,14 @@ export interface SiteIdentitySelect<T extends boolean = true> {
   tagline?: T;
   shortDescription?: T;
   longDescription?: T;
+  statusBanner?:
+    | T
+    | {
+        enabled?: T;
+        label?: T;
+        href?: T;
+        dotColor?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -2074,6 +2200,56 @@ export interface SiteNewsletterSelect<T extends boolean = true> {
   privacyNote?: T;
   confirmationEmailSubject?: T;
   confirmationEmailBody?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-homepage_select".
+ */
+export interface SiteHomepageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        h1Line1?: T;
+        h1Line2Soft?: T;
+        ledeBody?: T;
+        ledeEmphasis?: T;
+        ctaPrimary?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        ctaSecondary?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        media?:
+          | T
+          | {
+              chromeLabel?: T;
+              videoPoster?: T;
+              videoSources?:
+                | T
+                | {
+                    src?: T;
+                    type?: T;
+                    id?: T;
+                  };
+              demoLabel?: T;
+              footCaption?: T;
+            };
+        ticker?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

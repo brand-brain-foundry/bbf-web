@@ -25,6 +25,7 @@ import { SiteIdentity } from './payload/globals/SiteIdentity';
 import { SiteNavigation } from './payload/globals/SiteNavigation';
 import { SiteContact } from './payload/globals/SiteContact';
 import { SiteNewsletter } from './payload/globals/SiteNewsletter';
+import { SiteHomepage } from './payload/globals/SiteHomepage';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -68,6 +69,7 @@ export default buildConfig({
     SiteNavigation,
     SiteContact,
     SiteNewsletter,
+    SiteHomepage,
   ],
 
   // D-BBF-WEB-05: ES default, EN con prefijo /en

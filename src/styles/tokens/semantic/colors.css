@@ -81,6 +81,9 @@
      ============================================================ */
   --bbf-surface-sand: var(--bbf-color-sand-100);
   --bbf-surface-sand-elevated: var(--bbf-color-sand-50);
+  --bbf-surface-sand-deep: var(
+    --bbf-color-sand-200
+  ); /* #f7e8d2 — video shell bg, frame recessed (D-FASE3-Q2) */
   --bbf-surface-white: var(--bbf-color-white);
   --bbf-surface-black: var(--bbf-color-black-900);
   --bbf-surface-black-elevated: var(--bbf-color-black-800);

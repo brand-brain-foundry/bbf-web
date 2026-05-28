@@ -62,6 +62,47 @@ export const SiteIdentity: GlobalConfig = {
           'Descripción larga (max 600 chars). Used para Open Graph + JSON-LD Schema.org.',
       },
     },
+    {
+      name: 'statusBanner',
+      type: 'group',
+      label: { en: 'Status Banner', es: 'Banner de Estado' },
+      admin: {
+        description:
+          'Pill de estado en Nav (ej: "Cerebro activo · Sivar Brains"). Consumer: Header organism (despacho separado).',
+      },
+      fields: [
+        {
+          name: 'enabled',
+          type: 'checkbox',
+          defaultValue: true,
+          admin: { description: 'Mostrar u ocultar el banner en Nav.' },
+        },
+        {
+          name: 'label',
+          type: 'text',
+          localized: true,
+          defaultValue: 'Cerebro activo · Sivar Brains',
+          admin: { description: 'Texto del pill de estado.' },
+        },
+        {
+          name: 'href',
+          type: 'text',
+          required: false,
+          admin: { description: 'URL opcional al hacer click en el banner.' },
+        },
+        {
+          name: 'dotColor',
+          type: 'select',
+          defaultValue: 'active',
+          options: [
+            { label: 'Active (green)', value: 'active' },
+            { label: 'Alert (red)', value: 'red' },
+            { label: 'Warning (amber)', value: 'warning' },
+          ],
+          admin: { description: 'Color del dot indicador.' },
+        },
+      ],
+    },
   ],
   hooks: {
     afterChange: [revalidateGlobal],

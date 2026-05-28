@@ -35,6 +35,27 @@
   }
 }
 
+/* === HeroMediaFrame + HeroTicker keyframes (D-FASE5-T5) === */
+
+@keyframes bbf-rec-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes bbf-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* === Reduced motion canon WCAG 2.2 — hero animations === */
 @media (prefers-reduced-motion: reduce) {
   .hero-entrance,
@@ -54,5 +75,10 @@
 
   .bbf-cta-pill:hover {
     transform: none;
+  }
+
+  .bbf-hero-media-frame__rec-dot,
+  .bbf-hero-ticker__track {
+    animation: none !important;
   }
 }

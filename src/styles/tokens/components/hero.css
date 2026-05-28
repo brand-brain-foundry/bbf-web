@@ -122,6 +122,32 @@
   will-change: auto;
 }
 
+/* === Vertical grid decoration (12 cols — D-FASE2-Q3 firmada) === */
+[data-hero-decoration='grid-cols-12'] {
+  position: relative;
+}
+
+[data-hero-decoration='grid-cols-12']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    to right,
+    var(--bbf-border-on-sand, #e5ddd6) 1px,
+    transparent 1px
+  );
+  background-size: calc(100% / 12) 100%;
+  opacity: 0.25;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+  z-index: 0;
+}
+
+/* === Title soft tone — scoped to HeroSection (D-FASE2-05) === */
+[data-component='bbf-hero-section'] [data-tone='soft'] {
+  color: var(--bbf-text-on-sand-subtle);
+}
+
 /* === CTA pill — scale + shadow lift === */
 .bbf-cta-pill {
   transition:

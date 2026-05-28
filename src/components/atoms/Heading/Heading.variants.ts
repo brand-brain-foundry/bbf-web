@@ -22,6 +22,14 @@ export const headingVariants = cva(
   {
     variants: {
       level: {
+        // === Display Hero — extension Major Third canon (D-FASE2-03 Op-A, Hero Home H1) ===
+        'display-hero': [
+          '[font-size:var(--bbf-typography-display-hero-size)]',
+          'leading-[var(--bbf-typography-display-hero-leading)]',
+          'tracking-[var(--bbf-typography-display-hero-tracking)]',
+          '[font-weight:var(--bbf-typography-display-hero-weight)]',
+          '[font-family:var(--bbf-font-display)]',
+        ].join(' '),
         // === Golden ratio scale (D-BBF-KB-105) — Tier 2 cascade (Wave 11.4-C1) ===
         'display-1': [
           '[font-size:var(--bbf-typography-display-1-size)]',

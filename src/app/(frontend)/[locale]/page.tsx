@@ -1,77 +1,119 @@
-import Link from 'next/link';
+import { getPayload } from 'payload';
+import config from '@/payload-config';
 import { setRequestLocale } from 'next-intl/server';
-import { BBFLogo, BBFLogoAnimator } from '@/components/atoms/BBFLogo';
-import { Button } from '@/components/atoms/Button';
+import { HeroSection } from '@/components/sections/HeroSection';
+import { HeroMediaFrame } from '@/components/molecules/HeroMediaFrame';
+import { HeroTicker } from '@/components/molecules/HeroTicker';
+import { HeroVideo } from '@/components/molecules/HeroVideo';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
-import { HeroVideo } from '@/components/molecules/HeroVideo';
-import { LanguageSwitcher } from '@/components/molecules/LanguageSwitcher';
-import { HeroSection } from '@/components/sections/HeroSection';
+import { Button } from '@/components/atoms/Button';
+import { Icon, Icons } from '@/components/atoms/Icon';
+import { Reveal } from '@/components/atoms/Reveal';
+import type { Media } from '@/payload/payload-types';
+
+export const revalidate = 3600;
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const headline = locale === 'es' ? 'Tú diriges.' : 'You drive.';
-  const headline2 = locale === 'es' ? 'Tu marca ejecuta.' : 'Your brand runs.';
-  const tagline = locale === 'es' ? 'Próximamente' : 'Coming Soon';
-  const cta = locale === 'es' ? 'contactanos' : 'contact us';
-  const contactHref = locale === 'en' ? '/en/contacto' : '/contacto';
+  const payload = await getPayload({ config });
+  const site = await payload.findGlobal({
+    slug: 'site-homepage',
+    locale: locale as 'es' | 'en',
+    depth: 1,
+  });
+
+  const { hero } = site;
+  const posterUrl =
+    hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
+      ? ((hero.media.videoPoster as Media).url ?? undefined)
+      : undefined;
 
   return (
-    <HeroSection surface="auto">
-      <LanguageSwitcher />
+    <HeroSection surface="sand" height="auto" data-hero-decoration="grid-cols-12">
+      {/* Outer single-col grid — outer spacing container */}
+      <HeroSection.Grid
+        cols="1"
+        className="mx-auto w-full max-w-[1280px] px-6 py-[clamp(96px,11vw,132px)]"
+      >
+        {/* Head row — 2-col: title left, lede+CTAs right */}
+        <HeroSection.Grid cols="2-1.4-1">
+          <div>
+            <Heading level="display-hero" color="primary" align="left">
+              {hero.h1Line1}
+              <br />
+              <span data-tone="soft">{hero.h1Line2Soft}</span>
+            </Heading>
+          </div>
 
-      {/* Background video (z-0) — TD-M5-D3-01: poster pendiente M6+ */}
-      <HeroVideo autoplay muted loop>
-        <HeroVideo.Source src="/assets/media/hero/hero.av1.webm" type="webm-vp9" />
-        <HeroVideo.Source src="/assets/media/hero/hero.h264.mp4" type="mp4-h264" />
-      </HeroVideo>
+          <Reveal variant="up" delay={120}>
+            <div className="flex flex-col items-start gap-5">
+              <Text variant="body-lg" color="secondary" align="left">
+                {hero.ledeBody}
+                {hero.ledeEmphasis && (
+                  <>
+                    <br />
+                    <span className="font-medium text-[var(--bbf-text-on-sand)]">
+                      {hero.ledeEmphasis}
+                    </span>
+                  </>
+                )}
+              </Text>
 
-      {/* Contenido principal centrado (z-20, 8pt grid via hero-section.css) */}
-      <HeroSection.Content align="center">
-        <div className="hero-entrance hero-entrance--delay-1">
-          <BBFLogoAnimator>
-            <BBFLogo variant="stamp" size="hero" animated />
-          </BBFLogoAnimator>
-        </div>
+              <div className="flex flex-wrap gap-[10px]">
+                <Button intent="primary" size="md" asChild>
+                  <a href={hero.ctaPrimary.href}>
+                    {hero.ctaPrimary.label}
+                    <Icon icon={Icons.arrowRight} size="sm" />
+                  </a>
+                </Button>
+                <Button intent="ghost" size="md" asChild>
+                  <a href={hero.ctaSecondary.href}>
+                    {hero.ctaSecondary.label}
+                    <Icon icon={Icons.arrowRight} size="sm" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </Reveal>
+        </HeroSection.Grid>
 
-        <Heading
-          level="display-1"
-          weight="bold"
-          color="primary"
-          align="center"
-          className="hero-entrance hero-entrance--delay-2"
-        >
-          {headline}
-          <br />
-          {headline2}
-        </Heading>
+        {/* Media row — full width below head */}
+        <Reveal variant="up" delay={240}>
+          <div className="flex flex-col gap-0">
+            <HeroMediaFrame>
+              <HeroMediaFrame.Chrome
+                label={hero.media.chromeLabel ?? undefined}
+                recording
+                recDuration="00:42"
+              />
+              <HeroMediaFrame.VideoShell>
+                <HeroVideo controls preload="metadata" poster={posterUrl}>
+                  {hero.media.videoSources?.map((s) => (
+                    <HeroVideo.Source key={s.src} src={s.src} type={s.type} />
+                  ))}
+                </HeroVideo>
+              </HeroMediaFrame.VideoShell>
+              <HeroMediaFrame.Foot>
+                <div className="flex flex-col gap-1">
+                  <Text variant="caption" color="secondary">
+                    {hero.media.demoLabel}
+                  </Text>
+                  <Text variant="caption" color="primary">
+                    {hero.media.footCaption}
+                  </Text>
+                </div>
+              </HeroMediaFrame.Foot>
+            </HeroMediaFrame>
 
-        <Text
-          variant="tagline"
-          color="primary"
-          align="center"
-          className="hero-entrance hero-entrance--delay-3"
-        >
-          {tagline}
-        </Text>
-
-        {/* TD-M5-D4-01: hero-entrance → migrar a motion system M5-E */}
-        <Button
-          asChild
-          intent="primary"
-          size="lg"
-          className="bbf-cta-pill hero-entrance hero-entrance--delay-4"
-        >
-          <Link href={contactHref}>
-            <span>{cta}</span>
-            <span className="bbf-cta-arrow" aria-hidden="true">
-              →
-            </span>
-          </Link>
-        </Button>
-      </HeroSection.Content>
+            {hero.ticker && hero.ticker.length > 0 && (
+              <HeroTicker items={hero.ticker.map((t) => t.item)} durationSeconds={50} />
+            )}
+          </div>
+        </Reveal>
+      </HeroSection.Grid>
     </HeroSection>
   );
 }

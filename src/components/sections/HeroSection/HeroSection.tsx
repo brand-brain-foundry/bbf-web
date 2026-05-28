@@ -28,8 +28,10 @@ import { cn } from '@/lib/utils';
 import {
   heroSectionVariants,
   heroSectionContentVariants,
+  heroSectionGridVariants,
   type HeroSectionVariants,
   type HeroSectionContentVariants,
+  type HeroSectionGridVariants,
 } from './HeroSection.variants';
 
 /* ============================================================
@@ -94,8 +96,42 @@ function HeroSectionContent({ align, className, children }: HeroSectionContentPr
 }
 
 /* ============================================================
+   GRID (sub-component — D-FASE2-01, compound extension D-89)
+   ============================================================ */
+export interface HeroSectionGridProps extends HeroSectionGridVariants {
+  className?: string;
+  children: ReactNode;
+}
+
+/**
+ * HeroSection.Grid — layout grid sub-component.
+ * cols="1" → single column stack.
+ * cols="2-1.4-1" → 2-col 1.4fr/1fr at ≥920px (Claude Design hero layout).
+ *
+ * @example
+ * ```tsx
+ * <HeroSection.Grid cols="2-1.4-1">
+ *   <div>{/* title col *\/}</div>
+ *   <div>{/* lede col *\/}</div>
+ * </HeroSection.Grid>
+ * ```
+ */
+function HeroSectionGrid({ cols, className, children }: HeroSectionGridProps) {
+  return (
+    <div
+      data-component="bbf-hero-section-grid"
+      className={cn(heroSectionGridVariants({ cols }), className)}
+    >
+      {children}
+    </div>
+  );
+}
+HeroSectionGrid.displayName = 'HeroSection.Grid';
+
+/* ============================================================
    COMPOUND EXPORT (canon Radix pattern)
    ============================================================ */
 export const HeroSection = Object.assign(HeroSectionRoot, {
   Content: HeroSectionContent,
+  Grid: HeroSectionGrid,
 });

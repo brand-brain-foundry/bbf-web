@@ -7,6 +7,8 @@
 
 export * from './LanguageSwitcher';
 export * from './HeroVideo';
+export * from './HeroMediaFrame';
+export * from './HeroTicker';
 export * from './FormField';
 export * from './MobileMenu';
 export * from './NewsletterBox';

@@ -64,6 +64,11 @@ export interface HeroVideoProps extends HeroVideoVariants {
    */
   preload?: 'none' | 'metadata' | 'auto';
   /**
+   * Show native video controls. Default: false (background fill canon).
+   * Set true when used as foreground media (HeroMediaFrame.VideoShell).
+   */
+  controls?: boolean;
+  /**
    * ARIA label opcional. Default: aria-hidden=true (video decorativo).
    */
   ariaLabel?: string;
@@ -107,6 +112,7 @@ function HeroVideoRoot({
   loop = false,
   playsInline = true,
   preload = 'metadata',
+  controls = false,
   fit,
   ariaLabel,
   className,
@@ -120,6 +126,7 @@ function HeroVideoRoot({
         loop={loop}
         playsInline={playsInline}
         preload={preload}
+        controls={controls}
         poster={poster}
         aria-label={ariaLabel}
         aria-hidden={ariaLabel ? undefined : true}
