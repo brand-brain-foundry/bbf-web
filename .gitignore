@@ -91,3 +91,7 @@ scripts/**/.cache/
 # public/icon-512.png
 # public/opengraph-image.png
 .env.local.dev-backup
+.env*
+.env.local.backup
+.env*
+.env.local.backup
