@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * BBF Design System — HeroVideo molecule
  *
@@ -15,14 +13,14 @@
  *     <HeroVideo.Overlay tone="none" />
  *   </HeroVideo>
  *
- * Client Component (T6.7 Q3-Op-A): forwardRef + event props para REC timer sync.
- * Ref forwarded al <video> nativo — consumer (HeroMediaFrame) lee currentTime.
+ * Server Component (T6.7-FIX-RSC — revertido de Client, D-99 minimize client surface).
+ * Selector data-hero-video en <video> permite DOM query desde HeroRecTimer Client leaf.
  *
  * D-96 RATIFICADA (M5-D6): import type { CSSProperties } from 'react' canon BBF.
  * NOTA: codec real de hero.av1.webm es VP9 (encoder fnord plugin Premier 2026).
  */
 
-import type { CSSProperties, ReactNode, Ref } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import {
   heroVideoVariants,
@@ -75,16 +73,9 @@ export interface HeroVideoProps extends HeroVideoVariants {
   ariaLabel?: string;
   className?: string;
   children: ReactNode;
-  /** Ref forwarded to the native <video> element (T6.7 Q3-Op-A — REC timer sync). */
-  ref?: Ref<HTMLVideoElement>;
-  /** Called on video timeupdate events (T6.7 Q3-Op-A). */
-  onTimeUpdate?: () => void;
-  /** Called when playing state changes (T6.7 Q3-Op-A). */
-  onPlayingChange?: (playing: boolean) => void;
 }
 
 function HeroVideoRoot({
-  ref,
   poster,
   autoplay = false,
   muted = false,
@@ -96,13 +87,11 @@ function HeroVideoRoot({
   ariaLabel,
   className,
   children,
-  onTimeUpdate,
-  onPlayingChange,
 }: HeroVideoProps) {
   return (
     <div data-component="bbf-hero-video" className={cn(heroVideoVariants({ fit }), className)}>
       <video
-        ref={ref}
+        data-hero-video=""
         autoPlay={autoplay}
         muted={muted}
         loop={loop}
@@ -114,10 +103,6 @@ function HeroVideoRoot({
         aria-hidden={ariaLabel ? undefined : true}
         className="absolute inset-0 h-full w-full"
         style={{ objectFit: 'var(--bbf-hero-video-object-fit, cover)' as 'cover' }}
-        onTimeUpdate={onTimeUpdate}
-        onPlay={() => onPlayingChange?.(true)}
-        onPause={() => onPlayingChange?.(false)}
-        onEnded={() => onPlayingChange?.(false)}
       >
         {children}
       </video>

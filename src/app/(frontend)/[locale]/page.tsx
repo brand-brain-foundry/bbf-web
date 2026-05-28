@@ -2,7 +2,7 @@ import { getPayload } from 'payload';
 import config from '@/payload-config';
 import { setRequestLocale } from 'next-intl/server';
 import { HeroSection } from '@/components/sections/HeroSection';
-import { HeroMediaFrame } from '@/components/molecules/HeroMediaFrame';
+import { HeroMediaFrame, HeroRecTimer } from '@/components/molecules/HeroMediaFrame';
 import { HeroTicker } from '@/components/molecules/HeroTicker';
 import { HeroVideo } from '@/components/molecules/HeroVideo';
 import { Heading } from '@/components/atoms/Heading';
@@ -86,11 +86,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <Reveal variant="up" delay={240}>
           <div className="flex flex-col gap-0">
             <HeroMediaFrame>
-              <HeroMediaFrame.Chrome
-                label={hero.media.chromeLabel ?? undefined}
-                recording
-                recDuration="00:42"
-              />
+              <HeroMediaFrame.Chrome label={hero.media.chromeLabel ?? undefined} recording>
+                <HeroRecTimer />
+              </HeroMediaFrame.Chrome>
               <HeroMediaFrame.VideoShell>
                 <HeroVideo controls preload="metadata" poster={posterUrl}>
                   {hero.media.videoSources?.map((s) => (
