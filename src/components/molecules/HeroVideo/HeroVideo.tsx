@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * BBF Design System — HeroVideo molecule
  *
@@ -13,15 +15,14 @@
  *     <HeroVideo.Overlay tone="none" />
  *   </HeroVideo>
  *
- * Server Component (sin state interactivo, atributos native HTML video).
+ * Client Component (T6.7 Q3-Op-A): forwardRef + event props para REC timer sync.
+ * Ref forwarded al <video> nativo — consumer (HeroMediaFrame) lee currentTime.
  *
- * Auto-corrección §14: import CSSProperties directamente (no React.CSSProperties).
  * D-96 RATIFICADA (M5-D6): import type { CSSProperties } from 'react' canon BBF.
- *   Pattern: import directo del módulo react, NO namespace React.CSSProperties.
  * NOTA: codec real de hero.av1.webm es VP9 (encoder fnord plugin Premier 2026).
  */
 
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, ReactNode, Ref } from 'react';
 import { cn } from '@/lib/utils';
 import {
   heroVideoVariants,
@@ -74,38 +75,16 @@ export interface HeroVideoProps extends HeroVideoVariants {
   ariaLabel?: string;
   className?: string;
   children: ReactNode;
+  /** Ref forwarded to the native <video> element (T6.7 Q3-Op-A — REC timer sync). */
+  ref?: Ref<HTMLVideoElement>;
+  /** Called on video timeupdate events (T6.7 Q3-Op-A). */
+  onTimeUpdate?: () => void;
+  /** Called when playing state changes (T6.7 Q3-Op-A). */
+  onPlayingChange?: (playing: boolean) => void;
 }
 
-/**
- * BBF HeroVideo molecule — Atomic Design canon
- *
- * @description
- * Video hero canon BBF. Compound components dot notation (D-79).
- * Sources tipados con MIME map. Overlay opcional con tone variant.
- *
- * @example Default (sin overlay)
- * ```tsx
- * <HeroVideo poster="/assets/media/hero/hero-poster.jpg" autoplay muted loop>
- *   <HeroVideo.Source src="/assets/media/hero/hero.av1.webm" type="webm-vp9" />
- *   <HeroVideo.Source src="/assets/media/hero/hero.h264.mp4" type="mp4-h264" />
- * </HeroVideo>
- * ```
- *
- * @example Con overlay dark
- * ```tsx
- * <HeroVideo poster="..." autoplay muted loop>
- *   <HeroVideo.Source src="..." type="webm-vp9" />
- *   <HeroVideo.Source src="..." type="mp4-h264" />
- *   <HeroVideo.Overlay tone="dark" />
- * </HeroVideo>
- * ```
- *
- * @example Fit contain (no fill)
- * ```tsx
- * <HeroVideo fit="contain" poster="...">...</HeroVideo>
- * ```
- */
 function HeroVideoRoot({
+  ref,
   poster,
   autoplay = false,
   muted = false,
@@ -117,10 +96,13 @@ function HeroVideoRoot({
   ariaLabel,
   className,
   children,
+  onTimeUpdate,
+  onPlayingChange,
 }: HeroVideoProps) {
   return (
     <div data-component="bbf-hero-video" className={cn(heroVideoVariants({ fit }), className)}>
       <video
+        ref={ref}
         autoPlay={autoplay}
         muted={muted}
         loop={loop}
@@ -132,12 +114,17 @@ function HeroVideoRoot({
         aria-hidden={ariaLabel ? undefined : true}
         className="absolute inset-0 h-full w-full"
         style={{ objectFit: 'var(--bbf-hero-video-object-fit, cover)' as 'cover' }}
+        onTimeUpdate={onTimeUpdate}
+        onPlay={() => onPlayingChange?.(true)}
+        onPause={() => onPlayingChange?.(false)}
+        onEnded={() => onPlayingChange?.(false)}
       >
         {children}
       </video>
     </div>
   );
 }
+HeroVideoRoot.displayName = 'HeroVideo';
 
 /* ============================================================
    SOURCE (sub-component)
@@ -147,14 +134,6 @@ export interface HeroVideoSourceProps {
   type: HeroVideoSourceType;
 }
 
-/**
- * HeroVideo.Source — sub-component canon
- *
- * @example
- * ```tsx
- * <HeroVideo.Source src="/assets/media/hero/hero.av1.webm" type="webm-vp9" />
- * ```
- */
 function HeroVideoSource({ src, type }: HeroVideoSourceProps) {
   const mimeType = SOURCE_TYPE_MAP[type];
   return (
@@ -182,15 +161,6 @@ export interface HeroVideoOverlayProps extends HeroVideoOverlayVariants {
   className?: string;
 }
 
-/**
- * HeroVideo.Overlay — sub-component opcional canon
- *
- * @example
- * ```tsx
- * <HeroVideo.Overlay tone="dark" />
- * <HeroVideo.Overlay tone="custom" color="rgba(0,0,0,0.3)" />
- * ```
- */
 function HeroVideoOverlay({ tone = 'none', opacity, color, className }: HeroVideoOverlayProps) {
   if (tone === 'none' && !opacity && !color) return null;
 

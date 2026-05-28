@@ -76,3 +76,33 @@
     transition: none;
   }
 }
+
+/* Text gradient red — H1 soft line (Q2-Op-A T6.7 2026-05-28)
+ * Reuses @keyframes bbf-gradient-shift (A-01 — no duplicate). */
+.bbf-text-gradient-red-animated {
+  background: linear-gradient(
+    90deg,
+    var(--bbf-accent-red) 0%,
+    color-mix(in srgb, var(--bbf-accent-red) 70%, #ff8866 30%) 50%,
+    var(--bbf-accent-red) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: bbf-gradient-shift 4s ease-in-out infinite;
+}
+
+/* Specificity override — hero.css [data-component][data-tone='soft'] = (0,0,2,0) */
+[data-component='bbf-hero-section'] .bbf-text-gradient-red-animated {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-text-gradient-red-animated {
+    animation: none;
+    background-position: 0% 50%;
+  }
+}

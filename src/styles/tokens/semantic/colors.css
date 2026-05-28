@@ -84,6 +84,9 @@
   --bbf-surface-sand-deep: var(
     --bbf-color-sand-200
   ); /* #f7e8d2 — video shell bg, frame recessed (D-FASE3-Q2) */
+  --bbf-surface-hero: var(
+    --bbf-color-sand-deep-shade
+  ); /* #ebe3d4 — Hero section bg (Q1-Op-A T6.7) */
   --bbf-surface-white: var(--bbf-color-white);
   --bbf-surface-black: var(--bbf-color-black-900);
   --bbf-surface-black-elevated: var(--bbf-color-black-800);

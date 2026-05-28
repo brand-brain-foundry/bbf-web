@@ -44,7 +44,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <Heading level="display-hero" color="primary" align="left">
               {hero.h1Line1}
               <br />
-              <span data-tone="soft">{hero.h1Line2Soft}</span>
+              <span data-tone="soft" className="bbf-text-gradient-red-animated">
+                {hero.h1Line2Soft}
+              </span>
             </Heading>
           </div>
 

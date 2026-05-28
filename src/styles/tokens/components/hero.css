@@ -122,6 +122,11 @@
   will-change: auto;
 }
 
+/* === Hero section background — --bbf-surface-hero (Q1-Op-A T6.7 2026-05-28) === */
+[data-component='bbf-hero-section'] {
+  background: var(--bbf-surface-hero);
+}
+
 /* === Vertical grid decoration (12 cols — D-FASE2-Q3 firmada) === */
 [data-hero-decoration='grid-cols-12'] {
   position: relative;
