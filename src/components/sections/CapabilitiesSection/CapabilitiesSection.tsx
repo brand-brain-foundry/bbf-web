@@ -9,6 +9,7 @@ import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { Lissajous } from '@/components/atoms/Lissajous';
 import { HubDiagram } from '@/components/molecules/HubDiagram';
+import type { HubSpoke } from '@/components/molecules/HubDiagram';
 import { capabilitiesSectionVariants } from './CapabilitiesSection.variants';
 import type { CapabilitiesSectionVariants } from './CapabilitiesSection.variants';
 
@@ -79,10 +80,14 @@ function Header({ eyebrow, h2Line1, h2Line2Soft, lead }: HeaderProps) {
 
 // ── Hub ───────────────────────────────────────────────────────
 
-async function Hub() {
+interface HubProps {
+  spokes?: HubSpoke[];
+}
+
+async function Hub({ spokes }: HubProps = {}) {
   return (
     <div className="bbf-capabilities-hub-wrapper">
-      <HubDiagram />
+      <HubDiagram spokes={spokes} />
     </div>
   );
 }

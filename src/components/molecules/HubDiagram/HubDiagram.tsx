@@ -1,27 +1,44 @@
 /**
  * HubDiagram — D-85 monolítica, Server Component
  * Hub-and-spoke diagram: 5 canon-locked spokes, SVG animations, aria-hidden.
- * Labels + meta hardcoded per Q4 FASE 1 (visual marca, no editorial).
+ * Spokes editable via Payload SiteHomepage.capabilities.hubSpokes (Fix 3).
  * Hub center label from i18n (capabilities.ui.hubCenter).
  */
 import type { CSSProperties } from 'react';
 import { getTranslations } from 'next-intl/server';
 
-const SPOKES = [
-  { angle: 0, label: 'Conversa', meta: 'WhatsApp · Web · Voz' },
-  { angle: 72, label: 'Genera', meta: 'Copy · Assets · Plan' },
-  { angle: 144, label: 'Automatiza', meta: 'CRM · ERP · Workflows' },
-  { angle: 216, label: 'Integra', meta: 'Slack · Notion · Stack' },
-  { angle: 288, label: 'Aprende', meta: 'Métricas · Feedback' },
-] as const;
+export interface HubSpoke {
+  name: string;
+  meta?: string | null;
+}
 
-const R = 38;
+const DEFAULT_SPOKES = [
+  { angle: 0, name: 'Conversa', meta: 'WhatsApp · Web · Voz' },
+  { angle: 72, name: 'Genera', meta: 'Copy · Assets · Plan' },
+  { angle: 144, name: 'Automatiza', meta: 'CRM · ERP · Workflows' },
+  { angle: 216, name: 'Integra', meta: 'Slack · Notion · Stack' },
+  { angle: 288, name: 'Aprende', meta: 'Métricas · Feedback' },
+];
+
+const HUB_R = 10; // Fix 1: was 7 — text "MEMORIA" needs ~18px padding each side
+const SPOKE_R = 38;
 const CX = 50;
 const CY = 50;
+const SONAR_DELAYS = [0, 0.8, 1.6];
 
-export async function HubDiagram() {
+interface HubDiagramProps {
+  spokes?: HubSpoke[];
+}
+
+export async function HubDiagram({ spokes }: HubDiagramProps = {}) {
   const t = await getTranslations('capabilities.ui');
   const hubCenter = t('hubCenter');
+
+  const spokesToRender = DEFAULT_SPOKES.map((s, i) => ({
+    ...s,
+    name: spokes?.[i]?.name ?? s.name,
+    meta: spokes?.[i]?.meta ?? s.meta,
+  }));
 
   return (
     <div data-component="bbf-hub-diagram" className="bbf-capabilities-hub" aria-hidden="true">
@@ -38,7 +55,7 @@ export async function HubDiagram() {
         </defs>
 
         {/* Ambient glow */}
-        <circle cx={CX} cy={CY} r="42" fill="url(#bbf-hub-glow)" />
+        <circle cx={CX} cy={CY} r="44" fill="url(#bbf-hub-glow)" />
 
         {/* Concentric rings */}
         {[14, 24, 34, 44].map((r) => (
@@ -55,14 +72,47 @@ export async function HubDiagram() {
           />
         ))}
 
+        {/* Sonar waves — Fix 4: SVG native animate, prefers-reduced-motion via CSS (.bbf-hub-sonar) */}
+        <g className="bbf-hub-sonar">
+          {SONAR_DELAYS.map((delay) => (
+            <circle
+              key={delay}
+              cx={CX}
+              cy={CY}
+              r={HUB_R}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="0.4"
+              strokeOpacity="0"
+            >
+              <animate
+                attributeName="r"
+                from={`${HUB_R}`}
+                to={`${SPOKE_R}`}
+                dur="2.4s"
+                begin={`${delay}s`}
+                repeatCount="indefinite"
+              />
+              <animate
+                attributeName="stroke-opacity"
+                from="0.35"
+                to="0"
+                dur="2.4s"
+                begin={`${delay}s`}
+                repeatCount="indefinite"
+              />
+            </circle>
+          ))}
+        </g>
+
         {/* Spokes + animated particles */}
-        {SPOKES.map((s, i) => {
+        {spokesToRender.map((s, i) => {
           const rad = ((s.angle - 90) * Math.PI) / 180;
-          const x = (CX + Math.cos(rad) * R).toFixed(2);
-          const y = (CY + Math.sin(rad) * R).toFixed(2);
+          const x = (CX + Math.cos(rad) * SPOKE_R).toFixed(2);
+          const y = (CY + Math.sin(rad) * SPOKE_R).toFixed(2);
           const path = `M ${CX} ${CY} L ${x} ${y}`;
           return (
-            <g key={s.label}>
+            <g key={s.name}>
               <line
                 x1={CX}
                 y1={CY}
@@ -93,13 +143,13 @@ export async function HubDiagram() {
         })}
 
         {/* Spoke end nodes */}
-        {SPOKES.map((s) => {
+        {spokesToRender.map((s) => {
           const rad = ((s.angle - 90) * Math.PI) / 180;
-          const x = (CX + Math.cos(rad) * R).toFixed(2);
-          const y = (CY + Math.sin(rad) * R).toFixed(2);
+          const x = (CX + Math.cos(rad) * SPOKE_R).toFixed(2);
+          const y = (CY + Math.sin(rad) * SPOKE_R).toFixed(2);
           return (
             <circle
-              key={`node-${s.label}`}
+              key={`node-${s.name}`}
               cx={x}
               cy={y}
               r="1.6"
@@ -110,12 +160,12 @@ export async function HubDiagram() {
           );
         })}
 
-        {/* Hub center */}
-        <circle cx={CX} cy={CY} r="7" fill="var(--bbf-text-on-sand)" />
+        {/* Hub center — Fix 1: r=10 (era r=7), outer ring r=12 (era r=9) */}
+        <circle cx={CX} cy={CY} r={HUB_R} fill="var(--bbf-text-on-sand)" />
         <circle
           cx={CX}
           cy={CY}
-          r="9"
+          r={HUB_R + 2}
           fill="none"
           stroke="var(--bbf-text-on-sand)"
           strokeOpacity="0.2"
@@ -135,17 +185,17 @@ export async function HubDiagram() {
       </svg>
 
       {/* Spoke labels — HTML overlay */}
-      {SPOKES.map((s) => {
+      {spokesToRender.map((s) => {
         const rad = ((s.angle - 90) * Math.PI) / 180;
-        const x = (CX + Math.cos(rad) * (R + 10)).toFixed(1);
-        const y = (CY + Math.sin(rad) * (R + 10)).toFixed(1);
+        const x = (CX + Math.cos(rad) * (SPOKE_R + 10)).toFixed(1);
+        const y = (CY + Math.sin(rad) * (SPOKE_R + 10)).toFixed(1);
         return (
           <div
-            key={`label-${s.label}`}
+            key={`label-${s.name}`}
             className="bbf-capabilities-hub__label"
             style={{ left: `${x}%`, top: `${y}%` } as CSSProperties}
           >
-            <div className="bbf-capabilities-hub__label-name">{s.label}</div>
+            <div className="bbf-capabilities-hub__label-name">{s.name}</div>
             <div className="bbf-capabilities-hub__label-meta">{s.meta}</div>
           </div>
         );

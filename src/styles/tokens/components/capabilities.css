@@ -82,9 +82,9 @@
 }
 
 .bbf-capabilities-hub__label-name {
-  font-family: var(--bbf-font-mono);
-  font-size: var(--bbf-text-mono-xs);
-  font-weight: 600;
+  font-family: var(--bbf-font-display); /* Fix 2: era mono → Inter */
+  font-size: 0.9375rem; /* Fix 2: era --bbf-text-mono-xs (11px) → 15px */
+  font-weight: 500; /* Fix 2: era 600 → 500 (alineado diseño Claude T-18) */
   color: var(--bbf-text-on-sand);
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -96,6 +96,13 @@
   font-size: var(--bbf-text-micro);
   color: var(--bbf-text-on-sand-subtle);
   white-space: nowrap;
+}
+
+/* Sonar animation — Fix 4: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .bbf-hub-sonar {
+    display: none;
+  }
 }
 
 /* ============================================================

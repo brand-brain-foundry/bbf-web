@@ -130,7 +130,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           />
         </Reveal>
 
-        <CapabilitiesSection.Hub />
+        <CapabilitiesSection.Hub
+          spokes={cap.hubSpokes?.map((s) => ({ name: s.name ?? '', meta: s.meta })) ?? undefined}
+        />
 
         <CapabilitiesSection.Grid>
           <Reveal variant="up" staggerChildren>

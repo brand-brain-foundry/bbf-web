@@ -239,6 +239,35 @@ export const SiteHomepage: GlobalConfig = {
           admin: { description: 'Párrafo introductorio de la sección (max ~200 chars).' },
         },
         {
+          name: 'hubSpokes',
+          type: 'array',
+          dbName: 'cap_hub_spokes',
+          minRows: 5,
+          maxRows: 5,
+          label: { en: 'Hub Spokes', es: 'Spokes del Hub MEMORIA' },
+          admin: {
+            description:
+              '5 spokes del Hub MEMORIA (orden = ángulo 0°→72°→144°→216°→288°). Defaults: Conversa/Genera/Automatiza/Integra/Aprende.',
+          },
+          fields: [
+            {
+              name: 'name',
+              type: 'text',
+              localized: true,
+              required: true,
+              admin: {
+                description: 'Nombre del spoke (ej: Conversa). Uppercase automático en UI.',
+              },
+            },
+            {
+              name: 'meta',
+              type: 'text',
+              localized: true,
+              admin: { description: 'Sub-labels del spoke (ej: WhatsApp · Web · Voz).' },
+            },
+          ],
+        },
+        {
           name: 'items',
           type: 'array',
           minRows: 5,

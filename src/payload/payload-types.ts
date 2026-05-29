@@ -2054,6 +2054,22 @@ export interface SiteHomepage {
      */
     lead: string;
     /**
+     * 5 spokes del Hub MEMORIA (orden = ángulo 0°→72°→144°→216°→288°). Defaults: Conversa/Genera/Automatiza/Integra/Aprende.
+     */
+    hubSpokes?:
+      | {
+          /**
+           * Nombre del spoke (ej: Conversa). Uppercase automático en UI.
+           */
+          name: string;
+          /**
+           * Sub-labels del spoke (ej: WhatsApp · Web · Voz).
+           */
+          meta?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
      * Las 5 capacidades BBF (orden = orden visual). Exactamente 5.
      */
     items?:
@@ -2429,6 +2445,13 @@ export interface SiteHomepageSelect<T extends boolean = true> {
         h2Line1?: T;
         h2Line2Soft?: T;
         lead?: T;
+        hubSpokes?:
+          | T
+          | {
+              name?: T;
+              meta?: T;
+              id?: T;
+            };
         items?:
           | T
           | {

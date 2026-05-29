@@ -8,6 +8,7 @@ import * as migration_20260525_231150 from './20260525_231150';
 import * as migration_20260528_142418_wave_13_site_homepage from './20260528_142418_wave_13_site_homepage';
 import * as migration_20260529_083612_wave_14_capabilities_group from './20260529_083612_wave_14_capabilities_group';
 import * as migration_20260529_122936_ds_refinement_lissajous_scenes from './20260529_122936_ds_refinement_lissajous_scenes';
+import * as migration_20260529_171439_cap_hub_spokes from './20260529_171439_cap_hub_spokes';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20260529_122936_ds_refinement_lissajous_scenes.up,
     down: migration_20260529_122936_ds_refinement_lissajous_scenes.down,
-    name: '20260529_122936_ds_refinement_lissajous_scenes'
+    name: '20260529_122936_ds_refinement_lissajous_scenes',
+  },
+  {
+    up: migration_20260529_171439_cap_hub_spokes.up,
+    down: migration_20260529_171439_cap_hub_spokes.down,
+    name: '20260529_171439_cap_hub_spokes'
   },
 ];
