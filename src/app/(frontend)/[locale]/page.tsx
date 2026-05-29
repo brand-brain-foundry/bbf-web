@@ -135,7 +135,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <CapabilitiesSection.Grid>
           <Reveal variant="up" staggerChildren>
             {(cap.items ?? []).map((c, i) => (
-              <CapabilityCard key={c.slug} align={i % 2 === 0 ? 'l' : 'r'} index={i + 1}>
+              <CapabilityCard
+                key={c.id ?? `cap-${i}`}
+                align={i % 2 === 0 ? 'l' : 'r'}
+                index={i + 1}
+              >
                 <CapabilityCard.Txt
                   num={i + 1}
                   title={c.title ?? ''}
