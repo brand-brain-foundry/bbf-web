@@ -42,6 +42,20 @@
     "errorValidation": "Por favor revisá los datos del formulario.",
     "errorBot": "No se pudo procesar. Probá de nuevo."
   },
+  "capabilities": {
+    "ui": {
+      "exampleLabel": "Ejemplo",
+      "capabilityLabel": "capacidad",
+      "hubCenter": "MEMORIA"
+    },
+    "scenes": {
+      "states": {
+        "done": "✓ listo",
+        "live": "● activo",
+        "queue": "○ en cola"
+      }
+    }
+  },
   "errors": {
     "notFound": {
       "title": "Página no encontrada",

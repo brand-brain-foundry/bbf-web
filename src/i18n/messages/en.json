@@ -42,6 +42,20 @@
     "errorValidation": "Please review the form data.",
     "errorBot": "Could not process. Try again."
   },
+  "capabilities": {
+    "ui": {
+      "exampleLabel": "Example",
+      "capabilityLabel": "capability",
+      "hubCenter": "MEMORY"
+    },
+    "scenes": {
+      "states": {
+        "done": "✓ done",
+        "live": "● live",
+        "queue": "○ queued"
+      }
+    }
+  },
   "errors": {
     "notFound": {
       "title": "Page not found",

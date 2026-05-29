@@ -203,6 +203,315 @@ export const SiteHomepage: GlobalConfig = {
         },
       ],
     },
+    {
+      name: 'capabilities',
+      type: 'group',
+      label: { es: 'Sección Capacidades', en: 'Capabilities Section' },
+      fields: [
+        {
+          name: 'eyebrow',
+          type: 'text',
+          localized: true,
+          admin: {
+            description: 'Eyebrow label sobre el H2 (ej: §2 · Capacidades).',
+          },
+        },
+        {
+          name: 'h2Line1',
+          type: 'text',
+          localized: true,
+          required: true,
+          admin: { description: 'Primera línea del H2 de sección (color primario).' },
+        },
+        {
+          name: 'h2Line2Soft',
+          type: 'text',
+          localized: true,
+          required: true,
+          admin: { description: 'Segunda línea del H2 (tono muted).' },
+        },
+        {
+          name: 'lead',
+          type: 'textarea',
+          localized: true,
+          required: true,
+          admin: { description: 'Párrafo introductorio de la sección (max ~200 chars).' },
+        },
+        {
+          name: 'items',
+          type: 'array',
+          minRows: 5,
+          maxRows: 5,
+          label: { en: 'Capability Items', es: 'Items de Capacidades' },
+          admin: {
+            description: 'Las 5 capacidades BBF (orden = orden visual). Exactamente 5.',
+          },
+          fields: [
+            {
+              name: 'slug',
+              type: 'text',
+              required: true,
+              admin: {
+                description:
+                  'Identificador único: conversa | genera | automatiza | integra | aprende',
+              },
+            },
+            {
+              name: 'title',
+              type: 'text',
+              localized: true,
+              required: true,
+              admin: { description: 'Nombre de la capacidad (ej: Conversa).' },
+            },
+            {
+              name: 'lede',
+              type: 'textarea',
+              localized: true,
+              required: true,
+              admin: { description: 'Frase de impacto (1-2 líneas, peso medio).' },
+            },
+            {
+              name: 'body',
+              type: 'textarea',
+              localized: true,
+              required: true,
+              admin: { description: 'Descripción desarrollada (2-3 párrafos breves).' },
+            },
+            {
+              name: 'bullets',
+              type: 'array',
+              localized: true,
+              minRows: 1,
+              label: { en: 'Bullets', es: 'Bullets' },
+              admin: { description: 'Lista de características clave (3-5 items).' },
+              fields: [
+                {
+                  name: 'text',
+                  type: 'text',
+                  required: true,
+                  admin: { description: 'Texto del bullet.' },
+                },
+              ],
+            },
+            {
+              name: 'example',
+              type: 'textarea',
+              localized: true,
+              required: true,
+              admin: { description: 'Ejemplo concreto de uso (1-2 líneas, blockquote).' },
+            },
+            {
+              name: 'scene',
+              type: 'group',
+              label: { en: 'Scene Visualization', es: 'Visualización de Escena' },
+              fields: [
+                {
+                  name: 'kind',
+                  type: 'select',
+                  required: true,
+                  options: [
+                    { label: 'Chat', value: 'chat' },
+                    { label: 'Pipeline', value: 'pipeline' },
+                    { label: 'Workflow', value: 'workflow' },
+                    { label: 'Stack', value: 'stack' },
+                  ],
+                  admin: { description: 'Tipo de visualización para esta capacidad.' },
+                },
+                {
+                  name: 'meta',
+                  type: 'text',
+                  localized: true,
+                  required: true,
+                  admin: {
+                    description: 'Metadato contextual del scene (ej: "WhatsApp · Web · Voz").',
+                  },
+                },
+                // Q4: scene sub-groups condicionales (admin.condition)
+                {
+                  name: 'chat',
+                  type: 'group',
+                  label: { en: 'Chat Scene Data', es: 'Datos Escena Chat' },
+                  admin: {
+                    condition: (_data, siblingData) => siblingData?.kind === 'chat',
+                  },
+                  fields: [
+                    {
+                      name: 'messages',
+                      type: 'array',
+                      localized: true,
+                      label: { en: 'Messages', es: 'Mensajes' },
+                      fields: [
+                        {
+                          name: 'who',
+                          type: 'select',
+                          required: true,
+                          options: [
+                            { label: 'User', value: 'user' },
+                            { label: 'Brain', value: 'brain' },
+                          ],
+                        },
+                        {
+                          name: 'text',
+                          type: 'text',
+                          required: true,
+                        },
+                      ],
+                    },
+                    {
+                      name: 'footer',
+                      type: 'text',
+                      localized: true,
+                      admin: { description: 'Texto decorativo del footer del scene.' },
+                    },
+                  ],
+                },
+                {
+                  name: 'pipeline',
+                  type: 'group',
+                  label: { en: 'Pipeline Scene Data', es: 'Datos Escena Pipeline' },
+                  admin: {
+                    condition: (_data, siblingData) => siblingData?.kind === 'pipeline',
+                  },
+                  fields: [
+                    {
+                      name: 'steps',
+                      type: 'array',
+                      dbName: 'cap_items_pipe_steps',
+                      localized: true,
+                      label: { en: 'Steps', es: 'Pasos' },
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                          required: true,
+                          admin: { description: 'Nombre del paso.' },
+                        },
+                        {
+                          name: 'detail',
+                          type: 'text',
+                          required: true,
+                          admin: { description: 'Detalle secundario del paso.' },
+                        },
+                        {
+                          name: 'state',
+                          type: 'select',
+                          required: true,
+                          options: [
+                            { label: 'Done', value: 'done' },
+                            { label: 'Live', value: 'live' },
+                            { label: 'Queue', value: 'queue' },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      name: 'footer',
+                      type: 'text',
+                      localized: true,
+                      admin: { description: 'Texto decorativo del footer del scene.' },
+                    },
+                  ],
+                },
+                {
+                  name: 'workflow',
+                  type: 'group',
+                  label: { en: 'Workflow Scene Data', es: 'Datos Escena Workflow' },
+                  admin: {
+                    condition: (_data, siblingData) => siblingData?.kind === 'workflow',
+                  },
+                  fields: [
+                    {
+                      name: 'nodes',
+                      type: 'array',
+                      label: { en: 'Nodes', es: 'Nodos' },
+                      fields: [
+                        { name: 'x', type: 'number', required: true },
+                        { name: 'y', type: 'number', required: true },
+                        {
+                          name: 'label',
+                          type: 'text',
+                          localized: true,
+                          required: true,
+                        },
+                        {
+                          name: 'kind',
+                          type: 'select',
+                          required: true,
+                          options: [
+                            { label: 'Input', value: 'in' },
+                            { label: 'Step', value: 'step' },
+                            { label: 'Branch', value: 'branch' },
+                            { label: 'Auto', value: 'auto' },
+                            { label: 'Human', value: 'human' },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      name: 'edges',
+                      type: 'array',
+                      label: { en: 'Edges', es: 'Conexiones' },
+                      fields: [
+                        { name: 'from', type: 'number', required: true },
+                        { name: 'to', type: 'number', required: true },
+                      ],
+                    },
+                    {
+                      name: 'footer',
+                      type: 'text',
+                      localized: true,
+                      admin: { description: 'Texto decorativo del footer del scene.' },
+                    },
+                  ],
+                },
+                {
+                  name: 'stack',
+                  type: 'group',
+                  label: { en: 'Stack Scene Data', es: 'Datos Escena Stack' },
+                  admin: {
+                    condition: (_data, siblingData) => siblingData?.kind === 'stack',
+                  },
+                  fields: [
+                    {
+                      name: 'groups',
+                      type: 'array',
+                      localized: true,
+                      label: { en: 'Groups', es: 'Grupos' },
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                          required: true,
+                          admin: { description: 'Nombre del grupo de tecnologías.' },
+                        },
+                        {
+                          name: 'items',
+                          type: 'array',
+                          fields: [
+                            {
+                              name: 'name',
+                              type: 'text',
+                              required: true,
+                              admin: { description: 'Nombre del item/tecnología.' },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      name: 'footer',
+                      type: 'text',
+                      localized: true,
+                      admin: { description: 'Texto decorativo del footer del scene.' },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ],
   hooks: {
     afterChange: [revalidateGlobal],

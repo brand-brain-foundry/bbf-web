@@ -12,3 +12,6 @@ export * from './HeroTicker';
 export * from './FormField';
 export * from './MobileMenu';
 export * from './NewsletterBox';
+export * from './HubDiagram';
+export * from './CapabilityScene';
+export * from './CapabilityCard';

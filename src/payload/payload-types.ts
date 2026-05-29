@@ -2036,6 +2036,153 @@ export interface SiteHomepage {
         }[]
       | null;
   };
+  capabilities: {
+    /**
+     * Eyebrow label sobre el H2 (ej: §2 · Capacidades).
+     */
+    eyebrow?: string | null;
+    /**
+     * Primera línea del H2 de sección (color primario).
+     */
+    h2Line1: string;
+    /**
+     * Segunda línea del H2 (tono muted).
+     */
+    h2Line2Soft: string;
+    /**
+     * Párrafo introductorio de la sección (max ~200 chars).
+     */
+    lead: string;
+    /**
+     * Las 5 capacidades BBF (orden = orden visual). Exactamente 5.
+     */
+    items?:
+      | {
+          /**
+           * Identificador único: conversa | genera | automatiza | integra | aprende
+           */
+          slug: string;
+          /**
+           * Nombre de la capacidad (ej: Conversa).
+           */
+          title: string;
+          /**
+           * Frase de impacto (1-2 líneas, peso medio).
+           */
+          lede: string;
+          /**
+           * Descripción desarrollada (2-3 párrafos breves).
+           */
+          body: string;
+          /**
+           * Lista de características clave (3-5 items).
+           */
+          bullets?:
+            | {
+                /**
+                 * Texto del bullet.
+                 */
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          /**
+           * Ejemplo concreto de uso (1-2 líneas, blockquote).
+           */
+          example: string;
+          scene: {
+            /**
+             * Tipo de visualización para esta capacidad.
+             */
+            kind: 'chat' | 'pipeline' | 'workflow' | 'stack';
+            /**
+             * Metadato contextual del scene (ej: "WhatsApp · Web · Voz").
+             */
+            meta: string;
+            chat?: {
+              messages?:
+                | {
+                    who: 'user' | 'brain';
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * Texto decorativo del footer del scene.
+               */
+              footer?: string | null;
+            };
+            pipeline?: {
+              steps?:
+                | {
+                    /**
+                     * Nombre del paso.
+                     */
+                    label: string;
+                    /**
+                     * Detalle secundario del paso.
+                     */
+                    detail: string;
+                    state: 'done' | 'live' | 'queue';
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * Texto decorativo del footer del scene.
+               */
+              footer?: string | null;
+            };
+            workflow?: {
+              nodes?:
+                | {
+                    x: number;
+                    y: number;
+                    label: string;
+                    kind: 'in' | 'step' | 'branch' | 'auto' | 'human';
+                    id?: string | null;
+                  }[]
+                | null;
+              edges?:
+                | {
+                    from: number;
+                    to: number;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * Texto decorativo del footer del scene.
+               */
+              footer?: string | null;
+            };
+            stack?: {
+              groups?:
+                | {
+                    /**
+                     * Nombre del grupo de tecnologías.
+                     */
+                    label: string;
+                    items?:
+                      | {
+                          /**
+                           * Nombre del item/tecnología.
+                           */
+                          name: string;
+                          id?: string | null;
+                        }[]
+                      | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * Texto decorativo del footer del scene.
+               */
+              footer?: string | null;
+            };
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2247,6 +2394,99 @@ export interface SiteHomepageSelect<T extends boolean = true> {
           | T
           | {
               item?: T;
+              id?: T;
+            };
+      };
+  capabilities?:
+    | T
+    | {
+        eyebrow?: T;
+        h2Line1?: T;
+        h2Line2Soft?: T;
+        lead?: T;
+        items?:
+          | T
+          | {
+              slug?: T;
+              title?: T;
+              lede?: T;
+              body?: T;
+              bullets?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              example?: T;
+              scene?:
+                | T
+                | {
+                    kind?: T;
+                    meta?: T;
+                    chat?:
+                      | T
+                      | {
+                          messages?:
+                            | T
+                            | {
+                                who?: T;
+                                text?: T;
+                                id?: T;
+                              };
+                          footer?: T;
+                        };
+                    pipeline?:
+                      | T
+                      | {
+                          steps?:
+                            | T
+                            | {
+                                label?: T;
+                                detail?: T;
+                                state?: T;
+                                id?: T;
+                              };
+                          footer?: T;
+                        };
+                    workflow?:
+                      | T
+                      | {
+                          nodes?:
+                            | T
+                            | {
+                                x?: T;
+                                y?: T;
+                                label?: T;
+                                kind?: T;
+                                id?: T;
+                              };
+                          edges?:
+                            | T
+                            | {
+                                from?: T;
+                                to?: T;
+                                id?: T;
+                              };
+                          footer?: T;
+                        };
+                    stack?:
+                      | T
+                      | {
+                          groups?:
+                            | T
+                            | {
+                                label?: T;
+                                items?:
+                                  | T
+                                  | {
+                                      name?: T;
+                                      id?: T;
+                                    };
+                                id?: T;
+                              };
+                          footer?: T;
+                        };
+                  };
               id?: T;
             };
       };

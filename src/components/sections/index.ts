@@ -6,3 +6,4 @@
  */
 
 export * from './HeroSection';
+export * from './CapabilitiesSection';

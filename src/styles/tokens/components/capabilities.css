@@ -1,0 +1,465 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: Capabilities Section
+ *
+ * Despacho: B-BBF-WEB-HOME-CAPABILITIES-CONSTRUCTION
+ * Tier: 3 (COMPONENT)
+ * Decisiones: D-FASE3-01 (bbf-cap-livepulse scope local), D-85, D-86, D-89, D-77
+ *
+ * Layout tokens, utility classes, y @keyframes para la sección Capabilities.
+ * Todos los valores via tokens Tier 1/T2. Cero valores hardcoded.
+ */
+
+/* ============================================================
+   LAYOUT TOKENS — Capabilities section
+   ============================================================ */
+:root {
+  --bbf-capabilities-hub-max-w: 36rem; /* 576px — hub diagram max width */
+  --bbf-capabilities-grid-gap: var(--bbf-space-section-gap-lg); /* 96px entre cards */
+  --bbf-capabilities-card-cols: 1; /* mobile: 1 col */
+  --bbf-capabilities-scene-min-h: 18rem; /* scene shell min height */
+  --bbf-capabilities-num-size: var(--bbf-text-display-2); /* número de capability */
+}
+
+/* ============================================================
+   SECTION ROOT
+   ============================================================ */
+.bbf-capabilities-section {
+  background-color: var(--bbf-surface-sand);
+}
+
+/* ============================================================
+   HEADER layout — 2-col grid (Lissajous + content)
+   ============================================================ */
+.bbf-capabilities-header {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--bbf-space-content-gap-loose);
+  align-items: center;
+  padding-block-end: var(--bbf-space-section-gap-md);
+}
+
+@media (min-width: 768px) {
+  .bbf-capabilities-header {
+    grid-template-columns: auto 1fr;
+    gap: var(--bbf-space-section-gap-sm);
+  }
+}
+
+.bbf-capabilities-header__deco {
+  width: 6rem;
+  height: 6rem;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   HUB DIAGRAM container
+   ============================================================ */
+.bbf-capabilities-hub {
+  max-width: var(--bbf-capabilities-hub-max-w);
+  margin-inline: auto;
+  padding-block: var(--bbf-space-section-gap-sm);
+  aspect-ratio: 1;
+}
+
+/* ============================================================
+   HUB DIAGRAM labels
+   ============================================================ */
+.bbf-capabilities-hub {
+  position: relative;
+}
+
+.bbf-capabilities-hub__svg {
+  display: block;
+}
+
+.bbf-capabilities-hub__label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.bbf-capabilities-hub__label-name {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  font-weight: 600;
+  color: var(--bbf-text-on-sand);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.bbf-capabilities-hub__label-meta {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-micro);
+  color: var(--bbf-text-on-sand-subtle);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   CARD GRID
+   ============================================================ */
+.bbf-capabilities-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bbf-capabilities-grid-gap);
+}
+
+/* ============================================================
+   CAPABILITY CARD — compound root
+   ============================================================ */
+.bbf-capability-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--bbf-space-section-gap-sm);
+  align-items: start;
+}
+
+@media (min-width: 920px) {
+  .bbf-capability-card {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--bbf-space-section-gap-md);
+  }
+
+  /* Zigzag: align="r" inverts column order */
+  .bbf-capability-card[data-align='r'] .bbf-capability-card__txt {
+    order: 2;
+  }
+
+  .bbf-capability-card[data-align='r'] .bbf-capability-card__viz {
+    order: 1;
+  }
+}
+
+/* ============================================================
+   CARD TXT — content stack
+   ============================================================ */
+.bbf-capability-card__txt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bbf-space-content-gap-normal);
+}
+
+.bbf-capability-card__num {
+  display: flex;
+  align-items: baseline;
+  gap: var(--bbf-space-content-gap-tight);
+  color: var(--bbf-text-on-sand-subtle);
+}
+
+.bbf-capability-card__bullets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bbf-space-content-gap-tight);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bbf-capability-card__bullet {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--bbf-space-content-gap-tight);
+}
+
+.bbf-capability-card__example {
+  border-left: 2px solid var(--bbf-border-on-sand);
+  padding-inline-start: var(--bbf-space-content-gap-normal);
+  color: var(--bbf-text-on-sand-muted);
+  font-style: normal;
+}
+
+/* ============================================================
+   CARD VIZ — sticky scene wrapper (desktop)
+   ============================================================ */
+.bbf-capability-card__viz {
+  position: relative;
+  min-height: var(--bbf-capabilities-scene-min-h);
+}
+
+@media (min-width: 920px) {
+  .bbf-capability-card__viz {
+    position: sticky;
+    top: var(--bbf-space-section-gap-sm);
+  }
+}
+
+/* ============================================================
+   SCENE SHELL — shared base for all 4 kinds
+   ============================================================ */
+.bbf-cap-scene {
+  width: 100%;
+  min-height: var(--bbf-capabilities-scene-min-h);
+  border-radius: var(--bbf-radius-card);
+  border: 1px solid var(--bbf-border-on-sand);
+  background-color: var(--bbf-surface-white);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.bbf-cap-scene__head {
+  padding: var(--bbf-space-component-padding-md) var(--bbf-space-component-padding-lg);
+  border-bottom: 1px solid var(--bbf-border-on-sand);
+  color: var(--bbf-text-on-sand-muted);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bbf-cap-scene__body {
+  padding: var(--bbf-space-component-padding-lg);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bbf-space-content-gap-tight);
+}
+
+.bbf-cap-scene__footer {
+  padding: var(--bbf-space-component-padding-md) var(--bbf-space-component-padding-lg);
+  border-top: 1px solid var(--bbf-border-on-sand);
+  color: var(--bbf-text-on-sand-subtle);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+}
+
+/* ============================================================
+   WORKFLOW SCENE — node positioning
+   ============================================================ */
+.bbf-cap-workflow {
+  position: relative;
+  flex: 1;
+  min-height: 10rem;
+}
+
+.bbf-cap-workflow__node-wrap {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.bbf-cap-workflow__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--bbf-border-on-sand);
+  border: 1px solid currentColor;
+}
+
+.bbf-cap-workflow__node-wrap--in .bbf-cap-workflow__dot,
+.bbf-cap-workflow__node-wrap--branch .bbf-cap-workflow__dot {
+  background-color: var(--bbf-accent-red);
+  border-color: var(--bbf-accent-red);
+}
+
+.bbf-cap-workflow__node-wrap--auto .bbf-cap-workflow__dot {
+  background-color: var(--bbf-text-on-sand);
+  border-color: var(--bbf-text-on-sand);
+}
+
+.bbf-cap-workflow__node-label {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-micro);
+  color: var(--bbf-text-on-sand-muted);
+  white-space: nowrap;
+}
+
+.bbf-cap-workflow__node-label--auto {
+  color: var(--bbf-text-on-sand);
+}
+
+/* ============================================================
+   CHAT SCENE
+   ============================================================ */
+.bbf-cap-chat__messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bbf-space-content-gap-tight);
+}
+
+.bbf-cap-chat__msg {
+  max-width: 80%;
+  padding: var(--bbf-space-component-padding-sm) var(--bbf-space-component-padding-md);
+  border-radius: var(--bbf-radius-card);
+  font-size: var(--bbf-text-h5);
+  line-height: 1.4;
+}
+
+.bbf-cap-chat__msg--user {
+  align-self: flex-end;
+  background-color: var(--bbf-surface-black);
+  color: var(--bbf-text-on-black);
+  border-bottom-right-radius: var(--bbf-radius-sm, 0.25rem);
+}
+
+.bbf-cap-chat__msg--brain {
+  align-self: flex-start;
+  background-color: var(--bbf-surface-sand);
+  color: var(--bbf-text-on-sand);
+  border: 1px solid var(--bbf-border-on-sand);
+  border-bottom-left-radius: var(--bbf-radius-sm, 0.25rem);
+}
+
+/* ============================================================
+   PIPELINE SCENE
+   ============================================================ */
+.bbf-cap-pipe__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.bbf-cap-pipe__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--bbf-space-component-padding-md);
+  padding: var(--bbf-space-component-padding-sm) 0;
+  border-bottom: 1px solid var(--bbf-border-subtle-on-sand, var(--bbf-border-on-sand));
+}
+
+.bbf-cap-pipe__row:last-child {
+  border-bottom: none;
+}
+
+.bbf-cap-pipe__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bbf-cap-pipe__row--done .bbf-cap-pipe__dot {
+  background-color: var(--bbf-color-success, var(--bbf-accent-red));
+}
+
+.bbf-cap-pipe__row--live .bbf-cap-pipe__dot {
+  background-color: var(--bbf-accent-red);
+  animation: bbf-cap-livepulse var(--bbf-motion-slow, 400ms) var(--bbf-easing-in-out) infinite
+    alternate;
+}
+
+.bbf-cap-pipe__row--queue .bbf-cap-pipe__dot {
+  background-color: var(--bbf-border-on-sand);
+}
+
+.bbf-cap-pipe__label {
+  font-size: var(--bbf-text-h5);
+  color: var(--bbf-text-on-sand);
+}
+
+.bbf-cap-pipe__detail {
+  font-size: var(--bbf-text-h6);
+  color: var(--bbf-text-on-sand-muted);
+}
+
+.bbf-cap-pipe__state {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  color: var(--bbf-text-on-sand-subtle);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   WORKFLOW SCENE
+   ============================================================ */
+.bbf-cap-workflow {
+  position: relative;
+  flex: 1;
+}
+
+.bbf-cap-workflow__svg {
+  width: 100%;
+  height: 100%;
+  min-height: 10rem;
+}
+
+.bbf-cap-workflow__node {
+  fill: var(--bbf-surface-white);
+  stroke: var(--bbf-border-on-sand);
+}
+
+.bbf-cap-workflow__node--in,
+.bbf-cap-workflow__node--branch {
+  stroke: var(--bbf-accent-red);
+}
+
+.bbf-cap-workflow__node--auto {
+  fill: var(--bbf-surface-black);
+  stroke: var(--bbf-surface-black);
+}
+
+.bbf-cap-workflow__edge {
+  stroke: var(--bbf-border-on-sand);
+  fill: none;
+  stroke-width: 1.5;
+}
+
+.bbf-cap-workflow__label {
+  fill: var(--bbf-text-on-sand);
+  font-size: var(--bbf-text-micro);
+  font-family: var(--bbf-font-mono);
+}
+
+.bbf-cap-workflow__label--auto {
+  fill: var(--bbf-text-on-black);
+}
+
+/* ============================================================
+   STACK SCENE
+   ============================================================ */
+.bbf-cap-stack__groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bbf-space-content-gap-normal);
+}
+
+.bbf-cap-stack__group-label {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  color: var(--bbf-text-on-sand-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--bbf-space-content-gap-tight);
+}
+
+.bbf-cap-stack__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bbf-space-content-gap-tight);
+}
+
+.bbf-cap-stack__chip {
+  padding: 0.25rem var(--bbf-space-component-padding-md);
+  border-radius: var(--bbf-radius-full, 9999px);
+  border: 1px solid var(--bbf-border-on-sand);
+  background-color: var(--bbf-surface-sand);
+  color: var(--bbf-text-on-sand);
+  font-size: var(--bbf-text-h6);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   @keyframes bbf-cap-livepulse (D-FASE3-01)
+   Pulse animation for pipeline state=live indicator dot.
+   Uses color-mix for alpha opacity — no hardcoded colors.
+   ============================================================ */
+@keyframes bbf-cap-livepulse {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--bbf-accent-red) 60%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 0.375rem color-mix(in srgb, var(--bbf-accent-red) 0%, transparent);
+  }
+}
+
+/* Reduced-motion guard — D-FASE3-01 + WCAG 2.2 */
+@media (prefers-reduced-motion: reduce) {
+  .bbf-cap-pipe__row--live .bbf-cap-pipe__dot {
+    animation: none;
+  }
+}
