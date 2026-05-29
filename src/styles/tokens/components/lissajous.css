@@ -7,11 +7,11 @@
  * Despacho: B-BBF-WEB-DS-REFINEMENT-LISSAJOUS-SCENES
  *
  * Stroke widths canon para curvas Lissajous 2D.
- * Default = 1.5 (alineado con refinamiento visual Wave 14+).
+ * Default = 2.2 (restaurado FIX-VISUAL Q2, original diseño).
  * Thick = 2.5 (uso editorial alto contraste / hero scale).
  * Override consumer: [--bbf-lissajous-stroke-default:var(--bbf-lissajous-stroke-thick)]
  */
 :root {
-  --bbf-lissajous-stroke-default: 1.5;
+  --bbf-lissajous-stroke-default: 2.2;
   --bbf-lissajous-stroke-thick: 2.5;
 }

@@ -8,6 +8,7 @@ import { Container } from '@/components/atoms/Container';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { Lissajous } from '@/components/atoms/Lissajous';
+import type { LissajousName } from '@/lib/motion/lissajous';
 import { HubDiagram } from '@/components/molecules/HubDiagram';
 import { capabilitiesSectionVariants } from './CapabilitiesSection.variants';
 import type { CapabilitiesSectionVariants } from './CapabilitiesSection.variants';
@@ -40,9 +41,18 @@ interface HeaderProps {
   h2Line1: string;
   h2Line2Soft: string;
   lead: string;
+  lissajousVariant?: string | null;
+  lissajousAnimation?: 'static' | 'point-center' | null;
 }
 
-function Header({ eyebrow, h2Line1, h2Line2Soft, lead }: HeaderProps) {
+function Header({
+  eyebrow,
+  h2Line1,
+  h2Line2Soft,
+  lead,
+  lissajousVariant = 'trefoil-2d',
+  lissajousAnimation = 'point-center',
+}: HeaderProps) {
   return (
     <div className="bbf-capabilities-header">
       {/* Left col: eyebrow + Lissajous deco */}
@@ -58,13 +68,16 @@ function Header({ eyebrow, h2Line1, h2Line2Soft, lead }: HeaderProps) {
           </Text>
         )}
         <div className="bbf-capabilities-header__deco" aria-hidden="true">
-          <Lissajous name="trefoil-2d" />
+          <Lissajous
+            name={lissajousVariant as LissajousName}
+            animation={lissajousAnimation ?? 'point-center'}
+          />
         </div>
       </div>
 
       {/* Right col: title + lead */}
       <div>
-        <Heading level="display-2" as="h2" color="primary" align="left">
+        <Heading level="display-section-h2" as="h2" color="primary" align="left">
           {h2Line1}
           <br />
           <span className="[color:var(--bbf-text-on-sand-muted)]">{h2Line2Soft}</span>

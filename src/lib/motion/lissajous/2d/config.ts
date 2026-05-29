@@ -12,7 +12,7 @@ export const LISSAJOUS_2D_DEFAULTS = {
   speed: 1.0,
   showCurve: true,
   curveOpacity: 1.0,
-  curveWidth: 1.5, // alineado con --bbf-lissajous-stroke-default fallback
+  curveWidth: 2.2, // alineado con --bbf-lissajous-stroke-default fallback
   curveColor: 'currentColor', // adopta surface color via inherit
   showFloatingDot: false,
   floatingDotRadius: 30,

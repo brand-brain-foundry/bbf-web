@@ -239,6 +239,25 @@ export const SiteHomepage: GlobalConfig = {
           admin: { description: 'Párrafo introductorio de la sección (max ~200 chars).' },
         },
         {
+          name: 'lissajousVariant',
+          type: 'select',
+          dbName: 'lis_var_sec',
+          defaultValue: 'trefoil-2d',
+          options: lissajousVariantOptions2D,
+          admin: { description: 'Lissajous deco del Section Header. 6 variantes 2D.' },
+        },
+        {
+          name: 'lissajousAnimation',
+          type: 'select',
+          dbName: 'lis_anim_sec',
+          defaultValue: 'point-center',
+          options: [
+            { label: 'Static', value: 'static' },
+            { label: 'Point center', value: 'point-center' },
+          ],
+          admin: { description: 'Animación Lissajous Section Header.' },
+        },
+        {
           name: 'items',
           type: 'array',
           minRows: 5,
