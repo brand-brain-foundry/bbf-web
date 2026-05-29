@@ -8,7 +8,7 @@
  * Refactored: ES module + TypeScript + class-based + start/stop lifecycle.
  */
 
-import { lissajous2DPath } from '../math';
+import { lissajous2DPath, lissajousPosition2D } from '../math';
 import { LISSAJOUS_2D_DEFAULTS } from './config';
 import type { LissajousPreset2D, LissajousRuntimeOptions } from '../types';
 
@@ -17,7 +17,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 export interface Lissajous2DMotorOptions extends LissajousRuntimeOptions {
   preset: LissajousPreset2D;
   container: HTMLElement;
-  animation?: 'traveling' | 'static' | 'point-center';
+  animation?: 'traveling' | 'static' | 'point-center' | 'traveling-dot';
 }
 
 export class Lissajous2DMotor {
@@ -29,10 +29,11 @@ export class Lissajous2DMotor {
 
   private svg: SVGSVGElement | null = null;
   private pathEl: SVGPathElement | null = null;
+  private dotEl: SVGCircleElement | null = null;
   private rafId: number | null = null;
   private startTime: number = 0;
   private isPaused: boolean = false;
-  private animation: 'traveling' | 'static' | 'point-center';
+  private animation: 'traveling' | 'static' | 'point-center' | 'traveling-dot';
 
   constructor(options: Lissajous2DMotorOptions) {
     this.container = options.container;
@@ -56,6 +57,9 @@ export class Lissajous2DMotor {
       }
       return;
     }
+    if (this.animation === 'traveling-dot') {
+      this.appendTravelingDot();
+    }
     this.startTime = performance.now();
     this.tick();
   }
@@ -73,6 +77,7 @@ export class Lissajous2DMotor {
     }
     this.svg = null;
     this.pathEl = null;
+    this.dotEl = null;
   }
 
   /**
@@ -121,6 +126,19 @@ export class Lissajous2DMotor {
     this.container.appendChild(this.svg);
   }
 
+  private appendTravelingDot(): void {
+    if (!this.svg) return;
+    const group = this.svg.querySelector('g');
+    if (!group) return;
+    const dot = document.createElementNS(SVG_NS, 'circle');
+    dot.setAttribute('cx', '0');
+    dot.setAttribute('cy', '0');
+    dot.setAttribute('r', '8');
+    dot.setAttribute('fill', 'currentColor');
+    this.dotEl = dot as SVGCircleElement;
+    group.appendChild(dot);
+  }
+
   private appendCenterDot(): void {
     if (!this.svg) return;
     const group = this.svg.querySelector('g');
@@ -139,6 +157,11 @@ export class Lissajous2DMotor {
       const delta = elapsed * this.speed * Math.PI * 2;
       const pathD = lissajous2DPath(this.preset, this.radius, this.resolution, delta);
       this.pathEl.setAttribute('d', pathD);
+      if (this.animation === 'traveling-dot' && this.dotEl) {
+        const [x, y] = lissajousPosition2D(delta % (Math.PI * 2), this.preset, this.radius, 0);
+        this.dotEl.setAttribute('cx', x.toFixed(2));
+        this.dotEl.setAttribute('cy', y.toFixed(2));
+      }
     }
     this.rafId = requestAnimationFrame(this.tick);
   };

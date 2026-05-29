@@ -58,7 +58,7 @@ function Header({ eyebrow, h2Line1, h2Line2Soft, lead }: HeaderProps) {
           </Text>
         )}
         <div className="bbf-capabilities-header__deco" aria-hidden="true">
-          <Lissajous name="trefoil-2d" animation="point-center" />
+          <Lissajous name="trefoil-2d" animation="traveling-dot" />
         </div>
       </div>
 

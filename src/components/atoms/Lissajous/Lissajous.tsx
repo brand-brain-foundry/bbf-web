@@ -55,8 +55,9 @@ export interface LissajousProps extends LissajousRuntimeOptions {
    * - traveling: path animado continuo (default)
    * - static: path estático renderizado una vez
    * - point-center: path estático + dot central
+   * - traveling-dot: path animado + dot que recorre el path
    */
-  animation?: 'traveling' | 'static' | 'point-center';
+  animation?: 'traveling' | 'static' | 'point-center' | 'traveling-dot';
 }
 
 export function Lissajous({
