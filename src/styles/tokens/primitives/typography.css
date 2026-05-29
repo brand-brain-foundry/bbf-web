@@ -52,6 +52,12 @@
   /* Display Hero — extension Major Third canon (D-FASE2-03 Op-A firmada) */
   --bbf-text-display-hero: clamp(3rem, 7.4vw, 6.5rem); /* 48px → 104px — Hero Home H1 */
 
+  /* Display Section H2 — section header h2 (Fix 2, clamp 44→80px) */
+  --bbf-text-display-section-h2: clamp(2.75rem, 6vw, 5rem);
+
+  /* Display Card Title — card title (Fix 2, clamp 36→56px) */
+  --bbf-text-display-card-title: clamp(2.25rem, 4.4vw, 3.5rem);
+
   /* Mono scale — HeroMediaFrame chrome + HeroTicker */
   --bbf-text-mono-xs: 0.6875rem; /* 11px */
   --bbf-text-mono-md: 0.8125rem; /* 13px */

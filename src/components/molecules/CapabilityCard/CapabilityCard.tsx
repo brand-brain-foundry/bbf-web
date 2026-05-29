@@ -58,7 +58,7 @@ async function Txt({ num, title, lede, body, bullets, example }: TxtProps) {
       </div>
 
       {/* Title */}
-      <Heading as="h3" level="display-2" color="primary">
+      <Heading as="h3" level="display-card-title" color="primary">
         {title}
       </Heading>
 

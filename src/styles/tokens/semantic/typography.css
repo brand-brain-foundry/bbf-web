@@ -120,6 +120,20 @@
   --bbf-typography-display-2-tracking: var(--bbf-tracking-tighter);
   --bbf-typography-display-2-weight: var(--bbf-weight-semibold);
 
+  /* Display Section H2 (Fix 2 — section header) */
+  --bbf-typography-display-section-h2-font: var(--bbf-font-display);
+  --bbf-typography-display-section-h2-size: var(--bbf-text-display-section-h2);
+  --bbf-typography-display-section-h2-line: 1;
+  --bbf-typography-display-section-h2-tracking: -0.035em;
+  --bbf-typography-display-section-h2-weight: var(--bbf-weight-medium);
+
+  /* Display Card Title (Fix 2 — card titles) */
+  --bbf-typography-display-card-title-font: var(--bbf-font-display);
+  --bbf-typography-display-card-title-size: var(--bbf-text-display-card-title);
+  --bbf-typography-display-card-title-line: 1.02;
+  --bbf-typography-display-card-title-tracking: -0.03em;
+  --bbf-typography-display-card-title-weight: var(--bbf-weight-medium);
+
   /* H1 */
   --bbf-typography-h1-font: var(--bbf-font-display);
   --bbf-typography-h1-size: var(--bbf-text-h1);
