@@ -49,6 +49,14 @@ export interface LissajousProps extends LissajousRuntimeOptions {
    * aria-label para accessibility.
    */
   ariaLabel?: string;
+
+  /**
+   * Modo de animación 2D. Solo aplica a variantes 2D (ignorado en 3D).
+   * - traveling: path animado continuo (default)
+   * - static: path estático renderizado una vez
+   * - point-center: path estático + dot central
+   */
+  animation?: 'traveling' | 'static' | 'point-center';
 }
 
 export function Lissajous({
@@ -56,6 +64,7 @@ export function Lissajous({
   overrideMath,
   className,
   ariaLabel,
+  animation,
   ...runtimeOptions
 }: LissajousProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -63,7 +72,7 @@ export function Lissajous({
 
   // runtimeOptions omitted from deps: motors are init-once per Wave 11.8-B scope.
   // name/overrideMath/prefersReducedMotion changes restart the motor correctly.
-   
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -84,28 +93,25 @@ export function Lissajous({
       const motor = new Lissajous2DMotor({
         preset: preset as LissajousPreset2D,
         container,
+        animation: animation ?? 'traveling',
         ...runtimeOptions,
       });
       motor.start();
       return () => motor.stop();
     }
-  }, [name, overrideMath, prefersReducedMotion]);
+  }, [name, overrideMath, prefersReducedMotion, animation]);
 
   return (
     <div
       ref={containerRef}
       role="img"
       aria-label={ariaLabel ?? getLissajousVariant(name).defaultLabel}
-      className={cn(
-        'relative h-full w-full overflow-hidden',
-        'text-[var(--bbf-motion-lissajous-curva)]',
-        className,
-      )}
+      className={cn('relative h-full w-full overflow-hidden', className)}
     >
       {prefersReducedMotion && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center [color:var(--bbf-text-on-sand-muted)]"
+          className="absolute inset-0 flex items-center justify-center [color:currentColor]"
         >
           <svg
             viewBox="0 0 24 24"

@@ -1,9 +1,10 @@
 /**
  * CapabilityScene — D-85 monolítica polymorphic, Server Component
- * Renders one of 4 scene kinds: chat | pipeline | workflow | stack.
+ * Renders one of 5 scene kinds: chat | pipeline | workflow | stack | media.
  * All data via props from Payload. No 'use client'.
  */
 import type { CSSProperties } from 'react';
+import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import type { SceneData } from './types';
 
@@ -147,6 +148,53 @@ export async function CapabilityScene({ scene }: CapabilitySceneProps) {
           </div>
         </div>
         {stack?.footer && <div className="bbf-cap-scene__footer">{stack.footer}</div>}
+      </div>
+    );
+  }
+
+  if (scene.kind === 'media') {
+    const media = scene.media;
+    if (!media || typeof media.asset !== 'object' || media.asset === null) {
+      return null;
+    }
+    const asset = media.asset;
+    const isVideo = media.mediaType === 'video';
+    const altText = asset.alt ?? '';
+    const posterUrl =
+      typeof media.posterFallback === 'object' && media.posterFallback !== null
+        ? (media.posterFallback.url ?? undefined)
+        : undefined;
+    return (
+      <div
+        data-component="bbf-capability-scene"
+        data-kind="media"
+        className="bbf-cap-scene bbf-cap-media"
+      >
+        <div className="bbf-cap-media__frame">
+          {isVideo ? (
+            <video
+              src={asset.url ?? undefined}
+              poster={posterUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-label={altText}
+              className="bbf-cap-media__video"
+            />
+          ) : (
+            <Image
+              src={asset.url ?? ''}
+              alt={altText}
+              width={asset.width ?? 540}
+              height={asset.height ?? 960}
+              sizes="(max-width: 920px) 100vw, 50vw"
+              className="bbf-cap-media__image"
+            />
+          )}
+        </div>
+        {media.caption && <p className="bbf-cap-media__caption">{media.caption}</p>}
+        {media.footer && <p className="bbf-cap-scene__footer">{media.footer}</p>}
       </div>
     );
   }

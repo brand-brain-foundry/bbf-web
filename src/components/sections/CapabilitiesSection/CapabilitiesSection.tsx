@@ -64,7 +64,7 @@ function Header({ eyebrow, h2Line1, h2Line2Soft, lead }: HeaderProps) {
 
       {/* Right col: title + lead */}
       <div>
-        <Heading level="h2" color="primary" align="left">
+        <Heading level="display-2" as="h2" color="primary" align="left">
           {h2Line1}
           <br />
           <span className="[color:var(--bbf-text-on-sand-muted)]">{h2Line2Soft}</span>

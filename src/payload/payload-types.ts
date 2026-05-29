@@ -2094,7 +2094,7 @@ export interface SiteHomepage {
             /**
              * Tipo de visualización para esta capacidad.
              */
-            kind: 'chat' | 'pipeline' | 'workflow' | 'stack';
+            kind: 'chat' | 'pipeline' | 'workflow' | 'stack' | 'media';
             /**
              * Metadato contextual del scene (ej: "WhatsApp · Web · Voz").
              */
@@ -2172,6 +2172,31 @@ export interface SiteHomepage {
                       | null;
                     id?: string | null;
                   }[]
+                | null;
+              /**
+               * Texto decorativo del footer del scene.
+               */
+              footer?: string | null;
+            };
+            media?: {
+              mediaType: 'image' | 'video';
+              /**
+               * Imagen portrait 9:16 o video portrait 9:16.
+               */
+              asset: number | Media;
+              /**
+               * Frame poster del video (opcional).
+               */
+              posterFallback?: (number | null) | Media;
+              /**
+               * Pie de imagen/video opcional.
+               */
+              caption?: string | null;
+              /**
+               * Lissajous deco opcional. 6 variantes 2D.
+               */
+              lissajousVariant?:
+                | ('trefoil-2d' | 'pretzel-2d' | 'wave-2d' | 'ring-2d' | 'dense-2d' | 'figure8-2d')
                 | null;
               /**
                * Texto decorativo del footer del scene.
@@ -2484,6 +2509,16 @@ export interface SiteHomepageSelect<T extends boolean = true> {
                                     };
                                 id?: T;
                               };
+                          footer?: T;
+                        };
+                    media?:
+                      | T
+                      | {
+                          mediaType?: T;
+                          asset?: T;
+                          posterFallback?: T;
+                          caption?: T;
+                          lissajousVariant?: T;
                           footer?: T;
                         };
                   };

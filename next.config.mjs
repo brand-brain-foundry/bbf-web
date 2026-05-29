@@ -10,7 +10,7 @@ const nextConfig = {
     reactCompiler: false,
   },
   images: {
-    remotePatterns: [],
+    remotePatterns: [{ protocol: 'https', hostname: '*.public.blob.vercel-storage.com' }],
   },
 };
 

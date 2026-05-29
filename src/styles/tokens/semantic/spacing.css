@@ -58,6 +58,15 @@
   --bbf-space-section-gap-lg: var(--bbf-space-24); /* 96px */
   --bbf-space-section-gap-xl: var(--bbf-space-32); /* 128px */
 
+  /* ============================================================
+     SEMANTIC SPACING — section gaps FLUID (DS-Refinement wave-15)
+     Coexisten con tokens fixed (no breaking). Opt-in por consumer.
+     Decisión Q-SP-1 + Q-SP-2 firmadas: sufijo -fluid, Tier 2 semantic.
+     ============================================================ */
+  --bbf-space-section-pad-fluid: clamp(96px, 13vw, 180px); /* section padding-block */
+  --bbf-space-section-gap-fluid: clamp(80px, 10vw, 140px); /* gap card-to-card */
+  --bbf-space-card-grid-gap-fluid: clamp(32px, 5vw, 72px); /* gap interno card l/r columns */
+
   /* Navigation */
   --bbf-nav-underline-offset: 0.25rem; /* 4px — underline offset bajo baseline */
 }

@@ -1,0 +1,17 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: Lissajous
+ *
+ * Subordinado a: D-99 (Server+Client split) + D-BBF-KB-145 (DS discipline)
+ * Tier: 3 (COMPONENT)
+ * Decisiones: DS-Refinement Q-LIS-4 firmada (default + thick, sin escala completa)
+ * Despacho: B-BBF-WEB-DS-REFINEMENT-LISSAJOUS-SCENES
+ *
+ * Stroke widths canon para curvas Lissajous 2D.
+ * Default = 1.5 (alineado con refinamiento visual Wave 14+).
+ * Thick = 2.5 (uso editorial alto contraste / hero scale).
+ * Override consumer: [--bbf-lissajous-stroke-default:var(--bbf-lissajous-stroke-thick)]
+ */
+:root {
+  --bbf-lissajous-stroke-default: 1.5;
+  --bbf-lissajous-stroke-thick: 2.5;
+}

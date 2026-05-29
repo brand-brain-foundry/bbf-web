@@ -17,6 +17,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 export interface Lissajous2DMotorOptions extends LissajousRuntimeOptions {
   preset: LissajousPreset2D;
   container: HTMLElement;
+  animation?: 'traveling' | 'static' | 'point-center';
 }
 
 export class Lissajous2DMotor {
@@ -31,6 +32,7 @@ export class Lissajous2DMotor {
   private rafId: number | null = null;
   private startTime: number = 0;
   private isPaused: boolean = false;
+  private animation: 'traveling' | 'static' | 'point-center';
 
   constructor(options: Lissajous2DMotorOptions) {
     this.container = options.container;
@@ -38,6 +40,7 @@ export class Lissajous2DMotor {
     this.speed = options.speed ?? LISSAJOUS_2D_DEFAULTS.speed;
     this.radius = options.scale ?? LISSAJOUS_2D_DEFAULTS.radius;
     this.resolution = LISSAJOUS_2D_DEFAULTS.resolution;
+    this.animation = options.animation ?? 'traveling';
   }
 
   /**
@@ -45,6 +48,14 @@ export class Lissajous2DMotor {
    */
   public start(): void {
     this.buildSVG();
+    if (this.animation === 'static' || this.animation === 'point-center') {
+      const pathD = lissajous2DPath(this.preset, this.radius, this.resolution, 0);
+      this.pathEl?.setAttribute('d', pathD);
+      if (this.animation === 'point-center') {
+        this.appendCenterDot();
+      }
+      return;
+    }
     this.startTime = performance.now();
     this.tick();
   }
@@ -101,13 +112,25 @@ export class Lissajous2DMotor {
     this.pathEl = document.createElementNS(SVG_NS, 'path') as SVGPathElement;
     this.pathEl.setAttribute('fill', 'none');
     this.pathEl.setAttribute('stroke', 'currentColor');
-    this.pathEl.setAttribute('stroke-width', String(LISSAJOUS_2D_DEFAULTS.curveWidth));
+    this.pathEl.style.strokeWidth = 'var(--bbf-lissajous-stroke-default, 1.5)';
     this.pathEl.setAttribute('stroke-linecap', 'round');
     this.pathEl.setAttribute('stroke-linejoin', 'round');
 
     group.appendChild(this.pathEl);
     this.svg.appendChild(group);
     this.container.appendChild(this.svg);
+  }
+
+  private appendCenterDot(): void {
+    if (!this.svg) return;
+    const group = this.svg.querySelector('g');
+    if (!group) return;
+    const dot = document.createElementNS(SVG_NS, 'circle');
+    dot.setAttribute('cx', '0');
+    dot.setAttribute('cy', '0');
+    dot.setAttribute('r', '6');
+    dot.setAttribute('fill', 'currentColor');
+    group.appendChild(dot);
   }
 
   private tick = (): void => {

@@ -1,6 +1,7 @@
 import type { GlobalConfig } from 'payload';
 import { publicRead, isAdmin } from '@/payload/lib/access';
 import { revalidateGlobal } from '../hooks/revalidateGlobal';
+import { lissajousVariantOptions2D } from '@/payload/lib/lissajousOptions';
 
 export const SiteHomepage: GlobalConfig = {
   slug: 'site-homepage',
@@ -314,6 +315,7 @@ export const SiteHomepage: GlobalConfig = {
                     { label: 'Pipeline', value: 'pipeline' },
                     { label: 'Workflow', value: 'workflow' },
                     { label: 'Stack', value: 'stack' },
+                    { label: 'Media', value: 'media' },
                   ],
                   admin: { description: 'Tipo de visualización para esta capacidad.' },
                 },
@@ -497,6 +499,67 @@ export const SiteHomepage: GlobalConfig = {
                           ],
                         },
                       ],
+                    },
+                    {
+                      name: 'footer',
+                      type: 'text',
+                      localized: true,
+                      admin: { description: 'Texto decorativo del footer del scene.' },
+                    },
+                  ],
+                },
+                {
+                  name: 'media',
+                  type: 'group',
+                  label: { en: 'Media Scene Data', es: 'Datos Escena Media' },
+                  admin: {
+                    condition: (_data, siblingData) => siblingData?.kind === 'media',
+                  },
+                  fields: [
+                    {
+                      name: 'mediaType',
+                      type: 'select',
+                      dbName: 'm_type',
+                      required: true,
+                      defaultValue: 'image',
+                      options: [
+                        { label: { en: 'Image', es: 'Imagen' }, value: 'image' },
+                        { label: { en: 'Video', es: 'Video' }, value: 'video' },
+                      ],
+                    },
+                    {
+                      name: 'asset',
+                      type: 'upload',
+                      relationTo: 'media',
+                      required: true,
+                      admin: {
+                        description: 'Imagen portrait 9:16 o video portrait 9:16.',
+                      },
+                    },
+                    {
+                      name: 'posterFallback',
+                      type: 'upload',
+                      relationTo: 'media',
+                      admin: {
+                        condition: (_, sib) => sib?.mediaType === 'video',
+                        description: 'Frame poster del video (opcional).',
+                      },
+                    },
+                    {
+                      name: 'caption',
+                      type: 'text',
+                      localized: true,
+                      admin: { description: 'Pie de imagen/video opcional.' },
+                    },
+                    {
+                      name: 'lissajousVariant',
+                      type: 'select',
+                      dbName: 'lis_var',
+                      defaultValue: 'trefoil-2d',
+                      options: lissajousVariantOptions2D,
+                      admin: {
+                        description: 'Lissajous deco opcional. 6 variantes 2D.',
+                      },
                     },
                     {
                       name: 'footer',

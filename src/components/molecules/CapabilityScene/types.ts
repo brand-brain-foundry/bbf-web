@@ -18,3 +18,5 @@ export type PipelineStep = NonNullable<ScenePipelineData['steps']>[number];
 export type WorkflowNode = NonNullable<SceneWorkflowData['nodes']>[number];
 export type WorkflowEdge = NonNullable<SceneWorkflowData['edges']>[number];
 export type StackGroup = NonNullable<SceneStackData['groups']>[number];
+
+export type SceneMediaData = NonNullable<SceneData['media']>;
