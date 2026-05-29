@@ -112,7 +112,7 @@ export class Lissajous2DMotor {
     this.pathEl = document.createElementNS(SVG_NS, 'path') as SVGPathElement;
     this.pathEl.setAttribute('fill', 'none');
     this.pathEl.setAttribute('stroke', 'currentColor');
-    this.pathEl.style.strokeWidth = 'var(--bbf-lissajous-stroke-default, 2.5)';
+    this.pathEl.setAttribute('stroke-width', '2.5'); // presentation attribute — más confiable que CSS var en SVG JS-creado
     this.pathEl.setAttribute('stroke-linecap', 'round');
     this.pathEl.setAttribute('stroke-linejoin', 'round');
 
