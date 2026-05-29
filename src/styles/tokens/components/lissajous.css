@@ -12,6 +12,6 @@
  * Override consumer: [--bbf-lissajous-stroke-default:var(--bbf-lissajous-stroke-thick)]
  */
 :root {
-  --bbf-lissajous-stroke-default: 1.5;
-  --bbf-lissajous-stroke-thick: 2.5;
+  --bbf-lissajous-stroke-default: 2.5; /* corrige viewBox scaling: viewBox 340 + 96px container = 0.28x → 2.5 rende ~0.7px */
+  --bbf-lissajous-stroke-thick: 3.5;
 }
