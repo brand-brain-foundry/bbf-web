@@ -120,13 +120,6 @@
   --bbf-typography-display-2-tracking: var(--bbf-tracking-tighter);
   --bbf-typography-display-2-weight: var(--bbf-weight-semibold);
 
-  /* Display Section H2 (Section header — entre display-2 y display-1, fluid 44→80px) */
-  --bbf-typography-display-section-h2-font: var(--bbf-font-display);
-  --bbf-typography-display-section-h2-size: var(--bbf-text-display-section-h2);
-  --bbf-typography-display-section-h2-line: var(--bbf-leading-tight);
-  --bbf-typography-display-section-h2-tracking: var(--bbf-tracking-tight);
-  --bbf-typography-display-section-h2-weight: var(--bbf-weight-semibold);
-
   /* H1 */
   --bbf-typography-h1-font: var(--bbf-font-display);
   --bbf-typography-h1-size: var(--bbf-text-h1);

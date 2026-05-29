@@ -127,8 +127,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             h2Line1={cap.h2Line1 ?? ''}
             h2Line2Soft={cap.h2Line2Soft ?? ''}
             lead={cap.lead ?? ''}
-            lissajousVariant={cap.lissajousVariant}
-            lissajousAnimation={cap.lissajousAnimation}
           />
         </Reveal>
 

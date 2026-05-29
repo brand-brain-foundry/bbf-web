@@ -45,13 +45,6 @@ export const headingVariants = cva(
           '[font-weight:var(--bbf-typography-display-2-weight)]',
           '[font-family:var(--bbf-typography-display-2-font)]',
         ].join(' '),
-        'display-section-h2': [
-          '[font-size:var(--bbf-typography-display-section-h2-size)]',
-          'leading-[var(--bbf-typography-display-section-h2-line)]',
-          'tracking-[var(--bbf-typography-display-section-h2-tracking)]',
-          '[font-weight:var(--bbf-typography-display-section-h2-weight)]',
-          '[font-family:var(--bbf-typography-display-section-h2-font)]',
-        ].join(' '),
         h1: [
           '[font-size:var(--bbf-typography-h1-size)]',
           'leading-[var(--bbf-typography-h1-line)]',

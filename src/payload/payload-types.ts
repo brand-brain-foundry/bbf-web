@@ -2054,14 +2054,6 @@ export interface SiteHomepage {
      */
     lead: string;
     /**
-     * Lissajous deco del Section Header. 6 variantes 2D.
-     */
-    lissajousVariant?: ('trefoil-2d' | 'pretzel-2d' | 'wave-2d' | 'ring-2d' | 'dense-2d' | 'figure8-2d') | null;
-    /**
-     * Animación Lissajous Section Header.
-     */
-    lissajousAnimation?: ('static' | 'point-center') | null;
-    /**
      * Las 5 capacidades BBF (orden = orden visual). Exactamente 5.
      */
     items?:
@@ -2437,8 +2429,6 @@ export interface SiteHomepageSelect<T extends boolean = true> {
         h2Line1?: T;
         h2Line2Soft?: T;
         lead?: T;
-        lissajousVariant?: T;
-        lissajousAnimation?: T;
         items?:
           | T
           | {

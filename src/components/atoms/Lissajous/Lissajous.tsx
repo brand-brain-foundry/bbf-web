@@ -64,7 +64,7 @@ export function Lissajous({
   overrideMath,
   className,
   ariaLabel,
-  animation = 'point-center',
+  animation,
   ...runtimeOptions
 }: LissajousProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -93,7 +93,7 @@ export function Lissajous({
       const motor = new Lissajous2DMotor({
         preset: preset as LissajousPreset2D,
         container,
-        animation: animation,
+        animation: animation ?? 'traveling',
         ...runtimeOptions,
       });
       motor.start();
