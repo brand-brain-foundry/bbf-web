@@ -300,8 +300,10 @@
 
 .bbf-cap-chat__msg--user {
   align-self: flex-end;
-  background-color: var(--bbf-surface-black);
-  color: var(--bbf-text-on-black);
+  background: var(--bbf-gradient-red);
+  background-size: 200% 200%;
+  animation: bbf-gradient-shift 8s ease infinite;
+  color: var(--bbf-text-on-gradient-red);
   border-bottom-right-radius: var(--bbf-radius-sm, 0.25rem);
 }
 
@@ -470,6 +472,11 @@
 @media (prefers-reduced-motion: reduce) {
   .bbf-cap-pipe__row--live .bbf-cap-pipe__dot {
     animation: none;
+  }
+
+  .bbf-cap-chat__msg--user {
+    animation: none;
+    background-position: 0% 50%;
   }
 }
 

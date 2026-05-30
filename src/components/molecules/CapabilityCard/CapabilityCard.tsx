@@ -77,7 +77,7 @@ async function Txt({ num, title, lede, body, bullets, example }: TxtProps) {
         <ul className="bbf-capability-card__bullets">
           {bullets.map((bullet, i) => (
             <li key={bullet.id ?? i} className="bbf-capability-card__bullet">
-              <Icon icon={Icons.checkCircle} size="sm" color="accent" aria-hidden />
+              <Icon icon={Icons.checkCircle} size="sm" color="success" aria-hidden />
               <Text as="span" variant="body-sm" color="primary">
                 {bullet.text}
               </Text>

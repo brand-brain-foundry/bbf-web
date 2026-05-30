@@ -23,6 +23,7 @@ export const iconVariants = cva(['inline-block', 'shrink-0', 'transition-colors'
       muted: 'text-[var(--bbf-text-on-light-muted)]',
       accent: 'text-[var(--bbf-accent-red)]',
       inverse: 'text-[var(--bbf-text-on-dark)]',
+      success: 'text-[var(--bbf-text-success)]',
     },
   },
   defaultVariants: {
