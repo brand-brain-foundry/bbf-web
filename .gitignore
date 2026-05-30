@@ -95,3 +95,6 @@ scripts/**/.cache/
 .env.local.backup
 .env*
 .env.local.backup
+
+# Claude Code local settings
+.claude/settings.local.json
