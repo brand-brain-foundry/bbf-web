@@ -2212,7 +2212,7 @@ export interface SiteHomepage {
                * Lissajous deco opcional. 6 variantes 2D.
                */
               lissajousVariant?:
-                | ('trefoil-2d' | 'pretzel-2d' | 'wave-2d' | 'ring-2d' | 'dense-2d' | 'figure8-2d')
+                | ('trefoil-2d' | 'pretzel-2d' | 'wave-2d' | 'ring-2d' | 'dense-2d' | 'figure8-2d' | 'method-2d')
                 | null;
               /**
                * Texto decorativo del footer del scene.
