@@ -55,6 +55,9 @@
   /* Display Section H2 — section header h2 (Fix 2, clamp 44→80px) */
   --bbf-text-display-section-h2: clamp(2.75rem, 6vw, 5rem);
 
+  /* Display Step Title — §3 Cómo Funciona step card titles (clamp 24→32px) */
+  --bbf-text-display-step-title: clamp(1.5rem, 2.8vw, 2rem);
+
   /* Display Card Title — card title (Fix 2, clamp 36→56px) */
   --bbf-text-display-card-title: clamp(2.25rem, 4.4vw, 3.5rem);
 

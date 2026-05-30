@@ -52,6 +52,13 @@ export const headingVariants = cva(
           '[font-weight:var(--bbf-typography-display-section-h2-weight)]',
           '[font-family:var(--bbf-typography-display-section-h2-font)]',
         ].join(' '),
+        'display-step-title': [
+          '[font-size:var(--bbf-typography-display-step-title-size)]',
+          'leading-[var(--bbf-typography-display-step-title-line)]',
+          'tracking-[var(--bbf-typography-display-step-title-tracking)]',
+          '[font-weight:var(--bbf-typography-display-step-title-weight)]',
+          '[font-family:var(--bbf-typography-display-step-title-font)]',
+        ].join(' '),
         'display-card-title': [
           '[font-size:var(--bbf-typography-display-card-title-size)]',
           'leading-[var(--bbf-typography-display-card-title-line)]',

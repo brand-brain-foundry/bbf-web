@@ -127,6 +127,13 @@
   --bbf-typography-display-section-h2-tracking: -0.035em;
   --bbf-typography-display-section-h2-weight: var(--bbf-weight-medium);
 
+  /* Display Step Title (§3 Cómo Funciona — clamp 24→32px) */
+  --bbf-typography-display-step-title-font: var(--bbf-font-display);
+  --bbf-typography-display-step-title-size: var(--bbf-text-display-step-title);
+  --bbf-typography-display-step-title-line: var(--bbf-leading-tight);
+  --bbf-typography-display-step-title-tracking: -0.02em;
+  --bbf-typography-display-step-title-weight: var(--bbf-weight-medium);
+
   /* Display Card Title (Fix 2 — card titles) */
   --bbf-typography-display-card-title-font: var(--bbf-font-display);
   --bbf-typography-display-card-title-size: var(--bbf-text-display-card-title);
