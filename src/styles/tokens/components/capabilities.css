@@ -14,7 +14,11 @@
    ============================================================ */
 :root {
   --bbf-capabilities-hub-max-w: 36rem; /* 576px — hub diagram max width */
-  --bbf-capabilities-grid-gap: var(--bbf-space-section-gap-fluid); /* fluid 80–140px */
+  --bbf-capabilities-grid-gap: clamp(
+    140px,
+    14vw,
+    220px
+  ); /* Tier 3 override — más respiro visual entre cards (Tier 2 --bbf-space-section-gap-fluid preservado) */
   --bbf-capabilities-card-cols: 1; /* mobile: 1 col */
   --bbf-capabilities-scene-min-h: 18rem; /* scene shell min height */
   --bbf-capabilities-num-size: var(--bbf-text-display-2); /* número de capability */
@@ -189,7 +193,7 @@
 @media (min-width: 920px) {
   .bbf-capability-card__viz {
     position: sticky;
-    top: var(--bbf-space-section-gap-sm);
+    top: 6rem; /* 96px — compensa navbar + respiro visual del diseño Claude (era var(--bbf-space-section-gap-sm) = 48px) */
   }
 }
 
@@ -300,10 +304,8 @@
 
 .bbf-cap-chat__msg--user {
   align-self: flex-end;
-  background: var(--bbf-gradient-red);
-  background-size: 200% 200%;
-  animation: bbf-gradient-shift 8s ease infinite;
-  color: var(--bbf-text-on-gradient-red);
+  background-color: var(--bbf-surface-black);
+  color: var(--bbf-text-on-black);
   border-bottom-right-radius: var(--bbf-radius-sm, 0.25rem);
 }
 
@@ -472,11 +474,6 @@
 @media (prefers-reduced-motion: reduce) {
   .bbf-cap-pipe__row--live .bbf-cap-pipe__dot {
     animation: none;
-  }
-
-  .bbf-cap-chat__msg--user {
-    animation: none;
-    background-position: 0% 50%;
   }
 }
 
