@@ -2224,6 +2224,76 @@ export interface SiteHomepage {
         }[]
       | null;
   };
+  method: {
+    /**
+     * Eyebrow label sobre el H2 (ej: §6 · Método).
+     */
+    eyebrow?: string | null;
+    /**
+     * Primera línea del H2 de sección (color primario).
+     */
+    h2Line1: string;
+    /**
+     * Segunda línea del H2 (tono muted).
+     */
+    h2Line2Soft: string;
+    /**
+     * Los 3 servicios BBF (Diagnóstico / Build / Retainer). Exactamente 3. Defaults: 01 Diagnóstico — 2-3 sem, 02 Build — 8-24 sem, 03 Retainer — Mensual.
+     */
+    services?:
+      | {
+          /**
+           * Nombre del servicio (ej: Diagnóstico).
+           */
+          name: string;
+          /**
+           * Rango de duración (ej: 2 – 3 semanas).
+           */
+          range: string;
+          /**
+           * Compromiso del servicio (ej: Alcance cerrado · sin recurrencia).
+           */
+          commit: string;
+          /**
+           * Descripción del servicio (2-3 párrafos breves).
+           */
+          body: string;
+          /**
+           * Lista de entregables del servicio (3-5 items).
+           */
+          deliverables?:
+            | {
+                /**
+                 * Texto del entregable.
+                 */
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Primera línea de la cita central (color primario).
+     */
+    quoteMain?: string | null;
+    /**
+     * Segunda línea de la cita central (tono muted).
+     */
+    quoteSoft?: string | null;
+    /**
+     * Caption bajo la cita (mono-xs, muted).
+     */
+    quoteCaption?: string | null;
+    /**
+     * Texto del CTA link-arrow al final de la sección.
+     */
+    ctaText?: string | null;
+    /**
+     * URL destino del CTA.
+     */
+    ctaHref?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2547,6 +2617,33 @@ export interface SiteHomepageSelect<T extends boolean = true> {
                   };
               id?: T;
             };
+      };
+  method?:
+    | T
+    | {
+        eyebrow?: T;
+        h2Line1?: T;
+        h2Line2Soft?: T;
+        services?:
+          | T
+          | {
+              name?: T;
+              range?: T;
+              commit?: T;
+              body?: T;
+              deliverables?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        quoteMain?: T;
+        quoteSoft?: T;
+        quoteCaption?: T;
+        ctaText?: T;
+        ctaHref?: T;
       };
   updatedAt?: T;
   createdAt?: T;
