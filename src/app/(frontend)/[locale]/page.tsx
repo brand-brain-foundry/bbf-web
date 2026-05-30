@@ -3,6 +3,7 @@ import config from '@/payload-config';
 import { setRequestLocale } from 'next-intl/server';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { CapabilitiesSection } from '@/components/sections/CapabilitiesSection';
+import { ComoFuncionaSection } from '@/components/sections/ComoFuncionaSection';
 import { HeroMediaFrame, HeroRecTimer } from '@/components/molecules/HeroMediaFrame';
 import { HeroTicker } from '@/components/molecules/HeroTicker';
 import { HeroVideo } from '@/components/molecules/HeroVideo';
@@ -28,7 +29,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     depth: 1,
   });
 
-  const { hero, capabilities: cap } = site;
+  const { hero, capabilities: cap, howItWorks: hiw } = site;
   const posterUrl =
     hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
       ? ((hero.media.videoPoster as Media).url ?? undefined)
@@ -154,6 +155,45 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           ))}
         </CapabilitiesSection.Grid>
       </CapabilitiesSection>
+
+      {/* ─── COMO FUNCIONA SECTION §3 ───────────────────────────────── */}
+      {hiw && (
+        <ComoFuncionaSection surface="sand">
+          {/* Header con sticky descendientes — Reveal fade OBLIGATORIO L-BBF-216 */}
+          <Reveal variant="fade">
+            <ComoFuncionaSection.Header
+              eyebrow={hiw.eyebrow ?? '§3 · Cómo funciona'}
+              h2Line1={hiw.h2Line1 ?? 'Tres pasos.'}
+              h2Line2Soft={hiw.h2Line2Soft ?? 'Una sola memoria al centro.'}
+            />
+          </Reveal>
+
+          {/* Flow SVG con labels — safe para Reveal up */}
+          <Reveal variant="up">
+            <ComoFuncionaSection.Flow
+              steps={(hiw.steps ?? []).slice(0, 3).map((s) => ({
+                label: s.label ?? '',
+                meta: s.meta ?? '',
+              }))}
+            />
+          </Reveal>
+
+          {/* Steps grid — Reveal individual con delay stagger */}
+          <ComoFuncionaSection.Steps>
+            {(hiw.steps ?? []).map((step, i) => (
+              <Reveal key={step.id ?? `hiw-step-${i}`} variant="up" delay={i * 120}>
+                <ComoFuncionaSection.Step
+                  index={i + 1}
+                  label={step.label ?? ''}
+                  title={step.title ?? ''}
+                  body={step.body ?? ''}
+                  side={step.side ?? []}
+                />
+              </Reveal>
+            ))}
+          </ComoFuncionaSection.Steps>
+        </ComoFuncionaSection>
+      )}
     </>
   );
 }
