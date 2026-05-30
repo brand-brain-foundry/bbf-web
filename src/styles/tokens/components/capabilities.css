@@ -15,10 +15,10 @@
 :root {
   --bbf-capabilities-hub-max-w: 36rem; /* 576px — hub diagram max width */
   --bbf-capabilities-grid-gap: clamp(
-    140px,
-    14vw,
-    220px
-  ); /* Tier 3 override — más respiro visual entre cards (Tier 2 --bbf-space-section-gap-fluid preservado) */
+    120px,
+    12vw,
+    180px
+  ); /* Tier 3 override — gap arriba del separador (Tier 2 preservado). padding-top duplica este valor abajo del border. */
   --bbf-capabilities-card-cols: 1; /* mobile: 1 col */
   --bbf-capabilities-scene-min-h: 18rem; /* scene shell min height */
   --bbf-capabilities-num-size: var(--bbf-text-display-2); /* número de capability */
@@ -121,6 +121,13 @@
 /* ============================================================
    CAPABILITY CARD — compound root
    ============================================================ */
+
+/* Separador visual entre cards 2-5 */
+.bbf-capability-card + .bbf-capability-card {
+  border-top: 1px solid var(--bbf-border-on-sand);
+  padding-top: var(--bbf-capabilities-grid-gap);
+}
+
 .bbf-capability-card {
   display: grid;
   grid-template-columns: 1fr;
