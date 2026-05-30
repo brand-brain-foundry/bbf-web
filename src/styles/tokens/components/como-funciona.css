@@ -99,6 +99,8 @@
   align-items: center;
   justify-content: center;
   color: var(--bbf-text-on-sand-muted);
+  width: 6rem;
+  height: 6rem;
 }
 
 /* ============================================================
@@ -107,6 +109,7 @@
 
 .bbf-hiw-flow {
   max-width: 960px;
+  margin-inline: auto;
   margin-bottom: clamp(3.5rem, 6vw, 6rem);
   color: var(--bbf-text-on-sand);
 }
@@ -132,6 +135,14 @@
 .bbf-hiw-flow__label {
   text-align: center;
   padding-inline: 0.75rem;
+}
+
+.bbf-hiw-flow__label:first-child {
+  text-align: left;
+}
+
+.bbf-hiw-flow__label:last-child {
+  text-align: right;
 }
 
 .bbf-hiw-flow__label-num {
@@ -175,6 +186,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 1px; /* gap-as-border technique */
   background-color: var(--bbf-border-on-sand);
+  border: 1px solid var(--bbf-border-on-sand);
   border-radius: var(--bbf-hiw-steps-radius);
   overflow: hidden;
 }
@@ -300,8 +312,12 @@
   }
 }
 
-/* ≤640px — flow labels stack vertically */
+/* ≤640px — SVG hidden, flow labels stack vertically */
 @media (max-width: 640px) {
+  .bbf-hiw-flow__svg {
+    display: none;
+  }
+
   .bbf-hiw-flow__labels {
     grid-template-columns: 1fr;
     gap: 1rem; /* 16px */

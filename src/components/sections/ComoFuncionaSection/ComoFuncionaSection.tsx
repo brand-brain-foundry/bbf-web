@@ -57,7 +57,7 @@ function Header({ eyebrow, h2Line1, h2Line2Soft }: HeaderProps) {
 
       {/* Right column: H2 dual-line */}
       <Heading level="display-section-h2" as="h2">
-        {h2Line1} <span style={{ color: 'var(--bbf-text-on-sand-muted)' }}>{h2Line2Soft}</span>
+        {h2Line1} <span className="[color:var(--bbf-text-on-sand-muted)]">{h2Line2Soft}</span>
       </Heading>
     </header>
   );
