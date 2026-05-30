@@ -7,3 +7,4 @@
 
 export * from './HeroSection';
 export * from './CapabilitiesSection';
+export * from './ComoFuncionaSection';
