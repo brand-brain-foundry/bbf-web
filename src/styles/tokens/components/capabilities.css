@@ -15,10 +15,10 @@
 :root {
   --bbf-capabilities-hub-max-w: 36rem; /* 576px — hub diagram max width */
   --bbf-capabilities-grid-gap: clamp(
-    120px,
-    12vw,
-    180px
-  ); /* Tier 3 override — gap arriba del separador (Tier 2 preservado). padding-top duplica este valor abajo del border. */
+    64px,
+    7vw,
+    112px
+  ); /* Tier 3 override — gap subsección (no sección autónoma). Total con border+padding: ~130-225px. Tier 2 preservado. */
   --bbf-capabilities-card-cols: 1; /* mobile: 1 col */
   --bbf-capabilities-scene-min-h: 18rem; /* scene shell min height */
   --bbf-capabilities-num-size: var(--bbf-text-display-2); /* número de capability */
