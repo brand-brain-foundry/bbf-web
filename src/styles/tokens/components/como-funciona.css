@@ -1,0 +1,326 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: Cómo Funciona (§3 Home)
+ *
+ * Tier: 3 (COMPONENT)
+ * Scope: .bbf-hiw-* (hiw = "how it works")
+ * Section: §3 Cómo Funciona — Home
+ *
+ * Tokens consumidos (Tier 1/2):
+ *   --bbf-surface-sand, --bbf-border-on-sand
+ *   --bbf-text-on-sand, --bbf-text-on-sand-muted, --bbf-text-on-sand-subtle
+ *   --bbf-font-display, --bbf-font-mono
+ *   --bbf-text-mono-xs (0.6875rem / 11px), --bbf-text-mono-md (0.8125rem / 13px)
+ *   --bbf-typography-display-step-title-* (Tier 2 semantic Wave 14+)
+ *
+ * Refs: Q2 (eyebrow dot CSS scope), Q4 (sticky col + L-BBF-216 Reveal fade),
+ *       Q3 (reduced-motion packets guard)
+ * Design: /Volumes/PK/BBF/Repos/bbf-docs/.../home-process.jsx + home.css
+ */
+
+/* ============================================================
+   TIER 3 LOCAL TOKENS
+   ============================================================ */
+
+:root {
+  --bbf-hiw-steps-radius: 0.875rem; /* 14px — design spec, entre lg(12) y xl(16) */
+  --bbf-hiw-head-gap: clamp(1.5rem, 5vw, 6rem); /* 24→96px gap en 2-col head */
+  --bbf-hiw-section-pad: clamp(5rem, 8vw, 9rem); /* padding-block section */
+  --bbf-hiw-step-pad: clamp(1.5rem, 2.5vw, 2.5rem); /* 24→40px padding step card */
+}
+
+/* ============================================================
+   SECTION ROOT
+   ============================================================ */
+
+.bbf-hiw-section {
+  background-color: var(--bbf-surface-sand);
+  padding-block: var(--bbf-hiw-section-pad);
+}
+
+.bbf-hiw-section__wrap {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+/* ============================================================
+   HEAD — 2-col grid (left sticky col + right flow+steps)
+   ============================================================ */
+
+.bbf-hiw-section__head {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--bbf-hiw-head-gap);
+  align-items: start;
+  margin-bottom: clamp(3rem, 6vw, 6rem);
+}
+
+/* Left column: sticky eyebrow + Lissajous + H2 */
+.bbf-hiw-section__head-l {
+  position: sticky;
+  top: 96px; /* Q4: sticky col — consumer debe usar Reveal variant="fade" (L-BBF-216) */
+  display: flex;
+  flex-direction: column;
+  gap: 1.375rem; /* 22px */
+}
+
+/* ============================================================
+   EYEBROW (Q2: CSS scope, no atom)
+   ============================================================ */
+
+.bbf-hiw-section__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bbf-text-on-sand-muted);
+}
+
+.bbf-hiw-section__eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: var(--bbf-text-on-sand);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   LISSAJOUS DECO WRAPPER
+   ============================================================ */
+
+.bbf-hiw-section__deco {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bbf-text-on-sand-muted);
+}
+
+/* ============================================================
+   FLOW — SVG stations diagram
+   ============================================================ */
+
+.bbf-hiw-flow {
+  max-width: 960px;
+  margin-bottom: clamp(3.5rem, 6vw, 6rem);
+  color: var(--bbf-text-on-sand);
+}
+
+.bbf-hiw-flow__svg {
+  width: 100%;
+  height: 56px;
+  overflow: visible;
+  display: block;
+}
+
+/* Q3: packets hidden under reduced-motion */
+.bbf-hiw-flow__packets {
+  /* wrapper group — children are animated SVG elements */
+}
+
+.bbf-hiw-flow__labels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 1.25rem; /* 20px */
+}
+
+.bbf-hiw-flow__label {
+  text-align: center;
+  padding-inline: 0.75rem;
+}
+
+.bbf-hiw-flow__label-num {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--bbf-text-on-sand-subtle);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.bbf-hiw-flow__label-k {
+  font-family: var(--bbf-font-display);
+  font-size: clamp(1.25rem, 2vw, 1.75rem); /* 20→28px */
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--bbf-text-on-sand);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.bbf-hiw-flow__label-meta {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--bbf-text-on-sand-muted);
+  display: block;
+}
+
+/* ============================================================
+   STEPS — 3-col grid gap-as-border
+   ============================================================ */
+
+.bbf-hiw-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px; /* gap-as-border technique */
+  background-color: var(--bbf-border-on-sand);
+  border-radius: var(--bbf-hiw-steps-radius);
+  overflow: hidden;
+}
+
+/* ============================================================
+   STEP CARD
+   ============================================================ */
+
+.bbf-hiw-step {
+  background-color: var(--bbf-surface-sand);
+  padding: var(--bbf-hiw-step-pad);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Step head: num + label separator + name */
+.bbf-hiw-step__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem; /* 12px */
+  padding-bottom: 1.5rem; /* 24px */
+}
+
+.bbf-hiw-step__num {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-md);
+  font-weight: 500;
+  color: var(--bbf-text-on-sand);
+  flex-shrink: 0;
+}
+
+.bbf-hiw-step__lbl {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--bbf-text-on-sand-muted);
+  flex-shrink: 0;
+}
+
+.bbf-hiw-step__line {
+  flex: 1;
+  height: 1px;
+  background-color: var(--bbf-border-on-sand);
+}
+
+.bbf-hiw-step__name {
+  font-family: var(--bbf-font-mono);
+  font-size: 0.75rem; /* 12px */
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--bbf-text-on-sand);
+  flex-shrink: 0;
+}
+
+/* Step title — display-step-title scale (Q1 token) */
+.bbf-hiw-step__title {
+  font-family: var(--bbf-typography-display-step-title-font);
+  font-size: var(--bbf-typography-display-step-title-size);
+  line-height: var(--bbf-typography-display-step-title-line);
+  letter-spacing: var(--bbf-typography-display-step-title-tracking);
+  font-weight: var(--bbf-typography-display-step-title-weight);
+  color: var(--bbf-text-on-sand);
+  max-width: 22ch;
+  margin: 0.25rem 0 1rem; /* 4px 0 16px */
+}
+
+/* Step body */
+.bbf-hiw-step__body {
+  font-family: var(--bbf-font-body, var(--bbf-font-display));
+  font-size: var(--bbf-text-base, 1rem);
+  line-height: var(--bbf-leading-base, 1.55);
+  color: var(--bbf-text-on-sand-muted);
+  flex: 1;
+  margin: 0 0 1.5rem; /* 0 0 24px */
+}
+
+/* Step side list */
+.bbf-hiw-step__side {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  padding-top: 1rem; /* 16px */
+  border-top: 1px solid var(--bbf-border-on-sand);
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem; /* 6px */
+}
+
+.bbf-hiw-step__side-item {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--bbf-text-on-sand-muted);
+}
+
+/* ============================================================
+   MOBILE BREAKPOINTS
+   ============================================================ */
+
+/* ≤760px — head becomes single column, sticky disabled */
+@media (max-width: 760px) {
+  .bbf-hiw-section__head {
+    grid-template-columns: 1fr;
+    gap: 1rem; /* 16px */
+  }
+
+  .bbf-hiw-section__head-l {
+    position: static; /* disable sticky on mobile */
+  }
+}
+
+/* ≤880px — steps stack vertically */
+@media (max-width: 880px) {
+  .bbf-hiw-steps {
+    grid-template-columns: 1fr;
+    border-radius: 0;
+  }
+}
+
+/* ≤640px — flow labels stack vertically */
+@media (max-width: 640px) {
+  .bbf-hiw-flow__labels {
+    grid-template-columns: 1fr;
+    gap: 1rem; /* 16px */
+  }
+
+  .bbf-hiw-flow__label {
+    text-align: left;
+    padding-inline: 0;
+    padding-left: 0.875rem; /* 14px */
+    border-left: 2px solid var(--bbf-border-on-sand);
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION (Q3)
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-hiw-flow__packets {
+    display: none;
+  }
+}
