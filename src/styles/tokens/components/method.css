@@ -1,0 +1,313 @@
+/* ============================================================
+   METHOD SECTION — Tier 3 component tokens + styling
+   Pattern: D-89 compound, surface=sand default
+   Spec: home-method.jsx + home.css (FASE 0 pre-investigation)
+   Commit FASE 2: b35dbcf
+   ============================================================ */
+
+:root {
+  /* Tier 3 — Method specific tokens */
+  --bbf-method-bar-mb: clamp(40px, 5vw, 64px);
+  --bbf-method-cards-mb: clamp(80px, 10vw, 140px);
+  --bbf-method-cards-radius: 14px;
+  --bbf-method-card-padding: clamp(28px, 3.5vw, 44px);
+  --bbf-method-quote-padding-block: clamp(48px, 8vw, 96px);
+  --bbf-method-quote-padding-inline: clamp(32px, 6vw, 80px);
+  --bbf-method-quote-radius: 16px;
+  --bbf-method-quote-mb: 48px;
+}
+
+/* ============================================================
+   ROOT SECTION
+   ============================================================ */
+
+.bbf-method-section {
+  padding-block: var(--bbf-space-section-pad-fluid);
+}
+
+/* ============================================================
+   HEADER — eyebrow + Lissajous (left col) | H2 dual-line (right col)
+   L-03: grid 200px+1fr, gap clamp(24px,6vw,96px), align-items start
+   ============================================================ */
+
+.bbf-method-header {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--bbf-space-content-gap-loose);
+  align-items: start;
+  padding-block-end: var(--bbf-space-section-gap-md);
+}
+
+@media (min-width: 920px) {
+  .bbf-method-header {
+    grid-template-columns: 200px 1fr;
+    gap: clamp(24px, 6vw, 96px);
+  }
+}
+
+.bbf-method-header__left {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bbf-method-header__eyebrow {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: block;
+}
+
+.bbf-method-header__deco {
+  width: 6rem;
+  height: 6rem;
+  color: var(--bbf-text-on-sand-muted);
+}
+
+/* ============================================================
+   PROCESS BAR — pill horizontal con nodos + líneas punteadas
+   L-04/05: flex horizontal, gap 16px, padding 20px 24px, pill 999px
+   HTML: __step (flex:1) contains __node + __line (direct flex items of step)
+   CSS adapts to FASE 2 HTML structure (line inside step, not sibling of step)
+   ============================================================ */
+
+.bbf-method-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 20px 24px;
+  border: 1px solid var(--bbf-border-on-sand);
+  border-radius: 999px; /* pill */
+  margin-block-end: var(--bbf-method-bar-mb);
+}
+
+/* each step: stretches to fill available space (except last) */
+.bbf-method-bar__step {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 0.75rem;
+}
+
+.bbf-method-bar__step:last-child {
+  flex: 0 0 auto;
+}
+
+/* inner wrapper: dot + label stacked */
+.bbf-method-bar__node {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.bbf-method-bar__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--bbf-text-on-sand);
+  flex-shrink: 0;
+}
+
+.bbf-method-bar__step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+/* dashed line: stretches inside __step via flex:1 */
+.bbf-method-bar__line {
+  flex: 1;
+  height: 1px;
+  background-image: linear-gradient(
+    to right,
+    var(--bbf-border-on-sand) 0,
+    var(--bbf-border-on-sand) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  background-size: 8px 1px;
+  background-repeat: repeat-x;
+  min-width: 24px;
+}
+
+@media (max-width: 919px) {
+  .bbf-method-bar {
+    flex-direction: column;
+    border-radius: 14px;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 20px;
+  }
+
+  .bbf-method-bar__step {
+    flex: 0 0 auto;
+  }
+
+  .bbf-method-bar__line {
+    display: none; /* column layout — dashed line omitido */
+  }
+}
+
+/* ============================================================
+   CARDS GRID — gap-as-border technique
+   L-09/10/11: grid 3-col, gap:1px, bg=border-color, border-radius 14px, overflow hidden
+   ============================================================ */
+
+.bbf-method-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px; /* gap-as-border: el bg del grid se ve entre cards */
+  background-color: var(--bbf-border-on-sand);
+  border: 1px solid var(--bbf-border-on-sand);
+  border-radius: var(--bbf-method-cards-radius);
+  overflow: hidden; /* requerido para border-radius con children full-bleed */
+  margin-block-end: var(--bbf-method-cards-mb);
+}
+
+@media (max-width: 880px) {
+  .bbf-method-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   CARD — article (3 services)
+   L-14/15: padding clamp(28-44px), flex column
+   ============================================================ */
+
+.bbf-method-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--bbf-method-card-padding);
+  background-color: var(--bbf-surface-white);
+}
+
+/* head: num + service name con separador inferior */
+.bbf-method-card__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-block-end: 1.5rem;
+  margin-block-end: 1.5rem;
+  border-bottom: 1px solid var(--bbf-border-on-sand);
+}
+
+/* card number: mono-xs placeholder (body-sm por Q1) — FASE 3 override font-family */
+.bbf-method-card__num {
+  font-family: var(--bbf-font-mono, monospace);
+  letter-spacing: 0.04em;
+  font-size: 0.8125rem; /* 13px — mono-md del diseño Claude */
+  color: var(--bbf-text-on-sand-muted);
+}
+
+/* meta: dual-row (Duración/range + Compromiso/commit) */
+.bbf-method-card__meta {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-block-end: 1.5rem;
+}
+
+.bbf-method-card__meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* label: Duración / Compromiso */
+.bbf-method-card__lbl {
+  letter-spacing: 0.02em;
+}
+
+/* body paragraph: flex:1 empuja deliverables al bottom */
+.bbf-method-card__body {
+  flex: 1;
+  margin-block-end: 1.5rem;
+  line-height: 1.55;
+}
+
+/* deliverables list: border-top + icon grid */
+.bbf-method-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid var(--bbf-border-on-sand);
+}
+
+/* L-20: grid 18px + 1fr (icon + text) */
+.bbf-method-card__item {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+/* ============================================================
+   QUOTE — figure centrado con borde + figcaption mono
+   L-21/22/23: padding clamp, border, border-radius 16px, margin-bottom 48px
+   ============================================================ */
+
+.bbf-method-quote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--bbf-method-quote-padding-block) var(--bbf-method-quote-padding-inline);
+  border: 1px solid var(--bbf-border-on-sand);
+  border-radius: var(--bbf-method-quote-radius);
+  margin-block-end: var(--bbf-method-quote-mb);
+}
+
+/* reset browser blockquote defaults */
+.bbf-method-quote__body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.bbf-method-quote__caption {
+  margin-block-start: 1.5rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   CTA — link-arrow con hover gap nudge
+   L-24: display flex, justify-content flex-start
+   ============================================================ */
+
+.bbf-method-cta {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.bbf-method-cta__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--bbf-text-on-sand);
+  transition: gap 0.2s ease-out;
+}
+
+.bbf-method-cta__link:hover {
+  gap: 0.75rem; /* sutil arrow nudge */
+}
+
+/* ============================================================
+   PREFERS-REDUCED-MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-method-cta__link {
+    transition: none;
+  }
+
+  .bbf-method-cta__link:hover {
+    gap: 0.5rem;
+  }
+}
