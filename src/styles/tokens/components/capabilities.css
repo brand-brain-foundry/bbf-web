@@ -122,8 +122,8 @@
    CAPABILITY CARD — compound root
    ============================================================ */
 
-/* Separador visual entre cards 2-5 */
-.bbf-capability-card + .bbf-capability-card {
+/* Separador visual entre cards 2-N — apunta a Reveal (motion.div) direct children del grid */
+.bbf-capabilities-grid > div + div {
   border-top: 1px solid var(--bbf-border-on-sand);
   padding-top: var(--bbf-capabilities-grid-gap);
 }

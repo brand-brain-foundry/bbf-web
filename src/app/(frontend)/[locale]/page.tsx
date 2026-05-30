@@ -135,13 +135,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         />
 
         <CapabilitiesSection.Grid>
-          <Reveal variant="up" staggerChildren>
-            {(cap.items ?? []).map((c, i) => (
-              <CapabilityCard
-                key={c.id ?? `cap-${i}`}
-                align={i % 2 === 0 ? 'l' : 'r'}
-                index={i + 1}
-              >
+          {(cap.items ?? []).map((c, i) => (
+            <Reveal key={c.id ?? `cap-${i}`} variant="up">
+              <CapabilityCard align={i % 2 === 0 ? 'l' : 'r'} index={i + 1}>
                 <CapabilityCard.Txt
                   num={i + 1}
                   title={c.title ?? ''}
@@ -154,8 +150,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   <CapabilityScene scene={c.scene} />
                 </CapabilityCard.Viz>
               </CapabilityCard>
-            ))}
-          </Reveal>
+            </Reveal>
+          ))}
         </CapabilitiesSection.Grid>
       </CapabilitiesSection>
     </>
