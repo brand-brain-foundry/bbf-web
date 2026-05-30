@@ -2212,7 +2212,7 @@ export interface SiteHomepage {
                * Lissajous deco opcional. 6 variantes 2D.
                */
               lissajousVariant?:
-                | ('trefoil-2d' | 'pretzel-2d' | 'wave-2d' | 'ring-2d' | 'dense-2d' | 'figure8-2d')
+                | ('trefoil-2d' | 'pretzel-2d' | 'wave-2d' | 'ring-2d' | 'dense-2d' | 'figure8-2d' | 'process-2d')
                 | null;
               /**
                * Texto decorativo del footer del scene.
@@ -2220,6 +2220,56 @@ export interface SiteHomepage {
               footer?: string | null;
             };
           };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  howItWorks: {
+    /**
+     * Eyebrow label sobre el H2 (ej: §3 · CÓMO FUNCIONA).
+     */
+    eyebrow?: string | null;
+    /**
+     * Primera línea del H2 (color primario).
+     */
+    h2Line1: string;
+    /**
+     * Segunda línea del H2 (tono muted).
+     */
+    h2Line2Soft: string;
+    /**
+     * Los 3 pasos del proceso BBF (Aprende → Decide → Ejecuta). Exactamente 3.
+     */
+    steps?:
+      | {
+          /**
+           * Nombre del paso (ej: Aprende). Aparece en eyebrow del step card.
+           */
+          label: string;
+          /**
+           * Meta técnico mono (ej: INGESTA · MEMORIA).
+           */
+          meta?: string | null;
+          /**
+           * Título del paso (ej: El cerebro aprende tu marca).
+           */
+          title: string;
+          /**
+           * Descripción del paso (2-3 líneas).
+           */
+          body: string;
+          /**
+           * Bullets técnicos del paso (3-5 items).
+           */
+          side?:
+            | {
+                /**
+                 * Texto del bullet lateral.
+                 */
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
           id?: string | null;
         }[]
       | null;
@@ -2544,6 +2594,28 @@ export interface SiteHomepageSelect<T extends boolean = true> {
                           lissajousVariant?: T;
                           footer?: T;
                         };
+                  };
+              id?: T;
+            };
+      };
+  howItWorks?:
+    | T
+    | {
+        eyebrow?: T;
+        h2Line1?: T;
+        h2Line2Soft?: T;
+        steps?:
+          | T
+          | {
+              label?: T;
+              meta?: T;
+              title?: T;
+              body?: T;
+              side?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
                   };
               id?: T;
             };

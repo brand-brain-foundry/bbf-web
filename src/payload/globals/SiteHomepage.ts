@@ -604,6 +604,98 @@ export const SiteHomepage: GlobalConfig = {
         },
       ],
     },
+    {
+      name: 'howItWorks',
+      type: 'group',
+      label: { es: 'Sección Cómo Funciona', en: 'How It Works Section' },
+      fields: [
+        {
+          name: 'eyebrow',
+          type: 'text',
+          localized: true,
+          admin: {
+            description: 'Eyebrow label sobre el H2 (ej: §3 · CÓMO FUNCIONA).',
+          },
+        },
+        {
+          name: 'h2Line1',
+          type: 'text',
+          localized: true,
+          required: true,
+          admin: { description: 'Primera línea del H2 (color primario).' },
+        },
+        {
+          name: 'h2Line2Soft',
+          type: 'text',
+          localized: true,
+          required: true,
+          admin: { description: 'Segunda línea del H2 (tono muted).' },
+        },
+        {
+          name: 'steps',
+          type: 'array',
+          minRows: 3,
+          maxRows: 3,
+          label: { en: 'Process Steps', es: 'Pasos del Proceso' },
+          admin: {
+            description: 'Los 3 pasos del proceso BBF (Aprende → Decide → Ejecuta). Exactamente 3.',
+          },
+          defaultValue: [
+            { label: 'Aprende', meta: 'INGESTA · MEMORIA' },
+            { label: 'Decide', meta: 'RECUPERA · RAZONA' },
+            { label: 'Ejecuta', meta: 'CANAL · VOZ · TEXTO' },
+          ],
+          fields: [
+            {
+              name: 'label',
+              type: 'text',
+              localized: true,
+              required: true,
+              admin: {
+                description: 'Nombre del paso (ej: Aprende). Aparece en eyebrow del step card.',
+              },
+            },
+            {
+              name: 'meta',
+              type: 'text',
+              localized: true,
+              admin: { description: 'Meta técnico mono (ej: INGESTA · MEMORIA).' },
+            },
+            {
+              name: 'title',
+              type: 'text',
+              localized: true,
+              required: true,
+              admin: { description: 'Título del paso (ej: El cerebro aprende tu marca).' },
+            },
+            {
+              name: 'body',
+              type: 'textarea',
+              localized: true,
+              required: true,
+              admin: { description: 'Descripción del paso (2-3 líneas).' },
+            },
+            {
+              name: 'side',
+              type: 'array',
+              localized: true,
+              label: { en: 'Side Items', es: 'Items Laterales' },
+              admin: {
+                description: 'Bullets técnicos del paso (3-5 items).',
+              },
+              fields: [
+                {
+                  name: 'text',
+                  type: 'text',
+                  required: true,
+                  admin: { description: 'Texto del bullet lateral.' },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ],
   hooks: {
     afterChange: [revalidateGlobal],
