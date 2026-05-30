@@ -3,7 +3,6 @@ import config from '@/payload-config';
 import { setRequestLocale } from 'next-intl/server';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { CapabilitiesSection } from '@/components/sections/CapabilitiesSection';
-import { MethodSection } from '@/components/sections/MethodSection';
 import { HeroMediaFrame, HeroRecTimer } from '@/components/molecules/HeroMediaFrame';
 import { HeroTicker } from '@/components/molecules/HeroTicker';
 import { HeroVideo } from '@/components/molecules/HeroVideo';
@@ -29,7 +28,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     depth: 1,
   });
 
-  const { hero, capabilities: cap, method } = site;
+  const { hero, capabilities: cap } = site;
   const posterUrl =
     hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
       ? ((hero.media.videoPoster as Media).url ?? undefined)
@@ -155,59 +154,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           ))}
         </CapabilitiesSection.Grid>
       </CapabilitiesSection>
-
-      {/* ─── METHOD SECTION ─────────────────────────────────────────── */}
-      {method && (
-        <MethodSection surface="sand">
-          <Reveal variant="up">
-            <MethodSection.Header
-              eyebrow={method.eyebrow}
-              h2Line1={method.h2Line1 ?? 'Tres servicios coordinados.'}
-              h2Line2Soft={method.h2Line2Soft ?? 'Sin sorpresas.'}
-            />
-          </Reveal>
-
-          <Reveal variant="up">
-            <MethodSection.ProcessBar
-              steps={(method.services ?? []).slice(0, 3).map((s) => ({
-                label: s.name ?? '',
-                meta: s.range ?? '',
-              }))}
-            />
-          </Reveal>
-
-          <MethodSection.Cards>
-            {(method.services ?? []).map((service, i) => (
-              <Reveal key={service.id ?? `method-svc-${i}`} variant="up" delay={i * 100}>
-                <MethodSection.Card
-                  index={i + 1}
-                  name={service.name ?? ''}
-                  range={service.range ?? ''}
-                  commit={service.commit ?? ''}
-                  body={service.body ?? ''}
-                  deliverables={service.deliverables}
-                />
-              </Reveal>
-            ))}
-          </MethodSection.Cards>
-
-          {method.quoteMain && method.quoteSoft && method.quoteCaption && (
-            <Reveal variant="up">
-              <MethodSection.Quote
-                main={method.quoteMain}
-                soft={method.quoteSoft}
-                caption={method.quoteCaption}
-              />
-            </Reveal>
-          )}
-
-          {method.ctaText && method.ctaHref && (
-            <Reveal variant="up">
-              <MethodSection.CTA text={method.ctaText} href={method.ctaHref} />
-            </Reveal>
-          )}
-        </MethodSection>
-      )}
     </>
   );
 }
