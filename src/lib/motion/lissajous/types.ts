@@ -50,8 +50,7 @@ export type LissajousName =
   | 'wave-2d'
   | 'ring-2d'
   | 'dense-2d'
-  | 'figure8-2d'
-  | 'method-2d';
+  | 'figure8-2d';
 
 /**
  * Dimension de la variante.

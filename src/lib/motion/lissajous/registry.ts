@@ -87,12 +87,6 @@ export const LISSAJOUS_REGISTRY: Record<LissajousName, LissajousVariant> = {
     preset: { a: 1, b: 2, delta: Math.PI / 2 },
     defaultLabel: 'Figure 8 / Lemniscata',
   },
-  'method-2d': {
-    name: 'method-2d',
-    dimension: '2d',
-    preset: { a: 2, b: 3, delta: Math.PI / 2 },
-    defaultLabel: '2:3 Method 2D',
-  },
 } as const;
 
 /**

@@ -7,4 +7,3 @@
 
 export * from './HeroSection';
 export * from './CapabilitiesSection';
-export * from './MethodSection';
