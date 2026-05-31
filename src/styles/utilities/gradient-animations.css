@@ -106,3 +106,32 @@
     background-position: 0% 50%;
   }
 }
+
+/* Text gradient dark — H1 soft line dark shimmer (reuses bbf-gradient-shift, A-01) */
+.bbf-text-gradient-dark-animated {
+  background: linear-gradient(
+    90deg,
+    var(--bbf-text-on-warm) 0%,
+    var(--bbf-text-on-warm-muted) 50%,
+    var(--bbf-text-on-warm) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: bbf-gradient-shift 4s ease-in-out infinite;
+}
+
+/* Specificity override — hero.css [data-component][data-tone='soft'] = (0,0,2,0) */
+[data-component='bbf-hero-section'] .bbf-text-gradient-dark-animated {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-text-gradient-dark-animated {
+    animation: none;
+    background-position: 0% 50%;
+  }
+}

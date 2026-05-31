@@ -13,3 +13,15 @@
 :root {
   /* Empty — populated on-demand in M5-D */
 }
+
+/* Arrow icon translate on button hover — matches design-preview .btn:hover .btn__arrow */
+[data-component='bbf-button'] [data-component='bbf-icon'] {
+  transition: transform var(--bbf-motion-duration-fast, 200ms)
+    var(--bbf-motion-ease-out-quart, cubic-bezier(0.25, 1, 0.5, 1));
+}
+
+@media (hover: hover) {
+  [data-component='bbf-button']:hover [data-component='bbf-icon'] {
+    transform: translateX(3px);
+  }
+}
