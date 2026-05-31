@@ -41,12 +41,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         {/* Outer single-col grid — outer spacing container */}
         <HeroSection.Grid
           cols="1"
-          className="mx-auto w-full max-w-[1280px] px-6 py-[clamp(96px,11vw,132px)]"
+          className="mx-auto w-full max-w-[1280px] px-6 pt-[clamp(96px,11vw,132px)] pb-[clamp(48px,6vw,96px)]"
         >
           {/* Head row — 2-col: title left, lede+CTAs right */}
           <HeroSection.Grid cols="2-1.4-1">
             <div>
-              <Heading level="display-hero" color="primary" align="left">
+              <Heading level="display-hero" color="primary" align="left" weight="medium">
                 {hero.h1Line1}
                 <br />
                 <span data-tone="soft" className="bbf-text-gradient-red-animated">
