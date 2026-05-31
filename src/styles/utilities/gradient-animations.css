@@ -136,41 +136,62 @@
   }
 }
 
-/* Button dark gradient — sweep negro animado (Hero CTAs §1) */
+/* Button dark gradient — sweep negro con contraste #000→#333 (Hero CTA primario §1) */
 .bbf-btn-gradient-dark-animated {
   background: linear-gradient(
     110deg,
-    #0a0a0a 0%,
-    #1a1a1a 40%,
-    #2a2a2a 50%,
-    #1a1a1a 60%,
-    #0a0a0a 100%
+    #000000 0%,
+    #000000 30%,
+    #333333 50%,
+    #000000 70%,
+    #000000 100%
   );
-  background-size: 200% 100%;
-  animation: bbf-gradient-shift 3s ease-in-out infinite;
+  background-size: 300% 100%;
+  animation: bbf-gradient-shift 2.5s ease-in-out infinite;
   color: #ffffff;
   border: none;
 }
 
-/* Ghost variant — mismo sweep, borde translúcido blanco */
-.bbf-btn-gradient-dark-animated--ghost {
+/* Button animated border — pseudo-elemento ::before con mask (Hero CTA secundario §1) */
+.bbf-btn-border-dark-animated {
+  position: relative;
+  background: transparent;
+  color: #0a0a0a;
+  border: none;
+  isolation: isolate;
+}
+
+.bbf-btn-border-dark-animated::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
   background: linear-gradient(
     110deg,
-    #0a0a0a 0%,
-    #1a1a1a 40%,
-    #2a2a2a 50%,
-    #1a1a1a 60%,
-    #0a0a0a 100%
+    #000000 0%,
+    #333333 40%,
+    #555555 50%,
+    #333333 60%,
+    #000000 100%
   );
-  background-size: 200% 100%;
-  animation: bbf-gradient-shift 3s ease-in-out infinite;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background-size: 300% 100%;
+  animation: bbf-gradient-shift 2.5s ease-in-out infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bbf-btn-gradient-dark-animated,
-  .bbf-btn-gradient-dark-animated--ghost {
+  .bbf-btn-gradient-dark-animated {
+    animation: none;
+    background-position: 0% 50%;
+  }
+
+  .bbf-btn-border-dark-animated::before {
     animation: none;
     background-position: 0% 50%;
   }

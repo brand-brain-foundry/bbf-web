@@ -51,7 +51,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               <Heading level="display-hero" color="primary" align="left" weight="medium">
                 {hero.h1Line1}
                 <br />
-                <span data-tone="soft" className="text-[var(--bbf-text-on-warm-muted)]">
+                <span data-tone="soft" className="bbf-text-gradient-red-animated">
                   {hero.h1Line2Soft}
                 </span>
               </Heading>
@@ -83,12 +83,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                       <Icon icon={Icons.arrowRight} size="sm" />
                     </a>
                   </Button>
-                  <Button
-                    intent="ghost"
-                    size="md"
-                    asChild
-                    className="bbf-btn-gradient-dark-animated--ghost"
-                  >
+                  <Button intent="ghost" size="md" asChild className="bbf-btn-border-dark-animated">
                     <a href={hero.ctaSecondary.href}>
                       {hero.ctaSecondary.label}
                       <Icon icon={Icons.arrowRight} size="sm" />
