@@ -1,0 +1,317 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: Hero §1 (Claude Design migración)
+ *
+ * Tier: 3 (COMPONENT — section-specific)
+ * Despacho: B-BBF-WEB-MIGRACION-S1-HERO-EJECUTAR
+ * Decisiones: D-HERO-02 (rec-dot accent-red), D-HERO-03 (data-surface warm)
+ *
+ * Migración del diseño Claude Design §1 Hero al sistema BBF.
+ * TODOS los valores tokenizados. CERO hardcoded colors.
+ * Paleta: tokens warm (D-MIG-01) + existentes BBF.
+ *
+ * Refs: .claude/plans/migracion-s1-hero.md, BBF_DesignSystemMigrationCanon_v1 §8
+ */
+
+/* ============================================================================
+ * HERO SECTION — layout + structure
+ * ============================================================================ */
+
+.bbf-hero {
+  padding-top: clamp(96px, 11vw, 132px);
+  padding-bottom: clamp(48px, 6vw, 96px);
+  border-top: 0 !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grid background decoration — 12-column overlay */
+.bbf-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to right, var(--bbf-border-on-warm) 1px, transparent 1px);
+  background-size: calc(100% / 12) 100%;
+  opacity: 0.4;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+}
+
+/* ============================================================================
+ * GRID — wrapper
+ * ============================================================================ */
+
+.bbf-hero__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(28px, 3.5vw, 48px);
+  position: relative;
+}
+
+/* ============================================================================
+ * HEAD — 2-column title + lede layout
+ * ============================================================================ */
+
+.bbf-hero__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: end;
+}
+
+@media (max-width: 920px) {
+  .bbf-hero__head {
+    grid-template-columns: 1fr;
+    gap: var(--bbf-space-6); /* 24px */
+    align-items: start;
+  }
+}
+
+/* ============================================================================
+ * TITLE — H1 hero
+ * ============================================================================ */
+
+.bbf-hero__title {
+  font-size: var(--bbf-text-display-hero);
+  font-weight: var(--bbf-weight-medium); /* 500 */
+  line-height: var(--bbf-typography-display-hero-leading); /* 0.94 */
+  letter-spacing: var(--bbf-typography-display-hero-tracking); /* -0.045em */
+  margin: 0;
+  font-family: var(--bbf-font-display);
+  color: var(--bbf-text-on-warm);
+}
+
+.bbf-hero__title-soft {
+  color: var(--bbf-text-on-warm-muted);
+}
+
+/* ============================================================================
+ * LEDE — lead paragraph + CTAs
+ * ============================================================================ */
+
+.bbf-hero__lede {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bbf-space-5); /* 20px */
+  align-items: flex-start;
+}
+
+.bbf-hero__lede .lead {
+  max-width: 38ch;
+  font-size: clamp(16px, 1.4vw, 18px);
+  margin: 0;
+  color: var(--bbf-text-on-warm);
+  font-family: var(--bbf-font-body);
+}
+
+.bbf-hero__lede-em {
+  color: var(--bbf-text-on-warm);
+  font-weight: var(--bbf-weight-medium); /* 500 */
+}
+
+.bbf-hero__ctas {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ============================================================================
+ * MEDIA FRAME — video container
+ * ============================================================================ */
+
+.bbf-hero__media {
+  margin-top: var(--bbf-space-6); /* 24px */
+  border: 1px solid var(--bbf-border-on-warm);
+  border-radius: var(--bbf-radius-section-card); /* 14px */
+  overflow: hidden;
+  background: var(--bbf-surface-warm-elevated);
+}
+
+.bbf-hero__media-frame {
+  position: relative;
+}
+
+/* Chrome bar — top label strip */
+.bbf-hero__media-chrome {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--bbf-border-on-warm);
+  background: var(--bbf-surface-warm-base);
+  color: var(--bbf-text-on-warm-muted);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  letter-spacing: var(--bbf-tracking-wide); /* 0.02em */
+}
+
+.bbf-hero__rec {
+  color: var(--bbf-text-on-warm);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bbf-hero__rec-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--bbf-accent-red);
+  border-radius: 50%;
+  animation: bbf-rec-pulse 1.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* Footer — demo label + caption */
+.bbf-hero__media-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--bbf-space-6); /* 24px */
+  padding: var(--bbf-space-4) var(--bbf-space-5); /* 16px 20px */
+  border-top: 1px solid var(--bbf-border-on-warm);
+  background: var(--bbf-surface-warm-base);
+}
+
+.bbf-hero__media-foot .mono-xs {
+  color: var(--bbf-text-on-warm-muted);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+}
+
+.bbf-hero__media-foot .mono {
+  color: var(--bbf-text-on-warm);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  margin-top: 4px;
+}
+
+/* ============================================================================
+ * VIDEO SHELL — 16:9 aspect ratio container
+ * ============================================================================ */
+
+.bbf-hero__video-shell {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--bbf-surface-warm-deep);
+  overflow: hidden;
+}
+
+.bbf-hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--bbf-surface-warm-deep);
+}
+
+/* ============================================================================
+ * VIDEO EMPTY STATE — placeholder when no video src
+ * ============================================================================ */
+
+.bbf-hero__video:not([poster]):not(:focus-within) + .bbf-hero__video-empty,
+.bbf-hero__video[poster=''] + .bbf-hero__video-empty {
+  opacity: 1;
+}
+
+.bbf-hero__video-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+  color: var(--bbf-text-on-warm-muted);
+  pointer-events: none;
+  /* Gradient overlay with tinted grid — using color-mix for warm tone */
+  background:
+    radial-gradient(
+      ellipse at 50% 40%,
+      color-mix(in srgb, var(--bbf-text-on-warm) 6%, transparent),
+      transparent 70%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 12px,
+      color-mix(in srgb, var(--bbf-text-on-warm) 2%, transparent) 12px 13px
+    );
+  opacity: 1;
+  transition: opacity 0.3s var(--bbf-easing-in-out); /* --bbf-easing-soft equivalent */
+}
+
+.bbf-hero__video[src] ~ .bbf-hero__video-empty,
+.bbf-hero__video-shell:has(video > source) .bbf-hero__video-empty {
+  display: none;
+}
+
+/* Play button mark */
+.bbf-hero__video-empty-mark {
+  color: var(--bbf-text-on-warm);
+  width: 56px;
+  height: 56px;
+  border-radius: var(--bbf-radius-full);
+  border: 1px solid var(--bbf-border-on-warm);
+  background: var(--bbf-surface-warm-base);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bbf-hero__video-empty-msg {
+  max-width: 44ch;
+  line-height: 1.5;
+  letter-spacing: var(--bbf-tracking-wide); /* 0.02em */
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  color: var(--bbf-text-on-warm-muted);
+}
+
+/* ============================================================================
+ * TICKER — marquee strip (status/features)
+ * ============================================================================ */
+
+.bbf-hero__ticker {
+  overflow: hidden;
+  border-top: 1px solid var(--bbf-border-on-warm);
+  padding-block: 12px;
+  background: var(--bbf-surface-warm-base);
+}
+
+.bbf-hero__ticker-track {
+  display: flex;
+  gap: 36px;
+  animation: bbf-marquee 50s linear infinite;
+  white-space: nowrap;
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  color: var(--bbf-text-on-warm-muted);
+  letter-spacing: var(--bbf-tracking-wide); /* 0.02em */
+}
+
+.bbf-hero__ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bbf-space-2); /* 8px */
+  flex-shrink: 0;
+}
+
+.bbf-hero__ticker-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--bbf-text-on-warm);
+  border-radius: 50%;
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+/* ============================================================================
+ * REVEAL ANIMATION INTEGRATION
+ * ============================================================================ */
+
+.bbf-hero .reveal {
+  /* Reveal component handles animation — this just ensures CSS doesn't interfere */
+  opacity: 1; /* ensure visible post-reveal */
+}

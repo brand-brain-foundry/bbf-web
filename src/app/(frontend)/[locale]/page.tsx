@@ -37,7 +37,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <>
-      <HeroSection surface="sand" height="auto" data-hero-decoration="grid-cols-12">
+      <HeroSection surface="warm" height="auto" data-hero-decoration="grid-cols-12">
         {/* Outer single-col grid — outer spacing container */}
         <HeroSection.Grid
           cols="1"

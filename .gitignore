@@ -98,3 +98,5 @@ scripts/**/.cache/
 
 # Claude Code local settings
 .claude/settings.local.json
+.tmp-pixel/
+tmp/

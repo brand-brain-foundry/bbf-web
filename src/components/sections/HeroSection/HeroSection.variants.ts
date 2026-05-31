@@ -13,6 +13,7 @@ export const heroSectionVariants = cva(['bbf-hero-section', 'relative', 'overflo
       auto: 'bg-[var(--bbf-surface-sand)]',
       dark: 'bg-[var(--bbf-surface-black)]',
       sand: 'bg-[var(--bbf-surface-sand)]',
+      warm: 'bg-[var(--bbf-surface-warm-base)]',
       transparent: '',
     },
     height: {

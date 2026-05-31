@@ -50,6 +50,7 @@
 @import '../styles/tokens/components/logo.css';
 @import '../styles/tokens/components/button.css';
 @import '../styles/tokens/components/hero-section.css';
+@import '../styles/tokens/components/home-hero.css'; /* Migración §1 Hero — Claude Design warm */
 
 @import '../styles/tokens/components/prose.css';
 @import '../styles/tokens/components/hero-media-frame.css';
