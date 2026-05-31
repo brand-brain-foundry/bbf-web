@@ -1,0 +1,40 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Colors Warm
+ *
+ * Ramp warm coexistente con paleta cool canon BBF.
+ * D-MIG-01 (Opción A firmada 2026-05-31) — valores EXACTOS diseño Claude Design.
+ * Refs: .claude/plans/migracion-tokens-base.md §9C
+ *
+ * PROPÓSITO: base para migración Claude Design → sistema BBF.
+ * NO USAR en componentes existentes (Header, Footer, Lissajous, etc.).
+ * SOLO en secciones home migradas via semantic/colors-warm.css aliases.
+ *
+ * NO TOCAR: tokens en primitives/colors.css (paleta cool canon).
+ * Coexistencia garantizada — nombres distintos (warm vs color-*).
+ */
+
+@theme {
+  /* ============================================================
+     WARM BASE RAMP — surface values del diseño Claude Design
+     Nombre base: --bbf-color-warm-* (no colisiona con --bbf-color-black/sand/red)
+     ============================================================ */
+  --bbf-color-warm-50: #fafaf7; /* Claude --bg: superficie base cálida */
+  --bbf-color-warm-100: #f3f1ec; /* Claude --bg-elev: superficie elevada */
+  --bbf-color-warm-200: #ecebe5; /* Claude --bg-deep: superficie profunda */
+  --bbf-color-warm-highlight: #fff7e8; /* Claude --highlight: §5 tabla columna BBF */
+
+  /* ============================================================
+     WARM INK RAMP — text/border values del diseño Claude Design
+     Gama de grises cálidos orgánicos (vs los negros cool del sistema BBF)
+     ============================================================ */
+  --bbf-color-warm-ink: #0a0a0a; /* Claude --ink: texto principal */
+  --bbf-color-warm-ink-soft: #2a2a2a; /* Claude --ink-soft: texto secundario */
+  --bbf-color-warm-ink-muted: #6b6863; /* Claude --ink-muted: texto muted CRÍTICO */
+  --bbf-color-warm-ink-faint: #a8a59f; /* Claude --ink-faint: texto very muted */
+
+  /* ============================================================
+     WARM LINE RAMP — border values del diseño Claude Design
+     ============================================================ */
+  --bbf-color-warm-line: #e3e0d9; /* Claude --line: borde estándar */
+  --bbf-color-warm-line-soft: #ede9e1; /* Claude --line-soft: borde sutil */
+}

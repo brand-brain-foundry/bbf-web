@@ -1,0 +1,37 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Colors Warm
+ *
+ * Aliases semánticos para la migración Claude Design → sistema BBF.
+ * D-MIG-01 (Opción A firmada 2026-05-31).
+ * Refs: .claude/plans/migracion-tokens-base.md §9C Tier 2
+ *
+ * Consumen primitivos de primitives/colors-warm.css.
+ * Coexisten con semantic/colors.css (sistema cool canon) — sin colisión.
+ * Las secciones home migradas SOLO referencian estos tokens, nunca los primitivos.
+ *
+ * Regla: si en una sección home migrada necesitás un color → buscá acá primero.
+ */
+
+:root {
+  /* ============================================================
+     SURFACES WARM — fondos del diseño Claude Design
+     ============================================================ */
+  --bbf-surface-warm-base: var(--bbf-color-warm-50); /* reemplaza var(--bg) */
+  --bbf-surface-warm-elevated: var(--bbf-color-warm-100); /* reemplaza var(--bg-elev) */
+  --bbf-surface-warm-deep: var(--bbf-color-warm-200); /* reemplaza var(--bg-deep) */
+  --bbf-surface-warm-highlight: var(--bbf-color-warm-highlight); /* §5 tabla columna BBF */
+
+  /* ============================================================
+     TEXT ON WARM — jerarquía de texto sobre superficie warm
+     ============================================================ */
+  --bbf-text-on-warm: var(--bbf-color-warm-ink); /* reemplaza var(--ink) */
+  --bbf-text-on-warm-soft: var(--bbf-color-warm-ink-soft); /* reemplaza var(--ink-soft) */
+  --bbf-text-on-warm-muted: var(--bbf-color-warm-ink-muted); /* reemplaza var(--ink-muted) */
+  --bbf-text-on-warm-faint: var(--bbf-color-warm-ink-faint); /* reemplaza var(--ink-faint) */
+
+  /* ============================================================
+     BORDERS ON WARM — líneas y bordes sobre superficie warm
+     ============================================================ */
+  --bbf-border-on-warm: var(--bbf-color-warm-line); /* reemplaza var(--line) */
+  --bbf-border-on-warm-soft: var(--bbf-color-warm-line-soft); /* reemplaza var(--line-soft) */
+}

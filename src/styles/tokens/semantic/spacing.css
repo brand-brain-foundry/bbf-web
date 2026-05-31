@@ -69,4 +69,13 @@
 
   /* Navigation */
   --bbf-nav-underline-offset: 0.25rem; /* 4px — underline offset bajo baseline */
+
+  /* ============================================================
+     MIGRATION BASE — D-MIG-01 spacing Claude Design (secciones home)
+     Refs: .claude/plans/migracion-tokens-base.md §9C
+     ============================================================ */
+  --bbf-space-section-head-gap: clamp(24px, 6vw, 96px); /* section__head columnas gap */
+  --bbf-space-section-head-mb: clamp(48px, 7vw, 96px); /* section__head margin-bottom */
+  --bbf-space-section-gutter: clamp(20px, 4vw, 48px); /* pad-gutter horizontal (--pad-gutter) */
+  --bbf-space-hub-mb: clamp(72px, 10vw, 140px); /* caps__hub margin-bottom */
 }

@@ -75,6 +75,14 @@
   --bbf-logo-rotation-duration: 40s; /* idle rotation speed */
   --bbf-logo-rotation-duration-hover: 12s; /* hover acceleration target */
   --bbf-logo-rotation-easing: var(--bbf-easing-linear); /* rotation NUNCA ease */
+
+  /* MIGRATION BASE — D-MIG-04 (Claude Design --ease-out) */
+  --bbf-easing-organic: cubic-bezier(
+    0.2,
+    0.7,
+    0.2,
+    1
+  ); /* Claude Design ease-out — decelera suave */
 }
 
 /* ============================================================

@@ -300,17 +300,18 @@ const CAPABILITIES = [
   },
 ];
 
-type Scene = (typeof CAPABILITIES)[0]['scene'];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Scene = Record<string, any>;
 
 function CapabilityScene({ scene }: { scene: Scene }) {
-  if (scene.kind === 'chat' && 'messages' in scene) {
+  if (scene.kind === 'chat') {
     return (
       <div className="cap-scene cap-chat">
         <div className="cap-scene__head">
           <span className="mono-xs">{scene.meta}</span>
         </div>
         <div className="cap-chat__body">
-          {scene.messages.map((m, i) => (
+          {(scene.messages as { who: string; text: string }[]).map((m, i) => (
             <div key={i} className={`cap-chat__msg cap-chat__msg--${m.who}`}>
               {m.text}
             </div>
@@ -320,14 +321,14 @@ function CapabilityScene({ scene }: { scene: Scene }) {
       </div>
     );
   }
-  if (scene.kind === 'pipeline' && 'steps' in scene) {
+  if (scene.kind === 'pipeline') {
     return (
       <div className="cap-scene cap-pipe">
         <div className="cap-scene__head">
           <span className="mono-xs">{scene.meta}</span>
         </div>
         <ol className="cap-pipe__list">
-          {scene.steps.map((s, i) => (
+          {(scene.steps as { label: string; detail: string; state: string }[]).map((s, i) => (
             <li key={i} className={`cap-pipe__row cap-pipe__row--${s.state}`}>
               <span className="cap-pipe__bullet" aria-hidden="true" />
               <span className="cap-pipe__label">{s.label}</span>
@@ -342,8 +343,9 @@ function CapabilityScene({ scene }: { scene: Scene }) {
       </div>
     );
   }
-  if (scene.kind === 'workflow' && 'nodes' in scene) {
-    const { nodes, edges } = scene;
+  if (scene.kind === 'workflow') {
+    const nodes = scene.nodes as { x: number; y: number; label: string; kind: string }[];
+    const edges = scene.edges as number[][];
     return (
       <div className="cap-scene cap-flow">
         <div className="cap-scene__head">
@@ -383,14 +385,14 @@ function CapabilityScene({ scene }: { scene: Scene }) {
       </div>
     );
   }
-  if (scene.kind === 'stack' && 'groups' in scene) {
+  if (scene.kind === 'stack') {
     return (
       <div className="cap-scene cap-stack">
         <div className="cap-scene__head">
           <span className="mono-xs">{scene.meta}</span>
         </div>
         <div className="cap-stack__grid">
-          {scene.groups.map((g) => (
+          {(scene.groups as { label: string; items: string[] }[]).map((g) => (
             <div className="cap-stack__group" key={g.label}>
               <div className="mono-xs cap-stack__title">{g.label}</div>
               <div className="cap-stack__items">

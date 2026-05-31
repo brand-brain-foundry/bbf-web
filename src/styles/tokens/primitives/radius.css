@@ -13,4 +13,7 @@
   --bbf-radius-xl: 1rem; /* 16px */
   --bbf-radius-2xl: 1.5rem; /* 24px */
   --bbf-radius-full: 9999px;
+
+  /* MIGRATION BASE — D-MIG-02 (Claude Design section cards 14px) */
+  --bbf-radius-section-card: 0.875rem; /* 14px — cap-scene, media-frame, hiw-steps */
 }

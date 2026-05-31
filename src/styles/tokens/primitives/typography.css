@@ -122,4 +122,21 @@
   --bbf-paragraph-spacing: 1rem; /* 16px gap entre párrafos body */
   --bbf-heading-spacing-top: 2rem; /* 32px space above headings */
   --bbf-heading-spacing-bot: 1rem; /* 16px space below headings */
+
+  /* ============================================================
+     MIGRATION BASE — D-MIG-03 + D-MIG-05 (valores Claude Design)
+     Coexisten con escala BBF canon. Solo para secciones home migradas.
+     Refs: .claude/plans/migracion-tokens-base.md §9C
+     ============================================================ */
+
+  /* Hero Home H1 grande — Claude Design --fs-h1 (más amplio que display-hero) */
+  --bbf-text-display-hero-home: clamp(3.5rem, 9vw, 8rem); /* 56px → 128px — D-MIG-03 */
+
+  /* Lead paragraph — Claude Design --fs-lead — D-MIG-05 */
+  --bbf-text-lead: 1.375rem; /* 22px */
+
+  /* Fluid heading scale Claude Design — para h4/h5/h6 de secciones home */
+  --bbf-text-display-h4-fluid: clamp(1.75rem, 3.2vw, 2.5rem); /* 28px → 40px */
+  --bbf-text-display-h5-fluid: clamp(1.5rem, 2.8vw, 2rem); /* 24px → 32px */
+  --bbf-text-display-h6-fluid: clamp(1.25rem, 2.2vw, 1.625rem); /* 20px → 26px */
 }
