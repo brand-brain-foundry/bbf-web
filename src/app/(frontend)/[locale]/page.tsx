@@ -37,14 +37,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <>
-      <HeroSection surface="warm" height="auto" data-hero-decoration="grid-cols-12">
+      <HeroSection
+        surface="warm"
+        height="auto"
+        data-hero-decoration="grid-cols-12"
+        className="bbf-hero"
+      >
         {/* Outer single-col grid — outer spacing container */}
-        <HeroSection.Grid
-          cols="1"
-          className="mx-auto w-full max-w-[1280px] px-6 pt-[clamp(96px,11vw,132px)] pb-[clamp(48px,6vw,96px)]"
-        >
+        <HeroSection.Grid cols="1" className="bbf-hero__grid mx-auto w-full max-w-[1280px] px-6">
           {/* Head row — 2-col: title left, lede+CTAs right */}
-          <HeroSection.Grid cols="2-1.4-1">
+          <HeroSection.Grid cols="2-1.4-1" className="bbf-hero__head">
             <div>
               <Heading level="display-hero" color="primary" align="left" weight="medium">
                 {hero.h1Line1}
@@ -56,20 +58,20 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </div>
 
             <Reveal variant="up" delay={120}>
-              <div className="flex flex-col items-start gap-5">
+              <div className="bbf-hero__lede flex flex-col items-start gap-5">
                 <Text variant="body-lg" color="secondary" align="left">
                   {hero.ledeBody}
                   {hero.ledeEmphasis && (
                     <>
                       <br />
-                      <span className="font-medium text-[var(--bbf-text-on-sand)]">
+                      <span className="bbf-hero__lede-em font-medium text-[var(--bbf-text-on-warm)]">
                         {hero.ledeEmphasis}
                       </span>
                     </>
                   )}
                 </Text>
 
-                <div className="flex flex-wrap gap-[10px]">
+                <div className="bbf-hero__ctas flex flex-wrap gap-[10px]">
                   <Button intent="primary" size="md" asChild>
                     <a href={hero.ctaPrimary.href}>
                       {hero.ctaPrimary.label}
@@ -89,19 +91,23 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
           {/* Media row — full width below head */}
           <Reveal variant="up" delay={240}>
-            <div className="flex flex-col gap-0">
-              <HeroMediaFrame>
-                <HeroMediaFrame.Chrome label={hero.media.chromeLabel ?? undefined} recording>
+            <div className="bbf-hero__media flex flex-col gap-0">
+              <HeroMediaFrame className="bbf-hero__media-frame">
+                <HeroMediaFrame.Chrome
+                  label={hero.media.chromeLabel ?? undefined}
+                  recording
+                  className="bbf-hero__media-chrome"
+                >
                   <HeroRecTimer />
                 </HeroMediaFrame.Chrome>
-                <HeroMediaFrame.VideoShell>
+                <HeroMediaFrame.VideoShell className="bbf-hero__video-shell">
                   <HeroVideo controls preload="metadata" poster={posterUrl}>
                     {hero.media.videoSources?.map((s) => (
                       <HeroVideo.Source key={s.src} src={s.src} type={s.type} />
                     ))}
                   </HeroVideo>
                 </HeroMediaFrame.VideoShell>
-                <HeroMediaFrame.Foot>
+                <HeroMediaFrame.Foot className="bbf-hero__media-foot">
                   <div className="flex flex-col gap-1">
                     <Text variant="caption" color="secondary">
                       {hero.media.demoLabel}
@@ -114,7 +120,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               </HeroMediaFrame>
 
               {hero.ticker && hero.ticker.length > 0 && (
-                <HeroTicker items={hero.ticker.map((t) => t.item)} durationSeconds={50} />
+                <HeroTicker
+                  items={hero.ticker.map((t) => t.item)}
+                  durationSeconds={50}
+                  className="bbf-hero__ticker"
+                />
               )}
             </div>
           </Reveal>

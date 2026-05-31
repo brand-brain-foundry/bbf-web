@@ -50,10 +50,10 @@
 @import '../styles/tokens/components/logo.css';
 @import '../styles/tokens/components/button.css';
 @import '../styles/tokens/components/hero-section.css';
-@import '../styles/tokens/components/home-hero.css'; /* Migración §1 Hero — Claude Design warm */
 
 @import '../styles/tokens/components/prose.css';
 @import '../styles/tokens/components/hero-media-frame.css';
+@import '../styles/tokens/components/home-hero.css'; /* Migración §1 Hero — AFTER hero-media-frame: warm override wins */
 @import '../styles/tokens/components/capabilities.css';
 @import '../styles/tokens/components/como-funciona.css';
 @import '../styles/tokens/components/lissajous.css';

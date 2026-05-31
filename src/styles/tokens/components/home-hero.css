@@ -42,7 +42,10 @@
 
 .bbf-hero__grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(
+    0,
+    1fr
+  ); /* minmax(0) prevents content from expanding beyond container */
   gap: clamp(28px, 3.5vw, 48px);
   position: relative;
 }
@@ -95,11 +98,11 @@
   align-items: flex-start;
 }
 
-.bbf-hero__lede .lead {
+.bbf-hero__lede [data-component='bbf-text'] {
   max-width: 38ch;
   font-size: clamp(16px, 1.4vw, 18px);
   margin: 0;
-  color: var(--bbf-text-on-warm);
+  color: var(--bbf-text-on-warm-muted);
   font-family: var(--bbf-font-body);
 }
 
@@ -314,4 +317,18 @@
 .bbf-hero .reveal {
   /* Reveal component handles animation — this just ensures CSS doesn't interfere */
   opacity: 1; /* ensure visible post-reveal */
+}
+
+/* ============================================================================
+ * CONTEXT: suppress HeroMediaFrame's own box when nested inside .bbf-hero__media
+ * Specificity 0,2,0 beats .bbf-hero-media-frame (0,1,0) from hero-media-frame.css
+ * Required because HeroMediaFrame has its own border/bg in sand palette —
+ * the outer .bbf-hero__media provides the container with warm palette.
+ * ============================================================================ */
+
+.bbf-hero__media .bbf-hero-media-frame {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
 }
