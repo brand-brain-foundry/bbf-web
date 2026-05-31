@@ -51,7 +51,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               <Heading level="display-hero" color="primary" align="left" weight="medium">
                 {hero.h1Line1}
                 <br />
-                <span data-tone="soft" className="bbf-text-gradient-dark-animated">
+                <span data-tone="soft" className="text-[var(--bbf-text-on-warm-muted)]">
                   {hero.h1Line2Soft}
                 </span>
               </Heading>
@@ -72,7 +72,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 </Text>
 
                 <div className="bbf-hero__ctas flex flex-wrap gap-[10px]">
-                  <Button intent="primary" size="md" asChild>
+                  <Button
+                    intent="primary"
+                    size="md"
+                    asChild
+                    className="bbf-btn-gradient-dark-animated"
+                  >
                     <a href={hero.ctaPrimary.href}>
                       {hero.ctaPrimary.label}
                       <Icon icon={Icons.arrowRight} size="sm" />
@@ -82,7 +87,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                     intent="ghost"
                     size="md"
                     asChild
-                    className="border border-[var(--bbf-border-on-warm)]"
+                    className="bbf-btn-gradient-dark-animated--ghost"
                   >
                     <a href={hero.ctaSecondary.href}>
                       {hero.ctaSecondary.label}

@@ -135,3 +135,43 @@
     background-position: 0% 50%;
   }
 }
+
+/* Button dark gradient — sweep negro animado (Hero CTAs §1) */
+.bbf-btn-gradient-dark-animated {
+  background: linear-gradient(
+    110deg,
+    #0a0a0a 0%,
+    #1a1a1a 40%,
+    #2a2a2a 50%,
+    #1a1a1a 60%,
+    #0a0a0a 100%
+  );
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift 3s ease-in-out infinite;
+  color: #ffffff;
+  border: none;
+}
+
+/* Ghost variant — mismo sweep, borde translúcido blanco */
+.bbf-btn-gradient-dark-animated--ghost {
+  background: linear-gradient(
+    110deg,
+    #0a0a0a 0%,
+    #1a1a1a 40%,
+    #2a2a2a 50%,
+    #1a1a1a 60%,
+    #0a0a0a 100%
+  );
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift 3s ease-in-out infinite;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-btn-gradient-dark-animated,
+  .bbf-btn-gradient-dark-animated--ghost {
+    animation: none;
+    background-position: 0% 50%;
+  }
+}
