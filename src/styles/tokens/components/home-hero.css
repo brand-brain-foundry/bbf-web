@@ -50,6 +50,14 @@
   position: relative;
 }
 
+@media (min-width: 921px) {
+  .bbf-hero__grid {
+    padding-inline: var(
+      --bbf-space-12
+    ); /* 48px — matches design-preview (override px-6 from page.tsx) */
+  }
+}
+
 /* ============================================================================
  * HEAD — 2-column title + lede layout
  * ============================================================================ */
