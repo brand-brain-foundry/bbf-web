@@ -34,4 +34,36 @@
      ============================================================ */
   --bbf-border-on-warm: var(--bbf-color-warm-line); /* reemplaza var(--line) */
   --bbf-border-on-warm-soft: var(--bbf-color-warm-line-soft); /* reemplaza var(--line-soft) */
+
+  /* ============================================================
+     INTERACTIVE STATES — D-AUD-02 firmada 2026-06-01
+     Completan el sistema warm para §3-§7 con elementos interactivos.
+     Sin consumidores activos aún — se aplican en §3+ interactivo.
+     ============================================================ */
+
+  /* Hover de elementos sobre warm-base (cards, list items, nav items).
+     Midpoint entre warm-base y warm-elevated — paso sutil de ~4 unidades/canal. */
+  --bbf-surface-warm-hover: #f6f5f1;
+
+  /* Hover de elementos sobre warm-elevated (cards anidadas, items secundarios).
+     Midpoint entre warm-elevated y warm-deep. */
+  --bbf-surface-warm-elevated-hover: #efede8;
+
+  /* Background de FormField/input sobre warm. Ligeramente más claro que warm-base
+     para crear distinción visual de la superficie de página. */
+  --bbf-surface-warm-input: #fdfcf9;
+
+  /* Border de inputs activos, focus containers, separadores con énfasis.
+     Contraste 3.17:1 vs warm-base — WCAG 1.4.11 non-text contrast ≥3:1 ✅ */
+  --bbf-border-on-warm-strong: #908d86;
+
+  /* Focus ring para interactive elements sobre warm surfaces.
+     Coral oscuro BBF — contraste 5.03:1 vs warm-base.
+     WCAG 1.4.11 ≥3:1 ✅  WCAG 2.4.11 ≥3:1 ✅  Recomendado 4.5:1 ✅ */
+  --bbf-focus-ring-on-warm: var(--bbf-color-warm-coral-strong);
+
+  /* Texto de acento, links activos, CTAs textuales sobre warm.
+     Coral ligeramente más brillante que focus-ring — contraste 4.62:1 vs warm-base.
+     WCAG 1.4.3 AA normal text ≥4.5:1 ✅ */
+  --bbf-text-on-warm-accent: var(--bbf-color-warm-coral-accent);
 }

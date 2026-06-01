@@ -37,4 +37,13 @@
      ============================================================ */
   --bbf-color-warm-line: #e3e0d9; /* Claude --line: borde estándar */
   --bbf-color-warm-line-soft: #ede9e1; /* Claude --line-soft: borde sutil */
+
+  /* ============================================================
+     WARM CORAL RAMP — interactive accent colors (D-AUD-02)
+     Dos tonos del rojo coral BBF con contraste WCAG verificado
+     sobre --bbf-surface-warm-base (#fafaf7, L=0.9542).
+     NO usar en componentes cool/sand — solo en contextos warm.
+     ============================================================ */
+  --bbf-color-warm-coral-strong: #c83525; /* 5.03:1 vs warm-base — focus ring */
+  --bbf-color-warm-coral-accent: #d13a2a; /* 4.62:1 vs warm-base — text accent */
 }
