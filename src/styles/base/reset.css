@@ -29,7 +29,7 @@ body {
   color: var(--bbf-text-on-sand);
   background-color: var(--bbf-surface-sand);
   margin: 0;
-  overflow-x: hidden;
+  overflow-x: clip; /* sticky fix — hidden crea scroll container y rompe sticky; clip recorta sin crear container */
 }
 
 /* Headings: tipografía de display automática (patrón Sivar Brains) */
