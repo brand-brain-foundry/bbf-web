@@ -15,10 +15,10 @@
 :root {
   --bbf-capabilities-hub-max-w: 36rem; /* 576px — hub diagram max width */
   --bbf-capabilities-grid-gap: clamp(
-    32px,
-    4vw,
-    64px
-  ); /* Tier 3 override — gap subsección (no sección autónoma). Total con border+padding: ~65-130px. Tier 2 preservado. */
+    80px,
+    10vw,
+    140px
+  ); /* DA-02: gap entre items (preview .caps gap) */
   --bbf-capabilities-card-cols: 1; /* mobile: 1 col */
   --bbf-capabilities-scene-min-h: 18rem; /* scene shell min height */
   --bbf-capabilities-num-size: var(--bbf-text-display-2); /* número de capability */
@@ -95,13 +95,8 @@
 
 /* ============================================================
    CAPABILITY CARD — compound root
+   Valores exactos preview home.css (N2-CAPABILITY-ITEM firmado)
    ============================================================ */
-
-/* Separador visual entre cards 2-N — apunta a Reveal (motion.div) direct children del grid */
-.bbf-capabilities-grid > div + div {
-  border-top: 1px solid var(--bbf-border-on-sand);
-  padding-top: var(--bbf-capabilities-grid-gap);
-}
 
 .bbf-capability-card {
   display: grid;
@@ -113,10 +108,9 @@
 @media (min-width: 920px) {
   .bbf-capability-card {
     grid-template-columns: 1fr 1fr;
-    gap: var(--bbf-space-card-grid-gap-fluid);
+    gap: var(--bbf-space-card-grid-gap-fluid); /* clamp(32px,5vw,72px) ✓ preview */
   }
 
-  /* Zigzag: align="r" inverts column order */
   .bbf-capability-card[data-align='r'] .bbf-capability-card__txt {
     order: 2;
   }
@@ -127,41 +121,86 @@
 }
 
 /* ============================================================
-   CARD TXT — content stack
+   CARD TXT — content stack (spacing via individual margins)
    ============================================================ */
 .bbf-capability-card__txt {
   display: flex;
   flex-direction: column;
-  gap: var(--bbf-space-content-gap-normal);
+  gap: 0;
 }
 
+/* Number row: num + visual line + label */
 .bbf-capability-card__num {
   display: flex;
-  align-items: baseline;
-  gap: var(--bbf-space-content-gap-tight);
-  color: var(--bbf-text-on-sand-subtle);
+  align-items: center;
+  gap: var(--bbf-space-3); /* 12px — preview */
+  color: var(--bbf-text-on-warm-muted); /* #6b6863 */
+  margin-bottom: 18px; /* preview .h3 margin-top: 18px */
 }
 
+.bbf-capability-card__num-line {
+  flex: 1;
+  height: 1px;
+  background: var(--bbf-border-on-warm);
+  max-width: 80px; /* Tier 3 — preview */
+}
+
+/* Title H3 */
+.bbf-capability-card__title {
+  margin-bottom: 18px; /* preview .cap__title margin-bottom: 18px */
+}
+
+/* Lede */
+.bbf-capability-card__lede {
+  margin-bottom: var(--bbf-space-4); /* 16px — preview .cap__lede */
+}
+
+/* Body */
+.bbf-capability-card__body {
+  margin-bottom: var(--bbf-space-7); /* 28px — preview .cap__body */
+}
+
+/* Bullets */
 .bbf-capability-card__bullets {
   display: flex;
   flex-direction: column;
-  gap: var(--bbf-space-content-gap-tight);
+  gap: var(--bbf-space-3); /* 12px — preview */
   list-style: none;
   padding: 0;
   margin: 0;
+  border-top: 1px solid var(--bbf-border-on-warm); /* preview */
+  padding-top: var(--bbf-space-5); /* 20px — preview */
+  margin-bottom: var(--bbf-space-8); /* 32px — preview */
 }
 
 .bbf-capability-card__bullet {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--bbf-space-content-gap-tight);
+  display: grid;
+  grid-template-columns: 20px 1fr; /* preview */
+  gap: var(--bbf-space-2\.5); /* 10px — preview */
+  align-items: start;
+  line-height: 1.5; /* preview */
 }
 
+/* Example block */
 .bbf-capability-card__example {
-  border-left: 2px solid var(--bbf-border-on-sand);
-  padding-inline-start: var(--bbf-space-content-gap-normal);
-  color: var(--bbf-text-on-sand-muted);
-  font-style: normal;
+  border-left: 2px solid var(--bbf-text-on-warm); /* preview: var(--ink) */
+  padding: var(--bbf-space-6); /* 24px — DA-05 (preview: 22px 24px ≈ space-6) */
+  background-color: var(--bbf-surface-warm-elevated); /* preview: var(--bg-elev) */
+  border-radius: 0 var(--bbf-radius-md) var(--bbf-radius-md) 0; /* preview: 0 8px 8px 0 */
+}
+
+.bbf-capability-card__example-lbl {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs); /* 11px */
+  letter-spacing: 0.06em; /* Tier 3 — preview */
+  color: var(--bbf-text-on-warm-muted);
+}
+
+.bbf-capability-card__example-text {
+  font-style: italic; /* preview */
+  color: var(--bbf-text-on-warm-soft); /* preview: var(--ink-soft) */
+  max-width: 50ch; /* preview */
+  margin-top: var(--bbf-space-2); /* 8px — preview */
 }
 
 /* ============================================================
@@ -175,7 +214,7 @@
 @media (min-width: 920px) {
   .bbf-capability-card__viz {
     position: sticky;
-    top: 6rem; /* 96px — compensa navbar + respiro visual del diseño Claude (era var(--bbf-space-section-gap-sm) = 48px) */
+    top: 120px; /* DA-04: preview usa 120px (era 96px) */
   }
 }
 
@@ -186,8 +225,8 @@
   width: 100%;
   min-height: var(--bbf-capabilities-scene-min-h);
   border-radius: var(--bbf-radius-card);
-  border: 1px solid var(--bbf-border-on-sand);
-  background-color: var(--bbf-surface-white);
+  border: 1px solid var(--bbf-border-on-warm); /* preview: var(--line) */
+  background-color: var(--bbf-surface-warm-elevated); /* preview: var(--bg-elev) */
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -195,8 +234,9 @@
 
 .bbf-cap-scene__head {
   padding: var(--bbf-space-component-padding-md) var(--bbf-space-component-padding-lg);
-  border-bottom: 1px solid var(--bbf-border-on-sand);
-  color: var(--bbf-text-on-sand-muted);
+  border-bottom: 1px solid var(--bbf-border-on-warm);
+  color: var(--bbf-text-on-warm-muted); /* preview: var(--ink-muted) */
+  background-color: var(--bbf-surface-warm-base); /* preview: var(--bg) */
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
   letter-spacing: 0.08em;
@@ -213,8 +253,9 @@
 
 .bbf-cap-scene__footer {
   padding: var(--bbf-space-component-padding-md) var(--bbf-space-component-padding-lg);
-  border-top: 1px solid var(--bbf-border-on-sand);
-  color: var(--bbf-text-on-sand-subtle);
+  border-top: 1px solid var(--bbf-border-on-warm);
+  color: var(--bbf-text-on-warm-faint); /* preview: var(--ink-muted) */
+  background-color: var(--bbf-surface-warm-base); /* preview: var(--bg) */
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
 }
