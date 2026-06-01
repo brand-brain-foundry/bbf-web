@@ -8,6 +8,7 @@ export const capabilitiesSectionVariants = cva('bbf-capabilities-section', {
   variants: {
     surface: {
       sand: 'bg-[var(--bbf-surface-sand)]',
+      warm: 'bg-[var(--bbf-surface-warm-base)]',
       auto: '',
     },
   },

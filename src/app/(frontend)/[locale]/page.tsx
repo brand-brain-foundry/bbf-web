@@ -136,7 +136,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </HeroSection.Grid>
       </HeroSection>
 
-      <CapabilitiesSection surface="sand">
+      <CapabilitiesSection surface="warm">
         <Reveal variant="up">
           <CapabilitiesSection.Header
             eyebrow={cap.eyebrow}

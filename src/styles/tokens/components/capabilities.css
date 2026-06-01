@@ -28,7 +28,7 @@
    SECTION ROOT
    ============================================================ */
 .bbf-capabilities-section {
-  background-color: var(--bbf-surface-sand);
+  background-color: var(--bbf-surface-warm-base);
   padding-block: var(--bbf-space-section-pad-fluid);
 }
 
