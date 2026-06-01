@@ -16,7 +16,7 @@
 
 .bbf-hero-media-frame {
   border: 1px solid var(--bbf-border-on-sand);
-  border-radius: 14px;
+  border-radius: var(--bbf-radius-section-card); /* 0.875rem = 14px */
   overflow: hidden;
   background: var(--bbf-surface-sand);
   position: relative;
