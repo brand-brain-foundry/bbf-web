@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
+import { Container } from '@/components/atoms/Container';
 import { NewsletterBox } from '@/components/molecules/NewsletterBox';
 import { BBFLogo } from '@/components/atoms/BBFLogo';
 import { Badge } from '@/components/atoms/Badge';
@@ -70,7 +71,10 @@ export async function Footer({ className }: FooterProps) {
         className,
       )}
     >
-      <div className="bbf-container-wide mx-auto px-6 py-[var(--bbf-space-section-gap-sm)] sm:px-8 lg:px-10 lg:py-[var(--bbf-space-section-gap-md)]">
+      <Container
+        size="wide"
+        className="py-[var(--bbf-space-section-gap-sm)] lg:py-[var(--bbf-space-section-gap-md)]"
+      >
         {/* Main grid: brand + groups + newsletter */}
         <div
           className={cn(
@@ -199,7 +203,7 @@ export async function Footer({ className }: FooterProps) {
             © {year} {siteName}. {t('rights')}
           </p>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

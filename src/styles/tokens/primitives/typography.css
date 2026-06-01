@@ -52,8 +52,8 @@
   /* Display Hero — extension Major Third canon (D-FASE2-03 Op-A firmada) */
   --bbf-text-display-hero: clamp(3rem, 7.4vw, 6.5rem); /* 48px → 104px — Hero Home H1 */
 
-  /* Display Section H2 — section header h2 (Fix 2, clamp 44→80px) */
-  --bbf-text-display-section-h2: clamp(2.75rem, 6vw, 5rem);
+  /* Display Section H2 — D-CONT-03: clamp 32→80px (era 44→80px, mobile hierarchy fix) */
+  --bbf-text-display-section-h2: clamp(2rem, 6vw, 5rem);
 
   /* Display Step Title — §3 Cómo Funciona step card titles (clamp 24→32px) */
   --bbf-text-display-step-title: clamp(1.5rem, 2.8vw, 2rem);

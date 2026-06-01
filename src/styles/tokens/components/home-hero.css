@@ -48,14 +48,9 @@
   ); /* minmax(0) prevents content from expanding beyond container */
   gap: clamp(28px, 3.5vw, 48px);
   position: relative;
-}
-
-@media (min-width: 921px) {
-  .bbf-hero__grid {
-    padding-inline: var(
-      --bbf-space-12
-    ); /* 48px — matches design-preview (override px-6 from page.tsx) */
-  }
+  padding-inline: var(
+    --bbf-space-section-gutter
+  ); /* D-CONT-01-B: fuente única, era px-6+override921 */
 }
 
 /* ============================================================================

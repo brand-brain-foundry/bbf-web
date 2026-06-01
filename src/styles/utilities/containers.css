@@ -38,15 +38,7 @@
   max-width: var(--bbf-container-full);
 }
 
-/* Padding horizontal canónico para containers — consume --bbf-space-4/8 (Tier 1 primitives) */
+/* Padding horizontal canónico — una sola fuente de verdad (D-CONT-01-B) */
 .bbf-container-px {
-  padding-left: var(--bbf-space-4);
-  padding-right: var(--bbf-space-4);
-}
-
-@media (min-width: 768px) {
-  .bbf-container-px {
-    padding-left: var(--bbf-space-8);
-    padding-right: var(--bbf-space-8);
-  }
+  padding-inline: var(--bbf-space-section-gutter); /* clamp(20px, 4vw, 48px) */
 }

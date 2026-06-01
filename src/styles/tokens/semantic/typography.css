@@ -100,8 +100,8 @@
      Mapean propósito a primitivos — mobile overrides via @media
      ============================================================ */
 
-  /* Display Hero (Hero Home H1 — D-FASE2-03 Op-A, clamp 48px→104px, weight 500, leading 0.94) */
-  --bbf-typography-display-hero-size: var(--bbf-text-display-hero);
+  /* Display Hero (Hero Home H1 — D-CONT-02: clamp 56px→128px, era 48px→104px) */
+  --bbf-typography-display-hero-size: var(--bbf-text-display-hero-home);
   --bbf-typography-display-hero-leading: 0.94;
   --bbf-typography-display-hero-tracking: -0.045em;
   --bbf-typography-display-hero-weight: 500;
