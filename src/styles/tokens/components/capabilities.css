@@ -532,3 +532,27 @@
   font-size: var(--bbf-text-caption, var(--bbf-text-h6));
   color: var(--bbf-text-on-sand-muted);
 }
+
+/* ============================================================
+   HUB MOBILE FIX 2 — patrón del /design-preview canónico
+   Sub-A: gap Hub → primer CapabilityItem (era 0px).
+   Sub-B: label width 100px → texto meta largo wrappea en lugar de
+          overflowear (replica home-capabilities.jsx @media ≤720px).
+   Solo mobile ≤767px. Desktop intocado. HubDiagram.tsx INTOCABLE.
+   ============================================================ */
+@media (max-width: 767px) {
+  .bbf-capabilities-hub-wrapper {
+    margin-block-end: 72px; /* Sub-A: gap al primer CapabilityItem */
+  }
+
+  .bbf-capabilities-hub-wrapper .bbf-capabilities-hub__label {
+    width: 100px; /* Sub-B: permite wrap de label-meta largos — replica preview */
+  }
+
+  /* label-meta wrappea dentro del contenedor de 100px.
+     Contenido Payload más largo que defaults — white-space: nowrap lo haría
+     overflowear visualmente aunque el div mide 100px. */
+  .bbf-capabilities-hub-wrapper .bbf-capabilities-hub__label-meta {
+    white-space: normal;
+  }
+}
