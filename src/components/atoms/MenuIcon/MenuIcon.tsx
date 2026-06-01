@@ -35,6 +35,8 @@ export function MenuIcon({ open, className }: MenuIconProps) {
         style={{
           transform: open ? 'rotate(45deg)' : 'none',
           transformOrigin: '12px 12px',
+          /* D-BBF-MOTION-01: valor deliberado sin token equivalente en motion system —
+             revisitar al expandir tokens motion (no forzar match aproximado que altere feel) */
           transition:
             'transform 280ms cubic-bezier(0.32, 0.72, 0, 1), y1 280ms cubic-bezier(0.32, 0.72, 0, 1)',
         }}
@@ -47,6 +49,8 @@ export function MenuIcon({ open, className }: MenuIconProps) {
         y2="12"
         style={{
           opacity: open ? 0 : 1,
+          /* D-BBF-MOTION-01: valor deliberado sin token equivalente en motion system —
+             revisitar al expandir tokens motion (no forzar match aproximado que altere feel) */
           transition: 'opacity 200ms ease-out',
         }}
       />
@@ -59,6 +63,8 @@ export function MenuIcon({ open, className }: MenuIconProps) {
         style={{
           transform: open ? 'rotate(-45deg)' : 'none',
           transformOrigin: '12px 12px',
+          /* D-BBF-MOTION-01: valor deliberado sin token equivalente en motion system —
+             revisitar al expandir tokens motion (no forzar match aproximado que altere feel) */
           transition:
             'transform 280ms cubic-bezier(0.32, 0.72, 0, 1), y1 280ms cubic-bezier(0.32, 0.72, 0, 1)',
         }}
