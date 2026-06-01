@@ -44,7 +44,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         className="bbf-hero"
       >
         {/* Outer single-col grid — outer spacing container */}
-        <HeroSection.Grid cols="1" className="bbf-hero__grid mx-auto w-full max-w-[1280px]">
+        <HeroSection.Grid cols="1" className="bbf-hero__grid bbf-container-wide mx-auto w-full">
           {/* Head row — 2-col: title left, lede+CTAs right */}
           <HeroSection.Grid cols="2-1.4-1" className="bbf-hero__head">
             <div>
