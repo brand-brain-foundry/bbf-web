@@ -229,7 +229,7 @@
   min-height: var(--bbf-capabilities-scene-min-h);
   border-radius: var(--bbf-radius-card);
   border: 1px solid var(--bbf-border-on-warm); /* preview: var(--line) */
-  background-color: var(--bbf-capabilities-scene-bg); /* #ebe3d4 — Bug 2 */
+  background-color: var(--bbf-surface-warm-elevated); /* revert Bug 2 — #f3f1ec */
   overflow: hidden;
   display: flex;
   flex-direction: column;
