@@ -21,6 +21,9 @@
   ); /* DA-02: gap entre items (preview .caps gap) */
   --bbf-capabilities-card-cols: 1; /* mobile: 1 col */
   --bbf-capabilities-scene-min-h: 18rem; /* scene shell min height */
+  --bbf-capabilities-scene-bg: var(
+    --bbf-color-sand-deep-shade
+  ); /* #ebe3d4 — Bug 2, Tier 3 específico */
   --bbf-capabilities-num-size: var(--bbf-text-display-2); /* número de capability */
 }
 
@@ -226,7 +229,7 @@
   min-height: var(--bbf-capabilities-scene-min-h);
   border-radius: var(--bbf-radius-card);
   border: 1px solid var(--bbf-border-on-warm); /* preview: var(--line) */
-  background-color: var(--bbf-surface-warm-elevated); /* preview: var(--bg-elev) */
+  background-color: var(--bbf-capabilities-scene-bg); /* #ebe3d4 — Bug 2 */
   overflow: hidden;
   display: flex;
   flex-direction: column;

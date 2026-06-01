@@ -58,8 +58,8 @@
   /* Display Step Title — §3 Cómo Funciona step card titles (clamp 24→32px) */
   --bbf-text-display-step-title: clamp(1.5rem, 2.8vw, 2rem);
 
-  /* Display Card Title — card title (Fix 2, clamp 36→56px) */
-  --bbf-text-display-card-title: clamp(2.25rem, 4.4vw, 3.5rem);
+  /* Display Card Title — D-CONT-03b: clamp 28→56px (era 36→56px, H3<H2 en todos los viewports) */
+  --bbf-text-display-card-title: clamp(1.75rem, 4.4vw, 3.5rem);
 
   /* Mono scale — HeroMediaFrame chrome + HeroTicker */
   --bbf-text-mono-xs: 0.6875rem; /* 11px */

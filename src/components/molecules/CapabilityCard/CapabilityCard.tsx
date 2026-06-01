@@ -66,6 +66,7 @@ async function Txt({ num, title, lede, body, bullets, example }: TxtProps) {
         as="h3"
         level="display-card-title"
         color="primary"
+        weight="medium"
         className="bbf-capability-card__title [font-feature-settings:'ss01','cv11'] text-balance [color:var(--bbf-text-on-warm)]"
       >
         {title}
