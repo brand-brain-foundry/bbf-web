@@ -33,31 +33,6 @@
 }
 
 /* ============================================================
-   HEADER layout — 2-col grid (Lissajous + content)
-   ============================================================ */
-.bbf-capabilities-header {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--bbf-space-content-gap-loose);
-  align-items: start;
-  padding-block-end: var(--bbf-space-section-gap-md);
-}
-
-@media (min-width: 768px) {
-  .bbf-capabilities-header {
-    grid-template-columns: auto 1fr;
-    gap: var(--bbf-space-section-gap-sm);
-  }
-}
-
-.bbf-capabilities-header__deco {
-  width: 6rem;
-  height: 6rem;
-  flex-shrink: 0;
-  color: var(--bbf-text-on-sand-muted);
-}
-
-/* ============================================================
    HUB DIAGRAM container
    ============================================================ */
 .bbf-capabilities-hub {

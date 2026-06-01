@@ -15,3 +15,4 @@ export * from './NewsletterBox';
 export * from './HubDiagram';
 export * from './CapabilityScene';
 export * from './CapabilityCard';
+export * from './SectionHeader';

@@ -5,9 +5,8 @@
  */
 import type { ReactNode } from 'react';
 import { Container } from '@/components/atoms/Container';
-import { Heading } from '@/components/atoms/Heading';
-import { Text } from '@/components/atoms/Text';
 import { Lissajous } from '@/components/atoms/Lissajous';
+import { SectionHeader } from '@/components/molecules/SectionHeader';
 import { HubDiagram } from '@/components/molecules/HubDiagram';
 import type { HubSpoke } from '@/components/molecules/HubDiagram';
 import { capabilitiesSectionVariants } from './CapabilitiesSection.variants';
@@ -45,36 +44,13 @@ interface HeaderProps {
 
 function Header({ eyebrow, h2Line1, h2Line2Soft, lead }: HeaderProps) {
   return (
-    <div className="bbf-capabilities-header">
-      {/* Left col: eyebrow + Lissajous deco */}
-      <div className="bbf-capabilities-header__deco-col">
-        {eyebrow && (
-          <Text
-            as="span"
-            variant="caption"
-            color="muted"
-            className="mb-2 block [font-family:var(--bbf-font-mono)] tracking-wider uppercase"
-          >
-            {eyebrow}
-          </Text>
-        )}
-        <div className="bbf-capabilities-header__deco" aria-hidden="true">
-          <Lissajous name="trefoil-2d" animation="traveling-dot" />
-        </div>
-      </div>
-
-      {/* Right col: title + lead */}
-      <div>
-        <Heading level="display-section-h2" as="h2" color="primary" align="left">
-          {h2Line1}
-          <br />
-          <span className="[color:var(--bbf-text-on-sand-muted)]">{h2Line2Soft}</span>
-        </Heading>
-        <Text variant="body-lg" color="secondary" className="mt-4">
-          {lead}
-        </Text>
-      </div>
-    </div>
+    <SectionHeader
+      eyebrow={eyebrow}
+      h2Line1={h2Line1}
+      h2Line2Soft={h2Line2Soft}
+      lead={lead}
+      decoration={<Lissajous name="trefoil-2d" animation="traveling-dot" />}
+    />
   );
 }
 

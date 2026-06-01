@@ -1,0 +1,49 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: SectionHeader molecule
+ *
+ * Reutilizable en §2–§7. Grid 200px/1fr desktop, 1fr mobile.
+ * Valores exactos del Claude Design Preview (firmados B-BBF-WEB-S2-N1-HEADER-VALORES-EXACTOS).
+ * Layout: eyebrow + decoration (deco-col izquierda) + H2 + lead (derecha).
+ */
+
+/* ============================================================
+   HEADER GRID — 2-col layout
+   ============================================================ */
+.bbf-section-header {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--bbf-space-4); /* 16px — mobile (preview home.css:117) */
+  align-items: start;
+  margin-block-end: clamp(48px, 7vw, 96px); /* preview home.css:115 */
+}
+
+@media (min-width: 768px) {
+  .bbf-section-header {
+    grid-template-columns: 200px 1fr; /* preview home.css:111 */
+    gap: clamp(24px, 6vw, 96px); /* preview home.css:112 */
+  }
+}
+
+/* ============================================================
+   LEFT COL — eyebrow + decoration
+   ============================================================ */
+.bbf-section-header__deco-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bbf-space-6); /* 24px ≈ preview 22px — aprobado H */
+  align-items: flex-start;
+}
+
+.bbf-section-header__deco {
+  width: 6rem; /* 96px desktop */
+  height: 6rem;
+  flex-shrink: 0;
+  color: var(--bbf-text-on-warm-muted);
+}
+
+@media (max-width: 767px) {
+  .bbf-section-header__deco {
+    width: 72px; /* preview home.css:137 */
+    height: 72px;
+  }
+}
