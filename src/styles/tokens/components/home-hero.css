@@ -104,6 +104,8 @@
 .bbf-hero__lede [data-component='bbf-text'] {
   max-width: 38ch;
   font-size: clamp(16px, 1.4vw, 18px);
+  line-height: 1.45; /* D-TIP-02: Claude Design .lead spec — era 1.55 (body-lg default) */
+  letter-spacing: -0.01em; /* D-TIP-02: Claude Design .lead spec — era 0 (body-lg default) */
   margin: 0;
   color: var(--bbf-text-on-warm-muted);
   font-family: var(--bbf-font-body);
