@@ -70,11 +70,7 @@ export function SectionHeader({
           )}
         </Heading>
         {lead && (
-          <Text
-            variant="body-lg"
-            color="secondary"
-            className="[margin-top:var(--bbf-space-7)] [max-width:52ch] [font-size:clamp(16px,1.4vw,18px)] [line-height:1.45] [letter-spacing:-0.01em] [color:var(--bbf-text-on-warm-soft)]"
-          >
+          <Text className="bbf-lede bbf-lede--medium [margin-top:var(--bbf-space-7)] [max-width:52ch] [color:var(--bbf-text-on-warm-soft)]">
             {lead}
           </Text>
         )}

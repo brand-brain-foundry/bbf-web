@@ -59,7 +59,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
             <Reveal variant="up" delay={120}>
               <div className="bbf-hero__lede flex flex-col items-start gap-5">
-                <Text variant="body-lg" color="secondary" align="left">
+                <Text className="bbf-lede [max-width:38ch] [color:var(--bbf-text-on-warm-muted)]">
                   {hero.ledeBody}
                   {hero.ledeEmphasis && (
                     <>

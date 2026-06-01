@@ -72,22 +72,13 @@ async function Txt({ num, title, lede, body, bullets, example }: TxtProps) {
         {title}
       </Heading>
 
-      {/* Lede — 18px desktop / 16px mobile, weight 500, warm — D-TIP-01/02 */}
-      <Text
-        variant="body-lg"
-        weight="medium"
-        color="primary"
-        className="bbf-capability-card__lede [max-width:38ch] [font-size:clamp(16px,1.4vw,18px)] [line-height:1.45] [letter-spacing:-0.01em] [color:var(--bbf-text-on-warm)]"
-      >
+      {/* Lede — .bbf-lede--medium: 18px/16px, weight 500 — D-AUD-01 */}
+      <Text className="bbf-capability-card__lede bbf-lede bbf-lede--medium [max-width:38ch] [color:var(--bbf-text-on-warm)]">
         {lede}
       </Text>
 
-      {/* Body — 18px desktop / 16px mobile, warm-muted — D-TIP-01/02 */}
-      <Text
-        variant="body-lg"
-        color="secondary"
-        className="bbf-capability-card__body [max-width:50ch] [font-size:clamp(16px,1.4vw,18px)] [line-height:1.45] [letter-spacing:-0.01em] [color:var(--bbf-text-on-warm-muted)]"
-      >
+      {/* Body — .bbf-lede: 18px/16px, weight 400 — D-AUD-01 */}
+      <Text className="bbf-capability-card__body bbf-lede [max-width:50ch] [color:var(--bbf-text-on-warm-muted)]">
         {body}
       </Text>
 
