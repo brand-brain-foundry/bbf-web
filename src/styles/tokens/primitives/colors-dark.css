@@ -1,0 +1,48 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Colors Dark
+ *
+ * Set de colores para surface dark (§3 Caso — D-CASO-3 firmada 2026-06-02).
+ * Coexiste con paleta cool + warm. Cero modificación de tokens existentes.
+ *
+ * Refs: D-CASO-1..6, migracion-s3-caso.md
+ * Patrón: igual a colors-warm.css (parallel namespace, sin colisión).
+ *
+ * NAMING DECISIONS (C-01 — no duplicar):
+ *   - dark-bg = #0a0a0a (= warm-ink, hardcoded aquí por @theme requirement)
+ *   - dark-bg-elevated = #1a1a1a (= black-600)
+ *   - dark-line = #2a2a2a (= warm-ink-soft)
+ *   - dark-ink-muted = #a8a59f (= warm-ink-faint)
+ *   - blue-accent ≠ blue-500 (#255ff1 canon BBF) — nombre distinto para no colisionar
+ *   - sand-deep-shade (#ebe3d4) YA EXISTE en colors.css — no se duplica aquí
+ *
+ * NO USAR en componentes existentes (Header, Footer, §1 Hero, §2 Caps, etc.).
+ * SOLO en CaseSection y secciones futuras con surface dark.
+ */
+
+@theme {
+  /* ============================================================
+     DARK SURFACE RAMP
+     ============================================================ */
+  --bbf-color-dark-bg: #0a0a0a; /* surface base dark — near-black */
+  --bbf-color-dark-bg-elevated: #1a1a1a; /* surface elevada — cards, frames */
+  --bbf-color-dark-line: #2a2a2a; /* bordes y separadores sobre dark */
+
+  /* ============================================================
+     DARK INK RAMP — texto sobre surface dark
+     ============================================================ */
+  --bbf-color-dark-ink: #f5f3ed; /* texto principal — warm off-white */
+  --bbf-color-dark-ink-muted: #a8a59f; /* texto secundario — gris warm */
+
+  /* ============================================================
+     BLUE ACCENT PARA DARK SURFACE
+     Nota: --bbf-color-blue-500 ya existe con valor #255ff1 (canon BBF).
+     Nombres distintos para coexistencia sin colisión (C-01).
+     ============================================================ */
+  --bbf-color-blue-accent: #3b82f6; /* blue acento sobre dark — gradient start */
+  --bbf-color-blue-accent-deep: #1e40af; /* blue acento oscuro — gradient end */
+
+  /* ============================================================
+     SAND CLARO: --bbf-color-sand-deep-shade: #ebe3d4 YA EXISTE en colors.css
+     No se duplica aquí. Semantic layer referencia al token existente.
+     ============================================================ */
+}

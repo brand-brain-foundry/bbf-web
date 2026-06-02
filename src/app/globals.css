@@ -28,6 +28,7 @@
 /* === TIER 1: PRIMITIVES === */
 @import '../styles/tokens/primitives/colors.css';
 @import '../styles/tokens/primitives/colors-warm.css'; /* D-MIG-01: ramp warm coexistente */
+@import '../styles/tokens/primitives/colors-dark.css'; /* D-CASO-3: ramp dark coexistente */
 @import '../styles/tokens/primitives/spacing.css';
 @import '../styles/tokens/primitives/typography.css';
 @import '../styles/tokens/primitives/motion.css';
@@ -39,6 +40,7 @@
 /* === TIER 2: SEMANTIC === */
 @import '../styles/tokens/semantic/colors.css';
 @import '../styles/tokens/semantic/colors-warm.css'; /* D-MIG-01: aliases warm coexistentes */
+@import '../styles/tokens/semantic/colors-dark.css'; /* D-CASO-3: aliases dark coexistentes */
 @import '../styles/tokens/semantic/typography.css';
 @import '../styles/tokens/semantic/spacing.css';
 @import '../styles/tokens/semantic/motion.css';
@@ -58,6 +60,8 @@
 @import '../styles/tokens/components/capabilities.css';
 @import '../styles/tokens/components/como-funciona.css';
 @import '../styles/tokens/components/lissajous.css';
+@import '../styles/tokens/components/case-media-frame.css';
+@import '../styles/tokens/components/case-section.css';
 
 /* === MOTION TOKENS (Wave 11.8-A) === */
 @import '../styles/tokens/motion/index.css';

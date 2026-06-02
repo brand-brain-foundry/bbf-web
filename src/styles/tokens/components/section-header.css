@@ -47,3 +47,21 @@
     height: 72px;
   }
 }
+
+/* Dark surface — deco Lissajous usa tokens dark (D-CASO-3) */
+[data-surface='dark'] .bbf-section-header__deco {
+  color: var(--bbf-text-on-dark-surface-muted);
+}
+
+/* Dark surface — override Tailwind utility color (especificidad 0,3,0 > utility 0,1,0)
+   CVA Heading/Text color="primary" genera text-[var(--bbf-text-on-light)] = black.
+   Estos selectores lo sobreescriben con los tokens dark correctos. */
+.bbf-section-header[data-surface='dark'] [data-component='bbf-heading'] {
+  color: var(--bbf-text-on-dark-surface);
+}
+.bbf-section-header[data-surface='dark'] .bbf-lede {
+  color: var(--bbf-text-on-dark-surface-muted);
+}
+.bbf-section-header[data-surface='dark'] .bbf-section-header__deco-col [data-component='bbf-text'] {
+  color: var(--bbf-text-on-dark-surface-muted);
+}

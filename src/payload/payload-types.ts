@@ -2212,7 +2212,16 @@ export interface SiteHomepage {
                * Lissajous deco opcional. 6 variantes 2D.
                */
               lissajousVariant?:
-                | ('trefoil-2d' | 'pretzel-2d' | 'wave-2d' | 'ring-2d' | 'dense-2d' | 'figure8-2d' | 'process-2d')
+                | (
+                    | 'trefoil-2d'
+                    | 'pretzel-2d'
+                    | 'wave-2d'
+                    | 'ring-2d'
+                    | 'dense-2d'
+                    | 'figure8-2d'
+                    | 'process-2d'
+                    | 'case-2d'
+                  )
                 | null;
               /**
                * Texto decorativo del footer del scene.
@@ -2223,6 +2232,92 @@ export interface SiteHomepage {
           id?: string | null;
         }[]
       | null;
+  };
+  caseStudy?: {
+    /**
+     * Eyebrow mono label (ej: §3 · CASO).
+     */
+    eyebrow?: string | null;
+    /**
+     * Primera línea del H2 (color texto dark principal).
+     */
+    h2Line1?: string | null;
+    /**
+     * Segunda línea del H2 (gradient blue animado).
+     */
+    h2Line2Soft?: string | null;
+    /**
+     * Párrafo introductorio bajo el H2 (max ~220 chars).
+     */
+    lead?: string | null;
+    /**
+     * Etiqueta mono del chrome del frame (ej: SIVAR-BRAINS · WhatsApp Business · live).
+     */
+    mediaChromeLabel?: string | null;
+    /**
+     * Timestamp decorativo del chrome (ej: captura · 23:04 viernes).
+     */
+    mediaTimestamp?: string | null;
+    /**
+     * Imagen estática 16:9 del caso. Si se prefiere video, usar videoPoster + videoSources.
+     */
+    mediaAsset?: (number | null) | Media;
+    /**
+     * Imagen poster del video del caso (mostrada antes de carga). Opcional.
+     */
+    videoPoster?: (number | null) | Media;
+    /**
+     * Fuentes de video del caso en orden de prioridad (mejor codec primero). Vacío → placeholder.
+     */
+    videoSources?:
+      | {
+          /**
+           * URL del archivo de video.
+           */
+          src: string;
+          /**
+           * Codec / contenedor del video.
+           */
+          type: 'webm-av1' | 'webm-vp9' | 'mp4-h264' | 'mp4-h265' | 'mp4-av1' | 'mov';
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Las 3 fases del caso (Situación→Construcción→Operación). Exactamente 3.
+     */
+    phases?:
+      | {
+          /**
+           * Tag temporal del phase (ej: Antes, 12 semanas, Hoy).
+           */
+          tag: string;
+          /**
+           * Título de la fase (ej: Situación, Construcción, Operación).
+           */
+          title: string;
+          /**
+           * Descripción de la fase (2-3 líneas).
+           */
+          body: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Texto de la cita blockquote (display font grande).
+     */
+    quoteText?: string | null;
+    /**
+     * Atribución de la cita (mono-xs, ej: — Equipo BBF · Sivar Brains).
+     */
+    quoteCaption?: string | null;
+    /**
+     * Label del CTA link-arrow (ej: Leer el caso completo).
+     */
+    ctaLabel?: string | null;
+    /**
+     * URL destino del CTA.
+     */
+    ctaHref?: string | null;
   };
   howItWorks: {
     /**
@@ -2597,6 +2692,37 @@ export interface SiteHomepageSelect<T extends boolean = true> {
                   };
               id?: T;
             };
+      };
+  caseStudy?:
+    | T
+    | {
+        eyebrow?: T;
+        h2Line1?: T;
+        h2Line2Soft?: T;
+        lead?: T;
+        mediaChromeLabel?: T;
+        mediaTimestamp?: T;
+        mediaAsset?: T;
+        videoPoster?: T;
+        videoSources?:
+          | T
+          | {
+              src?: T;
+              type?: T;
+              id?: T;
+            };
+        phases?:
+          | T
+          | {
+              tag?: T;
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+        quoteText?: T;
+        quoteCaption?: T;
+        ctaLabel?: T;
+        ctaHref?: T;
       };
   howItWorks?:
     | T

@@ -22,8 +22,13 @@ export const revalidateGlobal: GlobalAfterChangeHook = ({ doc, previousDoc, glob
 
   req.payload.logger.info(`[revalidate] Global ${global.slug} updated — invalidating cache`);
 
-  revalidateTag(`global_${global.slug}`);
-  revalidatePath('/', 'layout');
+  try {
+    revalidateTag(`global_${global.slug}`);
+    revalidatePath('/', 'layout');
+  } catch {
+    // No-op fuera de Next.js request context (seed scripts, CLI).
+    // El cambio se commitió en DB — solo omitimos la invalidación de cache ISR.
+  }
 
   return doc;
 };

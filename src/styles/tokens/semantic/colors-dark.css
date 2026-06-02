@@ -1,0 +1,48 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Colors Dark
+ *
+ * Aliases semánticos para surface dark (§3 Caso — D-CASO-3 firmada 2026-06-02).
+ * Opción B aplicada: nombres paralelos con sufijo -surface para evitar
+ * colisión con legacy aliases en semantic/colors.css (4 consumidores activos).
+ *
+ * Consumidores legacy intactos:
+ *   --bbf-text-on-dark     → Button/Heading/Icon/Text atoms (inverse variant)
+ *   --bbf-border-on-dark   → Button atom
+ *
+ * Componentes nuevos (CaseSection, etc.) referencian ESTOS tokens con sufijo -surface.
+ *
+ * Refs: D-CASO-3, migracion-s3-caso.md, primitives/colors-dark.css
+ */
+
+:root {
+  /* ============================================================
+     SURFACES DARK — fondos de surface dark
+     ============================================================ */
+  --bbf-surface-dark-base: var(--bbf-color-dark-bg); /* #0a0a0a */
+  --bbf-surface-dark-elevated: var(--bbf-color-dark-bg-elevated); /* #1a1a1a */
+
+  /* ============================================================
+     TEXT ON DARK SURFACE — jerarquía de texto
+     Sufijo -surface distingue de legacy --bbf-text-on-dark (4 consumers, no tocar)
+     ============================================================ */
+  --bbf-text-on-dark-surface: var(--bbf-color-dark-ink); /* #f5f3ed */
+  --bbf-text-on-dark-surface-muted: var(--bbf-color-dark-ink-muted); /* #a8a59f */
+
+  /* Acento blue — legible sobre dark (5.39:1 WCAG AA verificado) */
+  --bbf-text-on-dark-surface-accent: var(--bbf-color-blue-accent); /* #3b82f6 */
+
+  /* Acento sand claro — warm sobre dark */
+  --bbf-text-on-dark-surface-sand: var(--bbf-color-sand-deep-shade); /* #ebe3d4 — existente */
+
+  /* ============================================================
+     BORDERS ON DARK SURFACE
+     Sufijo -surface distingue de legacy --bbf-border-on-dark (Button atom)
+     ============================================================ */
+  --bbf-border-on-dark-surface: var(--bbf-color-dark-line); /* #2a2a2a */
+
+  /* ============================================================
+     FOCUS RING ON DARK SURFACE
+     WCAG AA: #3b82f6 sobre #0a0a0a = 5.39:1 ✅ (≥4.5 text, ≥3 non-text)
+     ============================================================ */
+  --bbf-focus-ring-on-dark-surface: var(--bbf-color-blue-accent); /* #3b82f6 */
+}

@@ -46,7 +46,7 @@ async function seed() {
         payload.logger.info(`  ⊘ Entity ${e.slug} already exists, skipping`);
         continue;
       }
-       
+
       const created = await payload.create({ collection: 'entities', data: e as any });
       payload.logger.info(`  ✓ Entity ${e.slug} created (id: ${created.id})`);
     } catch (err) {
@@ -87,7 +87,7 @@ async function seed() {
         payload.logger.info(`  ⊘ Topic ${t.slug} already exists, skipping`);
         continue;
       }
-       
+
       await payload.create({ collection: 'topics', data: t as any });
       payload.logger.info(`  ✓ Topic ${t.slug} created`);
     } catch (err) {
@@ -141,12 +141,56 @@ async function seed() {
         payload.logger.info(`  ⊘ Cluster ${c.code} already exists, skipping`);
         continue;
       }
-       
+
       await payload.create({ collection: 'clusters', data: c as any });
       payload.logger.info(`  ✓ Cluster ${c.code} created`);
     } catch (err) {
       payload.logger.error(`  ✗ Cluster ${c.code} failed: ${err}`);
     }
+  }
+
+  // === §3 Caso — seed site-homepage global caseStudy (D-DATA-1: forzar upsert) ===
+  // D-DATA-1 firmada: siempre overwrite con valores canónicos de web-copy-optimized.md §3
+  try {
+    await payload.updateGlobal({
+      slug: 'site-homepage',
+      locale: 'es',
+      data: {
+        caseStudy: {
+          eyebrow: '● §3 · CASO',
+          h2Line1: 'El primer cerebro',
+          h2Line2Soft: 'en producción.',
+          lead: 'Sivar Brains es el primer cerebro de marca construido por Brand Brain Foundry. Joint venture con Sivar Films en El Salvador. Operando hoy.',
+          mediaChromeLabel: 'SIVAR-BRAINS · WhatsApp Business · live',
+          mediaTimestamp: 'captura · 23:04 viernes',
+          phases: [
+            {
+              tag: 'Antes',
+              title: 'Situación',
+              body: 'Sivar Films producía marcas con identidad fuerte pero cada canal vivía en silo. WhatsApp respondía una cosa. Instagram decía otra. La web tenía datos viejos. El equipo gastaba 3-4 horas diarias respondiendo lo mismo en cinco lugares.',
+            },
+            {
+              tag: '12 semanas',
+              title: 'Construcción',
+              body: 'En 12 semanas montamos su cerebro: ingestamos catálogo, voz, políticas, historia. Conectamos WhatsApp Business, Instagram, web. Activamos generación de contenido desde brief. Configuramos workflows de reservas y pedidos.',
+            },
+            {
+              tag: 'Hoy',
+              title: 'Operación',
+              body: 'Hoy el cerebro atiende clientes los siete días, genera el contenido semanal de redes, registra reservas en sistema sin intervención humana. Sivar Films opera el cliente final. BBF mantiene y evoluciona el sistema.',
+            },
+          ],
+          quoteText:
+            'Un viernes a las 11pm, un cliente abre WhatsApp y pregunta qué vino marida bien con la entraña. La marca responde — con voz, con criterio, con el conocimiento aprobado. Ese mismo conocimiento alimenta el contenido que se publica en redes el sábado.',
+          quoteCaption: '— Equipo BBF · Sivar Brains, en operación',
+          ctaLabel: 'Leer el caso completo',
+          ctaHref: '/casos/sivar-brains',
+        },
+      } as any,
+    });
+    payload.logger.info('  ✓ caseStudy (es) upserted con valores canónicos web-copy');
+  } catch (err) {
+    payload.logger.error(`  ✗ caseStudy seed failed: ${err}`);
   }
 
   // Pillars + cluster articles: B-BBF-12-SEED-EXPANSION

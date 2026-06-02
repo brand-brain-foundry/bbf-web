@@ -10,6 +10,8 @@ import * as migration_20260529_083612_wave_14_capabilities_group from './2026052
 import * as migration_20260529_122936_ds_refinement_lissajous_scenes from './20260529_122936_ds_refinement_lissajous_scenes';
 import * as migration_20260529_171439_cap_hub_spokes from './20260529_171439_cap_hub_spokes';
 import * as migration_20260530_171004_how_it_works_section from './20260530_171004_how_it_works_section';
+import * as migration_20260602_120000_case_study_section from './20260602_120000_case_study_section';
+import * as migration_20260602_130000_case_study_video from './20260602_130000_case_study_video';
 
 export const migrations = [
   {
@@ -70,6 +72,16 @@ export const migrations = [
   {
     up: migration_20260530_171004_how_it_works_section.up,
     down: migration_20260530_171004_how_it_works_section.down,
-    name: '20260530_171004_how_it_works_section'
+    name: '20260530_171004_how_it_works_section',
+  },
+  {
+    up: migration_20260602_120000_case_study_section.up,
+    down: migration_20260602_120000_case_study_section.down,
+    name: '20260602_120000_case_study_section',
+  },
+  {
+    up: migration_20260602_130000_case_study_video.up,
+    down: migration_20260602_130000_case_study_video.down,
+    name: '20260602_130000_case_study_video',
   },
 ];

@@ -1,0 +1,181 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: CaseSection (§3 Home)
+ *
+ * Tier: 3 (COMPONENT)
+ * Scope: .bbf-case-section-* (case = §3 Caso)
+ * Surface: dark — semantic/colors-dark.css
+ * Despacho: B-BBF-WEB-S3-CASO-EJECUTAR (D-CASO-3 firmada 2026-06-02)
+ * Design: home-case.jsx (LEY visual)
+ */
+
+:root {
+  --bbf-case-section-pad: clamp(5rem, 8vw, 9rem); /* padding-block */
+  --bbf-case-phase-pad: clamp(1.5rem, 3vw, 2.5rem); /* padding card */
+}
+
+/* ── Section root ─────────────────────────────────────────── */
+
+.bbf-case-section {
+  background-color: var(--bbf-surface-dark-base);
+  padding-block: var(--bbf-case-section-pad);
+}
+
+.bbf-case-section__wrap {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+/* ── Media frame spacing ─────────────────────────────────── */
+
+.bbf-case-section__media {
+  margin-block-end: clamp(3rem, 6vw, 5rem);
+}
+
+/* ── Phases grid ─────────────────────────────────────────── */
+
+.bbf-case-section__phases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--bbf-border-on-dark-surface);
+  border: 1px solid var(--bbf-border-on-dark-surface);
+  border-radius: var(--bbf-radius-section-card); /* 14px */
+  overflow: hidden;
+  margin-block-end: clamp(3rem, 6vw, 5rem);
+}
+
+@media (max-width: 880px) {
+  .bbf-case-section__phases {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Phase card ──────────────────────────────────────────── */
+
+.bbf-case-section__phase {
+  background: var(--bbf-surface-dark-base);
+  padding: var(--bbf-case-phase-pad);
+}
+
+.bbf-case-section__phase-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block-end: 28px;
+}
+
+.bbf-case-section__phase-num {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-md, 0.8125rem);
+  color: var(--bbf-text-on-dark-surface);
+  flex-shrink: 0;
+}
+
+.bbf-case-section__phase-divider {
+  flex: 1;
+  height: 1px;
+  background: var(--bbf-border-on-dark-surface);
+}
+
+.bbf-case-section__phase-tag {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs, 0.6875rem);
+  letter-spacing: 0.02em;
+  color: var(--bbf-text-on-dark-surface-muted);
+  flex-shrink: 0;
+}
+
+.bbf-case-section__phase-title {
+  margin: 0 0 14px;
+  color: var(--bbf-text-on-dark-surface);
+}
+
+.bbf-case-section__phase-body {
+  color: var(--bbf-text-on-dark-surface-muted);
+  margin: 0;
+  max-width: 32ch;
+  line-height: 1.55;
+  font-size: var(--bbf-text-body-md);
+}
+
+/* ── Quote block ──────────────────────────────────────────── */
+
+.bbf-case-section__quote {
+  margin-block-end: 32px;
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(2rem, 6vw, 5rem);
+  border: 1px solid var(--bbf-border-on-dark-surface);
+  background: var(--bbf-surface-dark-elevated);
+  border-radius: var(--bbf-radius-section-card);
+  position: relative;
+  max-width: 920px;
+}
+
+.bbf-case-section__quote-mark {
+  color: var(--bbf-text-on-dark-surface-muted);
+  margin-block-end: 18px;
+  opacity: 0.4;
+}
+
+.bbf-case-section__quote blockquote {
+  margin: 0;
+  font-family: var(--bbf-font-display);
+  font-size: clamp(1.25rem, 2.4vw, 1.875rem);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--bbf-text-on-dark-surface);
+  font-weight: 400;
+}
+
+.bbf-case-section__quote blockquote p {
+  margin: 0 0 18px;
+  text-wrap: balance;
+}
+
+.bbf-case-section__quote blockquote p:last-child {
+  margin-block-end: 24px;
+  color: var(--bbf-text-on-dark-surface-muted);
+}
+
+.bbf-case-section__quote figcaption {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs, 0.6875rem);
+  letter-spacing: 0.02em;
+  color: var(--bbf-text-on-dark-surface-muted);
+}
+
+/* ── CTA ──────────────────────────────────────────────────── */
+
+.bbf-case-section__cta {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* CTA link style — sand claro + hover blue + bg transparente */
+.bbf-cta-link-dark {
+  background: transparent;
+  color: var(--bbf-text-on-dark-surface);
+  border: none;
+  padding: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bbf-space-2);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-md, 0.8125rem);
+  letter-spacing: 0.04em;
+  transition: color 200ms var(--bbf-easing-hover, ease-out);
+}
+
+.bbf-cta-link-dark:hover {
+  color: var(--bbf-text-on-dark-surface-accent);
+}
+
+.bbf-cta-link-dark:hover svg {
+  transform: translateX(3px);
+}
+
+.bbf-cta-link-dark svg {
+  transition: transform 200ms var(--bbf-easing-hover, ease-out);
+  flex-shrink: 0;
+}

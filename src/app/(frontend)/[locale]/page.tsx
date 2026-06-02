@@ -3,7 +3,11 @@ import config from '@/payload-config';
 import { setRequestLocale } from 'next-intl/server';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { CapabilitiesSection } from '@/components/sections/CapabilitiesSection';
-import { ComoFuncionaSection } from '@/components/sections/ComoFuncionaSection';
+// ComoFuncionaSection desconectada (D-4 firmada) — componente conservado en /sections/ComoFuncionaSection/
+import { CaseSection } from '@/components/sections/CaseSection';
+import { SectionHeader } from '@/components/molecules/SectionHeader';
+import { CaseMediaFrame } from '@/components/molecules/CaseMediaFrame';
+import { Lissajous } from '@/components/atoms/Lissajous';
 import { HeroMediaFrame, HeroRecTimer } from '@/components/molecules/HeroMediaFrame';
 import { HeroTicker } from '@/components/molecules/HeroTicker';
 import { HeroVideo } from '@/components/molecules/HeroVideo';
@@ -29,11 +33,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     depth: 1,
   });
 
-  const { hero, capabilities: cap, howItWorks: hiw } = site;
+  const { hero, capabilities: cap, caseStudy: cs } = site;
   const posterUrl =
     hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
       ? ((hero.media.videoPoster as Media).url ?? undefined)
       : undefined;
+
+  // §3 Caso — video poster URL (si existe)
+  const casePosterUrl =
+    cs?.videoPoster && typeof cs.videoPoster === 'object'
+      ? ((cs.videoPoster as Media).url ?? undefined)
+      : undefined;
+  const caseVideoSources = cs?.videoSources ?? [];
 
   return (
     <>
@@ -171,43 +182,70 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </CapabilitiesSection.Grid>
       </CapabilitiesSection>
 
-      {/* ─── COMO FUNCIONA SECTION §3 ───────────────────────────────── */}
-      {hiw && (
-        <ComoFuncionaSection surface="sand">
-          {/* Header con sticky descendientes — Reveal fade OBLIGATORIO L-BBF-216 */}
-          <Reveal variant="fade">
-            <ComoFuncionaSection.Header
-              eyebrow={hiw.eyebrow ?? '§3 · Cómo funciona'}
-              h2Line1={hiw.h2Line1 ?? 'Tres pasos.'}
-              h2Line2Soft={hiw.h2Line2Soft ?? 'Una sola memoria al centro.'}
-            />
-          </Reveal>
-
-          {/* Flow SVG con labels — safe para Reveal up */}
+      {/* ─── CASE SECTION §3 ─────────────────────────────────────────── */}
+      {cs && (
+        <CaseSection surface="dark">
           <Reveal variant="up">
-            <ComoFuncionaSection.Flow
-              steps={(hiw.steps ?? []).slice(0, 3).map((s) => ({
-                label: s.label ?? '',
-                meta: s.meta ?? '',
-              }))}
+            <SectionHeader
+              surface="dark"
+              eyebrow={cs.eyebrow ?? '§3 · CASO'}
+              h2Line1={cs.h2Line1 ?? 'El cerebro'}
+              h2Line2Soft={cs.h2Line2Soft ?? 'en producción.'}
+              h2Line2SoftClassName="bbf-text-gradient-blue-animated"
+              lead={cs.lead ?? undefined}
+              decoration={<Lissajous name="case-2d" animation="traveling" />}
             />
           </Reveal>
 
-          {/* Steps grid — Reveal individual con delay stagger */}
-          <ComoFuncionaSection.Steps>
-            {(hiw.steps ?? []).map((step, i) => (
-              <Reveal key={step.id ?? `hiw-step-${i}`} variant="up" delay={i * 120}>
-                <ComoFuncionaSection.Step
-                  index={i + 1}
-                  label={step.label ?? ''}
-                  title={step.title ?? ''}
-                  body={step.body ?? ''}
-                  side={step.side ?? []}
+          <Reveal variant="up" delay={80}>
+            <CaseSection.Media>
+              <CaseMediaFrame>
+                <CaseMediaFrame.Chrome
+                  label={cs.mediaChromeLabel ?? 'SIVAR-BRAINS · WhatsApp Business · live'}
+                  timestamp={cs.mediaTimestamp ?? 'captura · 23:04 viernes'}
+                  live
+                />
+                <CaseMediaFrame.Body>
+                  {caseVideoSources.length > 0 ? (
+                    <HeroVideo controls preload="metadata" poster={casePosterUrl}>
+                      {caseVideoSources.map((s) => (
+                        <HeroVideo.Source key={s.src} src={s.src} type={s.type} />
+                      ))}
+                    </HeroVideo>
+                  ) : null}
+                </CaseMediaFrame.Body>
+              </CaseMediaFrame>
+            </CaseSection.Media>
+          </Reveal>
+
+          <CaseSection.Phases>
+            {(cs.phases ?? []).map((phase, i) => (
+              <Reveal key={phase.id ?? `case-phase-${i}`} variant="up" delay={i * 100}>
+                <CaseSection.Phase
+                  index={i}
+                  tag={phase.tag ?? ''}
+                  title={phase.title ?? ''}
+                  body={phase.body ?? ''}
                 />
               </Reveal>
             ))}
-          </ComoFuncionaSection.Steps>
-        </ComoFuncionaSection>
+          </CaseSection.Phases>
+
+          {cs.quoteText && (
+            <Reveal variant="up">
+              <CaseSection.Quote caption={cs.quoteCaption ?? undefined}>
+                {cs.quoteText}
+              </CaseSection.Quote>
+            </Reveal>
+          )}
+
+          <Reveal variant="up">
+            <CaseSection.Cta
+              href={cs.ctaHref ?? '/casos/sivar-brains'}
+              label={cs.ctaLabel ?? 'Leer el caso completo'}
+            />
+          </Reveal>
+        </CaseSection>
       )}
     </>
   );

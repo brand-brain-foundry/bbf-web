@@ -93,6 +93,12 @@ export const LISSAJOUS_REGISTRY: Record<LissajousName, LissajousVariant> = {
     preset: { a: 5, b: 4, delta: Math.PI / 4 },
     defaultLabel: '5:4 Process 2D',
   },
+  'case-2d': {
+    name: 'case-2d',
+    dimension: '2d',
+    preset: { a: 3, b: 4, delta: Math.PI / 3 },
+    defaultLabel: '3:4 Case 2D',
+  },
 } as const;
 
 /**

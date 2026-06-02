@@ -605,6 +605,163 @@ export const SiteHomepage: GlobalConfig = {
       ],
     },
     {
+      name: 'caseStudy',
+      type: 'group',
+      label: { es: 'Sección Caso (§3)', en: 'Case Study Section (§3)' },
+      fields: [
+        {
+          name: 'eyebrow',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Eyebrow mono label (ej: §3 · CASO).' },
+        },
+        {
+          name: 'h2Line1',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Primera línea del H2 (color texto dark principal).' },
+        },
+        {
+          name: 'h2Line2Soft',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Segunda línea del H2 (gradient blue animado).' },
+        },
+        {
+          name: 'lead',
+          type: 'textarea',
+          localized: true,
+          admin: { description: 'Párrafo introductorio bajo el H2 (max ~220 chars).' },
+        },
+        {
+          name: 'mediaChromeLabel',
+          type: 'text',
+          localized: true,
+          admin: {
+            description:
+              'Etiqueta mono del chrome del frame (ej: SIVAR-BRAINS · WhatsApp Business · live).',
+          },
+        },
+        {
+          name: 'mediaTimestamp',
+          type: 'text',
+          admin: { description: 'Timestamp decorativo del chrome (ej: captura · 23:04 viernes).' },
+        },
+        {
+          name: 'mediaAsset',
+          type: 'upload',
+          relationTo: 'media',
+          required: false,
+          admin: {
+            description:
+              'Imagen estática 16:9 del caso. Si se prefiere video, usar videoPoster + videoSources.',
+          },
+        },
+        {
+          name: 'videoPoster',
+          type: 'upload',
+          relationTo: 'media',
+          required: false,
+          admin: {
+            description: 'Imagen poster del video del caso (mostrada antes de carga). Opcional.',
+          },
+        },
+        {
+          name: 'videoSources',
+          type: 'array',
+          minRows: 0,
+          label: { en: 'Video Sources', es: 'Fuentes de Video' },
+          admin: {
+            description:
+              'Fuentes de video del caso en orden de prioridad (mejor codec primero). Vacío → placeholder.',
+          },
+          fields: [
+            {
+              name: 'src',
+              type: 'text',
+              required: true,
+              admin: { description: 'URL del archivo de video.' },
+            },
+            {
+              name: 'type',
+              type: 'select',
+              required: true,
+              options: [
+                { label: 'AV1 WebM', value: 'webm-av1' },
+                { label: 'VP9 WebM', value: 'webm-vp9' },
+                { label: 'H.264 MP4', value: 'mp4-h264' },
+                { label: 'H.265 MP4', value: 'mp4-h265' },
+                { label: 'AV1 MP4', value: 'mp4-av1' },
+                { label: 'QuickTime MOV', value: 'mov' },
+              ],
+              admin: { description: 'Codec / contenedor del video.' },
+            },
+          ],
+        },
+        {
+          name: 'phases',
+          type: 'array',
+          minRows: 3,
+          maxRows: 3,
+          label: { en: 'Case Phases', es: 'Fases del Caso' },
+          admin: {
+            description: 'Las 3 fases del caso (Situación→Construcción→Operación). Exactamente 3.',
+          },
+          fields: [
+            {
+              name: 'tag',
+              type: 'text',
+              localized: true,
+              required: true,
+              admin: { description: 'Tag temporal del phase (ej: Antes, 12 semanas, Hoy).' },
+            },
+            {
+              name: 'title',
+              type: 'text',
+              localized: true,
+              required: true,
+              admin: {
+                description: 'Título de la fase (ej: Situación, Construcción, Operación).',
+              },
+            },
+            {
+              name: 'body',
+              type: 'textarea',
+              localized: true,
+              required: true,
+              admin: { description: 'Descripción de la fase (2-3 líneas).' },
+            },
+          ],
+        },
+        {
+          name: 'quoteText',
+          type: 'textarea',
+          localized: true,
+          admin: { description: 'Texto de la cita blockquote (display font grande).' },
+        },
+        {
+          name: 'quoteCaption',
+          type: 'text',
+          localized: true,
+          admin: {
+            description: 'Atribución de la cita (mono-xs, ej: — Equipo BBF · Sivar Brains).',
+          },
+        },
+        {
+          name: 'ctaLabel',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Label del CTA link-arrow (ej: Leer el caso completo).' },
+        },
+        {
+          name: 'ctaHref',
+          type: 'text',
+          defaultValue: '/casos/sivar-brains',
+          admin: { description: 'URL destino del CTA.' },
+        },
+      ],
+    },
+    {
       name: 'howItWorks',
       type: 'group',
       label: { es: 'Sección Cómo Funciona', en: 'How It Works Section' },
