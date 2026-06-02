@@ -10,6 +10,7 @@
  * Refs: D-S4-02 (fully dynamic), D-S4-03 (P-3 tabs), B-BBF-WEB-S4-PORQUE-FASES-2A6 §5
  */
 
+import type { CSSProperties } from 'react';
 import { useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -114,8 +115,13 @@ export function Comparison({ columns, rows }: ComparisonProps) {
 
   return (
     <div className="bbf-cmp" data-component="bbf-cmp">
-      {/* ── Desktop grid ── */}
-      <div className="bbf-cmp__grid" role="table" aria-label="Comparación entre alternativas">
+      {/* ── Desktop grid — --cmp-cols inyecta column count dinámico (D-AUD-S4-01) ── */}
+      <div
+        className="bbf-cmp__grid"
+        role="table"
+        aria-label="Comparación entre alternativas"
+        style={{ '--cmp-cols': String(cols.length) } as CSSProperties}
+      >
         {/* Header row */}
         <div className="bbf-cmp__row bbf-cmp__row--head" role="row">
           <div className="bbf-cmp__rowhead bbf-cmp__cell--head" role="columnheader">

@@ -24,7 +24,7 @@
   /* Layout */
   --cmp-min-height: 4rem; /* 64px — row min-height */
   --cmp-row-head-width: minmax(180px, 1.2fr);
-  --cmp-data-cols: repeat(3, 1fr);
+  /* --cmp-cols se inyecta via inline style en PorqueSection.Comparison (D-AUD-S4-01) */
 }
 
 /* ── Root ──────────────────────────────────────────────────────────────── */
@@ -49,7 +49,8 @@
 
 .bbf-cmp__grid {
   display: grid;
-  grid-template-columns: var(--cmp-row-head-width) var(--cmp-data-cols);
+  /* C-01: --cmp-cols inyectado vía inline style → grid responde a columns.length (D-AUD-S4-01) */
+  grid-template-columns: var(--cmp-row-head-width) repeat(var(--cmp-cols, 3), 1fr);
 }
 
 /* ── Header row ────────────────────────────────────────────────────────── */
@@ -79,7 +80,7 @@
   letter-spacing: 0.05em;
   padding: 0.1875rem 0.5rem;
   border-radius: 999px;
-  margin-block-end: 0.5rem;
+  margin-block-end: var(--bbf-space-2);
 }
 
 .bbf-cmp__col-name {
@@ -94,7 +95,7 @@
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
   color: var(--bbf-text-on-warm-faint);
-  margin-block-start: 0.25rem;
+  margin-block-start: var(--bbf-space-1);
 }
 
 /* Highlighted column (BBF) */
@@ -118,8 +119,8 @@
   border-block-start: 1px solid var(--bbf-border-on-warm);
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  font-size: 0.875rem;
+  gap: 0.625rem; /* Tier 3 — 10px off-grid, valor diseño Claude */
+  font-size: var(--bbf-text-body-sm);
   color: var(--bbf-text-on-warm-soft);
   background-color: var(--bbf-surface-warm-base);
   min-height: var(--cmp-min-height);
@@ -147,7 +148,7 @@
 
 .bbf-cmp__rowhead-num {
   font-family: var(--bbf-font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--bbf-text-mono-xs);
   color: var(--bbf-text-on-warm-faint);
   flex-shrink: 0;
 }
@@ -164,13 +165,14 @@
   flex-shrink: 0;
 }
 
-.bbf-cmp__cell--yes .bbf-cmp__cell-icon {
+/* C-02: compound selector (sin espacio) — icon+modifier en el MISMO elemento span (D-AUD-S4-02) */
+.bbf-cmp__cell--yes.bbf-cmp__cell-icon {
   background-color: var(--bbf-text-on-warm);
   color: var(--bbf-surface-warm-base);
 }
 
-.bbf-cmp__cell--no .bbf-cmp__cell-icon,
-.bbf-cmp__cell--mid .bbf-cmp__cell-icon {
+.bbf-cmp__cell--no.bbf-cmp__cell-icon,
+.bbf-cmp__cell--mid.bbf-cmp__cell-icon {
   background-color: var(--bbf-surface-warm-elevated);
   color: var(--bbf-text-on-warm-muted);
 }
@@ -198,7 +200,7 @@
 
   .bbf-cmp__tab {
     flex: 1;
-    padding: 0.75rem 0.5rem;
+    padding: var(--bbf-space-3) var(--bbf-space-2);
     background: none;
     border: none;
     border-block-end: 2px solid transparent;
@@ -238,9 +240,9 @@
     padding-block: var(--cmp-cell-py-sm);
     padding-inline: var(--cmp-cell-px-sm);
     border-block-end: 1px solid var(--bbf-border-on-warm);
-    gap: 0.5rem;
+    gap: var(--bbf-space-2);
     align-items: center;
-    font-size: 0.875rem;
+    font-size: var(--bbf-text-body-sm);
   }
 
   .bbf-cmp-mobile__row:last-child {
@@ -249,7 +251,7 @@
 
   .bbf-cmp-mobile__attr {
     color: var(--bbf-text-on-warm-muted);
-    font-size: 0.75rem;
+    font-size: var(--bbf-text-xs);
   }
 
   .bbf-cmp-mobile__val {
@@ -285,7 +287,7 @@
   }
 
   .bbf-cmp__col-name {
-    font-size: 1rem;
+    font-size: var(--bbf-text-body-md);
   }
 }
 
@@ -317,6 +319,6 @@
 @media (max-width: 767px) {
   .bbf-porque-epilogue {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: var(--bbf-space-6);
   }
 }

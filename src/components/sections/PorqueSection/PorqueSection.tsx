@@ -4,7 +4,7 @@
  *
  * Compound:
  *   <PorqueSection>
- *     <SectionHeader surface="warm" ... decoration={<Lissajous name="comparison-2d" />} />
+ *     <SectionHeader surface="warm" ... decoration={<Lissajous name="cross-2d" />} />
  *     <PorqueSection.Comparison columns={...} rows={...} />
  *     <PorqueSection.Epilogue title={...} body={...} />
  *   </PorqueSection>
