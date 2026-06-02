@@ -99,6 +99,18 @@ export const LISSAJOUS_REGISTRY: Record<LissajousName, LissajousVariant> = {
     preset: { a: 3, b: 4, delta: Math.PI / 3 },
     defaultLabel: '3:4 Case 2D',
   },
+  'comparison-2d': {
+    name: 'comparison-2d',
+    dimension: '2d',
+    preset: { a: 5, b: 6, delta: Math.PI / 6 },
+    defaultLabel: '5:6 Comparison 2D',
+  },
+  'cross-2d': {
+    name: 'cross-2d',
+    dimension: '2d',
+    preset: { a: 5, b: 3, delta: Math.PI / 4 },
+    defaultLabel: '5:3 Cross 2D',
+  },
 } as const;
 
 /**

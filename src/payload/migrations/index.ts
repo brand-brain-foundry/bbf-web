@@ -12,6 +12,7 @@ import * as migration_20260529_171439_cap_hub_spokes from './20260529_171439_cap
 import * as migration_20260530_171004_how_it_works_section from './20260530_171004_how_it_works_section';
 import * as migration_20260602_120000_case_study_section from './20260602_120000_case_study_section';
 import * as migration_20260602_130000_case_study_video from './20260602_130000_case_study_video';
+import * as migration_20260602_180339_comparison_section from './20260602_180339_comparison_section';
 
 export const migrations = [
   {
@@ -83,5 +84,10 @@ export const migrations = [
     up: migration_20260602_130000_case_study_video.up,
     down: migration_20260602_130000_case_study_video.down,
     name: '20260602_130000_case_study_video',
+  },
+  {
+    up: migration_20260602_180339_comparison_section.up,
+    down: migration_20260602_180339_comparison_section.down,
+    name: '20260602_180339_comparison_section'
   },
 ];

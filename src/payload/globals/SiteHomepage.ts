@@ -762,6 +762,149 @@ export const SiteHomepage: GlobalConfig = {
       ],
     },
     {
+      name: 'comparison',
+      type: 'group',
+      label: { es: 'Sección Por Qué (§4)', en: 'Why Section (§4)' },
+      admin: {
+        description: {
+          en: '§4 comparison table: Why a brand brain vs agencies / consultants / SaaS.',
+          es: '§4 tabla comparativa: Por qué un cerebro de marca vs agencias / consultoras / SaaS.',
+        },
+      },
+      fields: [
+        {
+          name: 'eyebrow',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Eyebrow label (ej: §4 · POR QUÉ).' },
+        },
+        {
+          name: 'h2Line1',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Primera línea del H2 (color primario).' },
+        },
+        {
+          name: 'h2Line2Soft',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Segunda línea del H2 (tono muted).' },
+        },
+        {
+          name: 'lead',
+          type: 'textarea',
+          localized: true,
+          admin: { description: 'Párrafo introductorio bajo el H2 (max ~220 chars).' },
+        },
+        {
+          name: 'columns',
+          type: 'array',
+          dbName: 'cmp_columns',
+          label: { en: 'Table Columns', es: 'Columnas de la Tabla' },
+          admin: {
+            description:
+              'Columnas de la tabla comparativa. Exactamente 1 columna debe tener isHighlighted=true (columna BBF).',
+          },
+          fields: [
+            {
+              name: 'label',
+              type: 'text',
+              localized: true,
+              required: true,
+              admin: { description: 'Nombre de la columna (ej: Cerebro de marca).' },
+            },
+            {
+              name: 'sub',
+              type: 'text',
+              localized: true,
+              admin: { description: 'Sub-label de la columna (ej: Sistema propio).' },
+            },
+            {
+              name: 'isHighlighted',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description:
+                  'Columna BBF destacada. Activa el crown pill "▼ BBF" y es el tab por defecto en mobile.',
+              },
+            },
+          ],
+        },
+        {
+          name: 'rows',
+          type: 'array',
+          dbName: 'cmp_rows',
+          label: { en: 'Table Rows', es: 'Filas de la Tabla' },
+          admin: { description: 'Filas de la tabla comparativa (dimensiones de comparación).' },
+          fields: [
+            {
+              name: 'attribute',
+              type: 'text',
+              localized: true,
+              required: true,
+              admin: { description: 'Nombre de la dimensión (ej: Aprende tu empresa).' },
+            },
+            {
+              name: 'cells',
+              type: 'array',
+              dbName: 'cmp_cells',
+              label: { en: 'Cells', es: 'Celdas' },
+              admin: {
+                description:
+                  'Una celda por columna, en el mismo orden que las columnas definidas arriba.',
+              },
+              fields: [
+                {
+                  name: 'state',
+                  type: 'select',
+                  required: true,
+                  defaultValue: 'text',
+                  options: [
+                    { label: 'Sí ✓', value: 'yes' },
+                    { label: 'No ✗', value: 'no' },
+                    { label: 'Parcial —', value: 'mid' },
+                    { label: 'Solo texto', value: 'text' },
+                  ],
+                  admin: {
+                    description:
+                      'Ícono de la celda (yes=✓ circulo, no=✗ circulo, mid=— circulo, text=solo texto).',
+                  },
+                },
+                {
+                  name: 'value',
+                  type: 'text',
+                  localized: true,
+                  admin: { description: 'Texto de la celda.' },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'epilogue',
+          type: 'group',
+          label: { en: 'Epilogue', es: 'Epílogo' },
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              localized: true,
+              admin: { description: 'Título del epílogo (ej: La diferencia operativa).' },
+            },
+            {
+              name: 'body',
+              type: 'textarea',
+              localized: true,
+              admin: {
+                description:
+                  'Párrafos del epílogo separados por línea en blanco. Se renderizan como párrafos independientes.',
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'howItWorks',
       type: 'group',
       label: { es: 'Sección Cómo Funciona', en: 'How It Works Section' },

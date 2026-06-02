@@ -193,6 +193,104 @@ async function seed() {
     payload.logger.error(`  ✗ caseStudy seed failed: ${err}`);
   }
 
+  // === §4 Por qué — seed site-homepage global comparison (Versión B firmada Zavala 2026-06-02)
+  // 3 columnas: SaaS / Chatbot · Trabajo manual · Cerebro de marca (highlighted).
+  // Contenido: despacho B-BBF-WEB-S4-PORQUE-FASES-2A6 §2C.
+  // Nota: state='text' para todas las celdas (V-B no usa yes/no/mid — el énfasis BBF
+  // lo gestiona el flag isHighlighted de la columna + CSS del componente.
+  try {
+    await payload.updateGlobal({
+      slug: 'site-homepage',
+      locale: 'es',
+      data: {
+        comparison: {
+          eyebrow: '§4 · POR QUÉ',
+          h2Line1: 'La diferencia entre alquilar y ser dueño',
+          h2Line2Soft: '',
+          lead: 'Hoy tu empresa enfrenta dos costos invisibles: el SaaS que alquilás sin ser tuyo, y el trabajo repetitivo que tu equipo hace a mano. Un cerebro de marca cierra ambos.',
+          columns: [
+            { label: 'SaaS / Chatbot', isHighlighted: false },
+            { label: 'Trabajo manual', isHighlighted: false },
+            { label: 'Cerebro de marca', isHighlighted: true },
+          ],
+          rows: [
+            {
+              attribute: 'Propiedad',
+              cells: [
+                { state: 'text', value: 'Suya' },
+                { state: 'text', value: 'Tuya, pero diluida' },
+                { state: 'text', value: 'Tuya, código + datos' },
+              ],
+            },
+            {
+              attribute: 'Aprende tu empresa',
+              cells: [
+                { state: 'text', value: 'Promedio mercado' },
+                { state: 'text', value: 'Por persona' },
+                { state: 'text', value: 'Tu memoria específica' },
+              ],
+            },
+            {
+              attribute: 'Voz consistente',
+              cells: [
+                { state: 'text', value: 'Aproximada' },
+                { state: 'text', value: 'Depende de quién' },
+                { state: 'text', value: 'Exacta, siempre' },
+              ],
+            },
+            {
+              attribute: 'Disponibilidad',
+              cells: [
+                { state: 'text', value: '24/7' },
+                { state: 'text', value: 'Horario laboral' },
+                { state: 'text', value: '24/7' },
+              ],
+            },
+            {
+              attribute: 'Escala',
+              cells: [
+                { state: 'text', value: 'Pagás por uso' },
+                { state: 'text', value: 'Contratar más' },
+                { state: 'text', value: 'Sin costo lineal' },
+              ],
+            },
+            {
+              attribute: 'Gobernanza',
+              cells: [
+                { state: 'text', value: 'Del proveedor' },
+                { state: 'text', value: 'Sin trazabilidad' },
+                { state: 'text', value: 'Tuya, auditable' },
+              ],
+            },
+            {
+              attribute: 'Portabilidad',
+              cells: [
+                { state: 'text', value: 'No, lock-in' },
+                { state: 'text', value: 'Sí, pero en personas' },
+                { state: 'text', value: 'Sí, sistema propio' },
+              ],
+            },
+            {
+              attribute: 'Costo a 3 años',
+              cells: [
+                { state: 'text', value: 'Sube cada año' },
+                { state: 'text', value: 'Sube con escala' },
+                { state: 'text', value: 'Inversión que se aprecia' },
+              ],
+            },
+          ],
+          epilogue: {
+            title: 'La diferencia operativa',
+            body: 'Un SaaS te da acceso temporal a una herramienta que también usan tus competidores. El día que cancelás, no te llevás nada.\n\nEl trabajo manual repetitivo no escala. Cada nuevo cliente, cada nuevo canal, cada nueva pregunta — más horas, más personas, más costo.\n\nUn cerebro de marca es tuyo. Vive en tu infraestructura. Opera con tu voz exacta. Absorbe el trabajo repetitivo que hoy consume a tu equipo y libera horas para lo que solo un humano puede hacer: dirigir.',
+          },
+        },
+      } as any,
+    });
+    payload.logger.info('  ✓ comparison §4 (es) seeded con Versión B firmada (3 cols × 8 rows)');
+  } catch (err) {
+    payload.logger.error(`  ✗ comparison §4 seed failed: ${err}`);
+  }
+
   // Pillars + cluster articles: B-BBF-12-SEED-EXPANSION
   payload.logger.info('🌱 Seed complete.');
   process.exit(0);

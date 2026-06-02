@@ -62,6 +62,7 @@
 @import '../styles/tokens/components/lissajous.css';
 @import '../styles/tokens/components/case-media-frame.css';
 @import '../styles/tokens/components/case-section.css';
+@import '../styles/tokens/components/porque-section.css'; /* §4 Por qué — D-S4-01..04 */
 
 /* === MOTION TOKENS (Wave 11.8-A) === */
 @import '../styles/tokens/motion/index.css';

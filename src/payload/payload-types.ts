@@ -2221,6 +2221,8 @@ export interface SiteHomepage {
                     | 'figure8-2d'
                     | 'process-2d'
                     | 'case-2d'
+                    | 'comparison-2d'
+                    | 'cross-2d'
                   )
                 | null;
               /**
@@ -2318,6 +2320,85 @@ export interface SiteHomepage {
      * URL destino del CTA.
      */
     ctaHref?: string | null;
+  };
+  /**
+   * §4 comparison table: Why a brand brain vs agencies / consultants / SaaS.
+   */
+  comparison?: {
+    /**
+     * Eyebrow label (ej: §4 · POR QUÉ).
+     */
+    eyebrow?: string | null;
+    /**
+     * Primera línea del H2 (color primario).
+     */
+    h2Line1?: string | null;
+    /**
+     * Segunda línea del H2 (tono muted).
+     */
+    h2Line2Soft?: string | null;
+    /**
+     * Párrafo introductorio bajo el H2 (max ~220 chars).
+     */
+    lead?: string | null;
+    /**
+     * Columnas de la tabla comparativa. Exactamente 1 columna debe tener isHighlighted=true (columna BBF).
+     */
+    columns?:
+      | {
+          /**
+           * Nombre de la columna (ej: Cerebro de marca).
+           */
+          label: string;
+          /**
+           * Sub-label de la columna (ej: Sistema propio).
+           */
+          sub?: string | null;
+          /**
+           * Columna BBF destacada. Activa el crown pill "▼ BBF" y es el tab por defecto en mobile.
+           */
+          isHighlighted?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Filas de la tabla comparativa (dimensiones de comparación).
+     */
+    rows?:
+      | {
+          /**
+           * Nombre de la dimensión (ej: Aprende tu empresa).
+           */
+          attribute: string;
+          /**
+           * Una celda por columna, en el mismo orden que las columnas definidas arriba.
+           */
+          cells?:
+            | {
+                /**
+                 * Ícono de la celda (yes=✓ circulo, no=✗ circulo, mid=— circulo, text=solo texto).
+                 */
+                state: 'yes' | 'no' | 'mid' | 'text';
+                /**
+                 * Texto de la celda.
+                 */
+                value?: string | null;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    epilogue?: {
+      /**
+       * Título del epílogo (ej: La diferencia operativa).
+       */
+      title?: string | null;
+      /**
+       * Párrafos del epílogo separados por línea en blanco. Se renderizan como párrafos independientes.
+       */
+      body?: string | null;
+    };
   };
   howItWorks: {
     /**
@@ -2723,6 +2804,41 @@ export interface SiteHomepageSelect<T extends boolean = true> {
         quoteCaption?: T;
         ctaLabel?: T;
         ctaHref?: T;
+      };
+  comparison?:
+    | T
+    | {
+        eyebrow?: T;
+        h2Line1?: T;
+        h2Line2Soft?: T;
+        lead?: T;
+        columns?:
+          | T
+          | {
+              label?: T;
+              sub?: T;
+              isHighlighted?: T;
+              id?: T;
+            };
+        rows?:
+          | T
+          | {
+              attribute?: T;
+              cells?:
+                | T
+                | {
+                    state?: T;
+                    value?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        epilogue?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+            };
       };
   howItWorks?:
     | T

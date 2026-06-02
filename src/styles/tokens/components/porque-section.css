@@ -1,0 +1,322 @@
+/**
+ * porque-section.css — Tier 3 tokens §4 Por qué homepage
+ *
+ * Surface: sand-deep (#ebe3d4 via --bbf-color-sand-deep-shade, D-S4-01 Opción A).
+ * ComparisonTable: CSS Grid desktop / Column Selector Tabs mobile (D-S4-03 P-3).
+ * Tokens Tier 3 locales — NO reutilizar fuera de PorqueSection.
+ *
+ * Refs: D-S4-01..04, B-BBF-WEB-S4-PORQUE-FASES-2A6, home-comparison.jsx (LEY visual)
+ */
+
+/* ── Tier 3 tokens locales ─────────────────────────────────────────────── */
+
+.bbf-porque-section {
+  /* Spacing */
+  --cmp-cell-py: 1.125rem; /* 18px — off 8pt grid, valor diseño */
+  --cmp-cell-px: var(--bbf-space-5); /* 20px */
+  --cmp-cell-py-sm: 0.875rem; /* 14px — ≤920px */
+  --cmp-cell-px-sm: 0.75rem; /* 12px — ≤920px */
+  --cmp-head-pad-top: 1.625rem; /* 26px — col header */
+  --cmp-head-pad-bottom: 1.375rem; /* 22px — col header */
+  --cmp-icon-size: 1.125rem; /* 18px — cell state icon */
+  --cmp-epilogue-mt: clamp(3rem, 6vw, 5rem); /* 48→80px */
+
+  /* Layout */
+  --cmp-min-height: 4rem; /* 64px — row min-height */
+  --cmp-row-head-width: minmax(180px, 1.2fr);
+  --cmp-data-cols: repeat(3, 1fr);
+}
+
+/* ── Root ──────────────────────────────────────────────────────────────── */
+
+.bbf-porque-section {
+  background-color: var(--bbf-color-sand-deep-shade); /* #ebe3d4 — D-S4-01 */
+  padding-block: var(--bbf-space-section-pad-fluid);
+}
+
+/* ── ComparisonTable — wrapper ─────────────────────────────────────────── */
+
+.bbf-cmp {
+  border: 1px solid var(--bbf-border-on-warm);
+  border-radius: var(--bbf-radius-section-card);
+  overflow: hidden;
+  background-color: var(--bbf-surface-warm-base);
+  position: relative;
+  margin-block-start: var(--bbf-space-section-head-mb);
+}
+
+/* ── ComparisonTable — Grid (desktop) ─────────────────────────────────── */
+
+.bbf-cmp__grid {
+  display: grid;
+  grid-template-columns: var(--cmp-row-head-width) var(--cmp-data-cols);
+}
+
+/* ── Header row ────────────────────────────────────────────────────────── */
+
+.bbf-cmp__row--head {
+  display: contents;
+}
+
+.bbf-cmp__cell--head {
+  padding-block-start: var(--cmp-head-pad-top);
+  padding-block-end: var(--cmp-head-pad-bottom);
+  padding-inline: var(--cmp-cell-px);
+  background-color: var(--bbf-surface-warm-base);
+  position: relative;
+}
+
+.bbf-cmp__rowhead.bbf-cmp__cell--head {
+  background-color: var(--bbf-surface-warm-base);
+}
+
+.bbf-cmp__crown {
+  display: inline-block;
+  background-color: var(--bbf-text-on-warm);
+  color: var(--bbf-surface-warm-base);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  letter-spacing: 0.05em;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 999px;
+  margin-block-end: 0.5rem;
+}
+
+.bbf-cmp__col-name {
+  font-family: var(--bbf-font-display);
+  font-weight: 500;
+  font-size: 1.125rem;
+  letter-spacing: -0.015em;
+  color: var(--bbf-text-on-warm);
+}
+
+.bbf-cmp__col-sub {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs);
+  color: var(--bbf-text-on-warm-faint);
+  margin-block-start: 0.25rem;
+}
+
+/* Highlighted column (BBF) */
+.bbf-cmp__cell--head.is-hl,
+.bbf-cmp__cell.is-hl {
+  background-color: var(--bbf-surface-warm-highlight);
+}
+
+.bbf-cmp__cell--head.is-hl {
+  border-inline: 1px solid var(--bbf-text-on-warm);
+}
+
+/* ── Data rows ─────────────────────────────────────────────────────────── */
+
+.bbf-cmp__row {
+  display: contents;
+}
+
+.bbf-cmp__row > * {
+  padding: var(--cmp-cell-py) var(--cmp-cell-px);
+  border-block-start: 1px solid var(--bbf-border-on-warm);
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  color: var(--bbf-text-on-warm-soft);
+  background-color: var(--bbf-surface-warm-base);
+  min-height: var(--cmp-min-height);
+}
+
+/* Highlighted column data cells */
+.bbf-cmp__row > .is-hl {
+  background-color: var(--bbf-surface-warm-highlight);
+  border-inline: 1px solid var(--bbf-text-on-warm);
+  color: var(--bbf-text-on-warm);
+  font-weight: 500;
+}
+
+/* Last row — close bottom border on highlighted col */
+.bbf-cmp__row:last-child > .is-hl {
+  border-block-end: 1px solid var(--bbf-text-on-warm);
+}
+
+/* ── Row header (left col) ─────────────────────────────────────────────── */
+
+.bbf-cmp__rowhead {
+  background-color: var(--bbf-surface-warm-base) !important;
+  border-inline-end: none;
+}
+
+.bbf-cmp__rowhead-num {
+  font-family: var(--bbf-font-mono);
+  font-size: 0.6875rem;
+  color: var(--bbf-text-on-warm-faint);
+  flex-shrink: 0;
+}
+
+/* ── Cell state icons ──────────────────────────────────────────────────── */
+
+.bbf-cmp__cell-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--cmp-icon-size);
+  height: var(--cmp-icon-size);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bbf-cmp__cell--yes .bbf-cmp__cell-icon {
+  background-color: var(--bbf-text-on-warm);
+  color: var(--bbf-surface-warm-base);
+}
+
+.bbf-cmp__cell--no .bbf-cmp__cell-icon,
+.bbf-cmp__cell--mid .bbf-cmp__cell-icon {
+  background-color: var(--bbf-surface-warm-elevated);
+  color: var(--bbf-text-on-warm-muted);
+}
+
+/* ── Mobile: Column Selector Tabs (D-S4-03 P-3) ────────────────────────── */
+
+.bbf-cmp__tabs {
+  display: none; /* hidden desktop */
+}
+
+.bbf-cmp-mobile {
+  display: none; /* hidden desktop */
+}
+
+@media (max-width: 767px) {
+  .bbf-cmp__grid {
+    display: none; /* ocultar grid desktop */
+  }
+
+  .bbf-cmp__tabs {
+    display: flex;
+    gap: 0;
+    border-block-end: 1px solid var(--bbf-border-on-warm);
+  }
+
+  .bbf-cmp__tab {
+    flex: 1;
+    padding: 0.75rem 0.5rem;
+    background: none;
+    border: none;
+    border-block-end: 2px solid transparent;
+    font-family: var(--bbf-font-display);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--bbf-text-on-warm-muted);
+    cursor: pointer;
+    text-align: center;
+    transition:
+      color 150ms ease,
+      border-color 150ms ease;
+  }
+
+  .bbf-cmp__tab[aria-selected='true'] {
+    color: var(--bbf-text-on-warm);
+    border-block-end-color: var(--bbf-text-on-warm);
+  }
+
+  .bbf-cmp__tab--highlighted[aria-selected='true'] {
+    color: var(--bbf-text-on-warm);
+    border-block-end-color: var(--bbf-text-on-warm);
+    font-weight: 600;
+  }
+
+  .bbf-cmp-mobile {
+    display: block;
+  }
+
+  .bbf-cmp-mobile__panel {
+    /* tabpanel visible/hidden via aria */
+  }
+
+  .bbf-cmp-mobile__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-block: var(--cmp-cell-py-sm);
+    padding-inline: var(--cmp-cell-px-sm);
+    border-block-end: 1px solid var(--bbf-border-on-warm);
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.875rem;
+  }
+
+  .bbf-cmp-mobile__row:last-child {
+    border-block-end: none;
+  }
+
+  .bbf-cmp-mobile__attr {
+    color: var(--bbf-text-on-warm-muted);
+    font-size: 0.75rem;
+  }
+
+  .bbf-cmp-mobile__val {
+    color: var(--bbf-text-on-warm-soft);
+    text-align: right;
+  }
+
+  .bbf-cmp-mobile__val.is-highlighted {
+    color: var(--bbf-text-on-warm);
+    font-weight: 500;
+  }
+}
+
+/* ── Tablet (≤920px desktop grid más compacto) ─────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 920px) {
+  .bbf-porque-section {
+    --cmp-row-head-width: minmax(140px, 1fr);
+  }
+
+  .bbf-cmp__grid {
+    font-size: 0.8125rem;
+  }
+
+  .bbf-cmp__row > * {
+    padding: var(--cmp-cell-py-sm) var(--cmp-cell-px-sm);
+  }
+
+  .bbf-cmp__cell--head {
+    padding-block-start: calc(var(--cmp-head-pad-top) * 0.85);
+    padding-block-end: calc(var(--cmp-head-pad-bottom) * 0.85);
+    padding-inline: var(--cmp-cell-px-sm);
+  }
+
+  .bbf-cmp__col-name {
+    font-size: 1rem;
+  }
+}
+
+/* ── Epilogue ──────────────────────────────────────────────────────────── */
+
+.bbf-porque-epilogue {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  margin-block-start: var(--cmp-epilogue-mt);
+}
+
+.bbf-porque-epilogue__title {
+  /* max-width set via heading className — wrapper inherits grid column width */
+}
+
+.bbf-porque-epilogue__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.bbf-porque-epilogue__body p {
+  font-size: var(--bbf-text-body-md);
+  color: var(--bbf-text-on-warm-soft);
+  line-height: var(--bbf-leading-relaxed);
+}
+
+@media (max-width: 767px) {
+  .bbf-porque-epilogue {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

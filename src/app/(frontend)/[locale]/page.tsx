@@ -5,6 +5,7 @@ import { HeroSection } from '@/components/sections/HeroSection';
 import { CapabilitiesSection } from '@/components/sections/CapabilitiesSection';
 // ComoFuncionaSection desconectada (D-4 firmada) — componente conservado en /sections/ComoFuncionaSection/
 import { CaseSection } from '@/components/sections/CaseSection';
+import { PorqueSection } from '@/components/sections/PorqueSection';
 import { SectionHeader } from '@/components/molecules/SectionHeader';
 import { CaseMediaFrame } from '@/components/molecules/CaseMediaFrame';
 import { Lissajous } from '@/components/atoms/Lissajous';
@@ -33,7 +34,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     depth: 1,
   });
 
-  const { hero, capabilities: cap, caseStudy: cs } = site;
+  const { hero, capabilities: cap, caseStudy: cs, comparison: cmp } = site;
   const posterUrl =
     hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
       ? ((hero.media.videoPoster as Media).url ?? undefined)
@@ -246,6 +247,30 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             />
           </Reveal>
         </CaseSection>
+      )}
+
+      {/* ─── POR QUÉ SECTION §4 ──────────────────────────────────────────── */}
+      {cmp && (
+        <PorqueSection>
+          <Reveal variant="up">
+            <SectionHeader
+              surface="warm"
+              eyebrow={cmp.eyebrow ?? '§4 · POR QUÉ'}
+              h2Line1={cmp.h2Line1 ?? ''}
+              h2Line2Soft={cmp.h2Line2Soft ?? undefined}
+              lead={cmp.lead ?? undefined}
+              decoration={<Lissajous name="cross-2d" animation="traveling" />}
+            />
+          </Reveal>
+
+          <Reveal variant="fade">
+            <PorqueSection.Comparison columns={cmp.columns} rows={cmp.rows} />
+          </Reveal>
+
+          <Reveal variant="up">
+            <PorqueSection.Epilogue title={cmp.epilogue?.title} body={cmp.epilogue?.body} />
+          </Reveal>
+        </PorqueSection>
       )}
     </>
   );
