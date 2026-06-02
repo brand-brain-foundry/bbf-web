@@ -72,5 +72,6 @@
 @import '../styles/utilities/gradient-animations.css';
 @import '../styles/utilities/containers.css';
 @import '../styles/utilities/section-paddings.css';
-@import '../styles/utilities/text-utilities.css'; /* D-AUD-01: clase canónica .bbf-lede */
+@import '../styles/utilities/text-utilities.css'; /* D-AUD-01: .bbf-lede + D-AUDIT-01: .bbf-cta-link-dark */
+@import '../styles/utilities/section-wrap.css'; /* D-AUDIT-03: .bbf-section-wrap canónico */
 @import '../styles/utilities/view-transitions.css';

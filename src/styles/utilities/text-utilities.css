@@ -21,3 +21,41 @@
 .bbf-lede--medium {
   font-weight: var(--bbf-weight-medium);
 }
+
+/**
+ * .bbf-cta-link-dark — CTA link sobre surface dark
+ *
+ * Sand claro + hover azul acento + background transparente.
+ * Reutilizable en §5 Método, §6 Cierre, cualquier section dark.
+ * Siempre con Icon atom (arrowRight) como hermano.
+ *
+ * D-AUDIT-01: movido de case-section.css (scope §3) a utility canónica.
+ * Refs: D-CASO-3, AUDIT-S3-CASO.md P-01
+ */
+.bbf-cta-link-dark {
+  background: transparent;
+  color: var(--bbf-text-on-dark-surface);
+  border: none;
+  padding: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bbf-space-2);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-md, 0.8125rem);
+  letter-spacing: 0.04em;
+  transition: color 200ms var(--bbf-easing-hover, ease-out);
+}
+
+.bbf-cta-link-dark:hover {
+  color: var(--bbf-text-on-dark-surface-accent);
+}
+
+.bbf-cta-link-dark:hover svg {
+  transform: translateX(3px);
+}
+
+.bbf-cta-link-dark svg {
+  transition: transform 200ms var(--bbf-easing-hover, ease-out);
+  flex-shrink: 0;
+}

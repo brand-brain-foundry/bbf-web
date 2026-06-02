@@ -38,7 +38,7 @@ function Root({ children, surface = 'dark', className }: RootProps) {
       data-surface={surface}
       className={`bbf-case-section${className ? ` ${className}` : ''}`}
     >
-      <div className="bbf-case-section__wrap">{children}</div>
+      <div className="bbf-section-wrap">{children}</div>
     </section>
   );
 }

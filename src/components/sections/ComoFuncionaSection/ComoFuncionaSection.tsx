@@ -31,7 +31,7 @@ function Root({ children, surface, className }: RootProps) {
         typeof comoFuncionaSectionVariants
       >[0])}
     >
-      <div className="bbf-hiw-section__wrap">{children}</div>
+      <div className="bbf-section-wrap">{children}</div>
     </section>
   );
 }

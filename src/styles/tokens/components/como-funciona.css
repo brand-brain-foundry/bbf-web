@@ -37,11 +37,7 @@
   padding-block: var(--bbf-hiw-section-pad);
 }
 
-.bbf-hiw-section__wrap {
-  max-width: 1280px;
-  margin-inline: auto;
-  padding-inline: clamp(1rem, 4vw, 3rem);
-}
+/* .bbf-hiw-section__wrap → reemplazado por utility .bbf-section-wrap (D-AUDIT-03) */
 
 /* ============================================================
    HEAD — 2-col grid (left sticky col + right flow+steps)
