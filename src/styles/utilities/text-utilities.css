@@ -83,12 +83,14 @@
 }
 
 /* D-FIX-S5-05 firmada: hover canónico = red gradient animado.
-   Cualquier .bbf-cta-link-warm en el sistema hereda este hover. */
+   Cualquier .bbf-cta-link-warm en el sistema hereda este hover.
+   M-02: #ff8866 → var(--bbf-color-red-300) primitivo (sin token semántico específico).
+   M-03: prefers-reduced-motion → fallback color sólido (WCAG 2.3.3). */
 .bbf-cta-link-warm:hover {
   background: linear-gradient(
     90deg,
     var(--bbf-accent-red) 0%,
-    color-mix(in srgb, var(--bbf-accent-red) 70%, #ff8866 30%) 50%,
+    color-mix(in srgb, var(--bbf-accent-red) 70%, var(--bbf-color-red-300) 30%) 50%,
     var(--bbf-accent-red) 100%
   );
   background-size: 200% 100%;
@@ -115,4 +117,15 @@
   outline: 2px solid var(--bbf-interactive-focus-warm, var(--bbf-text-on-warm));
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-cta-link-warm:hover {
+    animation: none;
+    background-image: none;
+    background-clip: unset;
+    -webkit-background-clip: unset;
+    color: var(--bbf-text-on-warm-accent);
+    -webkit-text-fill-color: var(--bbf-text-on-warm-accent);
+  }
 }
