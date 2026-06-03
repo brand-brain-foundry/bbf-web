@@ -54,7 +54,8 @@ export type LissajousName =
   | 'process-2d'
   | 'case-2d'
   | 'comparison-2d'
-  | 'cross-2d';
+  | 'cross-2d'
+  | 'metodo-2d';
 
 /**
  * Dimension de la variante.

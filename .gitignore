@@ -100,3 +100,4 @@ scripts/**/.cache/
 .claude/settings.local.json
 .tmp-pixel/
 tmp/
+tmp-verify/

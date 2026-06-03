@@ -16,3 +16,4 @@ export * from './HubDiagram';
 export * from './CapabilityScene';
 export * from './CapabilityCard';
 export * from './SectionHeader';
+export * from './QuoteBlock';

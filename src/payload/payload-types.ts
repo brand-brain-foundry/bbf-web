@@ -2223,6 +2223,7 @@ export interface SiteHomepage {
                     | 'case-2d'
                     | 'comparison-2d'
                     | 'cross-2d'
+                    | 'metodo-2d'
                   )
                 | null;
               /**
@@ -2399,6 +2400,99 @@ export interface SiteHomepage {
        */
       body?: string | null;
     };
+  };
+  /**
+   * §5 three coordinated services: Diagnóstico → Build → Retainer.
+   */
+  method?: {
+    /**
+     * Eyebrow label (ej: §5 · MÉTODO).
+     */
+    eyebrow?: string | null;
+    /**
+     * Primera línea del H2 (ej: Tres servicios coordinados.).
+     */
+    h2Line1?: string | null;
+    /**
+     * Segunda línea del H2 en tono muted (ej: Sin sorpresas.).
+     */
+    h2Line2Soft?: string | null;
+    /**
+     * Nodos del process bar horizontal (01 · Diagnóstico, etc.).
+     */
+    phases?:
+      | {
+          /**
+           * Número del nodo (ej: 01).
+           */
+          number: string;
+          /**
+           * Etiqueta corta del nodo (ej: Diagnóstico).
+           */
+          shortLabel: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Los 3 servicios BBF (Diagnóstico / Build / Retainer). Exactamente 3.
+     */
+    services?:
+      | {
+          /**
+           * Número del servicio (ej: 01).
+           */
+          number: string;
+          /**
+           * Nombre del servicio (ej: Diagnóstico).
+           */
+          name: string;
+          /**
+           * Duración (ej: 2 – 3 semanas).
+           */
+          duration?: string | null;
+          /**
+           * Compromiso (ej: Alcance cerrado · sin recurrencia).
+           */
+          commitment?: string | null;
+          /**
+           * Descripción del servicio (2-3 líneas).
+           */
+          body?: string | null;
+          /**
+           * Lista de entregables del servicio (3-4 items).
+           */
+          deliverables?:
+            | {
+                /**
+                 * Texto del entregable.
+                 */
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Texto principal del quote (ej: No hay urgencia.).
+     */
+    quoteText?: string | null;
+    /**
+     * Segunda línea del quote en tono soft (ej: Hay método.).
+     */
+    quoteTextSoft?: string | null;
+    /**
+     * Atribución del quote (ej: Canon BBF · 01).
+     */
+    quoteAttribution?: string | null;
+    /**
+     * Texto del CTA link-arrow (ej: Conocer el método completo).
+     */
+    ctaLabel?: string | null;
+    /**
+     * URL destino del CTA.
+     */
+    ctaHref?: string | null;
   };
   howItWorks: {
     /**
@@ -2839,6 +2933,41 @@ export interface SiteHomepageSelect<T extends boolean = true> {
               title?: T;
               body?: T;
             };
+      };
+  method?:
+    | T
+    | {
+        eyebrow?: T;
+        h2Line1?: T;
+        h2Line2Soft?: T;
+        phases?:
+          | T
+          | {
+              number?: T;
+              shortLabel?: T;
+              id?: T;
+            };
+        services?:
+          | T
+          | {
+              number?: T;
+              name?: T;
+              duration?: T;
+              commitment?: T;
+              body?: T;
+              deliverables?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        quoteText?: T;
+        quoteTextSoft?: T;
+        quoteAttribution?: T;
+        ctaLabel?: T;
+        ctaHref?: T;
       };
   howItWorks?:
     | T

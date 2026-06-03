@@ -22,6 +22,7 @@
 import type { ReactNode } from 'react';
 import { Heading } from '@/components/atoms/Heading';
 import { Icon, Icons } from '@/components/atoms/Icon';
+import { QuoteBlock } from '@/components/molecules/QuoteBlock';
 
 /* ── Root ─────────────────────────────────────────────────── */
 
@@ -88,28 +89,7 @@ interface QuoteProps {
 }
 
 function Quote({ children, caption }: QuoteProps) {
-  return (
-    <figure className="bbf-case-section__quote">
-      {/* Quote mark SVG — home-case.jsx design spec */}
-      <svg
-        className="bbf-case-section__quote-mark"
-        width="48"
-        height="36"
-        viewBox="0 0 48 36"
-        fill="none"
-        aria-hidden="true"
-      >
-        <path
-          d="M0 36V20C0 8.95 8.95 0 20 0V8C13.37 8 8 13.37 8 20H20V36H0ZM28 36V20C28 8.95 36.95 0 48 0V8C41.37 8 36 13.37 36 20H48V36H28Z"
-          fill="currentColor"
-        />
-      </svg>
-      <blockquote>
-        <p>{children}</p>
-      </blockquote>
-      {caption && <figcaption>{caption}</figcaption>}
-    </figure>
-  );
+  return <QuoteBlock text={children} attribution={caption} surface="dark" variant="testimonial" />;
 }
 
 /* ── Cta ──────────────────────────────────────────────────── */

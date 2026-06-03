@@ -111,6 +111,12 @@ export const LISSAJOUS_REGISTRY: Record<LissajousName, LissajousVariant> = {
     preset: { a: 5, b: 3, delta: Math.PI / 4 },
     defaultLabel: '5:3 Cross 2D',
   },
+  'metodo-2d': {
+    name: 'metodo-2d',
+    dimension: '2d',
+    preset: { a: 2, b: 3, delta: Math.PI / 2 },
+    defaultLabel: '2:3 Método 2D',
+  },
 } as const;
 
 /**

@@ -905,6 +905,151 @@ export const SiteHomepage: GlobalConfig = {
       ],
     },
     {
+      name: 'method',
+      type: 'group',
+      label: { es: 'Sección Método (§5)', en: 'Method Section (§5)' },
+      admin: {
+        description: {
+          es: '§5 tres servicios coordinados: Diagnóstico → Build → Retainer.',
+          en: '§5 three coordinated services: Diagnóstico → Build → Retainer.',
+        },
+      },
+      fields: [
+        {
+          name: 'eyebrow',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Eyebrow label (ej: §5 · MÉTODO).' },
+        },
+        {
+          name: 'h2Line1',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Primera línea del H2 (ej: Tres servicios coordinados.).' },
+        },
+        {
+          name: 'h2Line2Soft',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Segunda línea del H2 en tono muted (ej: Sin sorpresas.).' },
+        },
+        {
+          name: 'phases',
+          type: 'array',
+          dbName: 'mth_phases',
+          label: { en: 'Process Bar Phases', es: 'Fases del Process Bar' },
+          admin: {
+            description: 'Nodos del process bar horizontal (01 · Diagnóstico, etc.).',
+          },
+          fields: [
+            {
+              name: 'number',
+              type: 'text',
+              required: true,
+              admin: { description: 'Número del nodo (ej: 01).' },
+            },
+            {
+              name: 'shortLabel',
+              type: 'text',
+              localized: true,
+              required: true,
+              admin: { description: 'Etiqueta corta del nodo (ej: Diagnóstico).' },
+            },
+          ],
+        },
+        {
+          name: 'services',
+          type: 'array',
+          dbName: 'mth_services',
+          minRows: 3,
+          maxRows: 3,
+          label: { en: 'Service Cards', es: 'Tarjetas de Servicio' },
+          admin: {
+            description: 'Los 3 servicios BBF (Diagnóstico / Build / Retainer). Exactamente 3.',
+          },
+          fields: [
+            {
+              name: 'number',
+              type: 'text',
+              required: true,
+              admin: { description: 'Número del servicio (ej: 01).' },
+            },
+            {
+              name: 'name',
+              type: 'text',
+              localized: true,
+              required: true,
+              admin: { description: 'Nombre del servicio (ej: Diagnóstico).' },
+            },
+            {
+              name: 'duration',
+              type: 'text',
+              localized: true,
+              admin: { description: 'Duración (ej: 2 – 3 semanas).' },
+            },
+            {
+              name: 'commitment',
+              type: 'text',
+              localized: true,
+              admin: { description: 'Compromiso (ej: Alcance cerrado · sin recurrencia).' },
+            },
+            {
+              name: 'body',
+              type: 'textarea',
+              localized: true,
+              admin: { description: 'Descripción del servicio (2-3 líneas).' },
+            },
+            {
+              name: 'deliverables',
+              type: 'array',
+              dbName: 'mth_deliverables',
+              label: { en: 'Deliverables', es: 'Entregables' },
+              admin: { description: 'Lista de entregables del servicio (3-4 items).' },
+              fields: [
+                {
+                  name: 'text',
+                  type: 'text',
+                  localized: true,
+                  required: true,
+                  admin: { description: 'Texto del entregable.' },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'quoteText',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Texto principal del quote (ej: No hay urgencia.).' },
+        },
+        {
+          name: 'quoteTextSoft',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Segunda línea del quote en tono soft (ej: Hay método.).' },
+        },
+        {
+          name: 'quoteAttribution',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Atribución del quote (ej: Canon BBF · 01).' },
+        },
+        {
+          name: 'ctaLabel',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Texto del CTA link-arrow (ej: Conocer el método completo).' },
+        },
+        {
+          name: 'ctaHref',
+          type: 'text',
+          defaultValue: '/metodo',
+          admin: { description: 'URL destino del CTA.' },
+        },
+      ],
+    },
+    {
       name: 'howItWorks',
       type: 'group',
       label: { es: 'Sección Cómo Funciona', en: 'How It Works Section' },

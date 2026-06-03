@@ -95,51 +95,6 @@
   font-size: var(--bbf-text-body-md);
 }
 
-/* ── Quote block ──────────────────────────────────────────── */
-
-.bbf-case-section__quote {
-  margin-block-end: 32px;
-  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(2rem, 6vw, 5rem);
-  border: 1px solid var(--bbf-border-on-dark-surface);
-  background: var(--bbf-surface-dark-elevated);
-  border-radius: var(--bbf-radius-section-card);
-  position: relative;
-  max-width: 920px;
-}
-
-.bbf-case-section__quote-mark {
-  color: var(--bbf-text-on-dark-surface-muted);
-  margin-block-end: 18px;
-  opacity: 0.4;
-}
-
-.bbf-case-section__quote blockquote {
-  margin: 0;
-  font-family: var(--bbf-font-display);
-  font-size: clamp(1.25rem, 2.4vw, 1.875rem);
-  line-height: 1.3;
-  letter-spacing: -0.02em;
-  color: var(--bbf-text-on-dark-surface);
-  font-weight: 400;
-}
-
-.bbf-case-section__quote blockquote p {
-  margin: 0 0 18px;
-  text-wrap: balance;
-}
-
-.bbf-case-section__quote blockquote p:last-child {
-  margin-block-end: 24px;
-  color: var(--bbf-text-on-dark-surface-muted);
-}
-
-.bbf-case-section__quote figcaption {
-  font-family: var(--bbf-font-mono);
-  font-size: var(--bbf-text-mono-xs, 0.6875rem);
-  letter-spacing: 0.02em;
-  color: var(--bbf-text-on-dark-surface-muted);
-}
-
 /* ── CTA ──────────────────────────────────────────────────── */
 
 .bbf-case-section__cta {

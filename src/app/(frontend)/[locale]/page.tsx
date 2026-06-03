@@ -3,9 +3,9 @@ import config from '@/payload-config';
 import { setRequestLocale } from 'next-intl/server';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { CapabilitiesSection } from '@/components/sections/CapabilitiesSection';
-// ComoFuncionaSection desconectada (D-4 firmada) — componente conservado en /sections/ComoFuncionaSection/
 import { CaseSection } from '@/components/sections/CaseSection';
 import { PorqueSection } from '@/components/sections/PorqueSection';
+import { MetodoSection } from '@/components/sections/MetodoSection';
 import { SectionHeader } from '@/components/molecules/SectionHeader';
 import { CaseMediaFrame } from '@/components/molecules/CaseMediaFrame';
 import { Lissajous } from '@/components/atoms/Lissajous';
@@ -34,7 +34,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     depth: 1,
   });
 
-  const { hero, capabilities: cap, caseStudy: cs, comparison: cmp } = site;
+  const { hero, capabilities: cap, caseStudy: cs, comparison: cmp, method: mth } = site;
   const posterUrl =
     hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
       ? ((hero.media.videoPoster as Media).url ?? undefined)
@@ -271,6 +271,34 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <PorqueSection.Epilogue title={cmp.epilogue?.title} body={cmp.epilogue?.body} />
           </Reveal>
         </PorqueSection>
+      )}
+      {/* ─── MÉTODO SECTION §5 ──────────────────────────────────────────── */}
+      {mth && (
+        <MetodoSection
+          data={{
+            eyebrow: mth.eyebrow,
+            h2Line1: mth.h2Line1,
+            h2Line2Soft: mth.h2Line2Soft,
+            phases: mth.phases?.map((p) => ({
+              number: p.number,
+              shortLabel: p.shortLabel,
+              id: p.id,
+            })),
+            services: mth.services?.map((s) => ({
+              number: s.number,
+              name: s.name,
+              duration: s.duration,
+              commitment: s.commitment,
+              body: s.body,
+              deliverables: s.deliverables,
+            })),
+            quoteText: mth.quoteText,
+            quoteTextSoft: mth.quoteTextSoft,
+            quoteAttribution: mth.quoteAttribution,
+            ctaLabel: mth.ctaLabel,
+            ctaHref: mth.ctaHref,
+          }}
+        />
       )}
     </>
   );

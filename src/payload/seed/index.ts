@@ -291,6 +291,76 @@ async function seed() {
     payload.logger.error(`  ✗ comparison §4 seed failed: ${err}`);
   }
 
+  // === §5 Método — seed site-homepage global method (D-S5-08 firmada: schema simple {text})
+  // D-DATA: forzar upsert con valores canónicos de web-copy-optimized.md §5
+  try {
+    await payload.updateGlobal({
+      slug: 'site-homepage',
+      locale: 'es',
+      data: {
+        method: {
+          eyebrow: '§5 · MÉTODO',
+          h2Line1: 'Tres servicios coordinados.',
+          h2Line2Soft: 'Sin sorpresas.',
+          phases: [
+            { number: '01', shortLabel: 'Diagnóstico' },
+            { number: '02', shortLabel: 'Build' },
+            { number: '03', shortLabel: 'Retainer' },
+          ],
+          services: [
+            {
+              number: '01',
+              name: 'Diagnóstico',
+              duration: '2 – 3 semanas',
+              commitment: 'Alcance cerrado · sin recurrencia',
+              body: 'Antes de construir nada, entendemos tu marca. Auditamos lo que existe, mapeamos lo que falta y diseñamos el sistema que vas a operar.',
+              deliverables: [
+                { text: 'Blueprint del cerebro de marca' },
+                { text: 'Roadmap de construcción priorizado' },
+                { text: 'Propuesta cerrada con alcance y costo' },
+                { text: 'Si no es viable, lo decimos' },
+              ],
+            },
+            {
+              number: '02',
+              name: 'Build',
+              duration: '8 – 24 semanas',
+              commitment: 'Según alcance · sistema propietario',
+              body: 'Construimos el cerebro: ingestamos conocimiento, configuramos voz y políticas, integramos canales, activamos workflows. Al terminar, el sistema es tuyo.',
+              deliverables: [
+                { text: 'Ingesta de conocimiento de marca' },
+                { text: 'Voz, políticas y criterios configurados' },
+                { text: 'Integraciones de canal activas' },
+                { text: 'Documentación y transferencia completa' },
+              ],
+            },
+            {
+              number: '03',
+              name: 'Retainer',
+              duration: 'Mensual · renovable',
+              commitment: 'Sin lock-in · cancelable en cualquier momento',
+              body: 'El cerebro mejora con cada uso. Mantenemos el sistema, incorporamos nuevos casos de uso, abrimos nuevos canales y evolucionamos la arquitectura mes a mes.',
+              deliverables: [
+                { text: 'Mejora continua del sistema' },
+                { text: 'Nuevos casos de uso activados' },
+                { text: 'Nuevos canales integrados' },
+                { text: 'El cerebro mejora mes a mes' },
+              ],
+            },
+          ],
+          quoteText: 'No hay urgencia.',
+          quoteTextSoft: 'Hay método.',
+          quoteAttribution: 'Canon BBF · 01',
+          ctaLabel: 'Conocer el método completo',
+          ctaHref: '/metodo',
+        },
+      } as any,
+    });
+    payload.logger.info('  ✓ method §5 (es) seeded con valores canónicos web-copy');
+  } catch (err) {
+    payload.logger.error(`  ✗ method §5 seed failed: ${err}`);
+  }
+
   // Pillars + cluster articles: B-BBF-12-SEED-EXPANSION
   payload.logger.info('🌱 Seed complete.');
   process.exit(0);

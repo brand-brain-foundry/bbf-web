@@ -59,3 +59,60 @@
   transition: transform 200ms var(--bbf-easing-hover, ease-out);
   flex-shrink: 0;
 }
+
+/**
+ * .bbf-cta-link-warm — CTA link sobre warm surface
+ *
+ * Paralelo a .bbf-cta-link-dark para surface warm.
+ * §5 Método y §6 Cierre. D-S5-07 firmada.
+ */
+.bbf-cta-link-warm {
+  background: transparent;
+  color: var(--bbf-text-on-warm);
+  border: none;
+  padding: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bbf-space-2);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-md, 0.8125rem);
+  letter-spacing: 0.04em;
+  transition: color 200ms var(--bbf-easing-hover, ease-out);
+  cursor: pointer;
+}
+
+/* D-FIX-S5-05 firmada: hover canónico = red gradient animado.
+   Cualquier .bbf-cta-link-warm en el sistema hereda este hover. */
+.bbf-cta-link-warm:hover {
+  background: linear-gradient(
+    90deg,
+    var(--bbf-accent-red) 0%,
+    color-mix(in srgb, var(--bbf-accent-red) 70%, #ff8866 30%) 50%,
+    var(--bbf-accent-red) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: bbf-gradient-shift 4s ease-in-out infinite;
+}
+
+.bbf-cta-link-warm:hover svg {
+  transform: translateX(3px);
+  /* SVG no hereda text-fill-color — mantiene color sólido legible */
+  color: var(--bbf-accent-red);
+  -webkit-text-fill-color: unset;
+}
+
+.bbf-cta-link-warm svg {
+  transition: transform 200ms var(--bbf-easing-hover, ease-out);
+  flex-shrink: 0;
+}
+
+.bbf-cta-link-warm:focus-visible {
+  outline: 2px solid var(--bbf-interactive-focus-warm, var(--bbf-text-on-warm));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
