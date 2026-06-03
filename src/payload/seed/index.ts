@@ -361,6 +361,32 @@ async function seed() {
     payload.logger.error(`  ✗ method §5 seed failed: ${err}`);
   }
 
+  // === §6 Cierre — seed site-homepage global closing (D-S6-05..08 firmadas)
+  try {
+    await payload.updateGlobal({
+      slug: 'site-homepage',
+      locale: 'es',
+      data: {
+        closing: {
+          eyebrow: '§6 · CIERRE',
+          brandLine: 'Brand Brain Foundry',
+          brandYear: null, // fallback dinámico en runtime → new Date().getFullYear()
+          statementLine1: 'Tu marca aprende una vez.',
+          statementLine2Soft: 'Te representa en todos lados.',
+          cta: {
+            label: 'Sentémonos a pensar',
+            href: '/contacto',
+          },
+          ctaNote: 'Diagnóstico cerrado · 2-3 semanas · sin compromiso de continuar',
+          signatureTagline: 'No hay urgencia. Hay método.',
+        },
+      } as any,
+    });
+    payload.logger.info('  ✓ closing §6 (es) seeded con valores canónicos web-copy');
+  } catch (err) {
+    payload.logger.error(`  ✗ closing §6 seed failed: ${err}`);
+  }
+
   // Pillars + cluster articles: B-BBF-12-SEED-EXPANSION
   payload.logger.info('🌱 Seed complete.');
   process.exit(0);

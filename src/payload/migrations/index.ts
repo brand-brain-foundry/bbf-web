@@ -14,6 +14,8 @@ import * as migration_20260602_120000_case_study_section from './20260602_120000
 import * as migration_20260602_130000_case_study_video from './20260602_130000_case_study_video';
 import * as migration_20260602_180339_comparison_section from './20260602_180339_comparison_section';
 import * as migration_20260603_074045_method_section from './20260603_074045_method_section';
+import * as migration_20260603_111230_closing_section from './20260603_111230_closing_section';
+import * as migration_20260603_132034_drop_como_funciona_orphan from './20260603_132034_drop_como_funciona_orphan';
 
 export const migrations = [
   {
@@ -94,6 +96,16 @@ export const migrations = [
   {
     up: migration_20260603_074045_method_section.up,
     down: migration_20260603_074045_method_section.down,
-    name: '20260603_074045_method_section'
+    name: '20260603_074045_method_section',
+  },
+  {
+    up: migration_20260603_111230_closing_section.up,
+    down: migration_20260603_111230_closing_section.down,
+    name: '20260603_111230_closing_section',
+  },
+  {
+    up: migration_20260603_132034_drop_como_funciona_orphan.up,
+    down: migration_20260603_132034_drop_como_funciona_orphan.down,
+    name: '20260603_132034_drop_como_funciona_orphan'
   },
 ];

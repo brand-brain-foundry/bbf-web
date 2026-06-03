@@ -1050,94 +1050,91 @@ export const SiteHomepage: GlobalConfig = {
       ],
     },
     {
-      name: 'howItWorks',
+      name: 'closing',
       type: 'group',
-      label: { es: 'Sección Cómo Funciona', en: 'How It Works Section' },
+      label: { es: 'Sección Cierre (§6)', en: 'Closing Section (§6)' },
+      admin: {
+        description: {
+          es: '§6 última sección del homepage. Surface dark. Statement + CTA principal + firma brand.',
+          en: '§6 last homepage section. Dark surface. Statement + main CTA + brand signature.',
+        },
+      },
       fields: [
         {
           name: 'eyebrow',
           type: 'text',
           localized: true,
+          defaultValue: '§6 · CIERRE',
+          admin: { description: 'Eyebrow meta row izquierda (ej: §6 · CIERRE).' },
+        },
+        {
+          name: 'brandLine',
+          type: 'text',
+          defaultValue: 'Brand Brain Foundry',
           admin: {
-            description: 'Eyebrow label sobre el H2 (ej: §3 · CÓMO FUNCIONA).',
+            description: 'Nombre de marca en la meta row (asset fijo — editable por seguridad).',
           },
         },
         {
-          name: 'h2Line1',
+          name: 'brandYear',
           type: 'text',
-          localized: true,
-          required: true,
-          admin: { description: 'Primera línea del H2 (color primario).' },
-        },
-        {
-          name: 'h2Line2Soft',
-          type: 'text',
-          localized: true,
-          required: true,
-          admin: { description: 'Segunda línea del H2 (tono muted).' },
-        },
-        {
-          name: 'steps',
-          type: 'array',
-          minRows: 3,
-          maxRows: 3,
-          label: { en: 'Process Steps', es: 'Pasos del Proceso' },
+          required: false,
           admin: {
-            description: 'Los 3 pasos del proceso BBF (Aprende → Decide → Ejecuta). Exactamente 3.',
+            description:
+              'Año en la meta row. Si vacío → fallback dinámico new Date().getFullYear().',
           },
-          defaultValue: [
-            { label: 'Aprende', meta: 'INGESTA · MEMORIA' },
-            { label: 'Decide', meta: 'RECUPERA · RAZONA' },
-            { label: 'Ejecuta', meta: 'CANAL · VOZ · TEXTO' },
-          ],
+        },
+        {
+          name: 'statementLine1',
+          type: 'text',
+          localized: true,
+          admin: {
+            description: 'Primera línea del statement H2 display (color primario sobre dark).',
+          },
+        },
+        {
+          name: 'statementLine2Soft',
+          type: 'text',
+          localized: true,
+          admin: {
+            description: 'Segunda línea del statement H2 (red gradient animado — D-S6-06).',
+          },
+        },
+        {
+          name: 'cta',
+          type: 'group',
+          label: { es: 'CTA Principal', en: 'Main CTA' },
           fields: [
             {
               name: 'label',
               type: 'text',
               localized: true,
-              required: true,
-              admin: {
-                description: 'Nombre del paso (ej: Aprende). Aparece en eyebrow del step card.',
-              },
+              admin: { description: 'Texto del CTA principal (ej: Sentémonos a pensar).' },
             },
             {
-              name: 'meta',
+              name: 'href',
               type: 'text',
-              localized: true,
-              admin: { description: 'Meta técnico mono (ej: INGESTA · MEMORIA).' },
-            },
-            {
-              name: 'title',
-              type: 'text',
-              localized: true,
-              required: true,
-              admin: { description: 'Título del paso (ej: El cerebro aprende tu marca).' },
-            },
-            {
-              name: 'body',
-              type: 'textarea',
-              localized: true,
-              required: true,
-              admin: { description: 'Descripción del paso (2-3 líneas).' },
-            },
-            {
-              name: 'side',
-              type: 'array',
-              localized: true,
-              label: { en: 'Side Items', es: 'Items Laterales' },
-              admin: {
-                description: 'Bullets técnicos del paso (3-5 items).',
-              },
-              fields: [
-                {
-                  name: 'text',
-                  type: 'text',
-                  required: true,
-                  admin: { description: 'Texto del bullet lateral.' },
-                },
-              ],
+              defaultValue: '/contacto',
+              admin: { description: 'URL destino del CTA.' },
             },
           ],
+        },
+        {
+          name: 'ctaNote',
+          type: 'text',
+          localized: true,
+          admin: {
+            description:
+              'Nota bajo el CTA (ej: Diagnóstico cerrado · 2-3 semanas · sin compromiso).',
+          },
+        },
+        {
+          name: 'signatureTagline',
+          type: 'text',
+          localized: true,
+          admin: {
+            description: 'Tagline de la firma brand en pill (ej: No hay urgencia. Hay método.).',
+          },
         },
       ],
     },

@@ -6,6 +6,7 @@ import { CapabilitiesSection } from '@/components/sections/CapabilitiesSection';
 import { CaseSection } from '@/components/sections/CaseSection';
 import { PorqueSection } from '@/components/sections/PorqueSection';
 import { MetodoSection } from '@/components/sections/MetodoSection';
+import { CierreSection } from '@/components/sections/CierreSection';
 import { SectionHeader } from '@/components/molecules/SectionHeader';
 import { CaseMediaFrame } from '@/components/molecules/CaseMediaFrame';
 import { Lissajous } from '@/components/atoms/Lissajous';
@@ -34,7 +35,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     depth: 1,
   });
 
-  const { hero, capabilities: cap, caseStudy: cs, comparison: cmp, method: mth } = site;
+  const {
+    hero,
+    capabilities: cap,
+    caseStudy: cs,
+    comparison: cmp,
+    method: mth,
+    closing: cls,
+  } = site;
   const posterUrl =
     hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
       ? ((hero.media.videoPoster as Media).url ?? undefined)
@@ -154,6 +162,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             eyebrow={cap.eyebrow}
             h2Line1={cap.h2Line1 ?? ''}
             h2Line2Soft={cap.h2Line2Soft ?? ''}
+            h2Line2SoftClassName="bbf-text-gradient-red-animated"
             lead={cap.lead ?? ''}
           />
         </Reveal>
@@ -297,6 +306,22 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             quoteAttribution: mth.quoteAttribution,
             ctaLabel: mth.ctaLabel,
             ctaHref: mth.ctaHref,
+          }}
+        />
+      )}
+
+      {/* ─── CIERRE SECTION §6 ──────────────────────────────────────────── */}
+      {cls && (
+        <CierreSection
+          data={{
+            eyebrow: cls.eyebrow,
+            brandLine: cls.brandLine,
+            brandYear: cls.brandYear,
+            statementLine1: cls.statementLine1,
+            statementLine2Soft: cls.statementLine2Soft,
+            cta: cls.cta,
+            ctaNote: cls.ctaNote,
+            signatureTagline: cls.signatureTagline,
           }}
         />
       )}

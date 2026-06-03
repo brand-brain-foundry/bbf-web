@@ -59,6 +59,17 @@ export const buttonVariants = cva(
           'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
+        // D-S6-02 firmada: CTA outline sobre surface dark con hover border-gradient
+        // Hover Alt 1: border red gradient animado + texto sand sólido estable
+        // Técnica CSS en button.css — no expresable en Tailwind arbitrary
+        'outline-dark': [
+          'bbf-btn-outline-dark',
+          'bg-transparent',
+          'border-2 border-[var(--bbf-text-on-dark-surface)]',
+          'text-[var(--bbf-text-on-dark-surface)]',
+          'active:scale-[0.97]',
+          'focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-[var(--bbf-surface-dark-base)]',
+        ].join(' '),
       },
       size: {
         xs: 'h-7  px-3  text-xs   gap-1.5',

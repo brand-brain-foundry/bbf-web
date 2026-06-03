@@ -64,6 +64,7 @@
 @import '../styles/tokens/components/quote-block.css'; /* D-S5-06: QuoteBlock molecule */
 @import '../styles/tokens/components/porque-section.css'; /* §4 Por qué — D-S4-01..04 */
 @import '../styles/tokens/components/metodo-section.css'; /* §5 Método — D-S5-01..08 */
+@import '../styles/tokens/components/cierre-section.css'; /* §6 Cierre — D-S6-01..08 */
 
 /* === MOTION TOKENS (Wave 11.8-A) === */
 @import '../styles/tokens/motion/index.css';

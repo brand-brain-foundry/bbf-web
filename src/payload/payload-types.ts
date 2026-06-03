@@ -2494,55 +2494,48 @@ export interface SiteHomepage {
      */
     ctaHref?: string | null;
   };
-  howItWorks: {
+  /**
+   * §6 last homepage section. Dark surface. Statement + main CTA + brand signature.
+   */
+  closing?: {
     /**
-     * Eyebrow label sobre el H2 (ej: §3 · CÓMO FUNCIONA).
+     * Eyebrow meta row izquierda (ej: §6 · CIERRE).
      */
     eyebrow?: string | null;
     /**
-     * Primera línea del H2 (color primario).
+     * Nombre de marca en la meta row (asset fijo — editable por seguridad).
      */
-    h2Line1: string;
+    brandLine?: string | null;
     /**
-     * Segunda línea del H2 (tono muted).
+     * Año en la meta row. Si vacío → fallback dinámico new Date().getFullYear().
      */
-    h2Line2Soft: string;
+    brandYear?: string | null;
     /**
-     * Los 3 pasos del proceso BBF (Aprende → Decide → Ejecuta). Exactamente 3.
+     * Primera línea del statement H2 display (color primario sobre dark).
      */
-    steps?:
-      | {
-          /**
-           * Nombre del paso (ej: Aprende). Aparece en eyebrow del step card.
-           */
-          label: string;
-          /**
-           * Meta técnico mono (ej: INGESTA · MEMORIA).
-           */
-          meta?: string | null;
-          /**
-           * Título del paso (ej: El cerebro aprende tu marca).
-           */
-          title: string;
-          /**
-           * Descripción del paso (2-3 líneas).
-           */
-          body: string;
-          /**
-           * Bullets técnicos del paso (3-5 items).
-           */
-          side?:
-            | {
-                /**
-                 * Texto del bullet lateral.
-                 */
-                text: string;
-                id?: string | null;
-              }[]
-            | null;
-          id?: string | null;
-        }[]
-      | null;
+    statementLine1?: string | null;
+    /**
+     * Segunda línea del statement H2 (red gradient animado — D-S6-06).
+     */
+    statementLine2Soft?: string | null;
+    cta?: {
+      /**
+       * Texto del CTA principal (ej: Sentémonos a pensar).
+       */
+      label?: string | null;
+      /**
+       * URL destino del CTA.
+       */
+      href?: string | null;
+    };
+    /**
+     * Nota bajo el CTA (ej: Diagnóstico cerrado · 2-3 semanas · sin compromiso).
+     */
+    ctaNote?: string | null;
+    /**
+     * Tagline de la firma brand en pill (ej: No hay urgencia. Hay método.).
+     */
+    signatureTagline?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -2969,27 +2962,22 @@ export interface SiteHomepageSelect<T extends boolean = true> {
         ctaLabel?: T;
         ctaHref?: T;
       };
-  howItWorks?:
+  closing?:
     | T
     | {
         eyebrow?: T;
-        h2Line1?: T;
-        h2Line2Soft?: T;
-        steps?:
+        brandLine?: T;
+        brandYear?: T;
+        statementLine1?: T;
+        statementLine2Soft?: T;
+        cta?:
           | T
           | {
               label?: T;
-              meta?: T;
-              title?: T;
-              body?: T;
-              side?:
-                | T
-                | {
-                    text?: T;
-                    id?: T;
-                  };
-              id?: T;
+              href?: T;
             };
+        ctaNote?: T;
+        signatureTagline?: T;
       };
   updatedAt?: T;
   createdAt?: T;

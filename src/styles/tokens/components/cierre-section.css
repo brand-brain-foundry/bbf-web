@@ -1,0 +1,154 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: CierreSection (§6 Home)
+ *
+ * Tier: 3 (COMPONENT)
+ * Scope: .bbf-cierre + .bbf-cierre__*
+ * Surface: DARK (D-S6-05) — --bbf-surface-dark-base = #0a0a0a
+ * D-S6-01..08 firmadas
+ */
+
+/* ── Section root ─────────────────────────────────────────── */
+
+.bbf-cierre {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bbf-surface-dark-base);
+  border-top: 1px solid var(--bbf-border-on-dark-surface);
+  padding-block: clamp(7.5rem, 18vw, 13.75rem) clamp(6rem, 12vw, 10rem);
+}
+
+.bbf-cierre::before {
+  /* Radial vignette sutil decorativo — ink leve desde top center */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    color-mix(in srgb, var(--bbf-text-on-dark-surface) 6%, transparent) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+/* ── Wrap layout ──────────────────────────────────────────── */
+
+.bbf-cierre__wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+/* ── Meta row (eyebrow) ───────────────────────────────────── */
+
+.bbf-cierre__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--bbf-space-4);
+  color: var(--bbf-text-on-dark-surface-muted);
+}
+
+/* L-BBF-226: Text atom aplica text-[var(--bbf-text-on-light)] directo en span — override con 0,3,0 */
+.bbf-cierre .bbf-cierre__meta [data-component='bbf-text'] {
+  color: var(--bbf-text-on-dark-surface-muted);
+}
+
+.bbf-cierre__meta-rule {
+  width: 80px;
+  height: 1px;
+  background: var(--bbf-border-on-dark-surface);
+  flex-shrink: 0;
+}
+
+/* ── Statement H2 ─────────────────────────────────────────── */
+
+.bbf-cierre__title {
+  /* D-S6-08: H2 puro sin container */
+  max-width: 16ch;
+  text-wrap: balance;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  /* font-size, font-weight, font-family via Heading atom level="display-hero" */
+}
+
+/* L-BBF-226: specificity 0,2,0 > Tailwind utility 0,1,0 — fuerza color sand en H2 */
+.bbf-cierre .bbf-cierre__title {
+  color: var(--bbf-text-on-dark-surface);
+}
+
+.bbf-cierre__title-soft {
+  /* D-S6-06: red gradient via .bbf-text-gradient-red-animated */
+  display: block;
+}
+
+/* ── CTA container ────────────────────────────────────────── */
+
+.bbf-cierre__cta-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--bbf-space-4);
+}
+
+.bbf-cierre__note {
+  color: var(--bbf-text-on-dark-surface-muted);
+}
+
+/* ── Signature pill ───────────────────────────────────────── */
+
+.bbf-cierre__signature {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bbf-space-3);
+  padding: var(--bbf-space-3) var(--bbf-space-5);
+  background: var(--bbf-surface-dark-elevated);
+  border: 1px solid var(--bbf-border-on-dark-surface);
+  border-radius: 999px;
+  color: var(--bbf-text-on-dark-surface-muted);
+}
+
+/* D-FIX-S6-02: Logo BBF gradient animado via CSS mask + gradient background */
+.bbf-cierre__signature [data-component='bbf-logo'] {
+  color: transparent; /* oculta currentColor del SVG inline */
+  background-image: linear-gradient(
+    110deg,
+    var(--bbf-accent-red) 0%,
+    var(--bbf-color-red-300) 50%,
+    var(--bbf-accent-red) 100%
+  );
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift 6s ease-in-out infinite;
+  -webkit-mask-image: url('/assets/brand/logos/BBF-Logo-Icon.svg');
+  mask-image: url('/assets/brand/logos/BBF-Logo-Icon.svg');
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-cierre__signature [data-component='bbf-logo'] {
+    animation: none;
+    background-image: none;
+    background-color: var(--bbf-accent-red);
+  }
+}
+
+.bbf-cierre__sig-name {
+  font-family: var(--bbf-font-display);
+  font-weight: var(--bbf-weight-medium, 500);
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  color: var(--bbf-text-on-dark-surface);
+}
+
+.bbf-cierre__sig-tag {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs, 0.6875rem);
+  font-style: italic;
+  color: var(--bbf-text-on-dark-surface-muted);
+}

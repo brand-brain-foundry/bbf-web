@@ -14,6 +14,41 @@
   /* Empty — populated on-demand in M5-D */
 }
 
+/**
+ * .bbf-btn-outline-dark — hover border gradient (D-S6-02 Alt 1 firmada)
+ *
+ * Border red gradient animado + texto sand sólido estable sobre surface dark.
+ * Técnica: double-background (padding-box=dark body, border-box=red gradient).
+ * Usa @keyframes bbf-gradient-shift de gradient-animations.css (A-01).
+ */
+@media (hover: hover) {
+  .bbf-btn-outline-dark:hover {
+    border-color: transparent;
+    background-image:
+      linear-gradient(var(--bbf-surface-dark-base), var(--bbf-surface-dark-base)),
+      linear-gradient(
+        110deg,
+        var(--bbf-accent-red) 0%,
+        var(--bbf-color-red-300) 50%,
+        var(--bbf-accent-red) 100%
+      );
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    background-size:
+      auto,
+      200% 100%;
+    animation: bbf-gradient-shift 6s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-btn-outline-dark:hover {
+    animation: none;
+    background-image: none;
+    border-color: var(--bbf-accent-red);
+  }
+}
+
 /* Arrow icon translate on button hover — matches design-preview .btn:hover .btn__arrow */
 [data-component='bbf-button'] [data-component='bbf-icon'] {
   transition: transform var(--bbf-motion-duration-fast, 200ms)
