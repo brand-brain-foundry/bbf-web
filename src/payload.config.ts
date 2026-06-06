@@ -119,6 +119,7 @@ export default buildConfig({
       },
       generateURL: ({ doc, locale }) => {
         const path = (doc as Record<string, unknown>).path;
+        // Payload preview — env var legítima: generateURL corre sync en init, getSiteIdentity() crearía dep circular
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com';
         return `${siteUrl}/${locale}/${typeof path === 'string' ? path : ''}`;
       },

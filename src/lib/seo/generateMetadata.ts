@@ -7,13 +7,15 @@ import config from '@/payload-config';
 interface GenerateMetadataOptions {
   locale: 'es' | 'en';
   path: string;
+  domain: string;
 }
 
 export async function generatePageMetadata({
   locale,
   path,
+  domain,
 }: GenerateMetadataOptions): Promise<Metadata> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com';
+  const siteUrl = domain;
 
   try {
     const payload = await getPayload({ config });

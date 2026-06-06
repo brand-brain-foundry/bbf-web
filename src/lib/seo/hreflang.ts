@@ -1,5 +1,3 @@
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sivarbrains.com';
-
 type Locale = 'es' | 'en';
 
 /**
@@ -7,11 +5,11 @@ type Locale = 'es' | 'en';
  *
  * Para paths idénticos en ambos idiomas (ej. /contacto → /en/contacto).
  */
-export function buildHreflang(currentPath: string, currentLocale: Locale) {
+export function buildHreflang(currentPath: string, currentLocale: Locale, domain: string) {
   const pathWithoutLocale = currentPath.replace(/^\/en/, '') || '/';
 
-  const esUrl = `${BASE_URL}${pathWithoutLocale}`;
-  const enUrl = `${BASE_URL}/en${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`;
+  const esUrl = `${domain}${pathWithoutLocale}`;
+  const enUrl = `${domain}/en${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`;
 
   return {
     canonical: currentLocale === 'en' ? enUrl : esUrl,
@@ -30,10 +28,11 @@ export function buildHreflang(currentPath: string, currentLocale: Locale) {
 export function buildHreflangBySlugMap(
   currentLocale: Locale,
   slugMap: { es: string; en: string },
+  domain: string,
   prefix: string = '',
 ) {
-  const esUrl = `${BASE_URL}${prefix}/${slugMap.es}`;
-  const enUrl = `${BASE_URL}/en${prefix}/${slugMap.en}`;
+  const esUrl = `${domain}${prefix}/${slugMap.es}`;
+  const enUrl = `${domain}/en${prefix}/${slugMap.en}`;
 
   return {
     canonical: currentLocale === 'en' ? enUrl : esUrl,

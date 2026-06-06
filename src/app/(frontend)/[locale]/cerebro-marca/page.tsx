@@ -5,6 +5,7 @@ import { fetchCornerstoneBySlug } from '@/lib/payload/fetchContent';
 import { CornerstoneTemplate } from '@/components/templates/CornerstoneTemplate';
 import { buildHreflangBySlugMap } from '@/lib/seo/hreflang';
 import { buildWebPageSchema } from '@/lib/seo/jsonld';
+import { getSiteIdentity } from '@/config/site';
 
 export const revalidate = 3600;
 
@@ -12,18 +13,14 @@ type Props = { params: Promise<{ locale: 'es' | 'en' }> };
 
 const SLUG_BY_LOCALE = { es: 'cerebro-marca', en: 'brand-brain' } as const;
 
-const PAGE_URL: Record<'es' | 'en', string> = {
-  es: 'https://sivarbrains.com/cerebro-marca',
-  en: 'https://sivarbrains.com/en/brand-brain',
-};
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const slug = SLUG_BY_LOCALE[locale];
   const item = await fetchCornerstoneBySlug(slug, locale);
   if (!item) return {};
 
-  const alternates = buildHreflangBySlugMap(locale, SLUG_BY_LOCALE);
+  const { siteDomain } = await getSiteIdentity(locale);
+  const alternates = buildHreflangBySlugMap(locale, SLUG_BY_LOCALE, siteDomain);
 
   return {
     title: item.title,
@@ -37,15 +34,24 @@ export default async function CerebroMarcaPage({ params }: Props) {
   setRequestLocale(locale);
 
   const slug = SLUG_BY_LOCALE[locale];
-  const item = await fetchCornerstoneBySlug(slug, locale);
+  const [item, { siteDomain }] = await Promise.all([
+    fetchCornerstoneBySlug(slug, locale),
+    getSiteIdentity(locale),
+  ]);
 
   if (!item) notFound();
 
+  const pageUrl =
+    locale === 'en'
+      ? `${siteDomain}/en/${SLUG_BY_LOCALE.en}`
+      : `${siteDomain}/${SLUG_BY_LOCALE.es}`;
+
   const webPageSchema = buildWebPageSchema({
+    domain: siteDomain,
     locale,
     title: item.title,
     description: item.excerpt ?? '',
-    url: PAGE_URL[locale],
+    url: pageUrl,
     datePublished: item.createdAt,
     dateModified: item.updatedAt,
   });

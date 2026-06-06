@@ -6,6 +6,7 @@ import { Text } from '@/components/atoms/Text';
 import { Reveal } from '@/components/atoms/Reveal';
 import { ContactForm } from '@/components/molecules/ContactForm';
 import { buildHreflang } from '@/lib/seo/hreflang';
+import { getSiteIdentity } from '@/config/site';
 
 type Props = {
   params: Promise<{ locale: 'es' | 'en' }>;
@@ -13,9 +14,12 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'contact' });
+  const [t, { siteDomain }] = await Promise.all([
+    getTranslations({ locale, namespace: 'contact' }),
+    getSiteIdentity(locale),
+  ]);
 
-  const alternates = buildHreflang('/contacto', locale);
+  const alternates = buildHreflang('/contacto', locale, siteDomain);
 
   return {
     title: t('metaTitle'),

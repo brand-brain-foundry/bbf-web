@@ -1,8 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sivarbrains.com';
+import { getSiteIdentity } from '@/config/site';
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
 
@@ -17,6 +16,9 @@ type SitemapEntry = MetadataRoute.Sitemap[number];
  * Filtra solo _status: published (no drafts).
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const site = await getSiteIdentity('es');
+  const BASE_URL = site.siteDomain;
+
   const entries: SitemapEntry[] = [];
 
   // 1. Páginas estáticas core

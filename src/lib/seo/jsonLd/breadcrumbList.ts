@@ -3,13 +3,15 @@ import type { BreadcrumbList, WithContext } from 'schema-dts';
 interface BuildBreadcrumbOptions {
   page: Record<string, unknown>;
   locale: 'es' | 'en';
+  domain: string;
 }
 
 export function buildBreadcrumbJsonLd({
   page,
   locale,
+  domain,
 }: BuildBreadcrumbOptions): WithContext<BreadcrumbList> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com';
+  const siteUrl = domain;
   const pathStr = typeof page.path === 'string' ? page.path : '';
   const segments = pathStr ? pathStr.split('/') : [];
 

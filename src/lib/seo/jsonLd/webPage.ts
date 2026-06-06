@@ -3,10 +3,15 @@ import type { WebPage, WithContext } from 'schema-dts';
 interface BuildWebPageOptions {
   page: Record<string, unknown>;
   locale: 'es' | 'en';
+  domain: string;
 }
 
-export function buildWebPageJsonLd({ page, locale }: BuildWebPageOptions): WithContext<WebPage> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com';
+export function buildWebPageJsonLd({
+  page,
+  locale,
+  domain,
+}: BuildWebPageOptions): WithContext<WebPage> {
+  const siteUrl = domain;
   const path = typeof page.path === 'string' ? page.path : '';
   const pageUrl = path ? `${siteUrl}/${locale}/${path}` : `${siteUrl}/${locale}`;
 

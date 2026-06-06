@@ -4,8 +4,9 @@ import type { Article, WithContext } from 'schema-dts';
 export function buildArticleJsonLd(
   post: Record<string, unknown>,
   locale: 'es' | 'en',
+  domain: string,
 ): WithContext<Article> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com';
+  const siteUrl = domain;
   const author = post.author as { name?: string } | undefined;
 
   return {

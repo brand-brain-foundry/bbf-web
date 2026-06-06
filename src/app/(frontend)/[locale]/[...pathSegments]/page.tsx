@@ -10,6 +10,7 @@ import { buildWebPageJsonLd } from '@/lib/seo/jsonLd/webPage';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/jsonLd/breadcrumbList';
 import { BlockRenderer } from '@/components/blocks/BlockRenderer';
 import { routing } from '@/i18n/routing';
+import { getSiteIdentity } from '@/config/site';
 
 type Locale = 'es' | 'en';
 
@@ -20,7 +21,8 @@ interface PageParams {
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const { locale, pathSegments = [] } = await params;
   const path = pathSegments.join('/');
-  return generatePageMetadata({ locale: locale as Locale, path });
+  const { siteDomain } = await getSiteIdentity(locale as Locale);
+  return generatePageMetadata({ locale: locale as Locale, path, domain: siteDomain });
 }
 
 export default async function DynamicPage({ params }: PageParams) {
@@ -30,7 +32,10 @@ export default async function DynamicPage({ params }: PageParams) {
   setRequestLocale(locale);
 
   const path = pathSegments.join('/');
-  const payload = await getPayload({ config });
+  const [payload, { siteDomain }] = await Promise.all([
+    getPayload({ config }),
+    getSiteIdentity(locale as Locale),
+  ]);
 
   // @ts-justify: pages pending payload generate:types — Wave 12-A
   const pagesResult = await (payload.find as Function)({
@@ -49,8 +54,12 @@ export default async function DynamicPage({ params }: PageParams) {
   }
 
   const page = docs[0];
-  const webPageJsonLd = buildWebPageJsonLd({ page, locale: locale as Locale });
-  const breadcrumbJsonLd = buildBreadcrumbJsonLd({ page, locale: locale as Locale });
+  const webPageJsonLd = buildWebPageJsonLd({ page, locale: locale as Locale, domain: siteDomain });
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd({
+    page,
+    locale: locale as Locale,
+    domain: siteDomain,
+  });
 
   const layout = (page.layout ?? []) as Array<{
     id?: string;

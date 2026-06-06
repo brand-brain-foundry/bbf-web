@@ -1,8 +1,7 @@
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sivarbrains.com';
-
 type Locale = 'es' | 'en';
 
 type BuildWebPageArgs = {
+  domain: string;
   locale: Locale;
   title: string;
   description: string;
@@ -28,10 +27,10 @@ export function buildWebPageSchema(args: BuildWebPageArgs) {
     description: args.description,
     inLanguage: args.locale,
     isPartOf: {
-      '@id': `${BASE_URL}/#website`,
+      '@id': `${args.domain}/#website`,
     },
     about: {
-      '@id': `${BASE_URL}/#organization`,
+      '@id': `${args.domain}/#organization`,
     },
     ...(args.datePublished && { datePublished: args.datePublished }),
     ...(args.dateModified && { dateModified: args.dateModified }),
