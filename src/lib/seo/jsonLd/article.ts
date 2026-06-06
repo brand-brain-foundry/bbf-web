@@ -5,7 +5,7 @@ export function buildArticleJsonLd(
   post: Record<string, unknown>,
   locale: 'es' | 'en',
 ): WithContext<Article> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://brandbrainfoundry.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com';
   const author = post.author as { name?: string } | undefined;
 
   return {

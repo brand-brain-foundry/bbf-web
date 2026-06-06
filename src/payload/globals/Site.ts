@@ -11,7 +11,7 @@ export const Site: GlobalConfig = {
       name: 'baseUrl',
       type: 'text',
       required: true,
-      defaultValue: 'https://brandbrainfoundry.com',
+      defaultValue: 'https://sivarbrains.com',
     },
     {
       name: 'organizationEntity',

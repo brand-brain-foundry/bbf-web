@@ -66,7 +66,7 @@ export const textVariants = cva(
         default: 'text-[var(--bbf-text-on-sand)]',
         muted: 'text-[var(--bbf-text-on-sand-muted)]',
         subtle: 'text-[var(--bbf-text-on-sand-subtle)]',
-        accent: 'text-[var(--bbf-accent-red)]',
+        accent: 'text-[var(--bbf-accent-blue)]',
         'on-black': 'text-[var(--bbf-text-on-black)]',
         'on-black-muted': 'text-[var(--bbf-text-on-black-muted)]',
       },
@@ -76,7 +76,7 @@ export const textVariants = cva(
         secondary: 'text-[var(--bbf-text-on-light-secondary)]',
         muted: 'text-[var(--bbf-text-on-light-muted)]',
         inverse: 'text-[var(--bbf-text-on-dark)]',
-        accent: 'text-[var(--bbf-accent-red)]',
+        accent: 'text-[var(--bbf-accent-blue)]',
       },
       align: {
         left: 'text-left',

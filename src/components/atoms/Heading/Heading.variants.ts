@@ -107,7 +107,7 @@ export const headingVariants = cva(
       tone: {
         default: 'text-[var(--bbf-text-on-sand)]',
         muted: 'text-[var(--bbf-text-on-sand-muted)]',
-        accent: 'text-[var(--bbf-accent-red)]',
+        accent: 'text-[var(--bbf-accent-blue)]',
         'on-black': 'text-[var(--bbf-text-on-black)]',
       },
       // color: legacy alias (mantener compat)
@@ -115,7 +115,7 @@ export const headingVariants = cva(
         primary: 'text-[var(--bbf-text-on-light)]',
         secondary: 'text-[var(--bbf-text-on-light-secondary)]',
         inverse: 'text-[var(--bbf-text-on-dark)]',
-        accent: 'text-[var(--bbf-accent-red)]',
+        accent: 'text-[var(--bbf-accent-blue)]',
       },
       align: {
         left: 'text-left',

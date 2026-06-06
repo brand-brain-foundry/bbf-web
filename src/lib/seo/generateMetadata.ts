@@ -13,7 +13,7 @@ export async function generatePageMetadata({
   locale,
   path,
 }: GenerateMetadataOptions): Promise<Metadata> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://brandbrainfoundry.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com';
 
   try {
     const payload = await getPayload({ config });
@@ -43,7 +43,7 @@ export async function generatePageMetadata({
     const title =
       (meta?.title as string | undefined) ||
       (defaults?.defaultTitle as string | undefined) ||
-      'Brand Brain Foundry';
+      'Sivar Brains';
     const description =
       (meta?.description as string | undefined) ||
       (defaults?.defaultDescription as string | undefined);
@@ -64,7 +64,7 @@ export async function generatePageMetadata({
         title,
         description,
         url: pageUrl,
-        siteName: 'Brand Brain Foundry',
+        siteName: 'Sivar Brains',
         locale: locale === 'es' ? 'es_MX' : 'en_US',
         type: 'website',
         images: ogImageRaw?.url ? [{ url: `${siteUrl}${ogImageRaw.url}` }] : undefined,
@@ -86,6 +86,6 @@ export async function generatePageMetadata({
       },
     };
   } catch {
-    return { title: 'Brand Brain Foundry' };
+    return { title: 'Sivar Brains' };
   }
 }

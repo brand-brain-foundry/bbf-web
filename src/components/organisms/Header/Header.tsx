@@ -2,6 +2,8 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
 import Link from 'next/link';
+import { getSiteIdentity } from '@/config/site';
+import { BBFLogo } from '@/components/atoms/BBFLogo';
 import { SkipLink } from '@/components/atoms/SkipLink';
 import { LanguageSwitcher } from '@/components/molecules/LanguageSwitcher';
 import { MobileMenu } from '@/components/molecules/MobileMenu';
@@ -27,11 +29,11 @@ export async function Header({ className }: HeaderProps) {
 
   const payload = await getPayload({ config });
   const [identity, navigation] = await Promise.all([
-    payload.findGlobal({ slug: 'site-identity', locale: localeKey }),
+    getSiteIdentity(localeKey),
     payload.findGlobal({ slug: 'site-navigation', locale: localeKey, depth: 2 }),
   ]);
 
-  const siteName = identity.siteName ?? 'Brand Brain Foundry';
+  const siteName = identity.siteName ?? 'Sivar Brains';
   const headerLinks = (navigation.headerLinks ?? []) as Array<{
     label: string;
     href: string;
@@ -81,22 +83,20 @@ export async function Header({ className }: HeaderProps) {
               aria-label={`${siteName} — ${t('logoAriaLabel')}`}
               className={cn(
                 'inline-flex shrink-0 items-center',
-                'font-bold tracking-tight',
-                'text-sm sm:text-base',
                 'text-[var(--bbf-text-on-sand)]',
                 'transition-all duration-200 ease-out',
-                '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
-                'focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
+                '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
+                'focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
               )}
             >
-              <span>{siteName}</span>
+              <BBFLogo variant="icon" size="sm" aria-hidden />
             </Link>
 
             {/* Desktop nav — left-aligned, flex-1 para empujar right cluster */}
             <HeaderDesktopNav
               links={headerLinks}
               localePrefix={localePrefix}
-              className="hidden flex-1 lg:flex"
+              className="hidden flex-1 lg:ml-6 lg:flex"
             />
 
             {/* Spacer mobile */}

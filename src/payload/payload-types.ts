@@ -1758,7 +1758,7 @@ export interface BrandSystem {
   createdAt?: string | null;
 }
 /**
- * Brand identity: name, tagline, description. Source of truth for header, footer, and metadata.
+ * Canonical brand identity. ONE source of truth for name, domain, founder, schema, content interpolation. Editing here propagates everywhere (metadata, Schema.org, llms.txt, sitemap, {{siteName}} in content).
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-identity".
@@ -1766,23 +1766,76 @@ export interface BrandSystem {
 export interface SiteIdentity {
   id: number;
   /**
-   * Nombre oficial del sitio. Aparece en header logo.
+   * Nombre canónico de la marca. Aparece en title, OG, Schema, wordmark, llms.txt. Placeholder: {{siteName}}
    */
   siteName: string;
   /**
-   * Eslogan corto (D-BBF-COPY-01). Aparece en footer bajo logo.
+   * Versión corta para mobile/PWA manifest. Default igual al name si no aplica. Placeholder: {{siteShortName}}
    */
-  tagline: string;
+  siteShortName: string;
   /**
-   * Descripción corta (max 200 chars). Footer bajo logo + meta description default.
+   * URL canónica con protocolo. Sin trailing slash. Placeholder: {{siteDomain}}
    */
-  shortDescription: string;
+  siteDomain: string;
   /**
-   * Descripción larga (max 600 chars). Used para Open Graph + JSON-LD Schema.org.
+   * Tagline corto para meta description fallback + Schema description. Placeholder: {{siteTagline}}
+   */
+  siteTagline: string;
+  /**
+   * Descripción media (150-300 chars). Meta description + OG + Schema. Placeholder: {{siteDescription}}
+   */
+  siteDescription: string;
+  /**
+   * Descripción larga para about page y Schema.org Organization.description completa. Placeholder: {{longDescription}}
    */
   longDescription?: string | null;
   /**
-   * Pill de estado en Nav (ej: "Cerebro activo · Sivar Brains"). Consumer: Header organism (despacho separado).
+   * Entidad persona fundadora — aparece en Schema.org Person para entity authority.
+   */
+  founder?: {
+    /**
+     * Placeholder: {{founderName}}
+     */
+    name?: string | null;
+    /**
+     * Entity-home del founder (página personal o LinkedIn).
+     */
+    url?: string | null;
+    /**
+     * URL LinkedIn del founder (opcional).
+     */
+    linkedin?: string | null;
+  };
+  /**
+   * La foundry que construye el sistema. Solo aparece en Schema.org para entity disambiguation.
+   */
+  producer?: {
+    /**
+     * Placeholder: {{producerName}}
+     */
+    name?: string | null;
+    url?: string | null;
+  };
+  seo?: {
+    /**
+     * Locale OG primario (og:locale).
+     */
+    defaultLocale?: ('es_SV' | 'es' | 'en_US') | null;
+    /**
+     * Handle Twitter/X con @. Vacío si no aplica.
+     */
+    twitterHandle?: string | null;
+    /**
+     * Path relativo a la imagen OG default (1200x630).
+     */
+    ogImagePath?: string | null;
+    /**
+     * Color para manifest + meta theme-color. Hex.
+     */
+    themeColor?: string | null;
+  };
+  /**
+   * Banner de estado visible en nav (ej: "Beta", "Lanzamiento próximo"). Consumer: Header organism.
    */
   statusBanner?: {
     /**
@@ -1798,10 +1851,28 @@ export interface SiteIdentity {
      */
     href?: string | null;
     /**
-     * Color del dot indicador.
+     * Color hex del dot indicador.
      */
-    dotColor?: ('active' | 'red' | 'warning') | null;
+    dotColor?: string | null;
   };
+  /**
+   * Topics en Schema.org knowsAbout para entity authority (AEO/LLMO).
+   */
+  schemaKnowsAbout?:
+    | {
+        topic?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * URLs canónicas de la misma entidad en otros dominios/plataformas (sameAs para Knowledge Graph).
+   */
+  schemaSameAs?:
+    | {
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2609,9 +2680,32 @@ export interface BrandSystemSelect<T extends boolean = true> {
  */
 export interface SiteIdentitySelect<T extends boolean = true> {
   siteName?: T;
-  tagline?: T;
-  shortDescription?: T;
+  siteShortName?: T;
+  siteDomain?: T;
+  siteTagline?: T;
+  siteDescription?: T;
   longDescription?: T;
+  founder?:
+    | T
+    | {
+        name?: T;
+        url?: T;
+        linkedin?: T;
+      };
+  producer?:
+    | T
+    | {
+        name?: T;
+        url?: T;
+      };
+  seo?:
+    | T
+    | {
+        defaultLocale?: T;
+        twitterHandle?: T;
+        ogImagePath?: T;
+        themeColor?: T;
+      };
   statusBanner?:
     | T
     | {
@@ -2619,6 +2713,18 @@ export interface SiteIdentitySelect<T extends boolean = true> {
         label?: T;
         href?: T;
         dotColor?: T;
+      };
+  schemaKnowsAbout?:
+    | T
+    | {
+        topic?: T;
+        id?: T;
+      };
+  schemaSameAs?:
+    | T
+    | {
+        url?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

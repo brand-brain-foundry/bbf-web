@@ -1,4 +1,4 @@
-const BASE_URL = 'https://brandbrainfoundry.com';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sivarbrains.com';
 
 type Locale = 'es' | 'en';
 

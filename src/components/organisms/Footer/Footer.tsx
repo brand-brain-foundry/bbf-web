@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
+import { getSiteIdentity } from '@/config/site';
+import { interpolate } from '@/lib/content-interpolation';
 import { Container } from '@/components/atoms/Container';
 import { NewsletterBox } from '@/components/molecules/NewsletterBox';
 import { BBFLogo } from '@/components/atoms/BBFLogo';
@@ -41,14 +43,16 @@ export async function Footer({ className }: FooterProps) {
 
   const payload = await getPayload({ config });
   const [identity, navigation, newsletter] = await Promise.all([
-    payload.findGlobal({ slug: 'site-identity', locale: localeKey }),
+    getSiteIdentity(localeKey),
     payload.findGlobal({ slug: 'site-navigation', locale: localeKey, depth: 2 }),
     payload.findGlobal({ slug: 'site-newsletter', locale: localeKey }),
   ]);
 
-  const siteName = identity.siteName ?? 'Brand Brain Foundry';
-  const tagline = identity.tagline;
-  const shortDescription = identity.shortDescription;
+  const siteName = identity.siteName ?? 'Sivar Brains';
+  const [tagline, shortDescription] = await Promise.all([
+    interpolate(identity.siteTagline, localeKey),
+    interpolate(identity.siteDescription, localeKey),
+  ]);
   const footerGroups = (navigation.footerGroups ?? []) as Array<{
     groupTitle: string;
     links: Array<{
@@ -89,21 +93,13 @@ export async function Footer({ className }: FooterProps) {
         >
           {/* Col 1: Brand identity */}
           <div className="order-2 flex flex-col gap-3 md:order-1 md:gap-4">
-            <div className="flex items-center gap-3">
-              <BBFLogo variant="icon" size="sm" aria-hidden="true" />
-              <p
-                className={cn(
-                  '[font-family:var(--bbf-font-display)]',
-                  'text-[length:var(--bbf-text-base)]',
-                  'leading-[var(--bbf-leading-snug)]',
-                  'tracking-[var(--bbf-tracking-tight)]',
-                  '[font-weight:var(--bbf-weight-bold)]',
-                  'text-[var(--bbf-text-on-sand)]',
-                )}
-              >
-                {siteName}
-              </p>
-            </div>
+            <BBFLogo
+              variant="horizontal"
+              name={siteName}
+              ariaLabel={siteName}
+              size="sm"
+              className="text-[var(--bbf-text-on-sand)]"
+            />
             {tagline && (
               <p
                 className={cn(

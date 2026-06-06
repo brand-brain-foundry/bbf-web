@@ -27,8 +27,8 @@ export const buttonVariants = cva(
     variants: {
       intent: {
         primary: [
-          'text-[var(--bbf-text-on-gradient-red)]',
-          '[background:var(--bbf-gradient-red)]',
+          'text-[var(--bbf-text-on-gradient-blue)]',
+          '[background:var(--bbf-accent-gradient)]',
           '[background-size:200%_200%]',
           '[background-position:0%_50%]',
           'shadow-sm',
@@ -45,10 +45,10 @@ export const buttonVariants = cva(
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
         outline: [
-          'text-[var(--bbf-accent-red)]',
+          'text-[var(--bbf-accent-blue)]',
           'bg-transparent',
-          'border-2 border-[var(--bbf-accent-red)]',
-          '[@media(hover:hover)]:hover:bg-[var(--bbf-accent-red)] [@media(hover:hover)]:hover:text-[var(--bbf-text-on-red)] [@media(hover:hover)]:hover:-translate-y-px',
+          'border-2 border-[var(--bbf-accent-blue)]',
+          '[@media(hover:hover)]:hover:bg-[var(--bbf-accent-blue)] [@media(hover:hover)]:hover:text-[var(--bbf-text-on-gradient-blue)] [@media(hover:hover)]:hover:-translate-y-px',
           'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),

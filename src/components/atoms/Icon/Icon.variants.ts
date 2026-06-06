@@ -21,7 +21,7 @@ export const iconVariants = cva(['inline-block', 'shrink-0', 'transition-colors'
       primary: 'text-[var(--bbf-text-on-light)]',
       secondary: 'text-[var(--bbf-text-on-light-secondary)]',
       muted: 'text-[var(--bbf-text-on-light-muted)]',
-      accent: 'text-[var(--bbf-accent-red)]',
+      accent: 'text-[var(--bbf-accent-blue)]',
       inverse: 'text-[var(--bbf-text-on-dark)]',
       success: 'text-[var(--bbf-text-success)]',
     },

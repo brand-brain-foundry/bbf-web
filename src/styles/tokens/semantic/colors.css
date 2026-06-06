@@ -110,6 +110,9 @@
   --bbf-text-on-red: var(--bbf-color-black-900);
   --bbf-text-on-red-muted: var(--bbf-color-black-700);
   --bbf-text-on-gradient-red: var(--bbf-color-black-900);
+  --bbf-text-on-gradient-blue: var(
+    --bbf-text-on-black
+  ); /* sand-100 — blue-500 es dark, necesita texto claro */
 
   /* Legacy aliases (compatibilidad — componentes existentes) */
   --bbf-text-on-light: var(--bbf-text-on-sand);
@@ -126,12 +129,12 @@
   --bbf-accent-red-hover: var(--bbf-color-red-600);
   --bbf-accent-red-active: var(--bbf-color-red-700);
   --bbf-accent-red-accessible: var(--bbf-color-red-700);
-  --bbf-accent-gradient: var(--bbf-gradient-red);
-  --bbf-accent-gradient-hover: var(--bbf-gradient-red-reverse);
+  --bbf-accent-gradient: var(--bbf-gradient-blue);
+  --bbf-accent-gradient-hover: var(--bbf-gradient-blue-reverse);
 
-  /* Accent contextual por superficie */
-  --bbf-accent-on-sand: var(--bbf-color-red-500);
-  --bbf-accent-on-black: var(--bbf-color-red-500);
+  /* Accent contextual por superficie — D-REBRAND-01: blue PRIMARY */
+  --bbf-accent-on-sand: var(--bbf-accent-blue);
+  --bbf-accent-on-black: var(--bbf-accent-blue);
   --bbf-accent-on-red: var(--bbf-color-sand-100);
 
   /* Blue accent — auxiliar (uso restringido) */

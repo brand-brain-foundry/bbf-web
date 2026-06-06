@@ -22,7 +22,7 @@ export const badgeVariants = cva(
     variants: {
       intent: {
         default: 'border-[var(--bbf-border-on-sand)] text-[var(--bbf-text-on-sand-muted)]',
-        accent: 'border-[var(--bbf-accent-red)] text-[var(--bbf-accent-red-hover)]',
+        accent: 'border-[var(--bbf-accent-blue)] text-[var(--bbf-accent-blue-hover)]',
         success: 'border-[var(--bbf-color-success-border)] text-[var(--bbf-color-success-text)]',
         beta: 'border-[var(--bbf-accent-blue)] text-[var(--bbf-accent-blue-active)]',
       },

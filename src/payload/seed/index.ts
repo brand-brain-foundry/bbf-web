@@ -11,7 +11,7 @@ async function seed() {
     {
       slug: 'bbf',
       kind: 'organization' as const,
-      name: 'Brand Brain Foundry',
+      name: 'Brand Brain Foundry', // producer entity — preserved intentionally
       description: 'Foundry de cerebros de marca.',
       organization: {
         foundingDate: '2026-01-01T00:00:00.000Z',
@@ -24,9 +24,10 @@ async function seed() {
       slug: 'zavala',
       kind: 'person' as const,
       name: 'Christian Zavala',
-      description: 'Fundador de Brand Brain Foundry. Estratega de marca con oficio Ogilvy.',
+      description:
+        'Fundador de Sivar Brains y Brand Brain Foundry. Estratega de marca con oficio Ogilvy.',
       person: {
-        jobTitle: 'Founder, Brand Brain Foundry',
+        jobTitle: 'Founder, Sivar Brains',
         homeLocation: 'Valencia, España',
         nationality: 'El Salvador',
       },
@@ -369,7 +370,7 @@ async function seed() {
       data: {
         closing: {
           eyebrow: '§6 · CIERRE',
-          brandLine: 'Brand Brain Foundry',
+          brandLine: 'Sivar Brains',
           brandYear: null, // fallback dinámico en runtime → new Date().getFullYear()
           statementLine1: 'Tu marca aprende una vez.',
           statementLine2Soft: 'Te representa en todos lados.',

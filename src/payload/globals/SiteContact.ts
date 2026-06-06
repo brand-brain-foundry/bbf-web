@@ -25,7 +25,7 @@ export const SiteContact: GlobalConfig = {
       name: 'primaryEmail',
       type: 'email',
       required: true,
-      defaultValue: 'contacto@brandbrainfoundry.com',
+      defaultValue: 'contacto@sivarbrains.com',
       admin: {
         description: 'Email principal (recipient form contacto). NO renderizado en front.',
       },
@@ -33,7 +33,7 @@ export const SiteContact: GlobalConfig = {
     {
       name: 'fallbackEmail',
       type: 'email',
-      defaultValue: 'hola@brandbrainfoundry.com',
+      defaultValue: 'hola@sivarbrains.com',
       admin: {
         description: 'Email fallback solo para mensajes de error técnico interno.',
       },
@@ -42,7 +42,7 @@ export const SiteContact: GlobalConfig = {
       name: 'fromEmail',
       type: 'email',
       required: true,
-      defaultValue: 'web@brandbrainfoundry.com',
+      defaultValue: 'web@sivarbrains.com',
       admin: {
         description: 'Email FROM para envíos transaccionales (Resend domain verified).',
       },

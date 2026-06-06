@@ -82,16 +82,15 @@
   cursor: pointer;
 }
 
-/* D-FIX-S5-05 firmada: hover canónico = red gradient animado.
+/* D-FIX-S5-05 firmada: hover canónico = blue gradient animado (SB PRIMARY D-REBRAND-01).
    Cualquier .bbf-cta-link-warm en el sistema hereda este hover.
-   M-02: #ff8866 → var(--bbf-color-red-300) primitivo (sin token semántico específico).
    M-03: prefers-reduced-motion → fallback color sólido (WCAG 2.3.3). */
 .bbf-cta-link-warm:hover {
   background: linear-gradient(
     90deg,
-    var(--bbf-accent-red) 0%,
-    color-mix(in srgb, var(--bbf-accent-red) 70%, var(--bbf-color-red-300) 30%) 50%,
-    var(--bbf-accent-red) 100%
+    var(--bbf-accent-blue) 0%,
+    color-mix(in srgb, var(--bbf-accent-blue) 70%, var(--bbf-color-blue-300) 30%) 50%,
+    var(--bbf-accent-blue) 100%
   );
   background-size: 200% 100%;
   background-clip: text;
@@ -104,7 +103,7 @@
 .bbf-cta-link-warm:hover svg {
   transform: translateX(3px);
   /* SVG no hereda text-fill-color — mantiene color sólido legible */
-  color: var(--bbf-accent-red);
+  color: var(--bbf-accent-blue);
   -webkit-text-fill-color: unset;
 }
 

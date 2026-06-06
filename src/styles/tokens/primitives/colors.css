@@ -103,6 +103,17 @@
     var(--bbf-color-orange-500) 0%,
     var(--bbf-color-red-500) 79%
   );
+  /* Gradient blue — blue-600 → blue-300 (contraste hue+luma suficiente para hover shift visible) */
+  --bbf-gradient-blue: linear-gradient(
+    135deg,
+    var(--bbf-color-blue-600) 21%,
+    var(--bbf-color-blue-300) 100%
+  );
+  --bbf-gradient-blue-reverse: linear-gradient(
+    135deg,
+    var(--bbf-color-blue-300) 0%,
+    var(--bbf-color-blue-600) 79%
+  );
   --bbf-gradient-sand: linear-gradient(
     180deg,
     var(--bbf-color-sand-50) 0%,

@@ -5,9 +5,9 @@
  * NO SectionHeader, NO Lissajous, NO container statement.
  *
  * D-S6-01: H2 level="display-hero" as="h2" weight="medium"
- * D-S6-02: Button intent="outline-dark" size="xl" — hover border red gradient (Alt 1)
+ * D-S6-02: Button intent="outline-dark" size="xl" — hover border blue gradient (D-REBRAND-01)
  * D-S6-05: Surface DARK (--bbf-surface-dark-base = #0a0a0a)
- * D-S6-06: H2 line2 soft con .bbf-text-gradient-red-animated
+ * D-S6-06: H2 line2 soft con .bbf-text-gradient-blue-animated (D-REBRAND-01)
  * D-S6-07: Pill firma con BBFLogo atom + nombre hardcoded + tagline Payload
  * D-S6-08: Statement H2 puro sin container
  */
@@ -37,7 +37,7 @@ export interface CierreData {
 export function CierreSection({ data }: { data: CierreData }) {
   const year = data.brandYear || new Date().getFullYear().toString();
   const eyebrow = data.eyebrow ?? '§6 · CIERRE';
-  const brandLine = data.brandLine ?? 'Brand Brain Foundry';
+  const brandLine = data.brandLine ?? 'Sivar Brains';
 
   return (
     <section
@@ -78,7 +78,7 @@ export function CierreSection({ data }: { data: CierreData }) {
             className="bbf-cierre__title [color:var(--bbf-text-on-dark-surface)]"
           >
             {data.statementLine1 ?? 'Tu marca aprende una vez.'}
-            <span className="bbf-cierre__title-soft bbf-text-gradient-red-animated">
+            <span className="bbf-cierre__title-soft bbf-text-gradient-blue-animated">
               {data.statementLine2Soft ?? 'Te representa en todos lados.'}
             </span>
           </Heading>

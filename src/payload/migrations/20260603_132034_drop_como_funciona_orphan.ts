@@ -1,19 +1,17 @@
-import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
+import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres';
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  // IF EXISTS guards: dev-mode may have already applied these changes
   await db.execute(sql`
-   ALTER TABLE "site_homepage_how_it_works_steps_side" DISABLE ROW LEVEL SECURITY;
-  ALTER TABLE "site_homepage_how_it_works_steps" DISABLE ROW LEVEL SECURITY;
-  ALTER TABLE "site_homepage_how_it_works_steps_locales" DISABLE ROW LEVEL SECURITY;
-  DROP TABLE "site_homepage_how_it_works_steps_side" CASCADE;
-  DROP TABLE "site_homepage_how_it_works_steps" CASCADE;
-  DROP TABLE "site_homepage_how_it_works_steps_locales" CASCADE;
+  DROP TABLE IF EXISTS "site_homepage_how_it_works_steps_side" CASCADE;
+  DROP TABLE IF EXISTS "site_homepage_how_it_works_steps" CASCADE;
+  DROP TABLE IF EXISTS "site_homepage_how_it_works_steps_locales" CASCADE;
   ALTER TABLE "site_homepage" ALTER COLUMN "closing_cta_href" DROP NOT NULL;
   ALTER TABLE "site_homepage_locales" ALTER COLUMN "closing_statement_line1" DROP NOT NULL;
   ALTER TABLE "site_homepage_locales" ALTER COLUMN "closing_cta_label" DROP NOT NULL;
-  ALTER TABLE "site_homepage_locales" DROP COLUMN "how_it_works_eyebrow";
-  ALTER TABLE "site_homepage_locales" DROP COLUMN "how_it_works_h2_line1";
-  ALTER TABLE "site_homepage_locales" DROP COLUMN "how_it_works_h2_line2_soft";`)
+  ALTER TABLE "site_homepage_locales" DROP COLUMN IF EXISTS "how_it_works_eyebrow";
+  ALTER TABLE "site_homepage_locales" DROP COLUMN IF EXISTS "how_it_works_h2_line1";
+  ALTER TABLE "site_homepage_locales" DROP COLUMN IF EXISTS "how_it_works_h2_line2_soft";`);
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
@@ -56,5 +54,5 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   CREATE INDEX "site_homepage_how_it_works_steps_side_locale_idx" ON "site_homepage_how_it_works_steps_side" USING btree ("_locale");
   CREATE INDEX "site_homepage_how_it_works_steps_order_idx" ON "site_homepage_how_it_works_steps" USING btree ("_order");
   CREATE INDEX "site_homepage_how_it_works_steps_parent_id_idx" ON "site_homepage_how_it_works_steps" USING btree ("_parent_id");
-  CREATE UNIQUE INDEX "site_homepage_how_it_works_steps_locales_locale_parent_id_un" ON "site_homepage_how_it_works_steps_locales" USING btree ("_locale","_parent_id");`)
+  CREATE UNIQUE INDEX "site_homepage_how_it_works_steps_locales_locale_parent_id_un" ON "site_homepage_how_it_works_steps_locales" USING btree ("_locale","_parent_id");`);
 }

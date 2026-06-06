@@ -2,11 +2,37 @@ import type { GlobalConfig } from 'payload';
 import { publicRead, isAdmin } from '@/payload/lib/access';
 import { revalidateGlobal } from '../hooks/revalidateGlobal';
 
+/**
+ * SiteIdentity — Entity Identity de la organización (single source of truth).
+ *
+ * Pre-implementación de una Entity Type "Organization" del sistema
+ * ONTOLOGY PRIMITIVES (Entities, Topics, Clusters, Signals) que se
+ * implementará en FASE 6. Cuando llegue ese momento, este global se
+ * promueve a primer registro de la collection `Entities` sin pérdida de datos.
+ *
+ * Hoy:   1 organización canónica ("Sivar Brains")
+ * FASE 6: collection escalable con N entities (Organizations, Persons, Products)
+ *
+ * Schema.org mapping:
+ *   siteName         → Organization.name
+ *   siteTagline      → Organization.slogan
+ *   siteDescription  → Organization.description
+ *   longDescription  → Organization.description (full)
+ *   siteDomain       → Organization.url
+ *   founder.name     → Organization.founder (Person reference)
+ *   producer.name    → Organization.producer (Organization reference)
+ *   schemaSameAs[]   → Organization.sameAs
+ *   schemaKnowsAbout[] → Organization.knowsAbout (Topic references)
+ *
+ * Consume via getSiteIdentity() en src/config/site-identity.ts.
+ * Alimenta: metadata HTML, Schema.org JSON-LD, llms.txt, sitemap,
+ *           wordmark visible, content interpolation {{siteName}}.
+ */
 export const SiteIdentity: GlobalConfig = {
   slug: 'site-identity',
   label: {
-    en: 'Site Identity',
-    es: 'Identidad del Sitio',
+    en: 'Site Identity (Entity)',
+    es: 'Identidad del Sitio (Entidad)',
   },
   access: { read: publicRead, update: isAdmin },
   admin: {
@@ -15,93 +41,237 @@ export const SiteIdentity: GlobalConfig = {
       es: 'Configuración del Sitio',
     },
     description: {
-      en: 'Brand identity: name, tagline, description. Source of truth for header, footer, and metadata.',
-      es: 'Identidad de marca: nombre, tagline, descripción. Fuente única para header, footer y metadata.',
+      en: 'Canonical brand identity. ONE source of truth for name, domain, founder, schema, content interpolation. Editing here propagates everywhere (metadata, Schema.org, llms.txt, sitemap, {{siteName}} in content).',
+      es: 'Identidad canónica de marca. UNA fuente de verdad para nombre, dominio, fundador, schema, interpolación de contenido. Editar acá se propaga en todo el sitio (metadata, Schema.org, llms.txt, sitemap, {{siteName}} en contenido).',
     },
   },
   fields: [
+    // ── Core Identity ────────────────────────────────────────────────
     {
       name: 'siteName',
       type: 'text',
       required: true,
-      defaultValue: 'Brand Brain Foundry',
-      admin: {
-        description: 'Nombre oficial del sitio. Aparece en header logo.',
-      },
-    },
-    {
-      name: 'tagline',
-      type: 'text',
+      defaultValue: 'Sivar Brains',
       localized: true,
-      required: true,
-      defaultValue: 'Piensa, y que trabaje tu marca.',
-      admin: {
-        description: 'Eslogan corto (D-BBF-COPY-01). Aparece en footer bajo logo.',
-      },
-    },
-    {
-      name: 'shortDescription',
-      type: 'textarea',
-      localized: true,
-      required: true,
-      maxLength: 200,
-      defaultValue:
-        'Foundry de cerebros de marca. Construimos sistemas de inteligencia de marca propios, propietarios y portables.',
       admin: {
         description:
-          'Descripción corta (max 200 chars). Footer bajo logo + meta description default.',
+          'Nombre canónico de la marca. Aparece en title, OG, Schema, wordmark, llms.txt. Placeholder: {{siteName}}',
+      },
+    },
+    {
+      name: 'siteShortName',
+      type: 'text',
+      required: true,
+      defaultValue: 'Sivar Brains',
+      localized: true,
+      admin: {
+        description:
+          'Versión corta para mobile/PWA manifest. Default igual al name si no aplica. Placeholder: {{siteShortName}}',
+      },
+    },
+    {
+      name: 'siteDomain',
+      type: 'text',
+      required: true,
+      defaultValue: 'https://sivarbrains.com',
+      admin: {
+        description: 'URL canónica con protocolo. Sin trailing slash. Placeholder: {{siteDomain}}',
+      },
+    },
+    {
+      name: 'siteTagline',
+      type: 'text',
+      required: true,
+      defaultValue: 'Cerebros de marca operacionales',
+      localized: true,
+      admin: {
+        description:
+          'Tagline corto para meta description fallback + Schema description. Placeholder: {{siteTagline}}',
+      },
+    },
+    {
+      name: 'siteDescription',
+      type: 'textarea',
+      required: true,
+      defaultValue:
+        'Sivar Brains construye cerebros de marca para empresas: contenido, conversación, soporte e integraciones operando como sistema. No hay urgencia. Hay método.',
+      localized: true,
+      admin: {
+        description:
+          'Descripción media (150-300 chars). Meta description + OG + Schema. Placeholder: {{siteDescription}}',
       },
     },
     {
       name: 'longDescription',
       type: 'textarea',
       localized: true,
-      maxLength: 600,
       admin: {
         description:
-          'Descripción larga (max 600 chars). Used para Open Graph + JSON-LD Schema.org.',
+          'Descripción larga para about page y Schema.org Organization.description completa. Placeholder: {{longDescription}}',
       },
     },
+
+    // ── Founder / Entity disambiguation ─────────────────────────────
+    {
+      name: 'founder',
+      type: 'group',
+      label: { en: 'Founder', es: 'Fundador' },
+      admin: {
+        description:
+          'Entidad persona fundadora — aparece en Schema.org Person para entity authority.',
+      },
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          defaultValue: 'Christian Zavala',
+          admin: { description: 'Placeholder: {{founderName}}' },
+        },
+        {
+          name: 'url',
+          type: 'text',
+          defaultValue: 'https://brandbrainfoundry.com',
+          admin: {
+            description: 'Entity-home del founder (página personal o LinkedIn).',
+          },
+        },
+        {
+          name: 'linkedin',
+          type: 'text',
+          defaultValue: '',
+          admin: { description: 'URL LinkedIn del founder (opcional).' },
+        },
+      ],
+    },
+
+    // ── Producer (BBF como foundry constructora) ─────────────────────
+    {
+      name: 'producer',
+      type: 'group',
+      label: { en: 'Producer', es: 'Productora' },
+      admin: {
+        description:
+          'La foundry que construye el sistema. Solo aparece en Schema.org para entity disambiguation.',
+      },
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          defaultValue: 'Brand Brain Foundry',
+          admin: { description: 'Placeholder: {{producerName}}' },
+        },
+        {
+          name: 'url',
+          type: 'text',
+          defaultValue: 'https://brandbrainfoundry.com',
+        },
+      ],
+    },
+
+    // ── SEO config ───────────────────────────────────────────────────
+    {
+      name: 'seo',
+      type: 'group',
+      label: 'SEO',
+      fields: [
+        {
+          name: 'defaultLocale',
+          type: 'select',
+          defaultValue: 'es_SV',
+          options: [
+            { label: 'Español (SV)', value: 'es_SV' },
+            { label: 'Español', value: 'es' },
+            { label: 'English (US)', value: 'en_US' },
+          ],
+          admin: { description: 'Locale OG primario (og:locale).' },
+        },
+        {
+          name: 'twitterHandle',
+          type: 'text',
+          defaultValue: '',
+          admin: { description: 'Handle Twitter/X con @. Vacío si no aplica.' },
+        },
+        {
+          name: 'ogImagePath',
+          type: 'text',
+          defaultValue: '/og-image.png',
+          admin: { description: 'Path relativo a la imagen OG default (1200x630).' },
+        },
+        {
+          name: 'themeColor',
+          type: 'text',
+          defaultValue: '#0a0a0a',
+          admin: { description: 'Color para manifest + meta theme-color. Hex.' },
+        },
+      ],
+    },
+
+    // ── Status Banner ────────────────────────────────────────────────
     {
       name: 'statusBanner',
       type: 'group',
       label: { en: 'Status Banner', es: 'Banner de Estado' },
       admin: {
         description:
-          'Pill de estado en Nav (ej: "Cerebro activo · Sivar Brains"). Consumer: Header organism (despacho separado).',
+          'Banner de estado visible en nav (ej: "Beta", "Lanzamiento próximo"). Consumer: Header organism.',
       },
       fields: [
         {
           name: 'enabled',
           type: 'checkbox',
-          defaultValue: true,
+          defaultValue: false,
           admin: { description: 'Mostrar u ocultar el banner en Nav.' },
         },
         {
           name: 'label',
           type: 'text',
           localized: true,
-          defaultValue: 'Cerebro activo · Sivar Brains',
           admin: { description: 'Texto del pill de estado.' },
         },
         {
           name: 'href',
           type: 'text',
-          required: false,
           admin: { description: 'URL opcional al hacer click en el banner.' },
         },
         {
           name: 'dotColor',
-          type: 'select',
-          defaultValue: 'active',
-          options: [
-            { label: 'Active (green)', value: 'active' },
-            { label: 'Alert (red)', value: 'red' },
-            { label: 'Warning (amber)', value: 'warning' },
-          ],
-          admin: { description: 'Color del dot indicador.' },
+          type: 'text',
+          defaultValue: '#3b82f6',
+          admin: { description: 'Color hex del dot indicador.' },
         },
       ],
+    },
+
+    // ── Schema.org enrichment ────────────────────────────────────────
+    {
+      name: 'schemaKnowsAbout',
+      type: 'array',
+      label: { en: 'Schema knowsAbout', es: 'Schema knowsAbout' },
+      fields: [{ name: 'topic', type: 'text' }],
+      defaultValue: [
+        { topic: 'Brand Intelligence' },
+        { topic: 'Cerebros de Marca' },
+        { topic: 'AI Brand Systems' },
+        { topic: 'Content Factories' },
+        { topic: 'Brand Operating Systems' },
+      ],
+      admin: {
+        description: 'Topics en Schema.org knowsAbout para entity authority (AEO/LLMO).',
+      },
+    },
+    {
+      name: 'schemaSameAs',
+      type: 'array',
+      label: { en: 'Schema sameAs', es: 'Schema sameAs' },
+      fields: [{ name: 'url', type: 'text' }],
+      defaultValue: [
+        { url: 'https://brandbrainfoundry.com' },
+        { url: 'https://cerebrosdemarca.com' },
+      ],
+      admin: {
+        description:
+          'URLs canónicas de la misma entidad en otros dominios/plataformas (sameAs para Knowledge Graph).',
+      },
     },
   ],
   hooks: {

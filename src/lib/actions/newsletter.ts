@@ -10,9 +10,9 @@ import { isDisposableEmail } from '@/lib/security/disposable-emails';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const AUDIENCE_ID = process.env.RESEND_AUDIENCE_ID;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://brandbrainfoundry.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sivarbrains.com';
 const FROM_NEWSLETTER =
-  process.env.RESEND_FROM_NEWSLETTER ?? 'BBF Newsletter <newsletter@brandbrainfoundry.com>';
+  process.env.RESEND_FROM_NEWSLETTER ?? 'Sivar Brains Newsletter <newsletter@sivarbrains.com>';
 
 const NewsletterSchema = z.object({
   email: z.string().email(),

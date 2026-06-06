@@ -14,8 +14,8 @@ export const mobileSubMenuToggleVariants = cva([
   'min-h-[44px] px-2 py-4',
   'text-lg font-medium text-[var(--bbf-text-on-sand)]',
   'transition-all duration-200 ease-out',
-  '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
-  'focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
+  '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
+  'focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
 ]);
 
 export const mobileSubMenuPanelVariants = cva(
@@ -36,8 +36,8 @@ export const mobileSubMenuGeneralItemVariants = cva([
   'text-sm font-medium text-[var(--bbf-text-on-sand-muted)]',
   'border-b border-[var(--bbf-border-on-sand)]/30',
   'transition-colors duration-150 ease-out',
-  '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
-  'focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
+  '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
+  'focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
 ]);
 
 export const mobileSubMenuCardVariants = cva([
@@ -54,7 +54,7 @@ export const mobileSubMenuTitleVariants = cva(
     'text-base font-medium',
     'text-[var(--bbf-text-on-sand)]',
     'transition-colors duration-150 ease-out',
-    '[@media(hover:hover)]:group-hover:text-[var(--bbf-accent-red)] group-focus-visible:text-[var(--bbf-accent-red)]',
+    '[@media(hover:hover)]:group-hover:text-[var(--bbf-accent-blue)] group-focus-visible:text-[var(--bbf-accent-blue)]',
   ],
   {
     variants: {

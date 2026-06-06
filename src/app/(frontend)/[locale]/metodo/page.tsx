@@ -13,8 +13,8 @@ type Props = { params: Promise<{ locale: 'es' | 'en' }> };
 const SLUG_BY_LOCALE = { es: 'metodo', en: 'method' } as const;
 
 const PAGE_URL: Record<'es' | 'en', string> = {
-  es: 'https://brandbrainfoundry.com/metodo',
-  en: 'https://brandbrainfoundry.com/en/method',
+  es: 'https://sivarbrains.com/metodo',
+  en: 'https://sivarbrains.com/en/method',
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -7,9 +7,9 @@ import config from '@/payload-config';
 export async function buildOrganizationJsonLd(
   locale: 'es' | 'en' = 'es',
 ): Promise<WithContext<Organization>> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://brandbrainfoundry.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com';
 
-  let siteName = 'Brand Brain Foundry';
+  let siteName = 'Sivar Brains';
   let siteDescription: string | undefined;
   let contactEmail: string | undefined;
   let logoUrl: string | undefined;

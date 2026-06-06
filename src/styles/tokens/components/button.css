@@ -17,9 +17,10 @@
 /**
  * .bbf-btn-outline-dark — hover border gradient (D-S6-02 Alt 1 firmada)
  *
- * Border red gradient animado + texto sand sólido estable sobre surface dark.
- * Técnica: double-background (padding-box=dark body, border-box=red gradient).
+ * Border blue gradient animado + texto sand sólido estable sobre surface dark.
+ * Técnica: double-background (padding-box=dark body, border-box=blue gradient).
  * Usa @keyframes bbf-gradient-shift de gradient-animations.css (A-01).
+ * D-REBRAND-01: blue PRIMARY (era red).
  */
 @media (hover: hover) {
   .bbf-btn-outline-dark:hover {
@@ -28,9 +29,9 @@
       linear-gradient(var(--bbf-surface-dark-base), var(--bbf-surface-dark-base)),
       linear-gradient(
         110deg,
-        var(--bbf-accent-red) 0%,
-        var(--bbf-color-red-300) 50%,
-        var(--bbf-accent-red) 100%
+        var(--bbf-color-blue-accent) 0%,
+        var(--bbf-color-blue-accent-deep) 50%,
+        var(--bbf-color-blue-accent) 100%
       );
     background-origin: border-box;
     background-clip: padding-box, border-box;
@@ -45,7 +46,7 @@
   .bbf-btn-outline-dark:hover {
     animation: none;
     background-image: none;
-    border-color: var(--bbf-accent-red);
+    border-color: var(--bbf-color-blue-accent);
   }
 }
 

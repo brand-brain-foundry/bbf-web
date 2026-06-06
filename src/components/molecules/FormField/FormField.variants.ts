@@ -21,7 +21,7 @@ export const formFieldBorderVariants = cva('', {
   variants: {
     error: {
       true: ['border-[var(--bbf-color-error)]', 'focus:border-[var(--bbf-color-error)]'],
-      false: ['border-[var(--bbf-border-on-sand)]', 'focus:border-[var(--bbf-accent-red)]'],
+      false: ['border-[var(--bbf-border-on-sand)]', 'focus:border-[var(--bbf-accent-blue)]'],
     },
     disabled: {
       true: '',

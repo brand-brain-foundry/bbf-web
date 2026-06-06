@@ -1,8 +1,8 @@
 export const CANON = {
   ORGANIZATION: {
-    name: 'Brand Brain Foundry',
-    alternateName: 'BBF',
-    slogan: 'Piensa, y que trabaje tu marca.',
+    name: 'Sivar Brains',
+    alternateName: 'SB',
+    slogan: 'Tú diriges. Tu marca opera.',
   },
 
   CTAS: {
@@ -53,6 +53,6 @@ export const CANON = {
     PRIVACIDAD: '/privacidad',
     TERMINOS: '/terminos',
     COOKIES: '/cookies',
-    GITHUB: 'https://github.com/brand-brain-foundry',
+    GITHUB: 'https://github.com/brand-brain-foundry', // BBF repo — unchanged
   },
 } as const;

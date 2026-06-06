@@ -31,8 +31,8 @@ const CORNERSTONE_FILES = [
     code: 'CS-01',
     slugEs: 'home',
     slugEn: 'home',
-    titleEs: 'Brand Brain Foundry',
-    titleEn: 'Brand Brain Foundry',
+    titleEs: 'Sivar Brains',
+    titleEn: 'Sivar Brains',
     excerptEs:
       'BBF construye cerebros de marca: estructuras de conocimiento que hacen que una marca piense, recuerde y actúe con coherencia.',
     excerptEn:
@@ -158,7 +158,7 @@ async function seedCornerstones() {
         kind: 'person' as const,
         name: 'Christian Zavala',
         description:
-          'Fundador de Brand Brain Foundry. Construye cerebros de marca con arquitectura hub-and-spoke.',
+          'Fundador de Sivar Brains y Brand Brain Foundry. Construye cerebros de marca con arquitectura hub-and-spoke.',
         person: {
           jobTitle: 'Fundador',
         },
@@ -171,7 +171,7 @@ async function seedCornerstones() {
       locale: 'en',
       data: {
         description:
-          'Founder of Brand Brain Foundry. Builds brand brains with hub-and-spoke architecture.',
+          'Founder of Sivar Brains and Brand Brain Foundry. Builds brand brains with hub-and-spoke architecture.',
         person: {
           jobTitle: 'Founder',
         },

@@ -64,7 +64,10 @@ export function QuoteBlock({
         <p className={`${base}__text`}>
           {text}
           {textSoft && (
-            <span className={`${base}__text-soft bbf-text-gradient-red-animated`}> {textSoft}</span>
+            <span className={`${base}__text-soft bbf-text-gradient-blue-animated`}>
+              {' '}
+              {textSoft}
+            </span>
           )}
         </p>
       </blockquote>

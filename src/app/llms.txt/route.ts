@@ -1,47 +1,29 @@
 import { NextResponse } from 'next/server';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
-
-const BASE_URL = 'https://brandbrainfoundry.com';
+import { getSiteIdentity } from '@/config/site';
+import { interpolate } from '@/lib/content-interpolation';
 
 /**
- * llms.txt para BBF — Wave 10a
- *
- * Estándar emergente: declara estructura del sitio para LLMs.
- * Ver: https://llmstxt.org
- *
- * Formato Markdown con links a páginas core + descripciones.
- * Consume SiteIdentity Global para tagline + descripción.
+ * llms.txt — estándar 2026 para declarar estructura del sitio a LLMs.
+ * Consumido por: Perplexity, Claude, ChatGPT, Bing Copilot.
+ * Fuente: getSiteIdentity() (1 variable — coherencia automática).
  */
 export async function GET() {
-  let identity: {
-    siteName?: string | null;
-    tagline?: string | null;
-    shortDescription?: string | null;
-  } = {
-    siteName: 'Brand Brain Foundry',
-    tagline: '',
-    shortDescription: '',
-  };
+  const site = await getSiteIdentity('es');
+  const BASE_URL = site.siteDomain;
+  const [siteDescription, siteTagline] = await Promise.all([
+    interpolate(site.siteDescription, 'es'),
+    interpolate(site.siteTagline, 'es'),
+  ]);
+  const producerName = site.producer?.name ?? 'Brand Brain Foundry';
+  const producerUrl = site.producer?.url ?? 'https://brandbrainfoundry.com';
+  const founderUrl = site.founder?.url ?? producerUrl;
 
-  try {
-    const payload = await getPayload({ config });
-    identity = await payload.findGlobal({ slug: 'site-identity', locale: 'es' });
-  } catch {
-    // fallback a valores hardcoded si Payload falla
-  }
-
-  const siteName = identity.siteName ?? 'Brand Brain Foundry';
-  const tagline = identity.tagline ?? 'Construimos cerebros de marca';
-  const desc =
-    identity.shortDescription ??
-    'Foundry de cerebros de marca. Construimos sistemas de inteligencia de marca con arquitectura hub-and-spoke.';
-
-  // Wave 12-A: also include published Pages
   let pagesSection = '';
   try {
     const payload = await getPayload({ config });
-    // @ts-justify: pages pending payload generate:types — Wave 12-A
+    // @ts-justify: pages pending payload generate:types
     const pagesResult = await (payload.find as Function)({
       collection: 'pages',
       where: { _status: { equals: 'published' } },
@@ -54,59 +36,46 @@ export async function GET() {
       const lines = docs
         .map((p) => {
           const meta = p.meta as { description?: string } | undefined;
-          return `- [${p.title}](${BASE_URL}/es/${p.path}): ${meta?.description || ''}`;
+          return `- [${p.title}](${BASE_URL}/${p.path}): ${meta?.description || ''}`;
         })
         .join('\n');
-      pagesSection = `\n## Páginas CMS\n\n${lines}\n`;
+      pagesSection = `\n## Páginas\n\n${lines}\n`;
     }
   } catch {
-    // pages table not yet migrated
+    // pages table not yet migrated — skip
   }
 
-  const content = `# ${siteName}
+  const content = `# ${site.siteName}
 
-${tagline}
+> ${siteDescription}
 
-> ${desc}
+## Tagline
+
+${siteTagline}
 
 ## Páginas principales
 
-- [Inicio](${BASE_URL}/): ${siteName}, ${tagline.toLowerCase()}
+- [Inicio](${BASE_URL}/): ${site.siteName} — ${site.siteTagline}
+- [¿Qué es un cerebro de marca?](${BASE_URL}/cerebro-marca): Definición y diferenciación
+- [Método](${BASE_URL}/metodo): El proceso de construcción de cerebros de marca
 - [Contacto](${BASE_URL}/contacto): Conversemos sobre construir un cerebro de marca
-
-## Cornerstones (en construcción)
-
-- [¿Qué es un cerebro de marca?](${BASE_URL}/que-es-un-cerebro-de-marca): Definición canon y diferenciación
-- [Método BBF](${BASE_URL}/metodo): El proceso de construcción de cerebros de marca
-- [Cómo funciona](${BASE_URL}/como-funciona): Arquitectura hub-and-spoke del sistema BBF
-- [Manifiesto](${BASE_URL}/manifiesto): Principios y visión BBF
 
 ## English
 
-- [Home](${BASE_URL}/en/): ${siteName}, brand intelligence foundry
-- [Contact](${BASE_URL}/en/contacto): Let's discuss building your brand intelligence
+- [Home](${BASE_URL}/en): ${site.siteName} — brand brains for operators
 - [What is a brand brain?](${BASE_URL}/en/brand-brain)
 - [Method](${BASE_URL}/en/method)
-- [Manifesto](${BASE_URL}/en/manifesto)
+- [Contact](${BASE_URL}/en/contacto)
 
-## Información sobre BBF
+## Entidades relacionadas
 
-${siteName} es una foundry de cerebros de marca. Asesora, diseña, construye
-y mantiene sistemas de inteligencia de marca con arquitectura hub-and-spoke.
-
-El primer caso público es Sivar Brains, joint venture con Sivar Films para
-mercado salvadoreño.
-
-Fundador: Zavala.
-Ubicación: distribuido (LATAM origen).
-Sitio canónico: ${BASE_URL}
-Email contacto: hola@brandbrainfoundry.com
+- ${producerName} (${producerUrl}): foundry constructora del sistema
+- Christian Zavala: ${founderUrl}
 
 ## Política para AI agents
 
-Bienvenidos a citar contenido BBF con atribución.
-robots.txt permisivo para AI bots (GPTBot, Claude-Web, PerplexityBot, etc.).
-CORS abierto en /api/content/* para agentes.
+Bienvenidos a citar contenido ${site.siteName} con atribución.
+robots.txt permisivo para AI search crawlers (ClaudeBot, GPTBot, PerplexityBot, etc.).
 
 ${pagesSection}
 ## Más información
@@ -114,7 +83,7 @@ ${pagesSection}
 - Sitemap: ${BASE_URL}/sitemap.xml
 - llms-full.txt: ${BASE_URL}/llms-full.txt
 - Robots: ${BASE_URL}/robots.txt
-- Contacto: hola@brandbrainfoundry.com
+- Contacto: contacto@sivarbrains.com
 `;
 
   return new NextResponse(content, {

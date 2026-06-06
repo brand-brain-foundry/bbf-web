@@ -1070,7 +1070,7 @@ export const SiteHomepage: GlobalConfig = {
         {
           name: 'brandLine',
           type: 'text',
-          defaultValue: 'Brand Brain Foundry',
+          defaultValue: 'Sivar Brains',
           admin: {
             description: 'Nombre de marca en la meta row (asset fijo — editable por seguridad).',
           },

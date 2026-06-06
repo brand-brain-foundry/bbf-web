@@ -17,7 +17,7 @@ export const linkVariants = cva(
       variant: {
         default: [
           'text-[var(--bbf-text-on-light)]',
-          '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
+          '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
           '[@media(hover:hover)]:hover:underline',
           'underline-offset-4',
           'active:opacity-70',
@@ -32,7 +32,7 @@ export const linkVariants = cva(
         underline: [
           'underline underline-offset-4',
           'text-[var(--bbf-text-on-light)]',
-          '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
+          '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
           'active:opacity-70',
           focusVisibleClasses,
         ].join(' '),

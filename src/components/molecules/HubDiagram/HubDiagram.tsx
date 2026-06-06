@@ -52,9 +52,9 @@ export async function HubDiagram({ spokes }: HubDiagramProps = {}) {
             <stop offset="0%" stopColor="currentColor" stopOpacity="0.10" />
             <stop offset="60%" stopColor="currentColor" stopOpacity="0" />
           </radialGradient>
-          {/* Fix A: red gradient animado via stop-offset cycling (Op-A4, 8s = Hero pattern) */}
-          <linearGradient id="bbf-hub-red-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="21%" style={{ stopColor: 'var(--bbf-color-red-500)' }}>
+          {/* D-REBRAND-01: blue gradient animado via stop-offset cycling (mirror red pattern) */}
+          <linearGradient id="bbf-hub-blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="21%" style={{ stopColor: 'var(--bbf-color-blue-500)' }}>
               <animate
                 attributeName="offset"
                 values="0%;30%;0%"
@@ -62,7 +62,7 @@ export async function HubDiagram({ spokes }: HubDiagramProps = {}) {
                 repeatCount="indefinite"
               />
             </stop>
-            <stop offset="100%" style={{ stopColor: 'var(--bbf-color-orange-500)' }}>
+            <stop offset="100%" style={{ stopColor: 'var(--bbf-color-blue-300)' }}>
               <animate
                 attributeName="offset"
                 values="100%;70%;100%"
@@ -179,14 +179,14 @@ export async function HubDiagram({ spokes }: HubDiagramProps = {}) {
           );
         })}
 
-        {/* Hub center — Fix 1: r=10, Fix A: red gradient animado via linearGradient defs */}
-        <circle cx={CX} cy={CY} r={HUB_R} fill="url(#bbf-hub-red-gradient)" />
+        {/* Hub center — D-REBRAND-01: blue gradient (mirror red pattern) */}
+        <circle cx={CX} cy={CY} r={HUB_R} fill="url(#bbf-hub-blue-gradient)" />
         <circle
           cx={CX}
           cy={CY}
           r={HUB_R + 2}
           fill="none"
-          stroke="var(--bbf-accent-red)"
+          stroke="var(--bbf-accent-blue)"
           strokeOpacity="0.3"
           strokeWidth="0.3"
         />

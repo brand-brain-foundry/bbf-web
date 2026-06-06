@@ -6,6 +6,9 @@ import { routing } from '@/i18n/routing';
 import { Header } from '@/components/organisms/Header';
 import { Footer } from '@/components/organisms/Footer';
 import { SkipLink } from '@/components/atoms/SkipLink';
+import { StructuredData } from '@/components/seo/StructuredData';
+import { getSiteIdentity } from '@/config/site';
+import { interpolate } from '@/lib/content-interpolation';
 import type { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
 
@@ -24,7 +27,7 @@ const mulish = Mulish({
 });
 
 export const viewport: Viewport = {
-  themeColor: '#fdf5ed',
+  themeColor: '#0a0a0a',
 };
 
 export function generateStaticParams() {
@@ -37,40 +40,34 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const currentLocale = locale === 'es' || locale === 'en' ? locale : 'es';
+  const l = (locale === 'es' || locale === 'en' ? locale : 'es') as 'es' | 'en';
 
-  const titles = {
-    es: 'Brand Brain Foundry — Construimos cerebros de marca',
-    en: 'Brand Brain Foundry — Building brand intelligence',
-  };
+  const site = await getSiteIdentity(l);
+  const seo = site.seo ?? {};
 
-  const descriptions = {
-    es: 'Foundry de cerebros de marca. Construimos sistemas de inteligencia de marca con arquitectura hub-and-spoke.',
-    en: 'Brand brain foundry. We build brand intelligence systems with hub-and-spoke architecture.',
-  };
-
-  const urls = {
-    es: 'https://brandbrainfoundry.com',
-    en: 'https://brandbrainfoundry.com/en',
-  };
+  const [siteTagline, siteDescription] = await Promise.all([
+    interpolate(site.siteTagline, l),
+    interpolate(site.siteDescription, l),
+  ]);
+  const title = `${site.siteName} — ${siteTagline}`;
+  const ogLocale = l === 'es' ? (seo.defaultLocale ?? 'es_SV') : 'en_US';
+  const ogImage = seo.ogImagePath ?? '/og-image.png';
 
   return {
-    metadataBase: new URL('https://brandbrainfoundry.com'),
-    title: titles[currentLocale],
-    description: descriptions[currentLocale],
+    metadataBase: new URL(site.siteDomain),
+    title,
+    description: siteDescription,
     keywords: [
       'brand brain',
       'cerebro de marca',
-      'foundry',
       'brand intelligence',
       'brand AI',
-      'consultoría branding',
       'sistemas de marca',
       'inteligencia de marca',
     ],
-    authors: [{ name: 'Brand Brain Foundry' }],
-    creator: 'Brand Brain Foundry',
-    publisher: 'Brand Brain Foundry',
+    authors: [{ name: site.siteName }],
+    creator: site.siteName,
+    publisher: site.siteName,
     icons: {
       icon: [
         { url: '/favicon.ico', sizes: 'any' },
@@ -93,37 +90,32 @@ export async function generateMetadata({
       },
     },
     alternates: {
-      canonical: currentLocale === 'es' ? '/' : `/${currentLocale}`,
+      canonical: l === 'es' ? site.siteDomain : `${site.siteDomain}/en`,
       languages: {
-        es: '/',
-        en: '/en',
-        'x-default': '/',
+        es: site.siteDomain,
+        en: `${site.siteDomain}/en`,
+        'x-default': site.siteDomain,
       },
     },
     openGraph: {
       type: 'website',
-      locale: currentLocale === 'es' ? 'es_ES' : 'en_US',
-      url: urls[currentLocale],
-      siteName: 'Brand Brain Foundry',
-      title: titles[currentLocale],
-      description: descriptions[currentLocale],
-      images: [
-        {
-          url: '/assets/media/images/og/og-default.png',
-          width: 1200,
-          height: 630,
-          alt: titles[currentLocale],
-        },
-      ],
+      locale: ogLocale,
+      alternateLocale: l === 'es' ? 'en_US' : (seo.defaultLocale ?? 'es_SV'),
+      url: l === 'es' ? site.siteDomain : `${site.siteDomain}/en`,
+      siteName: site.siteName,
+      title,
+      description: siteDescription,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: titles[currentLocale],
-      description: descriptions[currentLocale],
-      images: ['/assets/media/images/og/og-default.png'],
+      site: seo.twitterHandle || undefined,
+      title,
+      description: siteDescription,
+      images: [ogImage],
     },
     other: {
-      'apple-mobile-web-app-title': 'BBF',
+      'apple-mobile-web-app-title': site.siteName,
     },
   };
 }
@@ -144,42 +136,6 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
   const messages = await getMessages();
 
-  const organizationSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    '@id': 'https://brandbrainfoundry.com/#organization',
-    name: 'Brand Brain Foundry',
-    alternateName: 'BBF',
-    url: 'https://brandbrainfoundry.com',
-    logo: {
-      '@type': 'ImageObject',
-      url: 'https://brandbrainfoundry.com/icon-512.png',
-      width: 512,
-      height: 512,
-    },
-    image: 'https://brandbrainfoundry.com/assets/media/images/og/og-default.png',
-    description:
-      'Foundry de cerebros de marca. Asesoramos, diseñamos, construimos y mantenemos sistemas de inteligencia de marca para empresas que escalan.',
-    slogan: 'Construimos cerebros de marca',
-    foundingDate: '2026',
-    knowsAbout: [
-      'Brand Intelligence Systems',
-      'AI Brand Consulting',
-      'Brand Brain Architecture',
-      'Multi-tenant Brand Platforms',
-      'Brand Knowledge Systems',
-      'Brand Identity Design',
-    ],
-    sameAs: ['https://github.com/brand-brain-foundry'],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      email: 'contacto@brandbrainfoundry.com',
-      contactType: 'customer service',
-      availableLanguage: ['Spanish', 'English'],
-    },
-    inLanguage: locale === 'es' ? 'es' : 'en',
-  };
-
   return (
     <html lang={locale} className={`${inter.variable} ${mulish.variable}`}>
       <body>
@@ -189,29 +145,7 @@ export default async function LocaleLayout({
           <main id="main-content">{children}</main>
           <Footer />
         </NextIntlClientProvider>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'WebSite',
-              '@id': 'https://brandbrainfoundry.com/#website',
-              name: 'Brand Brain Foundry',
-              alternateName: 'BBF',
-              url: 'https://brandbrainfoundry.com',
-              inLanguage: ['es', 'en'],
-              publisher: {
-                '@id': 'https://brandbrainfoundry.com/#organization',
-              },
-            }),
-          }}
-        />
+        <StructuredData locale={locale} />
       </body>
     </html>
   );

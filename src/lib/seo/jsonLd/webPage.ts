@@ -6,7 +6,7 @@ interface BuildWebPageOptions {
 }
 
 export function buildWebPageJsonLd({ page, locale }: BuildWebPageOptions): WithContext<WebPage> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://brandbrainfoundry.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com';
   const path = typeof page.path === 'string' ? page.path : '';
   const pageUrl = path ? `${siteUrl}/${locale}/${path}` : `${siteUrl}/${locale}`;
 

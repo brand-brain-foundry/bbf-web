@@ -23,7 +23,7 @@ export const megaMenuTitleVariants = cva(
     'text-sm font-semibold',
     'text-[var(--bbf-text-on-sand)]',
     'transition-colors duration-200 ease-out',
-    '[@media(hover:hover)]:group-hover:text-[var(--bbf-accent-red)] group-focus-visible:text-[var(--bbf-accent-red)]',
+    '[@media(hover:hover)]:group-hover:text-[var(--bbf-accent-blue)] group-focus-visible:text-[var(--bbf-accent-blue)]',
   ],
   {
     variants: {

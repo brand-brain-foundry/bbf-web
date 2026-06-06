@@ -339,10 +339,18 @@
 
 .bbf-cap-chat__msg--brain {
   align-self: flex-start;
-  background-color: var(--bbf-surface-sand);
-  color: var(--bbf-text-on-sand);
-  border: 1px solid var(--bbf-border-on-sand);
+  background: var(--bbf-accent-gradient);
+  background-size: 200% 200%;
+  animation: bbf-gradient-shift 6s ease-in-out infinite;
+  color: var(--bbf-text-on-gradient-blue);
   border-bottom-left-radius: var(--bbf-radius-sm, 0.25rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-cap-chat__msg--brain {
+    animation: none;
+    background-position: 0% 50%;
+  }
 }
 
 /* ============================================================

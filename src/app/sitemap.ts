@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
 
-const BASE_URL = 'https://brandbrainfoundry.com';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sivarbrains.com';
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
 

@@ -111,7 +111,7 @@ export default buildConfig({
         ),
       generateTitle: ({ doc }) => {
         const title = (doc as Record<string, unknown>).title;
-        return `${typeof title === 'string' ? title : 'Untitled'} — Brand Brain Foundry`;
+        return `${typeof title === 'string' ? title : 'Untitled'} — Sivar Brains`;
       },
       generateDescription: ({ doc }) => {
         const title = (doc as Record<string, unknown>).title;
@@ -119,7 +119,7 @@ export default buildConfig({
       },
       generateURL: ({ doc, locale }) => {
         const path = (doc as Record<string, unknown>).path;
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://brandbrainfoundry.com';
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com';
         return `${siteUrl}/${locale}/${typeof path === 'string' ? path : ''}`;
       },
     }),

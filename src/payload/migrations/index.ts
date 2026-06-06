@@ -16,6 +16,9 @@ import * as migration_20260602_180339_comparison_section from './20260602_180339
 import * as migration_20260603_074045_method_section from './20260603_074045_method_section';
 import * as migration_20260603_111230_closing_section from './20260603_111230_closing_section';
 import * as migration_20260603_132034_drop_como_funciona_orphan from './20260603_132034_drop_como_funciona_orphan';
+import * as migration_20260605_090223_add_site_config_global from './20260605_090223_add_site_config_global';
+import * as migration_20260605_191000_merge_site_identity from './20260605_191000_merge_site_identity_into_site_config_then_rename';
+import * as migration_20260605_211913_add_cascade_to_capabilities_scene_tables from './20260605_211913_add_cascade_to_capabilities_scene_tables';
 
 export const migrations = [
   {
@@ -106,6 +109,21 @@ export const migrations = [
   {
     up: migration_20260603_132034_drop_como_funciona_orphan.up,
     down: migration_20260603_132034_drop_como_funciona_orphan.down,
-    name: '20260603_132034_drop_como_funciona_orphan'
+    name: '20260603_132034_drop_como_funciona_orphan',
+  },
+  {
+    up: migration_20260605_090223_add_site_config_global.up,
+    down: migration_20260605_090223_add_site_config_global.down,
+    name: '20260605_090223_add_site_config_global',
+  },
+  {
+    up: migration_20260605_191000_merge_site_identity.up,
+    down: migration_20260605_191000_merge_site_identity.down,
+    name: '20260605_191000_merge_site_identity_into_site_config_then_rename',
+  },
+  {
+    up: migration_20260605_211913_add_cascade_to_capabilities_scene_tables.up,
+    down: migration_20260605_211913_add_cascade_to_capabilities_scene_tables.down,
+    name: '20260605_211913_add_cascade_to_capabilities_scene_tables',
   },
 ];

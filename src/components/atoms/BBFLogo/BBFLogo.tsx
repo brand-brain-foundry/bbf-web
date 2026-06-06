@@ -61,9 +61,16 @@ export interface BBFLogoProps extends Omit<BBFLogoVariants, 'size'> {
   animated?: boolean;
   className?: string;
   /**
-   * ARIA label custom. Default: "Brand Brain Foundry"
+   * ARIA label custom. Default: nombre de la marca.
    */
   ariaLabel?: string;
+  /**
+   * Nombre dinámico (fuente de verdad: SiteIdentity).
+   * Cuando se provee en variant="horizontal" o "name-only",
+   * renderiza texto HTML en vez del wordmark SVG — garantiza
+   * que el nombre mostrado siempre viene de getSiteIdentity().
+   */
+  name?: string;
 }
 
 /**
@@ -105,7 +112,8 @@ export function BBFLogo({
   size,
   animated = false,
   className,
-  ariaLabel = 'Brand Brain Foundry',
+  ariaLabel,
+  name,
 }: BBFLogoProps) {
   // Determinar variant size predefinida vs custom
   const isVariantSize = typeof size === 'string' && (VARIANT_SIZES as string[]).includes(size);
@@ -118,17 +126,44 @@ export function BBFLogo({
     customSizeStyle = { '--bbf-logo-rendered': cssSize } as CSSProperties;
   }
 
-  // Cargar SVGs según variant
+  // Mixed render (name prop): icon SVG + texto dinámico desde SiteIdentity.
+  // Aplica a horizontal y name-only cuando el consumidor pasa `name`.
+  // Garantiza fuente de verdad única: el nombre viene siempre de getSiteIdentity().
+  if (name && (variant === 'horizontal' || variant === 'name-only')) {
+    const resolvedLabel = ariaLabel ?? name;
+    const iconHtml =
+      variant === 'horizontal' ? enrichSvg(loadSvg(LOGO_FILES.icon), 'bbf-logo-icon') : null;
+
+    return (
+      <div
+        data-component="bbf-logo"
+        data-variant={variant}
+        className={cn(bbfLogoVariants({ variant, size: variantSize }), className)}
+        style={customSizeStyle}
+        role="img"
+        aria-label={resolvedLabel}
+      >
+        {iconHtml && (
+          // display:contents — span transparente al layout, SVG queda como hijo directo del flex
+          <span className="contents" aria-hidden dangerouslySetInnerHTML={{ __html: iconHtml }} />
+        )}
+        <span className="bbf-logo-name-text">{name}</span>
+      </div>
+    );
+  }
+
+  // SVG-only render (default: wordmark vectorial o stamp animado)
+  const resolvedLabel = ariaLabel ?? 'Brand Brain Foundry';
   let svgContent = '';
 
   if (variant === 'icon') {
-    svgContent = enrichSvg(loadSvg(LOGO_FILES.icon), 'bbf-logo-icon', ariaLabel);
+    svgContent = enrichSvg(loadSvg(LOGO_FILES.icon), 'bbf-logo-icon', resolvedLabel);
   } else if (variant === 'horizontal') {
     svgContent =
       enrichSvg(loadSvg(LOGO_FILES.icon), 'bbf-logo-icon') +
-      enrichSvg(loadSvg(LOGO_FILES.nameH), 'bbf-logo-name-h', ariaLabel);
+      enrichSvg(loadSvg(LOGO_FILES.nameH), 'bbf-logo-name-h', resolvedLabel);
   } else if (variant === 'name-only') {
-    svgContent = enrichSvg(loadSvg(LOGO_FILES.nameH), 'bbf-logo-name-h', ariaLabel);
+    svgContent = enrichSvg(loadSvg(LOGO_FILES.nameH), 'bbf-logo-name-h', resolvedLabel);
   } else if (variant === 'stamp') {
     svgContent =
       enrichSvg(loadSvg(LOGO_FILES.nameCircle), 'bbf-logo-name-circle') +

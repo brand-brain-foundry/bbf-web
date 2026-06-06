@@ -1,11 +1,11 @@
 {
-  "name": "Brand Brain Foundry",
-  "short_name": "BBF",
-  "description": "Foundry de cerebros de marca",
+  "name": "Sivar Brains",
+  "short_name": "Sivar Brains",
+  "description": "Cerebros de marca operacionales",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fdf5ed",
-  "theme_color": "#fdf5ed",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
   "icons": [
     {
       "src": "/icon-192.png",

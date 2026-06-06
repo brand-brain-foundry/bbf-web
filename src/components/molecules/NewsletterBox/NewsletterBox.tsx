@@ -127,7 +127,7 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
               'border border-[var(--bbf-border-on-sand)]',
               'text-[var(--bbf-text-on-sand)] placeholder:text-[var(--bbf-text-on-sand-subtle)]',
               'transition-all duration-200 ease-out',
-              'focus:border-[var(--bbf-accent-red)] focus:ring-2 focus:ring-[var(--bbf-color-focus-ring)] focus:ring-offset-2 focus:ring-offset-[var(--bbf-surface-sand)] focus:outline-none',
+              'focus:border-[var(--bbf-accent-blue)] focus:ring-2 focus:ring-[var(--bbf-color-focus-ring)] focus:ring-offset-2 focus:ring-offset-[var(--bbf-surface-sand)] focus:outline-none',
               'disabled:cursor-not-allowed disabled:opacity-60',
             )}
           />

@@ -9,7 +9,7 @@ export function buildBreadcrumbJsonLd({
   page,
   locale,
 }: BuildBreadcrumbOptions): WithContext<BreadcrumbList> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://brandbrainfoundry.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com';
   const pathStr = typeof page.path === 'string' ? page.path : '';
   const segments = pathStr ? pathStr.split('/') : [];
 

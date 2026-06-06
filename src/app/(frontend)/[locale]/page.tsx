@@ -21,6 +21,7 @@ import { Button } from '@/components/atoms/Button';
 import { Icon, Icons } from '@/components/atoms/Icon';
 import { Reveal } from '@/components/atoms/Reveal';
 import type { Media } from '@/payload/payload-types';
+import { interpolate } from '@/lib/content-interpolation';
 
 export const revalidate = 3600;
 
@@ -43,6 +44,84 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     method: mth,
     closing: cls,
   } = site;
+
+  // Pre-interpolate all editorial {{placeholder}} fields across §1-§6
+  const l = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
+  const [
+    // §1 Hero
+    h1Line1,
+    h1Line2Soft,
+    ledeBody,
+    ledeEmphasis,
+    // §2 Capabilities header
+    capEyebrow,
+    capH2Line1,
+    capH2Line2Soft,
+    capLead,
+    // §3 Case Study
+    csEyebrow,
+    csH2Line1,
+    csH2Line2Soft,
+    csLead,
+    csQuoteText,
+    csQuoteCaption,
+    // §5 Método
+    mthEyebrow,
+    mthH2Line1,
+    mthH2Line2Soft,
+    mthQuoteText,
+    mthQuoteTextSoft,
+    mthQuoteAttribution,
+    mthCtaLabel,
+    // §6 Cierre
+    clsEyebrow,
+    clsBrandLine,
+    clsStatementLine1,
+    clsStatementLine2Soft,
+    clsCtaLabel,
+    clsCtaNote,
+    clsSignatureTagline,
+  ] = await Promise.all([
+    interpolate(hero?.h1Line1, l),
+    interpolate(hero?.h1Line2Soft, l),
+    interpolate(hero?.ledeBody, l),
+    interpolate(hero?.ledeEmphasis, l),
+    interpolate(cap?.eyebrow, l),
+    interpolate(cap?.h2Line1, l),
+    interpolate(cap?.h2Line2Soft, l),
+    interpolate(cap?.lead, l),
+    interpolate(cs?.eyebrow, l),
+    interpolate(cs?.h2Line1, l),
+    interpolate(cs?.h2Line2Soft, l),
+    interpolate(cs?.lead, l),
+    interpolate(cs?.quoteText, l),
+    interpolate(cs?.quoteCaption, l),
+    interpolate(mth?.eyebrow, l),
+    interpolate(mth?.h2Line1, l),
+    interpolate(mth?.h2Line2Soft, l),
+    interpolate(mth?.quoteText, l),
+    interpolate(mth?.quoteTextSoft, l),
+    interpolate(mth?.quoteAttribution, l),
+    interpolate(mth?.ctaLabel, l),
+    interpolate(cls?.eyebrow, l),
+    interpolate(cls?.brandLine, l),
+    interpolate(cls?.statementLine1, l),
+    interpolate(cls?.statementLine2Soft, l),
+    interpolate(cls?.cta?.label, l),
+    interpolate(cls?.ctaNote, l),
+    interpolate(cls?.signatureTagline, l),
+  ]);
+
+  // §2 Hub spokes — names and metas interpolated
+  const capHubSpokes = cap?.hubSpokes
+    ? await Promise.all(
+        cap.hubSpokes.map((s) =>
+          Promise.all([interpolate(s.name ?? '', l), interpolate(s.meta ?? '', l)]).then(
+            ([name, meta]) => ({ ...s, name, meta: meta || null }),
+          ),
+        ),
+      )
+    : undefined;
   const posterUrl =
     hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
       ? ((hero.media.videoPoster as Media).url ?? undefined)
@@ -69,10 +148,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <HeroSection.Grid cols="2-1.4-1" className="bbf-hero__head">
             <div>
               <Heading level="display-hero" color="primary" align="left" weight="medium">
-                {hero.h1Line1}
+                {h1Line1}
                 <br />
-                <span data-tone="soft" className="bbf-text-gradient-red-animated">
-                  {hero.h1Line2Soft}
+                <span data-tone="soft" className="bbf-text-gradient-blue-animated">
+                  {h1Line2Soft}
                 </span>
               </Heading>
             </div>
@@ -80,12 +159,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <Reveal variant="up" delay={120}>
               <div className="bbf-hero__lede flex flex-col items-start gap-5">
                 <Text className="bbf-lede [max-width:38ch] [color:var(--bbf-text-on-warm-muted)]">
-                  {hero.ledeBody}
-                  {hero.ledeEmphasis && (
+                  {ledeBody}
+                  {ledeEmphasis && (
                     <>
                       <br />
                       <span className="bbf-hero__lede-em font-medium text-[var(--bbf-text-on-warm)]">
-                        {hero.ledeEmphasis}
+                        {ledeEmphasis}
                       </span>
                     </>
                   )}
@@ -159,16 +238,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <CapabilitiesSection surface="warm">
         <Reveal variant="up">
           <CapabilitiesSection.Header
-            eyebrow={cap.eyebrow}
-            h2Line1={cap.h2Line1 ?? ''}
-            h2Line2Soft={cap.h2Line2Soft ?? ''}
-            h2Line2SoftClassName="bbf-text-gradient-red-animated"
-            lead={cap.lead ?? ''}
+            eyebrow={capEyebrow || undefined}
+            h2Line1={capH2Line1}
+            h2Line2Soft={capH2Line2Soft}
+            h2Line2SoftClassName="bbf-text-gradient-blue-animated"
+            lead={capLead}
           />
         </Reveal>
 
         <CapabilitiesSection.Hub
-          spokes={cap.hubSpokes?.map((s) => ({ name: s.name ?? '', meta: s.meta })) ?? undefined}
+          spokes={capHubSpokes?.map((s) => ({ name: s.name, meta: s.meta })) ?? undefined}
         />
 
         <CapabilitiesSection.Grid>
@@ -198,11 +277,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <Reveal variant="up">
             <SectionHeader
               surface="dark"
-              eyebrow={cs.eyebrow ?? '§3 · CASO'}
-              h2Line1={cs.h2Line1 ?? 'El cerebro'}
-              h2Line2Soft={cs.h2Line2Soft ?? 'en producción.'}
+              eyebrow={csEyebrow || '§3 · CASO'}
+              h2Line1={csH2Line1 || 'El cerebro'}
+              h2Line2Soft={csH2Line2Soft || 'en producción.'}
               h2Line2SoftClassName="bbf-text-gradient-blue-animated"
-              lead={cs.lead ?? undefined}
+              lead={csLead || undefined}
               decoration={<Lissajous name="case-2d" animation="traveling" />}
             />
           </Reveal>
@@ -241,10 +320,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             ))}
           </CaseSection.Phases>
 
-          {cs.quoteText && (
+          {csQuoteText && (
             <Reveal variant="up">
-              <CaseSection.Quote caption={cs.quoteCaption ?? undefined}>
-                {cs.quoteText}
+              <CaseSection.Quote caption={csQuoteCaption || undefined}>
+                {csQuoteText}
               </CaseSection.Quote>
             </Reveal>
           )}
@@ -285,9 +364,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       {mth && (
         <MetodoSection
           data={{
-            eyebrow: mth.eyebrow,
-            h2Line1: mth.h2Line1,
-            h2Line2Soft: mth.h2Line2Soft,
+            eyebrow: mthEyebrow || undefined,
+            h2Line1: mthH2Line1 || undefined,
+            h2Line2Soft: mthH2Line2Soft || undefined,
             phases: mth.phases?.map((p) => ({
               number: p.number,
               shortLabel: p.shortLabel,
@@ -301,10 +380,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               body: s.body,
               deliverables: s.deliverables,
             })),
-            quoteText: mth.quoteText,
-            quoteTextSoft: mth.quoteTextSoft,
-            quoteAttribution: mth.quoteAttribution,
-            ctaLabel: mth.ctaLabel,
+            quoteText: mthQuoteText || undefined,
+            quoteTextSoft: mthQuoteTextSoft || undefined,
+            quoteAttribution: mthQuoteAttribution || undefined,
+            ctaLabel: mthCtaLabel || undefined,
             ctaHref: mth.ctaHref,
           }}
         />
@@ -314,14 +393,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       {cls && (
         <CierreSection
           data={{
-            eyebrow: cls.eyebrow,
-            brandLine: cls.brandLine,
+            eyebrow: clsEyebrow || undefined,
+            brandLine: clsBrandLine || undefined,
             brandYear: cls.brandYear,
-            statementLine1: cls.statementLine1,
-            statementLine2Soft: cls.statementLine2Soft,
-            cta: cls.cta,
-            ctaNote: cls.ctaNote,
-            signatureTagline: cls.signatureTagline,
+            statementLine1: clsStatementLine1 || undefined,
+            statementLine2Soft: clsStatementLine2Soft || undefined,
+            cta: cls.cta ? { ...cls.cta, label: clsCtaLabel || cls.cta.label } : undefined,
+            ctaNote: clsCtaNote || undefined,
+            signatureTagline: clsSignatureTagline || undefined,
           }}
         />
       )}

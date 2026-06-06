@@ -17,13 +17,13 @@ export const navLinkBaseVariants = cva(
     'text-sm font-medium',
     'text-[var(--bbf-text-on-sand)]',
     'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
-    '[@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
-    'focus-visible:outline-none focus-visible:text-[var(--bbf-accent-red)]',
+    '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
+    'focus-visible:outline-none focus-visible:text-[var(--bbf-accent-blue)]',
   ],
   {
     variants: {
       active: {
-        true: 'text-[var(--bbf-accent-red)]',
+        true: 'text-[var(--bbf-accent-blue)]',
         false: '',
       },
     },
@@ -38,7 +38,7 @@ export type NavLinkBaseVariants = VariantProps<typeof navLinkBaseVariants>;
 export const navLinkUnderlineVariants = cva(
   [
     'absolute left-0 h-px',
-    'bg-[var(--bbf-accent-red)]',
+    'bg-[var(--bbf-accent-blue)]',
     'transition-all [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
   ],
   {

@@ -71,6 +71,20 @@
   width: auto;
 }
 
+/* Nombre como texto dinámico — fuente de verdad SiteIdentity (prop `name`).
+   Activo cuando horizontal/name-only reciben name prop en lugar del wordmark SVG. */
+.bbf-logo--horizontal .bbf-logo-name-text,
+.bbf-logo--name-only .bbf-logo-name-text {
+  font-family: var(--bbf-font-display);
+  font-weight: var(--bbf-weight-bold);
+  letter-spacing: var(--bbf-tracking-tight);
+  white-space: nowrap;
+  line-height: 1;
+  /* Proporción áurea respecto al icono: font-size = container ÷ φ (≈0.618×)
+     sm 2rem → ~1.24rem | md 2.5rem → ~1.55rem | lg 4rem → ~2.47rem */
+  font-size: calc(var(--bbf-logo-rendered, 2.5rem) * 0.618);
+}
+
 /* ============================================================
    VARIANT: name-only (solo nombre)
    ============================================================ */
