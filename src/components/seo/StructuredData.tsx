@@ -135,7 +135,7 @@ export async function StructuredData({ locale }: { locale: string }) {
         founder: founderRefs.length > 0 ? founderRefs : undefined,
         knowsAbout,
         sameAs,
-        inLanguage: l,
+        knowsLanguage: ['es', 'en'],
         areaServed: { '@type': 'Country', name: 'El Salvador' },
       },
       ...personNodes,
