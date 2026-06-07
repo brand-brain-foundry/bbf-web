@@ -19,6 +19,7 @@ import * as migration_20260603_132034_drop_como_funciona_orphan from './20260603
 import * as migration_20260605_090223_add_site_config_global from './20260605_090223_add_site_config_global';
 import * as migration_20260605_191000_merge_site_identity from './20260605_191000_merge_site_identity_into_site_config_then_rename';
 import * as migration_20260605_211913_add_cascade_to_capabilities_scene_tables from './20260605_211913_add_cascade_to_capabilities_scene_tables';
+import * as migration_20260606_225445_refactor_founder_group_to_founders_array from './20260606_225445_refactor_founder_group_to_founders_array';
 
 export const migrations = [
   {
@@ -125,5 +126,10 @@ export const migrations = [
     up: migration_20260605_211913_add_cascade_to_capabilities_scene_tables.up,
     down: migration_20260605_211913_add_cascade_to_capabilities_scene_tables.down,
     name: '20260605_211913_add_cascade_to_capabilities_scene_tables',
+  },
+  {
+    up: migration_20260606_225445_refactor_founder_group_to_founders_array.up,
+    down: migration_20260606_225445_refactor_founder_group_to_founders_array.down,
+    name: '20260606_225445_refactor_founder_group_to_founders_array',
   },
 ];

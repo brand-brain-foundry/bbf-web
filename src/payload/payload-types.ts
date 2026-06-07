@@ -1790,22 +1790,31 @@ export interface SiteIdentity {
    */
   longDescription?: string | null;
   /**
-   * Entidad persona fundadora — aparece en Schema.org Person para entity authority.
+   * Co-fundadores de la organización. Schema.org Person array. Multi-founder amplifica entity signal AEO/LLMO 2026 (Knowledge Panel + AI citations). El primer founder (índice 0) alimenta {{founderName}}. Todos alimentan {{foundersList}}.
    */
-  founder?: {
+  founders: {
     /**
-     * Placeholder: {{founderName}}
+     * Nombre completo del co-fundador. Aparece en Schema.org Person.name.
      */
-    name?: string | null;
+    name: string;
     /**
-     * Entity-home del founder (página personal o LinkedIn).
+     * Rol por habilidades — NO títulos corporativos. Ej: "Co-fundador · Arquitecto del método". Schema.org Person.jobTitle.
+     */
+    role?: string | null;
+    /**
+     * Entity-home del founder (página personal, portafolio, o LinkedIn). Schema.org Person.url.
      */
     url?: string | null;
     /**
-     * URL LinkedIn del founder (opcional).
+     * URL LinkedIn del founder. Schema.org Person.sameAs.
      */
     linkedin?: string | null;
-  };
+    /**
+     * Organización aliada. Ej: "Brand Brain Foundry" o "Sivar Films". Schema.org Person.affiliation.name.
+     */
+    affiliation?: string | null;
+    id?: string | null;
+  }[];
   /**
    * La foundry que construye el sistema. Solo aparece en Schema.org para entity disambiguation.
    */
@@ -2685,12 +2694,15 @@ export interface SiteIdentitySelect<T extends boolean = true> {
   siteTagline?: T;
   siteDescription?: T;
   longDescription?: T;
-  founder?:
+  founders?:
     | T
     | {
         name?: T;
+        role?: T;
         url?: T;
         linkedin?: T;
+        affiliation?: T;
+        id?: T;
       };
   producer?:
     | T

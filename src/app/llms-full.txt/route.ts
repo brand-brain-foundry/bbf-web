@@ -10,8 +10,8 @@ export async function GET() {
   const BASE_URL = site.siteDomain;
   const producerName = site.producer?.name ?? 'Brand Brain Foundry';
   const producerUrl = site.producer?.url ?? 'https://brandbrainfoundry.com';
-  const founderName = site.founder?.name ?? 'Christian Zavala';
-  const founderUrl = site.founder?.url ?? producerUrl;
+  const founderName = site.founders?.[0]?.name ?? 'Christian Zavala';
+  const founderUrl = site.founders?.[0]?.url ?? producerUrl;
 
   let pagesMarkdown = '';
 

@@ -19,14 +19,17 @@ import { revalidateGlobal } from '../hooks/revalidateGlobal';
  *   siteDescription  → Organization.description
  *   longDescription  → Organization.description (full)
  *   siteDomain       → Organization.url
- *   founder.name     → Organization.founder (Person reference)
+ *   founders[].name  → Organization.founder[] (Person[] array — FASE 3.6 multi-founder)
  *   producer.name    → Organization.producer (Organization reference)
  *   schemaSameAs[]   → Organization.sameAs
  *   schemaKnowsAbout[] → Organization.knowsAbout (Topic references)
  *
+ * FASE 3.6: founder group → founders array (3 co-fundadores: BBF + Sivar Films).
+ * Multi-founder amplifica entity signal AEO/LLMO 2026 (Knowledge Panel + AI citations).
+ *
  * Consume via getSiteIdentity() en src/config/site-identity.ts.
  * Alimenta: metadata HTML, Schema.org JSON-LD, llms.txt, sitemap,
- *           wordmark visible, content interpolation {{siteName}}.
+ *           wordmark visible, content interpolation {{siteName}}, {{founderName}}, {{foundersList}}.
  */
 export const SiteIdentity: GlobalConfig = {
   slug: 'site-identity',
@@ -111,35 +114,57 @@ export const SiteIdentity: GlobalConfig = {
       },
     },
 
-    // ── Founder / Entity disambiguation ─────────────────────────────
+    // ── Founders / Entity disambiguation ────────────────────────────
     {
-      name: 'founder',
-      type: 'group',
-      label: { en: 'Founder', es: 'Fundador' },
+      name: 'founders',
+      type: 'array',
+      label: { en: 'Founders', es: 'Co-fundadores' },
+      minRows: 1,
+      required: true,
       admin: {
         description:
-          'Entidad persona fundadora — aparece en Schema.org Person para entity authority.',
+          'Co-fundadores de la organización. Schema.org Person array. Multi-founder amplifica entity signal AEO/LLMO 2026 (Knowledge Panel + AI citations). El primer founder (índice 0) alimenta {{founderName}}. Todos alimentan {{foundersList}}.',
       },
       fields: [
         {
           name: 'name',
           type: 'text',
-          defaultValue: 'Christian Zavala',
-          admin: { description: 'Placeholder: {{founderName}}' },
+          required: true,
+          admin: {
+            description: 'Nombre completo del co-fundador. Aparece en Schema.org Person.name.',
+          },
+        },
+        {
+          name: 'role',
+          type: 'text',
+          localized: true,
+          admin: {
+            description:
+              'Rol por habilidades — NO títulos corporativos. Ej: "Co-fundador · Arquitecto del método". Schema.org Person.jobTitle.',
+          },
         },
         {
           name: 'url',
           type: 'text',
-          defaultValue: 'https://brandbrainfoundry.com',
           admin: {
-            description: 'Entity-home del founder (página personal o LinkedIn).',
+            description:
+              'Entity-home del founder (página personal, portafolio, o LinkedIn). Schema.org Person.url.',
           },
         },
         {
           name: 'linkedin',
           type: 'text',
-          defaultValue: '',
-          admin: { description: 'URL LinkedIn del founder (opcional).' },
+          admin: {
+            description: 'URL LinkedIn del founder. Schema.org Person.sameAs.',
+          },
+        },
+        {
+          name: 'affiliation',
+          type: 'text',
+          admin: {
+            description:
+              'Organización aliada. Ej: "Brand Brain Foundry" o "Sivar Films". Schema.org Person.affiliation.name.',
+          },
         },
       ],
     },

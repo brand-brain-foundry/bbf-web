@@ -18,7 +18,7 @@ export async function GET() {
   ]);
   const producerName = site.producer?.name ?? 'Brand Brain Foundry';
   const producerUrl = site.producer?.url ?? 'https://brandbrainfoundry.com';
-  const founderUrl = site.founder?.url ?? producerUrl;
+  const founderUrl = site.founders?.[0]?.url ?? producerUrl;
 
   let pagesSection = '';
   try {
