@@ -85,6 +85,8 @@ export function Hero() {
         >
           <div className="hero__media-frame">
             <div className="hero__media-chrome">
+              {/* AP-007 (FASE 4.B.0): texto '//' deliberado — estética UI mono, no comentario JS */}
+              {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
               <span className="mono-xs">// brand-brain.foundry · live feed</span>
               <span className="mono-xs hero__rec">
                 <span className="rec-dot" /> REC&nbsp;00:42

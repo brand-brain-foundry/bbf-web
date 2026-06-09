@@ -30,8 +30,9 @@ export async function generatePageMetadata({
       limit: 1,
       depth: 1,
     });
+    // D-FASE-B-08: slug canonical del global SEO.ts es camelCase, no kebab
     const seoDefaults = await (payload.findGlobal as Function)({
-      slug: 'seo-defaults',
+      slug: 'seoDefaults',
       locale,
       depth: 1,
     }).catch(() => null);
