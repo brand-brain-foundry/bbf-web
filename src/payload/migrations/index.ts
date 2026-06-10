@@ -20,6 +20,7 @@ import * as migration_20260605_090223_add_site_config_global from './20260605_09
 import * as migration_20260605_191000_merge_site_identity from './20260605_191000_merge_site_identity_into_site_config_then_rename';
 import * as migration_20260605_211913_add_cascade_to_capabilities_scene_tables from './20260605_211913_add_cascade_to_capabilities_scene_tables';
 import * as migration_20260606_225445_refactor_founder_group_to_founders_array from './20260606_225445_refactor_founder_group_to_founders_array';
+import * as migration_20260611_000100_site_identity_knows_about_relationship from './20260611_000100_site_identity_knows_about_relationship';
 
 export const migrations = [
   {
@@ -131,5 +132,10 @@ export const migrations = [
     up: migration_20260606_225445_refactor_founder_group_to_founders_array.up,
     down: migration_20260606_225445_refactor_founder_group_to_founders_array.down,
     name: '20260606_225445_refactor_founder_group_to_founders_array',
+  },
+  {
+    up: migration_20260611_000100_site_identity_knows_about_relationship.up,
+    down: migration_20260611_000100_site_identity_knows_about_relationship.down,
+    name: '20260611_000100_site_identity_knows_about_relationship',
   },
 ];

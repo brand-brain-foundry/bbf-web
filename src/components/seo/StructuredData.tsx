@@ -69,7 +69,9 @@ export async function StructuredData({ locale }: { locale: string }) {
 
   const domain = site.siteDomain;
   const founders = site.founders ?? [];
-  const knowsAbout = (site.schemaKnowsAbout ?? []).map((t) => t.topic).filter(Boolean);
+  const knowsAbout = (site.schemaKnowsAbout ?? [])
+    .map((t) => (typeof t === 'object' && t !== null ? t.name : null))
+    .filter(Boolean);
   const sameAs = (site.schemaSameAs ?? []).map((s) => s.url).filter(Boolean);
   const siteDescription = await interpolate(site.siteDescription, l);
 

@@ -1790,6 +1790,24 @@ export interface SiteIdentity {
    */
   longDescription?: string | null;
   /**
+   * Format YYYY-MM or YYYY-MM-DD (Schema.org Organization.foundingDate). E.g. 2025-10
+   */
+  foundingDate?: string | null;
+  /**
+   * Geographies Sivar Brains serves (Schema.org Organization.areaServed)
+   */
+  areaServed?:
+    | {
+        type: 'Country' | 'AdministrativeArea' | 'Region' | 'Place';
+        name: string;
+        /**
+         * ISO 3166-1 alpha-2 (e.g. SV, US, MX)
+         */
+        iso2?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Co-fundadores de la organización. Schema.org Person array. Multi-founder amplifica entity signal AEO/LLMO 2026 (Knowledge Panel + AI citations). El primer founder (índice 0) alimenta {{founderName}}. Todos alimentan {{foundersList}}.
    */
   founders: {
@@ -1865,14 +1883,9 @@ export interface SiteIdentity {
     dotColor?: string | null;
   };
   /**
-   * Topics en Schema.org knowsAbout para entity authority (AEO/LLMO).
+   * Topics canónicos de la organización (Schema.org Organization.knowsAbout). Fuente: Topics collection OntologyPrimitives §3.8. D-ALIGN-40.
    */
-  schemaKnowsAbout?:
-    | {
-        topic?: string | null;
-        id?: string | null;
-      }[]
-    | null;
+  schemaKnowsAbout?: (number | Topic)[] | null;
   /**
    * URLs canónicas de la misma entidad en otros dominios/plataformas (sameAs para Knowledge Graph).
    */
@@ -2694,6 +2707,15 @@ export interface SiteIdentitySelect<T extends boolean = true> {
   siteTagline?: T;
   siteDescription?: T;
   longDescription?: T;
+  foundingDate?: T;
+  areaServed?:
+    | T
+    | {
+        type?: T;
+        name?: T;
+        iso2?: T;
+        id?: T;
+      };
   founders?:
     | T
     | {
@@ -2726,12 +2748,7 @@ export interface SiteIdentitySelect<T extends boolean = true> {
         href?: T;
         dotColor?: T;
       };
-  schemaKnowsAbout?:
-    | T
-    | {
-        topic?: T;
-        id?: T;
-      };
+  schemaKnowsAbout?: T;
   schemaSameAs?:
     | T
     | {

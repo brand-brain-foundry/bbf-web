@@ -85,7 +85,7 @@ export const SiteIdentity: GlobalConfig = {
       name: 'siteTagline',
       type: 'text',
       required: true,
-      defaultValue: 'Cerebros de marca operacionales',
+      defaultValue: 'Construimos tu cerebro de marca', // C-1: corrige §6.3 prohibido "Cerebros de marca operacionales"
       localized: true,
       admin: {
         description:
@@ -112,6 +112,55 @@ export const SiteIdentity: GlobalConfig = {
         description:
           'Descripción larga para about page y Schema.org Organization.description completa. Placeholder: {{longDescription}}',
       },
+    },
+
+    // ── Org metadata (D-ALIGN-02 + D-ALIGN-05) ──────────────────────
+    {
+      name: 'foundingDate',
+      type: 'text',
+      label: { es: 'Fecha de fundación', en: 'Founding date' },
+      admin: {
+        description: {
+          es: 'Formato YYYY-MM o YYYY-MM-DD (Schema.org Organization.foundingDate). Ej: 2025-10',
+          en: 'Format YYYY-MM or YYYY-MM-DD (Schema.org Organization.foundingDate). E.g. 2025-10',
+        },
+        placeholder: '2025-10',
+      },
+      validate: (val: string | null | undefined) => {
+        if (!val) return true;
+        return /^\d{4}-\d{2}(-\d{2})?$/.test(val) || 'Format must be YYYY-MM or YYYY-MM-DD';
+      },
+    },
+    {
+      name: 'areaServed',
+      type: 'array',
+      label: { es: 'Áreas atendidas', en: 'Areas served' },
+      admin: {
+        description: {
+          es: 'Geografías que Sivar Brains atiende (Schema.org Organization.areaServed)',
+          en: 'Geographies Sivar Brains serves (Schema.org Organization.areaServed)',
+        },
+      },
+      fields: [
+        {
+          name: 'type',
+          type: 'select',
+          options: ['Country', 'AdministrativeArea', 'Region', 'Place'],
+          defaultValue: 'Country',
+          required: true,
+        },
+        {
+          name: 'name',
+          type: 'text',
+          localized: true,
+          required: true,
+        },
+        {
+          name: 'iso2',
+          type: 'text',
+          admin: { description: 'ISO 3166-1 alpha-2 (e.g. SV, US, MX)' },
+        },
+      ],
     },
 
     // ── Founders / Entity disambiguation ────────────────────────────
@@ -268,20 +317,18 @@ export const SiteIdentity: GlobalConfig = {
     },
 
     // ── Schema.org enrichment ────────────────────────────────────────
+    // D-ALIGN-40: schemaKnowsAbout migrado de array-text a relationship Topics.
+    // Fuente única: Topics collection (OntologyPrimitives §3.8 Pillar Topics).
+    // El array-text era puente temporal (FASE 4.B.1.A.1) — ahora eliminado.
     {
       name: 'schemaKnowsAbout',
-      type: 'array',
-      label: { en: 'Schema knowsAbout', es: 'Schema knowsAbout' },
-      fields: [{ name: 'topic', type: 'text' }],
-      defaultValue: [
-        { topic: 'Brand Intelligence' },
-        { topic: 'Cerebros de Marca' },
-        { topic: 'AI Brand Systems' },
-        { topic: 'Content Factories' },
-        { topic: 'Brand Operating Systems' },
-      ],
+      type: 'relationship',
+      relationTo: 'topics',
+      hasMany: true,
+      label: { en: 'Schema knowsAbout (Topics)', es: 'Schema knowsAbout (Topics)' },
       admin: {
-        description: 'Topics en Schema.org knowsAbout para entity authority (AEO/LLMO).',
+        description:
+          'Topics canónicos de la organización (Schema.org Organization.knowsAbout). Fuente: Topics collection OntologyPrimitives §3.8. D-ALIGN-40.',
       },
     },
     {
@@ -290,8 +337,9 @@ export const SiteIdentity: GlobalConfig = {
       label: { en: 'Schema sameAs', es: 'Schema sameAs' },
       fields: [{ name: 'url', type: 'text' }],
       defaultValue: [
+        { url: 'https://sivarbrains.com' },
         { url: 'https://brandbrainfoundry.com' },
-        { url: 'https://cerebrosdemarca.com' },
+        { url: 'https://github.com/brand-brain-foundry' }, // C-4: elimina cerebrosdemarca.com (no canonical §2.8), usa OntologyPrimitives §2.8
       ],
       admin: {
         description:
