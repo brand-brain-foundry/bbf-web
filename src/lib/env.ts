@@ -17,7 +17,12 @@ const envSchema = z.object({
   PAYLOAD_SECRET: z.string().min(32),
 
   // === Vercel Blob (media storage) ===
-  BLOB_READ_WRITE_TOKEN: z.string().min(1),
+  BLOB_READ_WRITE_TOKEN: z
+    .string()
+    .startsWith(
+      'vercel_blob_rw_',
+      'BLOB_READ_WRITE_TOKEN must be a Vercel Blob token (prefix: vercel_blob_rw_)',
+    ),
 
   // === Resend (email + newsletter) ===
   RESEND_API_KEY: z.string().min(1),
