@@ -346,6 +346,25 @@ export const SiteIdentity: GlobalConfig = {
           'URLs canónicas de la misma entidad en otros dominios/plataformas (sameAs para Knowledge Graph).',
       },
     },
+
+    // ── Organization Entity reference (D-ALIGN-42) ────────────────────
+    // Pointer explícito a la Entity canónica de la organización en la
+    // collection Entities. SSOT para JSON-LD Organization (StructuredData.tsx)
+    // + cualquier consumer futuro. Permite deprecar Site legacy global
+    // (que también tenía organizationEntity, sin consumers de código).
+    {
+      name: 'organizationEntity',
+      type: 'relationship',
+      relationTo: 'entities',
+      filterOptions: { kind: { equals: 'organization' } },
+      label: { en: 'Organization Entity', es: 'Entidad Organización' },
+      admin: {
+        description: {
+          en: 'Canonical organization entity (D-ALIGN-42). Links to Entities collection. Powers StructuredData JSON-LD. Only organization-type entities shown.',
+          es: 'Entidad canónica de la organización (D-ALIGN-42). Enlaza a la collection Entities. Alimenta StructuredData JSON-LD. Solo se muestran entidades tipo organización.',
+        },
+      },
+    },
   ],
   hooks: {
     afterChange: [revalidateGlobal],

@@ -134,13 +134,8 @@ async function seedSiteIdentity() {
       // schemaKnowsAbout: §6.3 clean (eliminado: "Content Factories" §6.3 prohibido,
       //   "Brand Operating Systems" proximity a "sistema operativo" §6.3)
       // Fuente: OntologyPrimitives §2.5 topics + CM-HP §6.2 vocab aprobado
-      schemaKnowsAbout: [
-        { topic: 'Brand Intelligence' },
-        { topic: 'Brand Brain Architecture' },
-        { topic: 'AI Brand Systems' },
-        { topic: 'Multi-channel Brand' },
-        { topic: 'Brand Memory' },
-      ],
+      // D-ALIGN-40: relationship hasMany → topics (IDs 1-5 seeded)
+      schemaKnowsAbout: [1, 2, 3, 4, 5],
 
       // schemaSameAs: OntologyPrimitives §2.8 sivar-brains sameAs canonical
       schemaSameAs: [

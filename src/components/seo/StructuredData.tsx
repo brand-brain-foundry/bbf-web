@@ -1,4 +1,5 @@
 import { getSiteIdentity } from '@/config/site';
+import { getEntityBySlug } from '@/lib/data/entities';
 import { interpolate } from '@/lib/content-interpolation';
 
 /**
@@ -72,7 +73,9 @@ export async function StructuredData({ locale }: { locale: string }) {
   const knowsAbout = (site.schemaKnowsAbout ?? [])
     .map((t) => (typeof t === 'object' && t !== null ? t.name : null))
     .filter(Boolean);
-  const sameAs = (site.schemaSameAs ?? []).map((s) => s.url).filter(Boolean);
+  // D-ALIGN-41: sameAs lee de Entity 'sivar-brains' (solo perfiles externos, no dominio propio)
+  const orgEntity = await getEntityBySlug('sivar-brains', l);
+  const sameAs = (orgEntity?.sameAs ?? []).map((s) => s.url).filter(Boolean);
   const siteDescription = await interpolate(site.siteDescription, l);
 
   // ── Person nodes — @id always under siteDomain (L-BBF-240) ─────────────

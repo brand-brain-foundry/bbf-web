@@ -106,7 +106,6 @@ export interface Config {
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('es' | 'en') | ('es' | 'en')[];
   globals: {
-    site: Site;
     socialLinks: SocialLink;
     seoDefaults: SeoDefault;
     brandSystem: BrandSystem;
@@ -117,7 +116,6 @@ export interface Config {
     'site-homepage': SiteHomepage;
   };
   globalsSelect: {
-    site: SiteSelect<false> | SiteSelect<true>;
     socialLinks: SocialLinksSelect<false> | SocialLinksSelect<true>;
     seoDefaults: SeoDefaultsSelect<false> | SeoDefaultsSelect<true>;
     brandSystem: BrandSystemSelect<false> | BrandSystemSelect<true>;
@@ -1697,22 +1695,6 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "site".
- */
-export interface Site {
-  id: number;
-  name: string;
-  description?: string | null;
-  baseUrl: string;
-  /**
-   * BBF Organization entity ref para JSON-LD global
-   */
-  organizationEntity?: (number | null) | Entity;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "socialLinks".
  */
 export interface SocialLink {
@@ -1895,6 +1877,10 @@ export interface SiteIdentity {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Canonical organization entity (D-ALIGN-42). Links to Entities collection. Powers StructuredData JSON-LD. Only organization-type entities shown.
+   */
+  organizationEntity?: (number | null) | Entity;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2635,19 +2621,6 @@ export interface SiteHomepage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "site_select".
- */
-export interface SiteSelect<T extends boolean = true> {
-  name?: T;
-  description?: T;
-  baseUrl?: T;
-  organizationEntity?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "socialLinks_select".
  */
 export interface SocialLinksSelect<T extends boolean = true> {
@@ -2755,6 +2728,7 @@ export interface SiteIdentitySelect<T extends boolean = true> {
         url?: T;
         id?: T;
       };
+  organizationEntity?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

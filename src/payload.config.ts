@@ -17,7 +17,6 @@ import { Surfaces } from './payload/collections/surfaces';
 import { Signals } from './payload/collections/signals';
 import { Redirects } from './payload/collections/redirects';
 
-import { Site } from './payload/globals/Site';
 import { SocialLinks } from './payload/globals/SocialLinks';
 import { SEO } from './payload/globals/SEO';
 import { BrandSystem } from './payload/globals/BrandSystem';
@@ -61,7 +60,6 @@ export default buildConfig({
   ],
 
   globals: [
-    Site,
     SocialLinks,
     SEO,
     BrandSystem,
