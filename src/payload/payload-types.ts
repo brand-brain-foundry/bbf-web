@@ -253,7 +253,7 @@ export interface Entity {
    * kebab-case, único globalmente (ej. zavala, bbf)
    */
   slug: string;
-  kind: 'organization' | 'person' | 'concept' | 'tool';
+  kind: 'organization' | 'person' | 'concept' | 'tool' | 'place';
   name: string;
   alternateNames?:
     | {
@@ -809,7 +809,22 @@ export interface Surface {
     | 'social-atom'
     | 'newsletter-snippet'
     | 'podcast-rss';
-  contentItemRef: number | ContentItem;
+  contentItemRef?: (number | null) | ContentItem;
+  /**
+   * Global this Surface represents. Use instead of contentItemRef for Global-level surfaces.
+   */
+  globalRef?:
+    | (
+        | 'site-homepage'
+        | 'site-identity'
+        | 'socialLinks'
+        | 'brandSystem'
+        | 'site-navigation'
+        | 'seoDefaults'
+        | 'site-newsletter'
+        | 'site-contact'
+      )
+    | null;
   locale: 'es' | 'en';
   /**
    * Computed output: HTML string, JSON-LD object, etc.
@@ -1581,6 +1596,7 @@ export interface SurfacesSelect<T extends boolean = true> {
   slug?: T;
   kind?: T;
   contentItemRef?: T;
+  globalRef?: T;
   locale?: T;
   output?: T;
   generatedAt?: T;
@@ -1864,19 +1880,6 @@ export interface SiteIdentity {
      */
     dotColor?: string | null;
   };
-  /**
-   * Topics canónicos de la organización (Schema.org Organization.knowsAbout). Fuente: Topics collection OntologyPrimitives §3.8. D-ALIGN-40.
-   */
-  schemaKnowsAbout?: (number | Topic)[] | null;
-  /**
-   * URLs canónicas de la misma entidad en otros dominios/plataformas (sameAs para Knowledge Graph).
-   */
-  schemaSameAs?:
-    | {
-        url?: string | null;
-        id?: string | null;
-      }[]
-    | null;
   /**
    * Canonical organization entity (D-ALIGN-42). Links to Entities collection. Powers StructuredData JSON-LD. Only organization-type entities shown.
    */
@@ -2720,13 +2723,6 @@ export interface SiteIdentitySelect<T extends boolean = true> {
         label?: T;
         href?: T;
         dotColor?: T;
-      };
-  schemaKnowsAbout?: T;
-  schemaSameAs?:
-    | T
-    | {
-        url?: T;
-        id?: T;
       };
   organizationEntity?: T;
   updatedAt?: T;

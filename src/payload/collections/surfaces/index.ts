@@ -40,8 +40,27 @@ export const Surfaces: CollectionConfig = {
       name: 'contentItemRef',
       type: 'relationship',
       relationTo: 'contentItems',
-      required: true,
+      // required removed — D-ONTOLOGY-03: Surface can point to a Global instead
       index: true,
+    },
+    {
+      name: 'globalRef',
+      type: 'select',
+      index: true,
+      options: [
+        { label: 'Homepage', value: 'site-homepage' },
+        { label: 'Site Identity', value: 'site-identity' },
+        { label: 'Social Links', value: 'socialLinks' },
+        { label: 'Brand System', value: 'brandSystem' },
+        { label: 'Site Navigation', value: 'site-navigation' },
+        { label: 'SEO Defaults', value: 'seoDefaults' },
+        { label: 'Site Newsletter', value: 'site-newsletter' },
+        { label: 'Site Contact', value: 'site-contact' },
+      ],
+      admin: {
+        description:
+          'Global this Surface represents. Use instead of contentItemRef for Global-level surfaces.',
+      },
     },
     {
       name: 'locale',

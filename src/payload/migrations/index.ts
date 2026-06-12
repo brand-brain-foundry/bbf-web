@@ -23,6 +23,8 @@ import * as migration_20260606_225445_refactor_founder_group_to_founders_array f
 import * as migration_20260611_000100_site_identity_knows_about_relationship from './20260611_000100_site_identity_knows_about_relationship';
 import * as migration_20260611_000200_site_identity_add_organization_entity from './20260611_000200_site_identity_add_organization_entity';
 import * as migration_20260611_000300_drop_site_legacy_global from './20260611_000300_drop_site_legacy_global';
+import * as migration_20260612_000100_drop_site_identity_dead_fields from './20260612_000100_drop_site_identity_dead_fields';
+import * as migration_20260612_000200_surfaces_d_ontology_03 from './20260612_000200_surfaces_d_ontology_03';
 
 export const migrations = [
   {
@@ -149,5 +151,15 @@ export const migrations = [
     up: migration_20260611_000300_drop_site_legacy_global.up,
     down: migration_20260611_000300_drop_site_legacy_global.down,
     name: '20260611_000300_drop_site_legacy_global',
+  },
+  {
+    up: migration_20260612_000100_drop_site_identity_dead_fields.up,
+    down: migration_20260612_000100_drop_site_identity_dead_fields.down,
+    name: '20260612_000100_drop_site_identity_dead_fields',
+  },
+  {
+    up: migration_20260612_000200_surfaces_d_ontology_03.up,
+    down: migration_20260612_000200_surfaces_d_ontology_03.down,
+    name: '20260612_000200_surfaces_d_ontology_03',
   },
 ];
