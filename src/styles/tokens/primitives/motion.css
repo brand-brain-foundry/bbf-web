@@ -1,12 +1,15 @@
 /**
  * BBF Design System — TIER 1 PRIMITIVE: Motion
  *
- * Subordinado a: BBF_M5_Framework_Plan.md §6 (M5-E formalizará completo)
- * Tier: 1 (PRIMITIVE)
- * Decisión: D-BBF-WEB-64 (CSS-only base)
+ * @deprecated D-DS-03 (firmada 2026-06-12) — Este archivo está DEPRECADO.
+ * SSOT canon: src/styles/tokens/motion/duration.css + motion/easing.css
  *
- * NOTA M5-A: tokens motion actuales heredados Sivar Brains (3 durations + 2 easings).
- * M5-E expande a sistema canon completo (6 durations + 6 easings) sin romper estos.
+ * Las variables --bbf-duration-* y --bbf-ease-* definidas aquí tienen
+ * 0 consumers en producción. NO agregar nuevas variables aquí.
+ * Los nuevos tokens motion van en motion/duration.css o motion/easing.css.
+ *
+ * Eliminación: diferida para evitar romper cascada Tailwind @theme.
+ * Verificar consumers antes de eliminar el @theme block.
  */
 
 @theme {

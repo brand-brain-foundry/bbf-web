@@ -24,13 +24,13 @@
 
 :root {
   /* ============================================================
-     DURATIONS canon (5 niveles)
+     DURATIONS canon — D-DS-03 SSOT: referencias a motion/duration.css
      ============================================================ */
   --bbf-motion-instant: 0ms; /* state changes sin transition */
-  --bbf-motion-fast: 150ms; /* hover, focus, small UI feedback */
-  --bbf-motion-base: 250ms; /* default canon BBF (95% casos) */
-  --bbf-motion-slow: 400ms; /* entrance animations, modals */
-  --bbf-motion-slower: 600ms; /* full transitions, page leaves */
+  --bbf-motion-fast: var(--bbf-motion-duration-fast); /* 180ms — D-DS-03 SSOT */
+  --bbf-motion-base: var(--bbf-motion-duration-base); /* 240ms — D-DS-03 SSOT */
+  --bbf-motion-slow: var(--bbf-motion-duration-slow); /* 540ms — D-DS-03 SSOT */
+  --bbf-motion-slower: var(--bbf-motion-duration-cinematic); /* 800ms — D-DS-03 SSOT */
 
   /* ============================================================
      EASINGS canon (4 curves estándar + custom BBF)
@@ -87,13 +87,13 @@
 
 /* ============================================================
    REDUCED MOTION (WCAG 2.2 canon)
+   D-DS-03: --bbf-motion-fast/base/slow/slower son refs a motion/duration.css.
+   motion/reduced.css ya cubre --bbf-motion-duration-* → cascade resuelve.
+   Solo overridear vars que motion/reduced.css NO cubre:
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --bbf-motion-fast: 0.01ms;
-    --bbf-motion-base: 0.01ms;
-    --bbf-motion-slow: 0.01ms;
-    --bbf-motion-slower: 0.01ms;
+    --bbf-motion-instant: 0ms;
     --bbf-logo-rotation-duration: 0s;
     --bbf-logo-rotation-duration-hover: 0s;
   }

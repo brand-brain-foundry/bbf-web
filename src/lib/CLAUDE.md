@@ -25,17 +25,20 @@ lib/
 
 ## Surface canon
 
-### Type (D-94 RATIFICADA)
+### Type (D-DS-02 FIRMADA 2026-06-12)
 
 ```typescript
-export type Surface = 'auto' | 'dark' | 'sand' | 'glass';
+export type Surface = 'auto' | 'sand' | 'warm' | 'dark' | 'transparent';
 ```
 
-**4 valores canon:**
+**5 valores canon:**
 - `auto`: contexto heredado (default)
-- `dark`: fondos oscuros
 - `sand`: fondos claros canon (default BBF página)
-- `glass`: superficies translúcidas (backdrop blur)
+- `warm`: fondos cálidos canon (CapabilitiesSection, MetodoSection, PorqueSection)
+- `dark`: fondos oscuros (hero principal, secciones inversas)
+- `transparent`: child preserve parent surface (composition cross-surface)
+
+`glass` diferido — 0 consumers en producción (D-DS-02).
 
 ### Flow (D-97 NUEVA)
 

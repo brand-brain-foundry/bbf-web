@@ -5,11 +5,11 @@
  * Decisiones: D-BBF-WEB-77 (surface-aware), D-94 RATIFICADA (M5-D6),
  *             D-110 RATIFICADA (M5-ADMIN-2)
  *
- * D-94 + D-110 RATIFICADAS: Surface type canon BBF — 5 valores:
+ * D-DS-02 FIRMADA (2026-06-12): Surface type canon BBF — 5 valores:
  *   - auto:        default según context heredado (resolved → algún valor)
- *   - dark:        fondos oscuros (hero principal, secciones inversas)
  *   - sand:        fondos claros canon (superficie principal BBF)
- *   - glass:       superficies translúcidas (backdrop blur, LocaleSwitcher)
+ *   - warm:        fondos cálidos (CapabilitiesSection, MetodoSection, HeroSection)
+ *   - dark:        fondos oscuros (hero principal, secciones inversas)
  *   - transparent: child preserve parent surface (composition cross-surface)
  *
  * D-110 NUEVA (M5-ADMIN-2): 'transparent' agregado.
@@ -19,6 +19,8 @@
  *   - transparent: "explícitamente preserve lo que viene del padre"
  *                  → sin tokens propios, pure pass-through
  *
+ * 'glass' DIFERIDO (D-DS-02): 0 consumers en producción. Si se necesita,
+ *   retomar en despacho futuro con implementación CSS completa.
  * Valores 'sand-elevated' y 'dark-elevated' ELIMINADOS (M5-D6).
  *
  * NOTA: el patrón CANON BBF es data-surface attribute en HTML.
@@ -37,15 +39,16 @@
 import { createContext, useContext, type ReactNode } from 'react';
 
 /**
- * BBF Design System — Surface canon 5 valores (D-94 + D-110)
+ * BBF Design System — Surface canon 5 valores (D-DS-02 FIRMADA 2026-06-12)
  *
- * Subordinado a: D-94 (ratificada M5-D6), D-110 (ratificada M5-ADMIN-2)
+ * Subordinado a: D-94 (ratificada M5-D6), D-110 (ratificada M5-ADMIN-2),
+ *               D-DS-02 (firmada 2026-06-12 — add warm, glass diferido)
  *
  * 5 valores canon BBF:
  *   - auto:        default según context heredado
- *   - dark:        fondos oscuros (hero principal, modals dark)
  *   - sand:        fondos claros canon BBF (default página)
- *   - glass:       superficies translúcidas (backdrop blur)
+ *   - warm:        fondos cálidos canon BBF (CapabilitiesSection, MetodoSection)
+ *   - dark:        fondos oscuros (hero principal, modals dark)
  *   - transparent: child preserve parent surface (composition cross-surface)
  *
  * D-110 NUEVA (M5-ADMIN-2):
@@ -53,8 +56,10 @@ import { createContext, useContext, type ReactNode } from 'react';
  *   Diferencia semántica vs 'auto':
  *     - auto: defaultea según context (resolved → algún valor)
  *     - transparent: explícitamente preserve parent surface
+ *
+ * 'glass' DIFERIDO (D-DS-02): 0 consumers. Retomar con CSS completo en despacho futuro.
  */
-export type Surface = 'auto' | 'dark' | 'sand' | 'glass' | 'transparent';
+export type Surface = 'auto' | 'sand' | 'warm' | 'dark' | 'transparent';
 
 const SurfaceContext = createContext<Surface | undefined>(undefined);
 
