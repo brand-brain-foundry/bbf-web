@@ -4,6 +4,10 @@
  * Reutilizable en §2–§7. Grid 200px/1fr desktop, 1fr mobile.
  * Valores exactos del Claude Design Preview (firmados B-BBF-WEB-S2-N1-HEADER-VALORES-EXACTOS).
  * Layout: eyebrow + decoration (deco-col izquierda) + H2 + lead (derecha).
+ *
+ * D-DS-07 (2026-06-12): SURFACE_TOKENS migrado de SectionHeader.tsx a CSS.
+ * Surface cascade via [data-surface] attribute ya presente en el wrapper div.
+ * Especificidad: (0,3,0) / (0,2,0) > utility Tailwind (0,1,0).
  */
 
 /* ============================================================
@@ -53,7 +57,52 @@
   color: var(--bbf-text-on-dark-surface-muted);
 }
 
-/* Dark surface — override Tailwind utility color (especificidad 0,3,0 > utility 0,1,0)
+/* ============================================================
+   SURFACE CASCADE — D-DS-07 (SURFACE_TOKENS migrado de TSX a CSS)
+   Pattern: data-surface attribute en el wrapper → cascade a hijos.
+   Cubre: heading H2, h2-soft span, lead, eyebrow (deco-col text).
+   ============================================================ */
+
+/* H2 soft span — clase fallback cuando no hay gradient class */
+.bbf-section-header__h2-soft {
+  color: var(--bbf-text-on-warm-muted); /* warm default */
+}
+
+/* WARM — default surface de SectionHeader */
+.bbf-section-header[data-surface='warm'] [data-component='bbf-heading'] {
+  color: var(--bbf-text-on-warm);
+}
+.bbf-section-header[data-surface='warm'] .bbf-lede {
+  color: var(--bbf-text-on-warm-soft);
+}
+.bbf-section-header[data-surface='warm'] .bbf-section-header__deco-col [data-component='bbf-text'] {
+  color: var(--bbf-text-on-warm-muted);
+}
+.bbf-section-header[data-surface='warm'] .bbf-section-header__h2-soft {
+  color: var(--bbf-text-on-warm-muted);
+}
+[data-surface='warm'] .bbf-section-header__deco {
+  color: var(--bbf-text-on-warm-muted);
+}
+
+/* SAND */
+.bbf-section-header[data-surface='sand'] [data-component='bbf-heading'] {
+  color: var(--bbf-text-on-sand);
+}
+.bbf-section-header[data-surface='sand'] .bbf-lede {
+  color: var(--bbf-text-on-sand-muted);
+}
+.bbf-section-header[data-surface='sand'] .bbf-section-header__deco-col [data-component='bbf-text'] {
+  color: var(--bbf-text-on-sand-subtle);
+}
+.bbf-section-header[data-surface='sand'] .bbf-section-header__h2-soft {
+  color: var(--bbf-text-on-sand-muted);
+}
+[data-surface='sand'] .bbf-section-header__deco {
+  color: var(--bbf-text-on-sand-subtle);
+}
+
+/* DARK — override Tailwind utility color (especificidad 0,3,0 > utility 0,1,0)
    CVA Heading/Text color="primary" genera text-[var(--bbf-text-on-light)] = black.
    Estos selectores lo sobreescriben con los tokens dark correctos. */
 .bbf-section-header[data-surface='dark'] [data-component='bbf-heading'] {
@@ -63,5 +112,11 @@
   color: var(--bbf-text-on-dark-surface-muted);
 }
 .bbf-section-header[data-surface='dark'] .bbf-section-header__deco-col [data-component='bbf-text'] {
+  color: var(--bbf-text-on-dark-surface-muted);
+}
+.bbf-section-header[data-surface='dark'] .bbf-section-header__h2-soft {
+  color: var(--bbf-text-on-dark-surface-muted);
+}
+[data-surface='dark'] .bbf-section-header__deco {
   color: var(--bbf-text-on-dark-surface-muted);
 }
