@@ -1744,13 +1744,16 @@ export interface SeoDefault {
 export interface BrandSystem {
   id: number;
   colors?: {
-    primary?: string | null;
-    background?: string | null;
-    accent?: string | null;
+    primaryPalette?: ('red' | 'blue') | null;
+    themeMode?: ('light' | 'dark' | 'auto') | null;
   };
   typography?: {
-    displayFamily?: string | null;
-    bodyFamily?: string | null;
+    displayFamily?: ('inter' | 'custom') | null;
+    bodyFamily?: ('mulish' | 'custom') | null;
+  };
+  brand?: {
+    logoVariant?: ('icon' | 'horizontal' | 'name-only' | 'stamp') | null;
+    accentGradient?: ('red-animated' | 'blue-animated' | 'none') | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -2658,15 +2661,20 @@ export interface BrandSystemSelect<T extends boolean = true> {
   colors?:
     | T
     | {
-        primary?: T;
-        background?: T;
-        accent?: T;
+        primaryPalette?: T;
+        themeMode?: T;
       };
   typography?:
     | T
     | {
         displayFamily?: T;
         bodyFamily?: T;
+      };
+  brand?:
+    | T
+    | {
+        logoVariant?: T;
+        accentGradient?: T;
       };
   updatedAt?: T;
   createdAt?: T;

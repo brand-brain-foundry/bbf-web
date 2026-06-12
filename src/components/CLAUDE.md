@@ -12,10 +12,10 @@
 ```
 components/
 ├── atoms/                     Primitive UI elements
-│   ├── BBFLogo/
-│   │   ├── BBFLogo.tsx        Server Component (carga SVG)
-│   │   ├── BBFLogoAnimator.tsx  Client wrapper WAAPI (D-99)
-│   │   ├── BBFLogo.variants.ts
+│   ├── BrandLogo/             D-DS-08 rename (era BrandLogo)
+│   │   ├── BrandLogo.tsx      Server Component (carga SVG)
+│   │   ├── BrandLogoAnimator.tsx  Client wrapper WAAPI (D-99)
+│   │   ├── BrandLogo.variants.ts
 │   │   └── index.ts
 │   ├── Button/
 │   │   ├── Button.tsx
@@ -129,9 +129,9 @@ export type AtomVariants = VariantProps<typeof atomVariants>;
 <Button intent="primary" href="...">...</Button>
 
 // Atom Server + Client split (D-99)
-<BBFLogoAnimator>
-  <BBFLogo variant="stamp" animated />
-</BBFLogoAnimator>
+<BrandLogoAnimator>
+  <BrandLogo variant="stamp" animated />
+</BrandLogoAnimator>
 
 // Molecule compound
 <HeroVideo>
@@ -157,13 +157,13 @@ export type AtomVariants = VariantProps<typeof atomVariants>;
 - Sin `'use client'` directive
 - Sin state interactivo, sin event handlers
 - Mejor performance, RSC compatible
-- Ejemplos: Heading, Text, BBFLogo, Button, Icon
+- Ejemplos: Heading, Text, BrandLogo, Button, Icon
 
 ### Client cuando necesario
 
 - `'use client'` al top del archivo
 - State, events, browser APIs, hooks de React
-- Ejemplos: BBFLogoAnimator (WAAPI), LocaleSwitcher (useRouter)
+- Ejemplos: BrandLogoAnimator (WAAPI), LocaleSwitcher (useRouter)
 
 ### Server + Client split canon (D-99)
 

@@ -10,7 +10,7 @@
  *   <HeroSection surface="dark">
  *     <HeroVideo ...>...</HeroVideo>
  *     <HeroSection.Content align="center">
- *       <BBFLogo variant="stamp" size="hero" animated />
+ *       <BrandLogo variant="stamp" size="hero" animated />
  *       <Heading level="display-2" color="inverse">...</Heading>
  *       <Text variant="tagline" color="inverse">...</Text>
  *       <Button asChild intent="primary" size="lg">
@@ -79,7 +79,7 @@ export interface HeroSectionContentProps extends HeroSectionContentVariants {
  * @example
  * ```tsx
  * <HeroSection.Content align="center">
- *   <BBFLogo variant="stamp" size="hero" animated />
+ *   <BrandLogo variant="stamp" size="hero" animated />
  *   <Heading level="display-2" color="inverse" align="center">...</Heading>
  * </HeroSection.Content>
  * ```

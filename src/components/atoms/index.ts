@@ -11,7 +11,7 @@ export * from './Icon';
 export * from './Heading';
 export * from './Link';
 export * from './Text';
-export * from './BBFLogo';
+export * from './BrandLogo';
 export * from './MenuIcon';
 export * from './NavLink';
 export * from './Badge';

@@ -1,8 +1,9 @@
 /**
- * BBF Design System — BBFLogo atom
+ * BrandLogo — atom genérico (D-DS-08, 2026-06-12)
  *
+ * Rename BBFLogo → BrandLogo (agnóstico, sin acoplamiento a nombre de marca).
  * Subordinado a: B-BBF-WEB-M5-D1.5-LOGO-SYSTEM-V2
- * Decisiones: D-77, D-78, D-82, D-84
+ * Decisiones: D-77, D-78, D-82, D-84, D-99, D-DS-08
  *
  * Server Component que carga e inyecta SVGs inline.
  *
@@ -12,26 +13,36 @@
  *   name-only  → solo nombre horizontal
  *   stamp      → icon centro + nombre circular alrededor (animable)
  *
+ * ASSET NAMING CONTRACT (D-DS-08 / AssetGenerationCanon §3):
+ *   Final naming: sb-logo-icon.svg | sb-logo-horizontal.svg | sb-logo-name.svg | sb-logo-stamp.svg
+ *   Drop-in cuando Zavala/diseño entregue los 7 SVG finales.
+ *   Actualmente apunta a los assets BBF-Logo-*.svg existentes.
+ *
  * PRESERVACIÓN CRÍTICA:
  *   - Server Component (fs.readFileSync)
  *   - dangerouslySetInnerHTML pattern
- *   - IDs SVG preservados (#BBF-Logo-Name-Circle para animación)
+ *   - IDs SVG preservados (#BBF-Logo-Name-Circle para animación WAAPI)
  *
  * Color: heredado via CSS currentColor (surface-aware).
  * Tamaño: via variant size o size prop explícito.
+ * logoVariant canonical: getBrandSystem().logoVariant → esta prop (D-DS-01↔08 circle).
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
 import type { CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
-import { bbfLogoVariants, type BBFLogoVariants } from './BBFLogo.variants';
+import { brandLogoVariants, type BrandLogoVariants } from './BrandLogo.variants';
 
 const LOGO_DIR = path.join(process.cwd(), 'public', 'assets', 'brand', 'logos');
+
+// ASSET NAMING CONTRACT (D-DS-08):
+//   Canon final: sb-logo-icon | sb-logo-horizontal | sb-logo-name | sb-logo-stamp
+//   Drop-in cuando lleguen los SVG finales con sb-logo-* naming.
 const LOGO_FILES = {
-  icon: 'BBF-Logo-Icon.svg',
-  nameH: 'BBF-Logo-Name-H.svg',
-  nameCircle: 'BBF-Logo-Name-Circle.svg',
+  icon: 'BBF-Logo-Icon.svg', // → sb-logo-icon.svg (pending design)
+  nameH: 'BBF-Logo-Name-H.svg', // → sb-logo-name.svg (pending design)
+  nameCircle: 'BBF-Logo-Name-Circle.svg', // → sb-logo-stamp.svg (pending design)
 } as const;
 
 function loadSvg(filename: string): string {
@@ -50,7 +61,7 @@ function enrichSvg(svg: string, additionalClass: string, ariaLabel?: string): st
 type VariantSizeName = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'hero';
 const VARIANT_SIZES: VariantSizeName[] = ['xs', 'sm', 'md', 'lg', 'xl', 'hero'];
 
-export interface BBFLogoProps extends Omit<BBFLogoVariants, 'size'> {
+export interface BrandLogoProps extends Omit<BrandLogoVariants, 'size'> {
   /**
    * Tamaño: variant name (xs/sm/md/lg/xl/hero), number (px), o string CSS.
    */
@@ -74,52 +85,40 @@ export interface BBFLogoProps extends Omit<BBFLogoVariants, 'size'> {
 }
 
 /**
- * BBF Logo atom — Atomic Design canon
- *
- * @description
- * Brand Brain Foundry logo system con 4 variantes compositional.
- * Atom NO conoce color (hereda via CSS surface).
- * Atom SÍ conoce tamaño y variante.
+ * BrandLogo — atom genérico agnóstico (D-DS-08)
  *
  * @example Default (icon variant, md size)
  * ```tsx
- * <BBFLogo />
+ * <BrandLogo />
  * ```
  *
  * @example Hero stamp animado (uso actual)
  * ```tsx
- * <BBFLogo variant="stamp" size="hero" animated />
+ * <BrandLogo variant="stamp" size="hero" animated />
  * ```
  *
  * @example Header horizontal
  * ```tsx
- * <BBFLogo variant="horizontal" size="md" />
+ * <BrandLogo variant="horizontal" size="md" />
  * ```
  *
- * @example Footer minimal (solo nombre)
+ * @example Con variante canónica de BrandSystem (D-DS-01↔08 circle)
  * ```tsx
- * <BBFLogo variant="name-only" size="sm" />
- * ```
- *
- * @example Custom size (override variant)
- * ```tsx
- * <BBFLogo variant="icon" size="3rem" />
- * <BBFLogo variant="icon" size={48} />
+ * const bs = await getBrandSystem();
+ * <BrandLogo variant={bs.logoVariant} size="md" />
  * ```
  */
-export function BBFLogo({
+export function BrandLogo({
   variant = 'icon',
   size,
   animated = false,
   className,
   ariaLabel,
   name,
-}: BBFLogoProps) {
-  // Determinar variant size predefinida vs custom
+}: BrandLogoProps) {
   const isVariantSize = typeof size === 'string' && (VARIANT_SIZES as string[]).includes(size);
   const variantSize = isVariantSize ? (size as VariantSizeName) : undefined;
 
-  // Calcular dimensión CSS para override custom
   let customSizeStyle: CSSProperties | undefined;
   if (!isVariantSize && size !== undefined) {
     const cssSize = typeof size === 'number' ? `${size}px` : size;
@@ -127,8 +126,6 @@ export function BBFLogo({
   }
 
   // Mixed render (name prop): icon SVG + texto dinámico desde SiteIdentity.
-  // Aplica a horizontal y name-only cuando el consumidor pasa `name`.
-  // Garantiza fuente de verdad única: el nombre viene siempre de getSiteIdentity().
   if (name && (variant === 'horizontal' || variant === 'name-only')) {
     const resolvedLabel = ariaLabel ?? name;
     const iconHtml =
@@ -136,15 +133,14 @@ export function BBFLogo({
 
     return (
       <div
-        data-component="bbf-logo"
+        data-component="brand-logo"
         data-variant={variant}
-        className={cn(bbfLogoVariants({ variant, size: variantSize }), className)}
+        className={cn(brandLogoVariants({ variant, size: variantSize }), className)}
         style={customSizeStyle}
         role="img"
         aria-label={resolvedLabel}
       >
         {iconHtml && (
-          // display:contents — span transparente al layout, SVG queda como hijo directo del flex
           <span className="contents" aria-hidden dangerouslySetInnerHTML={{ __html: iconHtml }} />
         )}
         <span className="bbf-logo-name-text">{name}</span>
@@ -172,10 +168,10 @@ export function BBFLogo({
 
   return (
     <div
-      data-component="bbf-logo"
+      data-component="brand-logo"
       data-variant={variant}
       data-animated={animated || undefined}
-      className={cn(bbfLogoVariants({ variant, size: variantSize }), className)}
+      className={cn(brandLogoVariants({ variant, size: variantSize }), className)}
       style={customSizeStyle}
       // SVG injected inline: Server Component pattern preserving animation IDs
       dangerouslySetInnerHTML={{ __html: svgContent }}

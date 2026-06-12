@@ -25,6 +25,7 @@ import * as migration_20260611_000200_site_identity_add_organization_entity from
 import * as migration_20260611_000300_drop_site_legacy_global from './20260611_000300_drop_site_legacy_global';
 import * as migration_20260612_000100_drop_site_identity_dead_fields from './20260612_000100_drop_site_identity_dead_fields';
 import * as migration_20260612_000200_surfaces_d_ontology_03 from './20260612_000200_surfaces_d_ontology_03';
+import * as migration_20260612_000300_brand_system_selectors from './20260612_000300_brand_system_selectors';
 
 export const migrations = [
   {
@@ -161,5 +162,10 @@ export const migrations = [
     up: migration_20260612_000200_surfaces_d_ontology_03.up,
     down: migration_20260612_000200_surfaces_d_ontology_03.down,
     name: '20260612_000200_surfaces_d_ontology_03',
+  },
+  {
+    up: migration_20260612_000300_brand_system_selectors.up,
+    down: migration_20260612_000300_brand_system_selectors.down,
+    name: '20260612_000300_brand_system_selectors',
   },
 ];

@@ -3,7 +3,7 @@ import { getPayload } from 'payload';
 import config from '@/payload-config';
 import Link from 'next/link';
 import { getSiteIdentity } from '@/config/site';
-import { BBFLogo } from '@/components/atoms/BBFLogo';
+import { BrandLogo } from '@/components/atoms/BrandLogo';
 import { SkipLink } from '@/components/atoms/SkipLink';
 import { LanguageSwitcher } from '@/components/molecules/LanguageSwitcher';
 import { MobileMenu } from '@/components/molecules/MobileMenu';
@@ -89,7 +89,7 @@ export async function Header({ className }: HeaderProps) {
                 'focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
               )}
             >
-              <BBFLogo variant="icon" size="sm" aria-hidden />
+              <BrandLogo variant="icon" size="sm" aria-hidden />
             </Link>
 
             {/* Desktop nav — left-aligned, flex-1 para empujar right cluster */}

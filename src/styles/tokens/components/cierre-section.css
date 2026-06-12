@@ -111,7 +111,7 @@
 
 /* D-FIX-S6-02: Logo BBF gradient animado via CSS mask + gradient background */
 /* D-REBRAND-01: blue PRIMARY sobre surface dark (era red). */
-.bbf-cierre__signature [data-component='bbf-logo'] {
+.bbf-cierre__signature [data-component='brand-logo'] {
   color: transparent; /* oculta currentColor del SVG inline */
   background-image: linear-gradient(
     110deg,
@@ -132,7 +132,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bbf-cierre__signature [data-component='bbf-logo'] {
+  .bbf-cierre__signature [data-component='brand-logo'] {
     animation: none;
     background-image: none;
     background-color: var(--bbf-color-blue-accent);

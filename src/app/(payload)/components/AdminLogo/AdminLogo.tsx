@@ -5,13 +5,13 @@
  * Decisiones: D-107 (Cross-surface), D-109 (Admin canon), D-110 (Surface)
  *
  * Logo BBF para Payload admin login + dashboard.
- * Reusa BBFLogo atom canon (NO sistema design paralelo).
+ * Reusa BrandLogo atom canon (NO sistema design paralelo).
  *
  * Referenciado en payload.config.ts:
  *   admin.components.graphics.Logo: '@/app/(payload)/components/AdminLogo'
  */
 
-import { BBFLogo } from '@/components/atoms/BBFLogo';
+import { BrandLogo } from '@/components/atoms/BrandLogo';
 
 export default function AdminLogo() {
   return (
@@ -24,7 +24,7 @@ export default function AdminLogo() {
         padding: 'var(--bbf-space-4) 0',
       }}
     >
-      <BBFLogo variant="horizontal" size="md" />
+      <BrandLogo variant="horizontal" size="md" />
     </div>
   );
 }

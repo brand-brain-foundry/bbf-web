@@ -6,7 +6,7 @@ import { getSiteIdentity } from '@/config/site';
 import { interpolate } from '@/lib/content-interpolation';
 import { Container } from '@/components/atoms/Container';
 import { NewsletterBox } from '@/components/molecules/NewsletterBox';
-import { BBFLogo } from '@/components/atoms/BBFLogo';
+import { BrandLogo } from '@/components/atoms/BrandLogo';
 import { Badge } from '@/components/atoms/Badge';
 import { cn } from '@/lib/utils';
 
@@ -93,7 +93,7 @@ export async function Footer({ className }: FooterProps) {
         >
           {/* Col 1: Brand identity */}
           <div className="order-2 flex flex-col gap-3 md:order-1 md:gap-4">
-            <BBFLogo
+            <BrandLogo
               variant="horizontal"
               name={siteName}
               ariaLabel={siteName}

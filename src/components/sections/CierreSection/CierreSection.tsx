@@ -8,7 +8,7 @@
  * D-S6-02: Button intent="outline-dark" size="xl" — hover border blue gradient (D-REBRAND-01)
  * D-S6-05: Surface DARK (--bbf-surface-dark-base = #0a0a0a)
  * D-S6-06: H2 line2 soft con .bbf-gradient-blue-animated (D-DS-05 rename, era .bbf-text-gradient-blue-animated)
- * D-S6-07: Pill firma con BBFLogo atom + nombre hardcoded + tagline Payload
+ * D-S6-07: Pill firma con BrandLogo atom + nombre hardcoded + tagline Payload
  * D-S6-08: Statement H2 puro sin container
  */
 
@@ -17,7 +17,7 @@ import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { Button } from '@/components/atoms/Button';
 import { Icon, Icons } from '@/components/atoms/Icon';
-import { BBFLogo } from '@/components/atoms/BBFLogo';
+import { BrandLogo } from '@/components/atoms/BrandLogo';
 import { Reveal } from '@/components/atoms/Reveal';
 
 export interface CierreData {
@@ -108,7 +108,7 @@ export function CierreSection({ data }: { data: CierreData }) {
         {/* Firma brand — D-S6-07 */}
         <Reveal>
           <div className="bbf-cierre__signature">
-            <BBFLogo variant="icon" size={22} aria-hidden />
+            <BrandLogo variant="icon" size={22} aria-hidden />
             <span>
               <span className="bbf-cierre__sig-name">{brandLine}</span>
               {data.signatureTagline && (

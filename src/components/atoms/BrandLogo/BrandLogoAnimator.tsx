@@ -1,28 +1,24 @@
 /**
- * BBF Design System — BBFLogoAnimator (Client Component)
+ * BrandLogoAnimator — Client Component (D-DS-08, 2026-06-12)
  *
+ * Rename BBFLogoAnimator → BrandLogoAnimator (agnóstico).
  * Subordinado a: B-BBF-WEB-M5-E-MOTION-SYSTEM
- * Decisiones: D-99 NUEVA (BBFLogo split Server + Client)
+ * Decisiones: D-99 (Server + Client split), D-DS-08 (rename)
  *
- * Wrapper Client Component que aplica WAAPI a BBFLogo Server.
+ * Wrapper Client Component que aplica WAAPI a BrandLogo Server.
  * Resuelve TD-M5-D1.5-05: hover speed transition smooth via updatePlaybackRate.
  *
- * Pattern canon BBF:
- *   - Server Component carga SVG (preserva static rendering, RSC compatible)
- *   - Client Component wrappea + aplica WAAPI animation control
- *   - Composition canon: import { BBFLogo } y wrap si necesita animation control
- *
  * NOTA: Solo necesario cuando se requiere hover speed control smooth.
- * Para logo estático (no animated), usar BBFLogo directo.
+ * Para logo estático (no animated), usar BrandLogo directo.
  *
  * @example
  * ```tsx
- * import { BBFLogo } from './BBFLogo';
- * import { BBFLogoAnimator } from './BBFLogoAnimator';
+ * import { BrandLogo } from './BrandLogo';
+ * import { BrandLogoAnimator } from './BrandLogoAnimator';
  *
- * <BBFLogoAnimator>
- *   <BBFLogo variant="stamp" size="hero" animated />
- * </BBFLogoAnimator>
+ * <BrandLogoAnimator>
+ *   <BrandLogo variant="stamp" size="hero" animated />
+ * </BrandLogoAnimator>
  * ```
  */
 
@@ -36,20 +32,12 @@ const ROTATION_DURATION_HOVER = 12000; // 12s — token canon
 const PLAYBACK_RATE_IDLE = 1;
 const PLAYBACK_RATE_HOVER = ROTATION_DURATION_IDLE / ROTATION_DURATION_HOVER; // 3.33x
 
-export interface BBFLogoAnimatorProps {
-  /** Children: BBFLogo Server Component (variant=stamp + animated=true esperado). */
+export interface BrandLogoAnimatorProps {
+  /** Children: BrandLogo Server Component (variant=stamp + animated=true esperado). */
   children: ReactNode;
 }
 
-/**
- * BBFLogoAnimator — Client wrapper para WAAPI canon
- *
- * Toma control de la animación CSS infinite rotate del SVG name-circle
- * y aplica WAAPI updatePlaybackRate() en hover para smooth speed change.
- *
- * Sin "salto" perceptible al cambiar velocidad (resuelve TD-M5-D1.5-05).
- */
-export function BBFLogoAnimator({ children }: BBFLogoAnimatorProps) {
+export function BrandLogoAnimator({ children }: BrandLogoAnimatorProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<Animation | null>(null);
 
@@ -102,7 +90,7 @@ export function BBFLogoAnimator({ children }: BBFLogoAnimatorProps) {
   return (
     <div
       ref={wrapperRef}
-      data-component="bbf-logo-animator"
+      data-component="brand-logo-animator"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{ display: 'inline-flex' }}

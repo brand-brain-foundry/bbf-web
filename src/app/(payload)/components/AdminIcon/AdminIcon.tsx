@@ -5,13 +5,13 @@
  * Decisiones: D-107 (Cross-surface), D-109 (Admin canon)
  *
  * Icon BBF condensado para Payload admin nav.
- * Reusa BBFLogo atom canon (variant stamp — icon compacto).
+ * Reusa BrandLogo atom canon (variant stamp — icon compacto).
  *
  * Referenciado en payload.config.ts:
  *   admin.components.graphics.Icon: '@/app/(payload)/components/AdminIcon'
  */
 
-import { BBFLogo } from '@/components/atoms/BBFLogo';
+import { BrandLogo } from '@/components/atoms/BrandLogo';
 
 export default function AdminIcon() {
   return (
@@ -23,7 +23,7 @@ export default function AdminIcon() {
         justifyContent: 'center',
       }}
     >
-      <BBFLogo variant="stamp" size="sm" />
+      <BrandLogo variant="stamp" size="sm" />
     </div>
   );
 }
