@@ -70,11 +70,15 @@ export async function StructuredData({ locale }: { locale: string }) {
 
   const domain = site.siteDomain;
   const founders = site.founders ?? [];
-  const knowsAbout = (site.schemaKnowsAbout ?? [])
+  // D-ALIGN-41: sameAs lee de Entity 'sivar-brains' (solo perfiles externos, no dominio propio)
+  // D-ALIGN-45: knowsAbout lee de Entity.organization.knowsAbout (no SiteIdentity.schemaKnowsAbout)
+  const orgEntity = await getEntityBySlug('sivar-brains', l);
+  const rawKnowsAbout = (orgEntity?.organization?.knowsAbout ?? []) as Array<
+    { name?: string | null } | number
+  >;
+  const knowsAbout = rawKnowsAbout
     .map((t) => (typeof t === 'object' && t !== null ? t.name : null))
     .filter(Boolean);
-  // D-ALIGN-41: sameAs lee de Entity 'sivar-brains' (solo perfiles externos, no dominio propio)
-  const orgEntity = await getEntityBySlug('sivar-brains', l);
   const sameAs = (orgEntity?.sameAs ?? []).map((s) => s.url).filter(Boolean);
   const siteDescription = await interpolate(site.siteDescription, l);
 

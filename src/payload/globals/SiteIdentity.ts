@@ -21,8 +21,6 @@ import { revalidateGlobal } from '../hooks/revalidateGlobal';
  *   siteDomain       → Organization.url
  *   founders[].name  → Organization.founder[] (Person[] array — FASE 3.6 multi-founder)
  *   producer.name    → Organization.producer (Organization reference)
- *   schemaSameAs[]   → Organization.sameAs
- *   schemaKnowsAbout[] → Organization.knowsAbout (Topic references)
  *
  * FASE 3.6: founder group → founders array (3 co-fundadores: BBF + Sivar Films).
  * Multi-founder amplifica entity signal AEO/LLMO 2026 (Knowledge Panel + AI citations).
@@ -314,37 +312,6 @@ export const SiteIdentity: GlobalConfig = {
           admin: { description: 'Color hex del dot indicador.' },
         },
       ],
-    },
-
-    // ── Schema.org enrichment ────────────────────────────────────────
-    // D-ALIGN-40: schemaKnowsAbout migrado de array-text a relationship Topics.
-    // Fuente única: Topics collection (OntologyPrimitives §3.8 Pillar Topics).
-    // El array-text era puente temporal (FASE 4.B.1.A.1) — ahora eliminado.
-    {
-      name: 'schemaKnowsAbout',
-      type: 'relationship',
-      relationTo: 'topics',
-      hasMany: true,
-      label: { en: 'Schema knowsAbout (Topics)', es: 'Schema knowsAbout (Topics)' },
-      admin: {
-        description:
-          'Topics canónicos de la organización (Schema.org Organization.knowsAbout). Fuente: Topics collection OntologyPrimitives §3.8. D-ALIGN-40.',
-      },
-    },
-    {
-      name: 'schemaSameAs',
-      type: 'array',
-      label: { en: 'Schema sameAs', es: 'Schema sameAs' },
-      fields: [{ name: 'url', type: 'text' }],
-      defaultValue: [
-        { url: 'https://sivarbrains.com' },
-        { url: 'https://brandbrainfoundry.com' },
-        { url: 'https://github.com/brand-brain-foundry' }, // C-4: elimina cerebrosdemarca.com (no canonical §2.8), usa OntologyPrimitives §2.8
-      ],
-      admin: {
-        description:
-          'URLs canónicas de la misma entidad en otros dominios/plataformas (sameAs para Knowledge Graph).',
-      },
     },
 
     // ── Organization Entity reference (D-ALIGN-42) ────────────────────

@@ -5,7 +5,7 @@ import { slugRegex } from '@/payload/lib/utils/ulid';
 export const Topics: CollectionConfig = {
   slug: 'topics',
   admin: {
-    useAsTitle: 'slug',
+    useAsTitle: 'name',
     defaultColumns: ['slug', 'kind', 'parentTopic', 'status'],
     group: 'Primitives',
   },

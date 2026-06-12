@@ -41,6 +41,7 @@ export const Entities: CollectionConfig = {
         { label: 'Person', value: 'person' },
         { label: 'Concept', value: 'concept' },
         { label: 'Tool', value: 'tool' },
+        { label: 'Place', value: 'place' },
       ],
       admin: {
         position: 'sidebar',

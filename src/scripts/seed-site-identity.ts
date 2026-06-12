@@ -130,19 +130,6 @@ async function seedSiteIdentity() {
         href: null,
         dotColor: '#3b82f6',
       },
-
-      // schemaKnowsAbout: §6.3 clean (eliminado: "Content Factories" §6.3 prohibido,
-      //   "Brand Operating Systems" proximity a "sistema operativo" §6.3)
-      // Fuente: OntologyPrimitives §2.5 topics + CM-HP §6.2 vocab aprobado
-      // D-ALIGN-40: relationship hasMany → topics (IDs 1-5 seeded)
-      schemaKnowsAbout: [1, 2, 3, 4, 5],
-
-      // schemaSameAs: OntologyPrimitives §2.8 sivar-brains sameAs canonical
-      schemaSameAs: [
-        { url: 'https://sivarbrains.com' },
-        { url: 'https://brandbrainfoundry.com' },
-        { url: 'https://github.com/brand-brain-foundry' },
-      ],
     },
   });
 
@@ -277,8 +264,6 @@ async function seedSiteIdentity() {
   console.log('   ✅ seo.themeColor: #255FF1 (corrige #fef9e8)');
   console.log('   ✅ seo.twitterHandle: @sivarbrains (pendiente de crear cuenta)');
   console.log('   ✅ statusBanner: disabled, label null');
-  console.log('   ✅ schemaKnowsAbout: 5 topics §6.3 clean');
-  console.log('   ✅ schemaSameAs: 3 URLs sivar-brains canonical');
   console.log('');
   console.log('🔒 NO sobrescrito:');
   console.log('   - siteDescription ES+EN (Hotfix canonical)');
