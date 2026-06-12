@@ -1,5 +1,22 @@
 /**
- * BBF — Gradient animations canon (D-BBF-KB-108)
+ * BBF — Gradient animations canon (D-DS-05 FIRMADA 2026-06-12)
+ *
+ * SET CERRADO — 5 gradientes canónicos:
+ *   G-01  .bbf-gradient-red-animated       CTA primario, accent sobre sand
+ *   G-02  .bbf-gradient-blue-animated      Accent text sobre dark/ink surfaces
+ *   G-03  .bbf-gradient-dark-animated      Button/CTA sobre dark surfaces
+ *   G-04  .bbf-gradient-warm-text-animated Text gradient sobre warm surfaces
+ *   G-05  .bbf-gradient-border-animated    Border animado (button dark)
+ *
+ * ELIMINADOS (0 consumers): .bbf-gradient-red-hover, .bbf-btn-gradient-primary,
+ *   .bbf-text-gradient-red-animated (D-DS-05 + A-01 Simplicidad).
+ *
+ * RENAMES D-DS-05:
+ *   .bbf-text-gradient-blue-animated  → .bbf-gradient-blue-animated
+ *   .bbf-btn-gradient-dark-animated   → .bbf-gradient-dark-animated
+ *   .bbf-text-gradient-dark-animated  → .bbf-gradient-warm-text-animated
+ *   .bbf-btn-border-dark-animated     → .bbf-gradient-border-animated
+ *
  * Hover: background-position shift sobre gradient 200% size
  * Idle: slow auto-shift para elementos siempre visibles
  */
@@ -26,90 +43,15 @@
   }
 }
 
+/* G-01 — Red animated background (CTA primario, accent sobre sand) */
 .bbf-gradient-red-animated {
   background: var(--bbf-gradient-red);
   background-size: 200% 200%;
   animation: bbf-gradient-shift 8s ease infinite;
 }
 
-.bbf-gradient-red-hover {
-  background: var(--bbf-gradient-red);
-  background-size: 200% 200%;
-  background-position: 0% 50%;
-  transition: background-position 600ms cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-@media (hover: hover) {
-  .bbf-gradient-red-hover:hover {
-    background-position: 100% 50%;
-  }
-}
-
-/* Fallback utility for Button primary intent (Tailwind v4 arbitrary property compat) */
-.bbf-btn-gradient-primary {
-  background: var(--bbf-accent-gradient);
-  background-size: 200% 200%;
-  background-position: 0% 50%;
-  transition:
-    background-position 600ms cubic-bezier(0.32, 0.72, 0, 1),
-    transform 200ms ease-out,
-    box-shadow 200ms ease-out;
-}
-
-@media (hover: hover) {
-  .bbf-btn-gradient-primary:hover {
-    background-position: 100% 50%;
-  }
-}
-
-.bbf-btn-gradient-primary:active {
-  background-position: 50% 50%;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bbf-gradient-red-animated {
-    animation: none;
-  }
-
-  .bbf-gradient-red-hover,
-  .bbf-btn-gradient-primary {
-    transition: none;
-  }
-}
-
-/* Text gradient red — H1 soft line (Q2-Op-A T6.7 2026-05-28)
- * Reuses @keyframes bbf-gradient-shift (A-01 — no duplicate). */
-.bbf-text-gradient-red-animated {
-  background: linear-gradient(
-    90deg,
-    var(--bbf-accent-red) 0%,
-    color-mix(in srgb, var(--bbf-accent-red) 70%, #ff8866 30%) 50%,
-    var(--bbf-accent-red) 100%
-  );
-  background-size: 200% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  animation: bbf-gradient-shift 4s ease-in-out infinite;
-}
-
-/* Specificity override — hero.css [data-component][data-tone='soft'] = (0,0,2,0) */
-[data-component='bbf-hero-section'] .bbf-text-gradient-red-animated {
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bbf-text-gradient-red-animated {
-    animation: none;
-    background-position: 0% 50%;
-  }
-}
-
-/* Text gradient blue animated — H2 soft line sobre surface dark (D-CASO-3)
- * Paralelo a .bbf-text-gradient-red-animated (D-HERO-01). Reutiliza @keyframes bbf-gradient-shift (A-01). */
-.bbf-text-gradient-blue-animated {
+/* G-02 — Blue text gradient (accent text sobre dark/ink surfaces) */
+.bbf-gradient-blue-animated {
   background-image: linear-gradient(
     110deg,
     var(--bbf-color-blue-accent) 0%,
@@ -124,15 +66,41 @@
   animation: bbf-gradient-shift 6s ease-in-out infinite;
 }
 
+/* Specificity override — hero.css [data-component][data-tone='soft'] = (0,0,2,0) */
+[data-component='bbf-hero-section'] .bbf-gradient-blue-animated {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .bbf-text-gradient-blue-animated {
+  .bbf-gradient-red-animated {
+    animation: none;
+  }
+
+  .bbf-gradient-blue-animated {
     animation: none;
     background-position: 0% 50%;
   }
 }
 
-/* Text gradient dark — H1 soft line dark shimmer (reuses bbf-gradient-shift, A-01) */
-.bbf-text-gradient-dark-animated {
+/* G-03 — Dark sweep button gradient (D-DS-09: hardcoded → tokens) */
+.bbf-gradient-dark-animated {
+  background: linear-gradient(
+    110deg,
+    var(--bbf-color-black-900) 0%,
+    var(--bbf-color-black-900) 30%,
+    var(--bbf-color-black-500) 50%,
+    var(--bbf-color-black-900) 70%,
+    var(--bbf-color-black-900) 100%
+  );
+  background-size: 300% 100%;
+  animation: bbf-gradient-shift 2.5s ease-in-out infinite;
+  color: var(--bbf-color-white);
+  border: none;
+}
+
+/* G-04 — Warm text shimmer (text gradient sobre warm surfaces) */
+.bbf-gradient-warm-text-animated {
   background: linear-gradient(
     90deg,
     var(--bbf-text-on-warm) 0%,
@@ -148,44 +116,21 @@
 }
 
 /* Specificity override — hero.css [data-component][data-tone='soft'] = (0,0,2,0) */
-[data-component='bbf-hero-section'] .bbf-text-gradient-dark-animated {
+[data-component='bbf-hero-section'] .bbf-gradient-warm-text-animated {
   color: transparent;
   -webkit-text-fill-color: transparent;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .bbf-text-gradient-dark-animated {
-    animation: none;
-    background-position: 0% 50%;
-  }
-}
-
-/* Button dark gradient — sweep negro con contraste #000→#333 (Hero CTA primario §1) */
-.bbf-btn-gradient-dark-animated {
-  background: linear-gradient(
-    110deg,
-    #000000 0%,
-    #000000 30%,
-    #333333 50%,
-    #000000 70%,
-    #000000 100%
-  );
-  background-size: 300% 100%;
-  animation: bbf-gradient-shift 2.5s ease-in-out infinite;
-  color: #ffffff;
-  border: none;
-}
-
-/* Button animated border — pseudo-elemento ::before con mask (Hero CTA secundario §1) */
-.bbf-btn-border-dark-animated {
+/* G-05 — Animated border button (pseudo ::before mask, D-DS-09: hardcoded → tokens) */
+.bbf-gradient-border-animated {
   position: relative;
   background: transparent;
-  color: #0a0a0a;
+  color: var(--bbf-color-black-700);
   border: none;
   isolation: isolate;
 }
 
-.bbf-btn-border-dark-animated::before {
+.bbf-gradient-border-animated::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -193,11 +138,11 @@
   padding: 1.5px;
   background: linear-gradient(
     110deg,
-    #000000 0%,
-    #333333 40%,
-    #555555 50%,
-    #333333 60%,
-    #000000 100%
+    var(--bbf-color-black-900) 0%,
+    var(--bbf-color-black-500) 40%,
+    var(--bbf-color-black-400) 50%,
+    var(--bbf-color-black-500) 60%,
+    var(--bbf-color-black-900) 100%
   );
   background-size: 300% 100%;
   animation: bbf-gradient-shift 2.5s ease-in-out infinite;
@@ -210,12 +155,17 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bbf-btn-gradient-dark-animated {
+  .bbf-gradient-dark-animated {
     animation: none;
     background-position: 0% 50%;
   }
 
-  .bbf-btn-border-dark-animated::before {
+  .bbf-gradient-warm-text-animated {
+    animation: none;
+    background-position: 0% 50%;
+  }
+
+  .bbf-gradient-border-animated::before {
     animation: none;
     background-position: 0% 50%;
   }

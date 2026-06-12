@@ -99,7 +99,7 @@ export function MetodoSection({ data }: { data: MetodoData }) {
           h2Line1={data.h2Line1 ?? 'Tres servicios coordinados.'}
           h2Line2Soft={data.h2Line2Soft ?? 'Sin sorpresas.'}
           surface="warm"
-          h2Line2SoftClassName="bbf-text-gradient-blue-animated"
+          h2Line2SoftClassName="bbf-gradient-blue-animated"
           decoration={<Lissajous name="figure8-2d" animation="traveling" />}
         />
       </Reveal>

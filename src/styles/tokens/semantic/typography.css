@@ -91,9 +91,9 @@
   --bbf-font-body: var(--bbf-font-mulish);
   --bbf-font-code: var(--bbf-font-mono);
 
-  /* Legacy aliases (compatibilidad — deprecar en M5-D) */
-  --bbf-font-heading: var(--bbf-font-display);
-  --bbf-font-sans: var(--bbf-font-body);
+  /* Legacy aliases — D-DS-04 (2026-06-12): ELIMINADOS
+   * --bbf-font-heading: 0 consumers tras actualizar reset.css → usa --bbf-font-display
+   * --bbf-font-sans: 0 consumers → usa --bbf-font-body */
 
   /* ============================================================
      SEMANTIC TYPOGRAPHY TOKENS (D-BBF-KB-105)
@@ -205,26 +205,10 @@
   --bbf-typography-tagline-weight: var(--bbf-weight-semibold); /* 600 */
   /* Note: text-transform uppercase aplicado en el componente, no en token */
 
-  /* Lead / large body (legacy alias → usar body-lg) */
-  --bbf-typography-lead-font: var(--bbf-font-body);
-  --bbf-typography-lead-size: var(--bbf-text-lg);
-  --bbf-typography-lead-line: var(--bbf-leading-base);
-  --bbf-typography-lead-tracking: var(--bbf-tracking-normal);
-  --bbf-typography-lead-weight: var(--bbf-weight-regular);
-
-  /* Small / caption (legacy alias → usar body-sm o caption) */
-  --bbf-typography-small-font: var(--bbf-font-body);
-  --bbf-typography-small-size: var(--bbf-text-sm);
-  --bbf-typography-small-line: var(--bbf-leading-snug-small);
-  --bbf-typography-small-tracking: var(--bbf-tracking-normal);
-  --bbf-typography-small-weight: var(--bbf-weight-regular);
-
-  /* Micro / footnote */
-  --bbf-typography-micro-font: var(--bbf-font-body);
-  --bbf-typography-micro-size: var(--bbf-text-micro);
-  --bbf-typography-micro-line: var(--bbf-leading-snug-small);
-  --bbf-typography-micro-tracking: var(--bbf-tracking-wide);
-  --bbf-typography-micro-weight: var(--bbf-weight-medium);
+  /* D-DS-04 (2026-06-12): ELIMINADOS por 0 consumers
+   * --bbf-typography-lead-* → usar --bbf-typography-body-lg-* o body-lg token directo
+   * --bbf-typography-small-* → usar --bbf-typography-body-sm-* o body-sm token directo
+   * --bbf-typography-micro-* → usar --bbf-text-micro + --bbf-weight-medium directo */
 }
 
 /* Mobile typography adjustments (D-BBF-KB-105 — ratio 1.333 < 640px) */

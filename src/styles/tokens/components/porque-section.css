@@ -79,13 +79,13 @@
   font-size: var(--bbf-text-mono-xs);
   letter-spacing: 0.05em;
   padding: 0.1875rem 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--bbf-radius-full); /* D-DS-09 FIX-04 */
   margin-block-end: var(--bbf-space-2);
 }
 
 .bbf-cmp__col-name {
   font-family: var(--bbf-font-display);
-  font-weight: 500;
+  font-weight: var(--bbf-weight-medium); /* D-DS-09 FIX-05 */
   font-size: 1.125rem;
   letter-spacing: -0.015em;
   color: var(--bbf-text-on-warm);
@@ -131,7 +131,7 @@
   background-color: var(--bbf-surface-warm-highlight);
   border-inline: 1px solid var(--bbf-text-on-warm);
   color: var(--bbf-text-on-warm);
-  font-weight: 500;
+  font-weight: var(--bbf-weight-medium); /* D-DS-09 FIX-05 */
 }
 
 /* Last row — close bottom border on highlighted col */
@@ -206,7 +206,7 @@
     border-block-end: 2px solid transparent;
     font-family: var(--bbf-font-display);
     font-size: 0.8125rem;
-    font-weight: 500;
+    font-weight: var(--bbf-weight-medium); /* D-DS-09 FIX-05 */
     color: var(--bbf-text-on-warm-muted);
     cursor: pointer;
     text-align: center;
@@ -261,7 +261,7 @@
 
   .bbf-cmp-mobile__val.is-highlighted {
     color: var(--bbf-text-on-warm);
-    font-weight: 500;
+    font-weight: var(--bbf-weight-medium); /* D-DS-09 FIX-05 */
   }
 }
 

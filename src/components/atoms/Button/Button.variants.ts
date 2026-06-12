@@ -85,6 +85,9 @@ export const buttonVariants = cva(
         dark: 'focus-visible:ring-offset-[var(--bbf-surface-black)]',
         black: 'focus-visible:ring-offset-[var(--bbf-surface-black)]',
         red: 'focus-visible:ring-offset-[var(--bbf-surface-red)]',
+        /* D-DS-02: 'glass' diferido del Surface type canónico (0 consumers en producción).
+         * Este variant es Button-local (backdrop-blur para LocaleSwitcher), NO es el
+         * canonical Surface type de SurfaceContext. Son sistemas independientes. */
         glass: 'backdrop-blur-md',
       },
       loading: {

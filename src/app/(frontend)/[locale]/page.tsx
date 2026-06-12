@@ -150,7 +150,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               <Heading level="display-hero" color="primary" align="left" weight="medium">
                 {h1Line1}
                 <br />
-                <span data-tone="soft" className="bbf-text-gradient-blue-animated">
+                <span data-tone="soft" className="bbf-gradient-blue-animated">
                   {h1Line2Soft}
                 </span>
               </Heading>
@@ -171,18 +171,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 </Text>
 
                 <div className="bbf-hero__ctas flex flex-wrap gap-[10px]">
-                  <Button
-                    intent="primary"
-                    size="md"
-                    asChild
-                    className="bbf-btn-gradient-dark-animated"
-                  >
+                  <Button intent="primary" size="md" asChild className="bbf-gradient-dark-animated">
                     <a href={hero.ctaPrimary.href}>
                       {hero.ctaPrimary.label}
                       <Icon icon={Icons.arrowRight} size="sm" />
                     </a>
                   </Button>
-                  <Button intent="ghost" size="md" asChild className="bbf-btn-border-dark-animated">
+                  <Button intent="ghost" size="md" asChild className="bbf-gradient-border-animated">
                     <a href={hero.ctaSecondary.href}>
                       {hero.ctaSecondary.label}
                       <Icon icon={Icons.arrowRight} size="sm" />
@@ -241,7 +236,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             eyebrow={capEyebrow || undefined}
             h2Line1={capH2Line1}
             h2Line2Soft={capH2Line2Soft}
-            h2Line2SoftClassName="bbf-text-gradient-blue-animated"
+            h2Line2SoftClassName="bbf-gradient-blue-animated"
             lead={capLead}
           />
         </Reveal>
@@ -280,7 +275,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               eyebrow={csEyebrow || '§3 · CASO'}
               h2Line1={csH2Line1 || 'El cerebro'}
               h2Line2Soft={csH2Line2Soft || 'en producción.'}
-              h2Line2SoftClassName="bbf-text-gradient-blue-animated"
+              h2Line2SoftClassName="bbf-gradient-blue-animated"
               lead={csLead || undefined}
               decoration={<Lissajous name="case-2d" animation="traveling" />}
             />

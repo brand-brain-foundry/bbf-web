@@ -56,7 +56,7 @@ import { SurfaceProvider } from '@/lib/context/SurfaceContext';
 
 // Consumer (Client Component)
 import { useSurface } from '@/lib/hooks/useSurface';
-const surface = useSurface(); // 'auto' | 'dark' | 'sand' | 'glass'
+const surface = useSurface(); // 'auto' | 'sand' | 'warm' | 'dark' | 'transparent'
 ```
 
 ---

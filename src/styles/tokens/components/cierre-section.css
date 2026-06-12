@@ -79,7 +79,7 @@
 }
 
 .bbf-cierre__title-soft {
-  /* D-S6-06: blue gradient via .bbf-text-gradient-blue-animated (D-REBRAND-01) */
+  /* D-S6-06: blue gradient via .bbf-gradient-blue-animated (D-DS-05 rename) */
   display: block;
 }
 
@@ -105,7 +105,7 @@
   padding: var(--bbf-space-3) var(--bbf-space-5);
   background: var(--bbf-surface-dark-elevated);
   border: 1px solid var(--bbf-border-on-dark-surface);
-  border-radius: 999px;
+  border-radius: var(--bbf-radius-full); /* D-DS-09 FIX-04 */
   color: var(--bbf-text-on-dark-surface-muted);
 }
 

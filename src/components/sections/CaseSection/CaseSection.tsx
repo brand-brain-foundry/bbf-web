@@ -4,7 +4,7 @@
  *
  * Compound:
  *   <CaseSection surface="dark">
- *     <SectionHeader surface="dark" h2Line2SoftClassName="bbf-text-gradient-blue-animated" ... />
+ *     <SectionHeader surface="dark" h2Line2SoftClassName="bbf-gradient-blue-animated" ... />
  *     <CaseSection.Media>
  *       <CaseMediaFrame> ... </CaseMediaFrame>
  *     </CaseSection.Media>

@@ -78,14 +78,14 @@
   /* Meta */
   --bbf-text-caption: 0.875rem; /* 14px */
 
-  /* Legacy scale aliases (compatibilidad — actualizado a golden ratio values) */
+  /* Legacy scale aliases — D-DS-04 (2026-06-12)
+   * @deprecated --bbf-text-xs/sm/base/lg: tienen consumers activos, mantener hasta migración.
+   *   Usar --bbf-text-body-sm/md/lg en código nuevo.
+   * ELIMINADOS (0 consumers): --bbf-text-2xl/3xl/4xl (usaban mismos valores que h1/display-2/display-1) */
   --bbf-text-xs: 0.75rem; /* 12px — badge, caption, microcopy */
   --bbf-text-sm: 0.875rem; /* 14px — small body */
   --bbf-text-base: 1rem; /* 16px — body */
   --bbf-text-lg: 1.125rem; /* 18px — lead/large body */
-  --bbf-text-2xl: 1.625rem; /* 26px — h1 */
-  --bbf-text-3xl: 2.625rem; /* 42px — display-2 */
-  --bbf-text-4xl: 4.25rem; /* 68px — display-1 */
   /* ============================================================
      LINE HEIGHTS (proporción áurea — D-BBF-KB-105)
      ============================================================ */

@@ -41,7 +41,7 @@ type QuoteBlockProps = {
 - **text** → usa tokens de `display-section-h2` (parity con H2 del SectionHeader)
   - font-size: `var(--bbf-typography-display-section-h2-size)`
   - font-weight: `var(--bbf-typography-display-section-h2-weight)` (~500)
-- **textSoft** → misma tipografía + `.bbf-text-gradient-red-animated`
+- **textSoft** → misma tipografía + `.bbf-gradient-blue-animated` (D-DS-05)
 - Atribución: mono-xs, centrada, margin-top generoso
 
 ---
@@ -65,7 +65,7 @@ Si aparece un nuevo quote design en páginas internas (/metodo, /cerebro-marca) 
 
 - Testimonial dark: `--bbf-surface-dark-elevated`, `--bbf-border-on-dark-surface`, `--bbf-text-on-dark-surface*`
 - Manifesto warm: `--bbf-surface-warm-elevated`, `--bbf-border-on-warm`, `--bbf-text-on-warm*`, `--bbf-typography-display-section-h2-*`
-- Gradient textSoft: `.bbf-text-gradient-red-animated` (gradient-animations.css)
+- Gradient textSoft: `.bbf-gradient-blue-animated` (gradient-animations.css, D-DS-05)
 
 ---
 
