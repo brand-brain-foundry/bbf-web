@@ -80,17 +80,8 @@ export const SiteNavigation: GlobalConfig = {
           localized: true,
           required: true,
         },
-        // L1 (D-NAV-8 Opción C): destino agnóstico SSOT. Reemplaza href texto libre.
+        // D-NAV-8 Opción C: destino agnóstico SSOT (href texto libre eliminado en L2).
         linkTargetField(),
-        {
-          name: 'href',
-          type: 'text',
-          // @deprecated L1 expand-contract: superseded por linkTarget. Consumers migran en L2,
-          //   luego se elimina href. Opcional para no romper data existente durante la transición.
-          admin: {
-            description: '@deprecated — usar linkTarget. Path relativo legacy (transición L1→L2).',
-          },
-        },
         // === Wave 8: mega-menu sub-links ===
         {
           name: 'hasSubMenu',
@@ -176,17 +167,8 @@ export const SiteNavigation: GlobalConfig = {
           localized: true,
           required: true,
         },
-        // L1 (D-NAV-8 Opción C): destino agnóstico SSOT. (D-NAV-11 type/text-cta library → L2.)
+        // D-NAV-8 Opción C: destino agnóstico SSOT (href eliminado en L2). type/text-cta → D-NAV-11 (L2+).
         linkTargetField(),
-        {
-          name: 'href',
-          type: 'text',
-          // @deprecated L1 expand-contract: superseded por linkTarget. Migra en L2.
-          defaultValue: '/contacto',
-          admin: {
-            description: '@deprecated — usar linkTarget. Legacy (transición L1→L2).',
-          },
-        },
         {
           name: 'intent',
           type: 'select',
@@ -244,16 +226,8 @@ export const SiteNavigation: GlobalConfig = {
               localized: true,
               required: true,
             },
-            // L1 (D-NAV-8 Opción C): destino agnóstico SSOT.
+            // D-NAV-8 Opción C: destino agnóstico SSOT (href eliminado en L2).
             linkTargetField(),
-            {
-              name: 'href',
-              type: 'text',
-              // @deprecated L1 expand-contract: superseded por linkTarget. Migra en L2.
-              admin: {
-                description: '@deprecated — usar linkTarget. Legacy (transición L1→L2).',
-              },
-            },
             {
               name: 'flag',
               type: 'text',

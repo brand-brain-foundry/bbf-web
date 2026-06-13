@@ -1926,10 +1926,6 @@ export interface SiteNavigation {
           page?: (number | null) | Page;
         };
         /**
-         * @deprecated — usar linkTarget. Path relativo legacy (transición L1→L2).
-         */
-        href?: string | null;
-        /**
          * Si está activo, al hacer hover/click se abre mega-menu con sub-links.
          */
         hasSubMenu?: boolean | null;
@@ -1984,10 +1980,6 @@ export interface SiteNavigation {
        */
       page?: (number | null) | Page;
     };
-    /**
-     * @deprecated — usar linkTarget. Legacy (transición L1→L2).
-     */
-    href?: string | null;
     intent: 'primary' | 'secondary' | 'outline';
   };
   /**
@@ -2026,10 +2018,6 @@ export interface SiteNavigation {
                  */
                 page?: (number | null) | Page;
               };
-              /**
-               * @deprecated — usar linkTarget. Legacy (transición L1→L2).
-               */
-              href?: string | null;
               /**
                * Optional badge text (e.g. "New", "Beta", "Soon"). Empty = no badge.
                */
@@ -2827,7 +2815,6 @@ export interface SiteNavigationSelect<T extends boolean = true> {
               routeKey?: T;
               page?: T;
             };
-        href?: T;
         hasSubMenu?: T;
         subLinks?:
           | T
@@ -2851,7 +2838,6 @@ export interface SiteNavigationSelect<T extends boolean = true> {
               routeKey?: T;
               page?: T;
             };
-        href?: T;
         intent?: T;
       };
   footerGroups?:
@@ -2868,7 +2854,6 @@ export interface SiteNavigationSelect<T extends boolean = true> {
                     routeKey?: T;
                     page?: T;
                   };
-              href?: T;
               flag?: T;
               flagVariant?: T;
               id?: T;

@@ -80,7 +80,7 @@ export function MobileSubMenu({
       <div className={mobileSubMenuPanelVariants({ open: isOpen })}>
         <div className="flex flex-col gap-1 pb-3 pl-2">
           <Link
-            href={`${localePrefix}${href}`}
+            href={href}
             onClick={onLinkClick}
             tabIndex={isOpen ? 0 : -1}
             className={mobileSubMenuGeneralItemVariants()}

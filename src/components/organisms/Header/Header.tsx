@@ -9,6 +9,7 @@ import { LanguageSwitcher } from '@/components/molecules/LanguageSwitcher';
 import { MobileMenu } from '@/components/molecules/MobileMenu';
 import { Button } from '@/components/atoms/Button';
 import { HeaderDesktopNav } from './HeaderDesktopNav';
+import { resolveLinkHref } from '@/lib/nav/resolveLinkHref';
 import { cn } from '@/lib/utils';
 
 type HeaderProps = {
@@ -34,7 +35,12 @@ export async function Header({ className }: HeaderProps) {
   ]);
 
   const siteName = identity.siteName ?? 'Sivar Brains';
-  const headerLinks = (navigation.headerLinks ?? []) as Array<{
+  // L2 (D-NAV-8): href top-level resuelto desde linkTarget vía getPathname.
+  //   subLinks siguen en href (L3 — D-NAV-9).
+  const headerLinks = (navigation.headerLinks ?? []).map((l) => ({
+    ...l,
+    href: resolveLinkHref(l.linkTarget, localeKey),
+  })) as Array<{
     label: string;
     href: string;
     hasSubMenu?: boolean;
@@ -53,6 +59,7 @@ export async function Header({ className }: HeaderProps) {
     }>;
   }>;
   const headerCta = navigation.headerCta;
+  const headerCtaHref = resolveLinkHref(headerCta?.linkTarget, localeKey, '/contacto');
   const homeHref = localeKey === 'en' ? '/en' : '/';
 
   return (
@@ -111,7 +118,7 @@ export async function Header({ className }: HeaderProps) {
                   size="sm"
                   className="hidden sm:inline-flex"
                 >
-                  <Link href={`${localePrefix}${headerCta.href}`}>{headerCta.label}</Link>
+                  <Link href={headerCtaHref}>{headerCta.label}</Link>
                 </Button>
               )}
 
@@ -134,9 +141,7 @@ export async function Header({ className }: HeaderProps) {
                   headerCta
                     ? {
                         label: headerCta.label,
-                        // L1 expand-contract: href @deprecated (ahora opcional). Coalesce al default
-                        //   hasta que L2 resuelva linkTarget vía getPathname.
-                        href: headerCta.href ?? '/contacto',
+                        href: headerCtaHref, // L2: resuelto desde linkTarget
                         intent: headerCta.intent as 'primary' | 'secondary' | 'outline' | undefined,
                       }
                     : undefined

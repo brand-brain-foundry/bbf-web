@@ -163,7 +163,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
               return (
                 <Link
                   key={`${link.href}-${idx}`}
-                  href={`${localePrefix}${link.href}`}
+                  href={link.href}
                   onClick={close}
                   tabIndex={isOpen ? 0 : -1}
                   className={mobileMenuItemVariants()}
@@ -186,11 +186,7 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
           {cta && (
             <div className="px-6 pt-2 pb-8">
               <Button asChild intent={cta.intent ?? 'primary'} size="lg" className="w-full">
-                <Link
-                  href={`${localePrefix}${cta.href}`}
-                  onClick={close}
-                  tabIndex={isOpen ? 0 : -1}
-                >
+                <Link href={cta.href} onClick={close} tabIndex={isOpen ? 0 : -1}>
                   {cta.label}
                 </Link>
               </Button>

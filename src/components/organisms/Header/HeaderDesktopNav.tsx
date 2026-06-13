@@ -110,7 +110,7 @@ export function HeaderDesktopNav({ links, localePrefix, className }: HeaderDeskt
             }}
           >
             <NavLink
-              href={`${localePrefix}${link.href}`}
+              href={link.href}
               hasSubMenu={hasSub}
               isOpen={isOpen}
               ariaControls={hasSub ? panelId : undefined}

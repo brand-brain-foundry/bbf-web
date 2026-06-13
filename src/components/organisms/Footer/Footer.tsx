@@ -4,6 +4,7 @@ import { getPayload } from 'payload';
 import config from '@/payload-config';
 import { getSiteIdentity } from '@/config/site';
 import { interpolate } from '@/lib/content-interpolation';
+import { resolveLinkHref } from '@/lib/nav/resolveLinkHref';
 import { Container } from '@/components/atoms/Container';
 import { NewsletterBox } from '@/components/molecules/NewsletterBox';
 import { BrandLogo } from '@/components/atoms/BrandLogo';
@@ -38,7 +39,6 @@ type FlagVariant = 'default' | 'accent' | 'success' | 'beta';
 export async function Footer({ className }: FooterProps) {
   const locale = await getLocale();
   const localeKey = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
-  const localePrefix = localeKey === 'en' ? '/en' : '';
   const t = await getTranslations('footer');
 
   const payload = await getPayload({ config });
@@ -53,7 +53,16 @@ export async function Footer({ className }: FooterProps) {
     interpolate(identity.siteTagline, localeKey),
     interpolate(identity.siteDescription, localeKey),
   ]);
-  const footerGroups = (navigation.footerGroups ?? []) as Array<{
+  // L2 (D-NAV-8): href resuelto desde linkTarget vía getPathname.
+  const footerGroups = (navigation.footerGroups ?? []).map((g) => ({
+    groupTitle: g.groupTitle,
+    links: (g.links ?? []).map((l) => ({
+      label: l.label,
+      href: resolveLinkHref(l.linkTarget, localeKey),
+      flag: l.flag,
+      flagVariant: l.flagVariant,
+    })),
+  })) as Array<{
     groupTitle: string;
     links: Array<{
       label: string;
@@ -167,7 +176,7 @@ export async function Footer({ className }: FooterProps) {
                 {group.links.map((link, lidx) => (
                   <li key={`${link.href}-${lidx}`}>
                     <Link
-                      href={`${localePrefix}${link.href}`}
+                      href={link.href}
                       className={cn(
                         'group inline-flex items-center gap-2 py-1',
                         'min-h-[44px] md:min-h-0',
