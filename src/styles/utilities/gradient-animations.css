@@ -1,6 +1,9 @@
 /**
  * BBF — Gradient animations canon (D-DS-05 FIRMADA 2026-06-12)
  *
+ * D-DS-13 (2026-06-13): valores → semantic/gradients.css (--bbf-gradient-{alias})
+ *                        duraciones → semantic/motion.css (--bbf-motion-duration-gradient-*)
+ *
  * SET CERRADO — 5 gradientes canónicos:
  *   G-01  .bbf-gradient-red-animated       CTA primario, accent sobre sand
  *   G-02  .bbf-gradient-blue-animated      Accent text sobre dark/ink surfaces
@@ -45,25 +48,20 @@
 
 /* G-01 — Red animated background (CTA primario, accent sobre sand) */
 .bbf-gradient-red-animated {
-  background: var(--bbf-gradient-red);
+  background: var(--bbf-gradient-accent); /* D-DS-13 */
   background-size: 200% 200%;
-  animation: bbf-gradient-shift 8s ease infinite;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-idle) ease infinite; /* D-DS-13 */
 }
 
 /* G-02 — Blue text gradient (accent text sobre dark/ink surfaces) */
 .bbf-gradient-blue-animated {
-  background-image: linear-gradient(
-    110deg,
-    var(--bbf-color-blue-accent) 0%,
-    var(--bbf-color-blue-accent-deep) 50%,
-    var(--bbf-color-blue-accent) 100%
-  );
+  background-image: var(--bbf-gradient-primary); /* D-DS-13 */
   background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  animation: bbf-gradient-shift 6s ease-in-out infinite;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite; /* D-DS-13 */
 }
 
 /* Specificity override — hero.css [data-component][data-tone='soft'] = (0,0,2,0) */
@@ -85,34 +83,22 @@
 
 /* G-03 — Dark sweep button gradient (D-DS-09: hardcoded → tokens) */
 .bbf-gradient-dark-animated {
-  background: linear-gradient(
-    110deg,
-    var(--bbf-color-black-900) 0%,
-    var(--bbf-color-black-900) 30%,
-    var(--bbf-color-black-500) 50%,
-    var(--bbf-color-black-900) 70%,
-    var(--bbf-color-black-900) 100%
-  );
+  background: var(--bbf-gradient-dark); /* D-DS-13 */
   background-size: 300% 100%;
-  animation: bbf-gradient-shift 2.5s ease-in-out infinite;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-fast) ease-in-out infinite; /* D-DS-13 */
   color: var(--bbf-color-white);
   border: none;
 }
 
 /* G-04 — Warm text shimmer (text gradient sobre warm surfaces) */
 .bbf-gradient-warm-text-animated {
-  background: linear-gradient(
-    90deg,
-    var(--bbf-text-on-warm) 0%,
-    var(--bbf-text-on-warm-muted) 50%,
-    var(--bbf-text-on-warm) 100%
-  );
+  background: var(--bbf-gradient-secondary); /* D-DS-13 */
   background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  animation: bbf-gradient-shift 4s ease-in-out infinite;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-medium) ease-in-out infinite; /* D-DS-13 */
 }
 
 /* Specificity override — hero.css [data-component][data-tone='soft'] = (0,0,2,0) */
@@ -136,16 +122,9 @@
   inset: 0;
   border-radius: inherit;
   padding: 1.5px;
-  background: linear-gradient(
-    110deg,
-    var(--bbf-color-black-900) 0%,
-    var(--bbf-color-black-500) 40%,
-    var(--bbf-color-black-400) 50%,
-    var(--bbf-color-black-500) 60%,
-    var(--bbf-color-black-900) 100%
-  );
+  background: var(--bbf-gradient-border); /* D-DS-13 */
   background-size: 300% 100%;
-  animation: bbf-gradient-shift 2.5s ease-in-out infinite;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-fast) ease-in-out infinite; /* D-DS-13 */
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);

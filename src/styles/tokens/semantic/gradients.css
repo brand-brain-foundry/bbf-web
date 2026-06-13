@@ -1,0 +1,56 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Gradient Aliases
+ *
+ * D-DS-13 (2026-06-13): aliases semánticos por intención para los 5
+ * gradientes canon (G-01..G-05). Separa la INTENCIÓN del VALOR.
+ * Consumers: utilities/gradient-animations.css
+ *
+ * accent   = red CTA / énfasis primario sobre sand
+ * primary  = blue text / accent sobre dark
+ * dark     = dark sweep / button fills oscuros
+ * secondary= warm/sand text shimmer
+ * border   = animated border line (mask pseudo-element)
+ *
+ * Refs: D-DS-05 (nombres de clases), D-DS-13 (aliases)
+ */
+
+:root {
+  /* G-01 — accent (red, CTA primario) */
+  --bbf-gradient-accent: var(--bbf-gradient-red);
+
+  /* G-02 — primary (blue text, sobre dark) */
+  --bbf-gradient-primary: linear-gradient(
+    110deg,
+    var(--bbf-color-blue-accent) 0%,
+    var(--bbf-color-blue-accent-deep) 50%,
+    var(--bbf-color-blue-accent) 100%
+  );
+
+  /* G-03 — dark (button dark sweep) */
+  --bbf-gradient-dark: linear-gradient(
+    110deg,
+    var(--bbf-color-black-900) 0%,
+    var(--bbf-color-black-900) 30%,
+    var(--bbf-color-black-500) 50%,
+    var(--bbf-color-black-900) 70%,
+    var(--bbf-color-black-900) 100%
+  );
+
+  /* G-04 — secondary (warm text shimmer, sobre warm surfaces) */
+  --bbf-gradient-secondary: linear-gradient(
+    90deg,
+    var(--bbf-text-on-warm) 0%,
+    var(--bbf-text-on-warm-muted) 50%,
+    var(--bbf-text-on-warm) 100%
+  );
+
+  /* G-05 — border (animated border mask, pseudo-element) */
+  --bbf-gradient-border: linear-gradient(
+    110deg,
+    var(--bbf-color-black-900) 0%,
+    var(--bbf-color-black-500) 40%,
+    var(--bbf-color-black-400) 50%,
+    var(--bbf-color-black-500) 60%,
+    var(--bbf-color-black-900) 100%
+  );
+}

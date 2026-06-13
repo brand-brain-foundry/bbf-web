@@ -45,6 +45,7 @@
 @import '../styles/tokens/semantic/typography.css';
 @import '../styles/tokens/semantic/spacing.css';
 @import '../styles/tokens/semantic/motion.css';
+@import '../styles/tokens/semantic/gradients.css'; /* D-DS-13: semantic gradient aliases */
 @import '../styles/tokens/semantic/shadows.css';
 @import '../styles/tokens/semantic/feedback.css';
 

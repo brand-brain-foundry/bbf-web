@@ -76,6 +76,15 @@
   --bbf-logo-rotation-duration-hover: 12s; /* hover acceleration target */
   --bbf-logo-rotation-easing: var(--bbf-easing-linear); /* rotation NUNCA ease */
 
+  /* ============================================================
+     GRADIENT ANIMATION DURATIONS — D-DS-13 (2026-06-13)
+     Reemplaza 2.5s/4s/6s/8s hardcoded en gradient-animations.css.
+     ============================================================ */
+  --bbf-motion-duration-gradient-fast: 2500ms; /* G-03 dark sweep, G-05 border */
+  --bbf-motion-duration-gradient-medium: 4000ms; /* G-04 warm text shimmer */
+  --bbf-motion-duration-gradient-slow: 6000ms; /* G-02 blue text gradient */
+  --bbf-motion-duration-gradient-idle: 8000ms; /* G-01 red accent pulse */
+
   /* MIGRATION BASE — D-MIG-04 (Claude Design --ease-out) */
   --bbf-easing-organic: cubic-bezier(
     0.2,
