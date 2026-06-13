@@ -20,7 +20,7 @@ export const megaMenuItemVariants = cva([
 
 export const megaMenuTitleVariants = cva(
   [
-    'text-sm font-semibold',
+    'text-[length:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-semibold)]',
     'text-[var(--bbf-text-on-sand)]',
     'transition-colors duration-200 ease-out',
     '[@media(hover:hover)]:group-hover:text-[var(--bbf-accent-blue)] group-focus-visible:text-[var(--bbf-accent-blue)]',
@@ -37,7 +37,7 @@ export const megaMenuTitleVariants = cva(
 );
 
 export const megaMenuDescriptionVariants = cva([
-  'text-xs',
+  'text-[length:var(--bbf-text-xs)]',
   'leading-[var(--bbf-leading-snug)]',
   'text-[var(--bbf-text-on-sand-muted)]',
 ]);

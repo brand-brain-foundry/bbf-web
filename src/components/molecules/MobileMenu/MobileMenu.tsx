@@ -129,7 +129,9 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
         >
           {/* Panel header */}
           <div className="flex items-center justify-between border-b border-[var(--bbf-border-on-sand)] px-6 py-5">
-            <span className="text-sm font-bold text-[var(--bbf-text-on-sand)]">{siteName}</span>
+            <span className="text-[length:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-bold)] text-[var(--bbf-text-on-sand)]">
+              {siteName}
+            </span>
             <button
               type="button"
               onClick={close}

@@ -68,7 +68,7 @@ export const mobileMenuPanelVariants = cva(
 
 export const mobileMenuItemVariants = cva([
   'group block min-h-[44px] border-b border-[var(--bbf-border-on-sand)]/40 px-2 py-4',
-  'text-lg font-medium text-[var(--bbf-text-on-sand)]',
+  'text-[length:var(--bbf-text-body-lg)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-text-on-sand)]',
   'transition-all duration-150 ease-out',
   '[@media(hover:hover)]:hover:translate-x-1 [@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
   'focus-visible:translate-x-1 focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
