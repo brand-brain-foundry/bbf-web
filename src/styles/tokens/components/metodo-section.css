@@ -19,7 +19,7 @@
 .bbf-mth__bar {
   display: flex;
   align-items: center;
-  border: 1px solid var(--bbf-border-on-warm);
+  border: var(--bbf-line-border) solid var(--bbf-border-on-warm);
   border-radius: var(--bbf-radius-full); /* D-DS-09 FIX-04 */
   background: var(--bbf-surface-warm-base);
   padding: 1.25rem 1.5rem;
@@ -64,7 +64,7 @@
   flex: 1;
   min-width: 2rem;
   height: 0;
-  border-top: 1px dashed var(--bbf-border-on-warm);
+  border-top: var(--bbf-line-border) dashed var(--bbf-border-on-warm);
   margin-inline: 1rem;
 }
 
@@ -89,7 +89,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
   background: var(--bbf-border-on-warm);
-  border: 1px solid var(--bbf-border-on-warm);
+  border: var(--bbf-line-border) solid var(--bbf-border-on-warm);
   border-radius: var(--bbf-radius-section-card);
   overflow: hidden;
   margin-block-end: clamp(5rem, 10vw, 8.75rem);
@@ -133,7 +133,7 @@
 
 .bbf-service-card__divider {
   border: none;
-  border-top: 1px solid var(--bbf-border-on-warm);
+  border-top: var(--bbf-line-border) solid var(--bbf-border-on-warm);
   margin-block: 1.25rem;
 }
 

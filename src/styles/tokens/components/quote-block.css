@@ -18,7 +18,7 @@
 .bbf-quote-block--testimonial.bbf-quote-block--dark {
   margin-block-end: 32px;
   padding: clamp(2.5rem, 6vw, 4.5rem) clamp(2rem, 6vw, 5rem);
-  border: 1px solid var(--bbf-border-on-dark-surface);
+  border: var(--bbf-line-border) solid var(--bbf-border-on-dark-surface);
   background: var(--bbf-surface-dark-elevated);
   border-radius: var(--bbf-radius-section-card);
   position: relative;
@@ -57,7 +57,7 @@
 
 .bbf-quote-block--manifesto.bbf-quote-block--warm {
   padding: clamp(3rem, 8vw, 6rem) clamp(2rem, 6vw, 5rem);
-  border: 1px solid var(--bbf-border-on-warm);
+  border: var(--bbf-line-border) solid var(--bbf-border-on-warm);
   background: var(--bbf-surface-warm-elevated);
   border-radius: var(--bbf-radius-section-card);
   text-align: center;

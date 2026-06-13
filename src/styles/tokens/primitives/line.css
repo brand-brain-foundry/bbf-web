@@ -1,0 +1,21 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Line Thickness
+ *
+ * D-DS-14 (2026-06-13): cadena madre→variante via calc().
+ * MADRE: --bbf-line-base — cambiar este valor propaga TODA la escala.
+ * Patrón: --bbf-stagger-base en semantic/motion.css:52-57.
+ *
+ * sm  = 1px   standard border/divider
+ * md  = 1.5px gradient border padding inset (G-05)
+ * lg  = 2px   focus ring (WCAG 2.4.7)
+ * xl  = 4px   accent/emphasis border
+ */
+
+:root {
+  --bbf-line-base: 1px; /* MADRE — cambiar propaga todo */
+
+  --bbf-line-sm: var(--bbf-line-base); /* 1px   — standard */
+  --bbf-line-md: calc(var(--bbf-line-base) * 1.5); /* 1.5px — gradient inset */
+  --bbf-line-lg: calc(var(--bbf-line-base) * 2); /* 2px   — focus ring */
+  --bbf-line-xl: calc(var(--bbf-line-base) * 4); /* 4px   — emphasis */
+}

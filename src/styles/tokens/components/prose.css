@@ -50,7 +50,7 @@
 }
 
 .bbf-prose blockquote {
-  border-left: 4px solid var(--bbf-accent-red);
+  border-left: var(--bbf-line-emphasis) solid var(--bbf-accent-red); /* D-DS-14 */
   padding-left: 1rem;
   margin-block: 1.5rem;
   font-style: italic;
@@ -82,6 +82,6 @@
 
 .bbf-prose hr {
   border: none;
-  border-top: 1px solid var(--bbf-color-sand-300);
+  border-top: var(--bbf-line-border) solid var(--bbf-color-sand-300);
   margin-block: 2rem;
 }

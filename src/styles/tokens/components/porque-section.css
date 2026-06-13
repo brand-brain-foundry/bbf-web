@@ -37,7 +37,7 @@
 /* ── ComparisonTable — wrapper ─────────────────────────────────────────── */
 
 .bbf-cmp {
-  border: 1px solid var(--bbf-border-on-warm);
+  border: var(--bbf-line-border) solid var(--bbf-border-on-warm);
   border-radius: var(--bbf-radius-section-card);
   overflow: hidden;
   background-color: var(--bbf-surface-warm-base);
@@ -105,7 +105,7 @@
 }
 
 .bbf-cmp__cell--head.is-hl {
-  border-inline: 1px solid var(--bbf-text-on-warm);
+  border-inline: var(--bbf-line-border) solid var(--bbf-text-on-warm);
 }
 
 /* ── Data rows ─────────────────────────────────────────────────────────── */
@@ -116,7 +116,7 @@
 
 .bbf-cmp__row > * {
   padding: var(--cmp-cell-py) var(--cmp-cell-px);
-  border-block-start: 1px solid var(--bbf-border-on-warm);
+  border-block-start: var(--bbf-line-border) solid var(--bbf-border-on-warm);
   display: flex;
   align-items: center;
   gap: 0.625rem; /* Tier 3 — 10px off-grid, valor diseño Claude */
@@ -129,14 +129,14 @@
 /* Highlighted column data cells */
 .bbf-cmp__row > .is-hl {
   background-color: var(--bbf-surface-warm-highlight);
-  border-inline: 1px solid var(--bbf-text-on-warm);
+  border-inline: var(--bbf-line-border) solid var(--bbf-text-on-warm);
   color: var(--bbf-text-on-warm);
   font-weight: var(--bbf-weight-medium); /* D-DS-09 FIX-05 */
 }
 
 /* Last row — close bottom border on highlighted col */
 .bbf-cmp__row:last-child > .is-hl {
-  border-block-end: 1px solid var(--bbf-text-on-warm);
+  border-block-end: var(--bbf-line-border) solid var(--bbf-text-on-warm);
 }
 
 /* ── Row header (left col) ─────────────────────────────────────────────── */
@@ -195,7 +195,7 @@
   .bbf-cmp__tabs {
     display: flex;
     gap: 0;
-    border-block-end: 1px solid var(--bbf-border-on-warm);
+    border-block-end: var(--bbf-line-border) solid var(--bbf-border-on-warm);
   }
 
   .bbf-cmp__tab {
@@ -203,7 +203,7 @@
     padding: var(--bbf-space-3) var(--bbf-space-2);
     background: none;
     border: none;
-    border-block-end: 2px solid transparent;
+    border-block-end: var(--bbf-line-focus) solid transparent; /* D-DS-14 */
     font-family: var(--bbf-font-display);
     font-size: 0.8125rem;
     font-weight: var(--bbf-weight-medium); /* D-DS-09 FIX-05 */
@@ -239,7 +239,7 @@
     grid-template-columns: 1fr 1fr;
     padding-block: var(--cmp-cell-py-sm);
     padding-inline: var(--cmp-cell-px-sm);
-    border-block-end: 1px solid var(--bbf-border-on-warm);
+    border-block-end: var(--bbf-line-border) solid var(--bbf-border-on-warm);
     gap: var(--bbf-space-2);
     align-items: center;
     font-size: var(--bbf-text-body-sm);

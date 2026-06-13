@@ -36,6 +36,7 @@
 @import '../styles/tokens/primitives/shadows.css';
 @import '../styles/tokens/primitives/breakpoints.css';
 @import '../styles/tokens/primitives/z-index.css';
+@import '../styles/tokens/primitives/line.css'; /* D-DS-14: madre→variante line thickness */
 
 /* === TIER 2: SEMANTIC === */
 @import '../styles/tokens/semantic/colors.css';
@@ -48,6 +49,7 @@
 @import '../styles/tokens/semantic/gradients.css'; /* D-DS-13: semantic gradient aliases */
 @import '../styles/tokens/semantic/shadows.css';
 @import '../styles/tokens/semantic/feedback.css';
+@import '../styles/tokens/semantic/lines.css'; /* D-DS-14: semantic line aliases + focus-ring wire */
 
 /* === TIER 3: COMPONENT === */
 @import '../styles/tokens/components/hero.css';

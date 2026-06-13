@@ -10,7 +10,7 @@
  */
 
 .bbf-case-media-frame {
-  border: 1px solid var(--bbf-border-on-dark-surface);
+  border: var(--bbf-line-border) solid var(--bbf-border-on-dark-surface);
   border-radius: var(--bbf-radius-section-card); /* 14px */
   overflow: hidden;
   background: var(--bbf-surface-dark-base);
@@ -23,7 +23,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 18px;
-  border-bottom: 1px solid var(--bbf-border-on-dark-surface);
+  border-bottom: var(--bbf-line-border) solid var(--bbf-border-on-dark-surface);
   background: var(--bbf-surface-dark-base);
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs, 0.6875rem);

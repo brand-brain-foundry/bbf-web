@@ -121,7 +121,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  padding: 1.5px;
+  padding: var(--bbf-line-gradient-inset); /* D-DS-14 */
   background: var(--bbf-gradient-border); /* D-DS-13 */
   background-size: 300% 100%;
   animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-fast) ease-in-out infinite; /* D-DS-13 */

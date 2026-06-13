@@ -1,0 +1,23 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Line Thickness Aliases
+ *
+ * D-DS-14 (2026-06-13): aliases semánticos por intención.
+ * Subordinado a: primitives/line.css (--bbf-line-{sm/md/lg/xl}).
+ *
+ * border         = cards, dividers, section separators
+ * focus          = focus ring WCAG 2.4.7
+ * emphasis       = accent/blockquote borders
+ * gradient-inset = G-05 ::before padding mask trick
+ *
+ * --bbf-focus-ring-width wires focus.css existing var() fallback.
+ */
+
+:root {
+  --bbf-line-border: var(--bbf-line-sm); /* 1px   — standard borders */
+  --bbf-line-focus: var(--bbf-line-lg); /* 2px   — focus ring */
+  --bbf-line-emphasis: var(--bbf-line-xl); /* 4px   — accent/blockquote */
+  --bbf-line-gradient-inset: var(--bbf-line-md); /* 1.5px — gradient border trick */
+
+  /* Wire focus.css: var(--bbf-focus-ring-width, 2px) resolves here */
+  --bbf-focus-ring-width: var(--bbf-line-focus);
+}

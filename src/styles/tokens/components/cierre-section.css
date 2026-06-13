@@ -13,7 +13,7 @@
   position: relative;
   overflow: hidden;
   background-color: var(--bbf-surface-dark-base);
-  border-top: 1px solid var(--bbf-border-on-dark-surface);
+  border-top: var(--bbf-line-border) solid var(--bbf-border-on-dark-surface);
   padding-block: clamp(7.5rem, 18vw, 13.75rem) clamp(6rem, 12vw, 10rem);
 }
 
@@ -57,7 +57,7 @@
 
 .bbf-cierre__meta-rule {
   width: 80px;
-  height: 1px;
+  height: var(--bbf-line-border);
   background: var(--bbf-border-on-dark-surface);
   flex-shrink: 0;
 }
@@ -104,7 +104,7 @@
   gap: var(--bbf-space-3);
   padding: var(--bbf-space-3) var(--bbf-space-5);
   background: var(--bbf-surface-dark-elevated);
-  border: 1px solid var(--bbf-border-on-dark-surface);
+  border: var(--bbf-line-border) solid var(--bbf-border-on-dark-surface);
   border-radius: var(--bbf-radius-full); /* D-DS-09 FIX-04 */
   color: var(--bbf-on-surface-muted); /* D-DS-12 */
 }
