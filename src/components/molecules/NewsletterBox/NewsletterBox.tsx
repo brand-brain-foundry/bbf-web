@@ -122,7 +122,7 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
             aria-invalid={state.kind === 'error' ? 'true' : undefined}
             className={cn(
               'h-12 w-full rounded-full px-5',
-              'text-[length:var(--bbf-text-base)]',
+              'text-[length:var(--bbf-text-body-md)]',
               'bg-[var(--bbf-surface-white)]',
               'border border-[var(--bbf-border-on-sand)]',
               'text-[var(--bbf-text-on-sand)] placeholder:text-[var(--bbf-text-on-sand-subtle)]',
@@ -148,7 +148,7 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
 
         {state.kind === 'error' && (
           <p
-            className="text-[length:var(--bbf-text-sm)] text-[var(--bbf-color-error-text)]"
+            className="text-[length:var(--bbf-text-body-sm)] text-[var(--bbf-color-error-text)]"
             role="alert"
             aria-live="assertive"
           >

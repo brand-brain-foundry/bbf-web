@@ -46,7 +46,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
 
     const baseClass = cn(
       'w-full border',
-      'text-[length:var(--bbf-text-base)]',
+      'text-[length:var(--bbf-text-body-md)]',
       'bg-[var(--bbf-surface-white)]',
       'text-[var(--bbf-text-on-sand)] placeholder:text-[var(--bbf-text-on-sand-subtle)]',
       'transition-all duration-200 ease-out',

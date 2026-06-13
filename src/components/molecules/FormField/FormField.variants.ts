@@ -12,7 +12,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 export const formFieldLabelVariants = cva([
   'mb-2 block',
-  'text-[length:var(--bbf-text-sm)]',
+  'text-[length:var(--bbf-text-body-sm)]',
   '[font-weight:var(--bbf-weight-medium)]',
   'text-[var(--bbf-text-on-sand)]',
 ]);
@@ -38,7 +38,7 @@ export const formFieldBorderVariants = cva('', {
   defaultVariants: { error: false, disabled: false },
 });
 
-export const formFieldMessageVariants = cva(['mt-2', 'text-[length:var(--bbf-text-sm)]'], {
+export const formFieldMessageVariants = cva(['mt-2', 'text-[length:var(--bbf-text-body-sm)]'], {
   variants: {
     type: {
       error: 'text-[var(--bbf-text-error)]',

@@ -62,7 +62,7 @@
   --bbf-headline-leading: 0.9;
 
   /* === Tagline / Eyebrow (PATCH-4: 16px fijo + tracking +) === */
-  --bbf-tagline-size: var(--bbf-text-base); /* 16px fijo */
+  --bbf-tagline-size: var(--bbf-text-body-md); /* 16px fijo */
   --bbf-tagline-weight: 700;
   --bbf-tagline-tracking: 0.15em; /* PATCH-4 */
   --bbf-tagline-color: var(--bbf-text-on-sand);

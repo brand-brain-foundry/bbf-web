@@ -201,7 +201,7 @@
 }
 
 .bbf-capability-card__example-text {
-  font-size: var(--bbf-text-base); /* 16px — explícito, D-TIP-03 */
+  font-size: var(--bbf-text-body-md); /* 16px — explícito, D-TIP-03 */
   font-style: italic; /* preview */
   color: var(--bbf-text-on-warm-soft); /* preview: var(--ink-soft) */
   max-width: 50ch; /* preview */

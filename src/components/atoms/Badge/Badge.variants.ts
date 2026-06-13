@@ -29,7 +29,7 @@ export const badgeVariants = cva(
       size: {
         xs: 'text-[9px] leading-none px-1 py-[2px] tracking-normal',
         sm: 'text-[length:var(--bbf-text-xs)] px-1.5 py-0.5 tracking-wider',
-        md: 'text-[length:var(--bbf-text-sm)] px-2 py-1 tracking-wider',
+        md: 'text-[length:var(--bbf-text-body-sm)] px-2 py-1 tracking-wider',
       },
     },
     defaultVariants: {

@@ -103,7 +103,7 @@ export async function Footer({ className }: FooterProps) {
             {tagline && (
               <p
                 className={cn(
-                  'text-[length:var(--bbf-text-sm)]',
+                  'text-[length:var(--bbf-text-body-sm)]',
                   'leading-[var(--bbf-leading-base)]',
                   '[font-weight:var(--bbf-weight-medium)]',
                   'text-[var(--bbf-text-on-sand)]',
@@ -115,7 +115,7 @@ export async function Footer({ className }: FooterProps) {
             {shortDescription && (
               <p
                 className={cn(
-                  'text-[length:var(--bbf-text-sm)]',
+                  'text-[length:var(--bbf-text-body-sm)]',
                   'leading-[var(--bbf-leading-snug-small)]',
                   'text-[var(--bbf-text-on-sand-muted)]',
                   'max-w-xs',
@@ -171,7 +171,7 @@ export async function Footer({ className }: FooterProps) {
                       className={cn(
                         'group inline-flex items-center gap-2 py-1',
                         'min-h-[44px] md:min-h-0',
-                        'text-[length:var(--bbf-text-sm)]',
+                        'text-[length:var(--bbf-text-body-sm)]',
                         '[font-weight:var(--bbf-weight-regular)]',
                         'text-[var(--bbf-text-on-sand)]',
                         'transition-all duration-200 ease-out',

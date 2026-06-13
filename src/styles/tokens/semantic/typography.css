@@ -171,7 +171,7 @@
 
   /* Body (default) */
   --bbf-typography-body-font: var(--bbf-font-body);
-  --bbf-typography-body-size: var(--bbf-text-base);
+  --bbf-typography-body-size: var(--bbf-text-body-md);
   --bbf-typography-body-line: var(--bbf-leading-base);
   --bbf-typography-body-tracking: var(--bbf-tracking-normal);
   --bbf-typography-body-weight: var(--bbf-weight-regular);
@@ -199,7 +199,7 @@
 
   /* Tagline — all-caps hero subtitle pattern BBF */
   --bbf-typography-tagline-font: var(--bbf-font-body);
-  --bbf-typography-tagline-size: var(--bbf-text-base); /* 1rem / 16px */
+  --bbf-typography-tagline-size: var(--bbf-text-body-md); /* 1rem / 16px */
   --bbf-typography-tagline-line: var(--bbf-leading-snug); /* 1.15 */
   --bbf-typography-tagline-tracking: var(--bbf-tracking-tagline); /* 0.15em */
   --bbf-typography-tagline-weight: var(--bbf-weight-semibold); /* 600 */
