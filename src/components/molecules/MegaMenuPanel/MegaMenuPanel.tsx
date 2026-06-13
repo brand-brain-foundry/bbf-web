@@ -32,7 +32,6 @@ type MegaMenuPanelProps = {
   /** Drives content cross-fade key — use String(openIndex) from consumer. */
   activeKey: string;
   subLinks: SubLink[];
-  localePrefix: string;
   onClose: () => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -59,7 +58,6 @@ export function MegaMenuPanel({
   isOpen,
   activeKey,
   subLinks,
-  localePrefix,
   onClose,
   onMouseEnter,
   onMouseLeave,
@@ -123,7 +121,7 @@ export function MegaMenuPanel({
                 return (
                   <Link
                     key={`${sub.href}-${idx}`}
-                    href={`${localePrefix}${sub.href}`}
+                    href={sub.href}
                     onClick={onClose}
                     role="menuitem"
                     tabIndex={isOpen ? 0 : -1}

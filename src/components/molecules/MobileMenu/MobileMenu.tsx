@@ -40,7 +40,6 @@ type MobileMenuCta = {
 type MobileMenuProps = {
   links: MobileMenuLink[];
   cta?: MobileMenuCta;
-  localePrefix: string;
   siteName?: string;
 };
 
@@ -48,7 +47,7 @@ type MobileMenuProps = {
  * BBF MobileMenu — drawer right-side canon (D-BBF-KB-107)
  * Fix 6.1: isMounted SSR-safe, backdrop+panel hermanos, h-[100dvh], z-index split
  */
-export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: MobileMenuProps) {
+export function MobileMenu({ links, cta, siteName = 'BBF' }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -153,7 +152,6 @@ export function MobileMenu({ links, cta, localePrefix, siteName = 'BBF' }: Mobil
                     label={link.label}
                     href={link.href}
                     subLinks={link.subLinks}
-                    localePrefix={localePrefix}
                     onLinkClick={close}
                     tabIndex={isOpen ? 0 : -1}
                   />

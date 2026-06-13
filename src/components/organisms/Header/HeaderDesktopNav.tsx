@@ -28,7 +28,6 @@ type HeaderLink = {
 
 type HeaderDesktopNavProps = {
   links: HeaderLink[];
-  localePrefix: string;
   className?: string;
 };
 
@@ -41,7 +40,7 @@ type HeaderDesktopNavProps = {
  *
  * onMouseLeave en el nav completo (no por item) evita cierre accidental.
  */
-export function HeaderDesktopNav({ links, localePrefix, className }: HeaderDesktopNavProps) {
+export function HeaderDesktopNav({ links, className }: HeaderDesktopNavProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const navRef = useRef<HTMLElement | null>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -134,7 +133,6 @@ export function HeaderDesktopNav({ links, localePrefix, className }: HeaderDeskt
         isOpen={hasActiveSubMenu}
         activeKey={String(openIndex ?? -1)}
         subLinks={activeLink?.subLinks ?? []}
-        localePrefix={localePrefix}
         onClose={closeAll}
         onMouseEnter={cancelClose}
         onMouseLeave={scheduleClose}

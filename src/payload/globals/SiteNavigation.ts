@@ -42,6 +42,36 @@ const linkTargetField = (): Field => ({
   ],
 });
 
+/**
+ * subLink target polimórfico — L3 (D-NAV-9, firma Zavala 2026-06-13).
+ *   page     → página HIJA (relationship→pages). href deriva de page.path (SSOT).
+ *   external → URL externa cruda (escape hatch, sin SSOT — solo fuera del sitio).
+ * Anchors de sección DIFERIDOS a 4.C.3 (Pages no tiene modelo de secciones hoy).
+ */
+const subLinkTargetField = (): Field => ({
+  name: 'linkTarget',
+  type: 'group',
+  label: { en: 'Sub-link target', es: 'Destino del sub-link' },
+  admin: {
+    description: 'Destino agnóstico: page (página hija) o external (URL externa). Anchors → 4.C.3.',
+  },
+  fields: [
+    {
+      name: 'page',
+      type: 'relationship',
+      relationTo: 'pages',
+      admin: { description: 'Página hija (D-NAV-9). href deriva de page.path (SSOT).' },
+    },
+    {
+      name: 'external',
+      type: 'text',
+      admin: {
+        description: 'URL externa cruda (escape hatch, sin SSOT). Solo links fuera del sitio.',
+      },
+    },
+  ],
+});
+
 export const SiteNavigation: GlobalConfig = {
   slug: 'site-navigation',
   label: {
@@ -110,11 +140,8 @@ export const SiteNavigation: GlobalConfig = {
               localized: true,
               required: true,
             },
-            {
-              name: 'href',
-              type: 'text',
-              required: true,
-            },
+            // L3 (D-NAV-9): destino agnóstico SSOT del sub-link (href texto libre eliminado).
+            subLinkTargetField(),
             {
               name: 'description',
               type: 'textarea',

@@ -1935,7 +1935,19 @@ export interface SiteNavigation {
         subLinks?:
           | {
               label: string;
-              href: string;
+              /**
+               * Destino agnóstico: page (página hija) o external (URL externa). Anchors → 4.C.3.
+               */
+              linkTarget?: {
+                /**
+                 * Página hija (D-NAV-9). href deriva de page.path (SSOT).
+                 */
+                page?: (number | null) | Page;
+                /**
+                 * URL externa cruda (escape hatch, sin SSOT). Solo links fuera del sitio.
+                 */
+                external?: string | null;
+              };
               /**
                * Descripción corta opcional (ej: "El proceso paso a paso").
                */
@@ -2820,7 +2832,12 @@ export interface SiteNavigationSelect<T extends boolean = true> {
           | T
           | {
               label?: T;
-              href?: T;
+              linkTarget?:
+                | T
+                | {
+                    page?: T;
+                    external?: T;
+                  };
               description?: T;
               mediaType?: T;
               media?: T;

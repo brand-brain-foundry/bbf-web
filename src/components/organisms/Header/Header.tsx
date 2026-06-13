@@ -26,7 +26,6 @@ type HeaderProps = {
 export async function Header({ className }: HeaderProps) {
   const [locale, t] = await Promise.all([getLocale(), getTranslations('Header')]);
   const localeKey = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
-  const localePrefix = localeKey === 'en' ? '/en' : '';
 
   const payload = await getPayload({ config });
   const [identity, navigation] = await Promise.all([
@@ -35,11 +34,14 @@ export async function Header({ className }: HeaderProps) {
   ]);
 
   const siteName = identity.siteName ?? 'Sivar Brains';
-  // L2 (D-NAV-8): href top-level resuelto desde linkTarget vía getPathname.
-  //   subLinks siguen en href (L3 — D-NAV-9).
+  // L2/L3 (D-NAV-8/9): href top-level Y subLinks resueltos desde linkTarget vía getPathname.
   const headerLinks = (navigation.headerLinks ?? []).map((l) => ({
     ...l,
     href: resolveLinkHref(l.linkTarget, localeKey),
+    subLinks: l.subLinks?.map((s) => ({
+      ...s,
+      href: resolveLinkHref(s.linkTarget, localeKey, '#'),
+    })),
   })) as Array<{
     label: string;
     href: string;
@@ -100,11 +102,7 @@ export async function Header({ className }: HeaderProps) {
             </Link>
 
             {/* Desktop nav — left-aligned, flex-1 para empujar right cluster */}
-            <HeaderDesktopNav
-              links={headerLinks}
-              localePrefix={localePrefix}
-              className="hidden flex-1 lg:ml-6 lg:flex"
-            />
+            <HeaderDesktopNav links={headerLinks} className="hidden flex-1 lg:ml-6 lg:flex" />
 
             {/* Spacer mobile */}
             <div className="flex-1 lg:hidden" />
@@ -146,7 +144,6 @@ export async function Header({ className }: HeaderProps) {
                       }
                     : undefined
                 }
-                localePrefix={localePrefix}
                 siteName={siteName}
               />
             </div>

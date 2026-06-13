@@ -33,7 +33,6 @@ type MobileSubMenuProps = {
   label: string;
   href: string;
   subLinks: SubLink[];
-  localePrefix: string;
   onLinkClick: () => void;
   tabIndex?: number;
 };
@@ -52,7 +51,6 @@ export function MobileSubMenu({
   label,
   href,
   subLinks,
-  localePrefix,
   onLinkClick,
   tabIndex = 0,
 }: MobileSubMenuProps) {
@@ -95,7 +93,7 @@ export function MobileSubMenu({
             return (
               <Link
                 key={`${sub.href}-${idx}`}
-                href={`${localePrefix}${sub.href}`}
+                href={sub.href}
                 onClick={onLinkClick}
                 tabIndex={isOpen ? 0 : -1}
                 className={mobileSubMenuCardVariants()}

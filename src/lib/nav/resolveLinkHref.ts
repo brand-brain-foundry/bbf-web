@@ -16,12 +16,17 @@ type LinkTargetInput =
   | {
       routeKey?: string | null;
       page?: { path?: string | null } | string | number | null;
+      external?: string | null;
     }
   | null
   | undefined;
 
 type GetPathnameHref = Parameters<typeof getPathname>[0]['href'];
 
+/**
+ * Prioridad: routeKey (header/cta/footer) → page (dinámica) → external (subLinks escape hatch) → fallback.
+ * Cada linkTarget rellena solo su rama (Surfaces-like), así un único resolver sirve a header/footer/subLinks.
+ */
 export function resolveLinkHref(target: LinkTargetInput, locale: Locale, fallback = '/'): string {
   const routeKey = target?.routeKey;
   if (routeKey) {
@@ -31,6 +36,10 @@ export function resolveLinkHref(target: LinkTargetInput, locale: Locale, fallbac
   const path = page && typeof page === 'object' ? (page.path ?? null) : null;
   if (path) {
     return getPathname({ locale, href: path as GetPathnameHref });
+  }
+  const external = target?.external;
+  if (external) {
+    return external; // URL externa cruda (sin SSOT — fuera del sitio). D-NAV-9.
   }
   return fallback;
 }
