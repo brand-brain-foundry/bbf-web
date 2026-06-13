@@ -114,6 +114,7 @@ export interface Config {
     'site-contact': SiteContact;
     'site-newsletter': SiteNewsletter;
     'site-homepage': SiteHomepage;
+    'site-cta-library': SiteCtaLibrary;
   };
   globalsSelect: {
     socialLinks: SocialLinksSelect<false> | SocialLinksSelect<true>;
@@ -124,6 +125,7 @@ export interface Config {
     'site-contact': SiteContactSelect<false> | SiteContactSelect<true>;
     'site-newsletter': SiteNewsletterSelect<false> | SiteNewsletterSelect<true>;
     'site-homepage': SiteHomepageSelect<false> | SiteHomepageSelect<true>;
+    'site-cta-library': SiteCtaLibrarySelect<false> | SiteCtaLibrarySelect<true>;
   };
   locale: 'es' | 'en';
   widgets: {
@@ -1967,7 +1969,10 @@ export interface SiteNavigation {
    * CTA destacado en header (D-BBF-KB-100). Junto a LanguageSwitcher.
    */
   headerCta: {
-    label: string;
+    /**
+     * Key del CTA en SiteCtaLibrary (D-NAV-11). Label e intent vienen del catálogo.
+     */
+    ctaKey: string;
     /**
      * Destino agnóstico: elegí routeKey (ruta canónica) o page (página dinámica). SSOT, sin texto libre.
      */
@@ -1992,7 +1997,6 @@ export interface SiteNavigation {
        */
       page?: (number | null) | Page;
     };
-    intent: 'primary' | 'secondary' | 'outline';
   };
   /**
    * Footer link groups (e.g. Navigation, Resources, Company)
@@ -2701,6 +2705,29 @@ export interface SiteHomepage {
   createdAt?: string | null;
 }
 /**
+ * Single source of truth for all cross-site CTA labels and styles (D-DS-18, D-NAV-11).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-cta-library".
+ */
+export interface SiteCtaLibrary {
+  id: number;
+  items?:
+    | {
+        /**
+         * Identificador único (e.g. "watch-it-run"). Usado como ctaKey en nav y consumers.
+         */
+        key: string;
+        label: string;
+        type: 'solid' | 'outline';
+        intent: 'primary' | 'secondary' | 'outline' | 'outline-dark';
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "socialLinks_select".
  */
@@ -2848,14 +2875,13 @@ export interface SiteNavigationSelect<T extends boolean = true> {
   headerCta?:
     | T
     | {
-        label?: T;
+        ctaKey?: T;
         linkTarget?:
           | T
           | {
               routeKey?: T;
               page?: T;
             };
-        intent?: T;
       };
   footerGroups?:
     | T
@@ -3186,6 +3212,24 @@ export interface SiteHomepageSelect<T extends boolean = true> {
             };
         ctaNote?: T;
         signatureTagline?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-cta-library_select".
+ */
+export interface SiteCtaLibrarySelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        key?: T;
+        label?: T;
+        type?: T;
+        intent?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

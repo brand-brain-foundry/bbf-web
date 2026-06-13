@@ -29,6 +29,7 @@ import * as migration_20260612_000300_brand_system_selectors from './20260612_00
 import * as migration_20260613_120000_wave_4c1_linktarget from './20260613_120000_wave_4c1_linktarget';
 import * as migration_20260613_130000_wave_4c1_drop_legacy_href from './20260613_130000_wave_4c1_drop_legacy_href';
 import * as migration_20260613_140000_wave_4c1_sublink_linktarget from './20260613_140000_wave_4c1_sublink_linktarget';
+import * as migration_20260614_000100_site_cta_library from './20260614_000100_site_cta_library';
 
 export const migrations = [
   {
@@ -185,5 +186,10 @@ export const migrations = [
     up: migration_20260613_140000_wave_4c1_sublink_linktarget.up,
     down: migration_20260613_140000_wave_4c1_sublink_linktarget.down,
     name: '20260613_140000_wave_4c1_sublink_linktarget',
+  },
+  {
+    up: migration_20260614_000100_site_cta_library.up,
+    down: migration_20260614_000100_site_cta_library.down,
+    name: '20260614_000100_site_cta_library',
   },
 ];

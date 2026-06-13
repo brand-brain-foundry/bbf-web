@@ -189,24 +189,16 @@ export const SiteNavigation: GlobalConfig = {
       },
       fields: [
         {
-          name: 'label',
+          name: 'ctaKey',
           type: 'text',
-          localized: true,
           required: true,
+          admin: {
+            description:
+              'Key del CTA en SiteCtaLibrary (D-NAV-11). Label e intent vienen del catálogo.',
+          },
         },
-        // D-NAV-8 Opción C: destino agnóstico SSOT (href eliminado en L2). type/text-cta → D-NAV-11 (L2+).
+        // D-NAV-8 Opción C: destino agnóstico SSOT. D-NAV-11: label/intent → SiteCtaLibrary.
         linkTargetField(),
-        {
-          name: 'intent',
-          type: 'select',
-          required: true,
-          defaultValue: 'primary',
-          options: [
-            { label: 'Primary (black)', value: 'primary' },
-            { label: 'Secondary (red)', value: 'secondary' },
-            { label: 'Outline', value: 'outline' },
-          ],
-        },
       ],
     },
     {

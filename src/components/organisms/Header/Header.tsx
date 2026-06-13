@@ -10,6 +10,7 @@ import { MobileMenu } from '@/components/molecules/MobileMenu';
 import { Button } from '@/components/atoms/Button';
 import { HeaderDesktopNav } from './HeaderDesktopNav';
 import { resolveLinkHref } from '@/lib/nav/resolveLinkHref';
+import { getCtaByKey } from '@/lib/payload/getSiteCtaLibrary';
 import { cn } from '@/lib/utils';
 
 type HeaderProps = {
@@ -60,8 +61,10 @@ export async function Header({ className }: HeaderProps) {
       } | null;
     }>;
   }>;
-  const headerCta = navigation.headerCta;
-  const headerCtaHref = resolveLinkHref(headerCta?.linkTarget, localeKey, '/contacto');
+  const headerCtaNav = navigation.headerCta;
+  const headerCtaHref = resolveLinkHref(headerCtaNav?.linkTarget, localeKey, '/contacto');
+  // D-NAV-11: label + intent vienen de SiteCtaLibrary, no del nav (C-01 SSOT).
+  const headerCta = headerCtaNav?.ctaKey ? await getCtaByKey(headerCtaNav.ctaKey, localeKey) : null;
   const homeHref = localeKey === 'en' ? '/en' : '/';
 
   return (

@@ -37,10 +37,8 @@ const HEADER = [
 ] as const;
 
 const CTA = {
+  ctaKey: 'watch-it-run', // D-NAV-11: label/intent → SiteCtaLibrary (seed-site-cta-library.ts)
   routeKey: '/contacto',
-  es: 'Verlo funcionar',
-  en: 'Watch it run',
-  intent: 'primary',
 } as const;
 
 // Footer: grupos Explora/Método (propuesta footer firmada). order = índice.
@@ -87,7 +85,7 @@ async function seedSiteNavigation() {
     locale: 'es',
     data: {
       headerLinks: buildHeader('es'),
-      headerCta: { label: CTA.es, linkTarget: { routeKey: CTA.routeKey }, intent: CTA.intent },
+      headerCta: { ctaKey: CTA.ctaKey, linkTarget: { routeKey: CTA.routeKey } },
       footerGroups: buildFooter('es'),
     },
   });
@@ -99,7 +97,7 @@ async function seedSiteNavigation() {
     locale: 'en',
     data: {
       headerLinks: buildHeader('en'),
-      headerCta: { label: CTA.en, linkTarget: { routeKey: CTA.routeKey }, intent: CTA.intent },
+      headerCta: { ctaKey: CTA.ctaKey, linkTarget: { routeKey: CTA.routeKey } },
       footerGroups: buildFooter('en'),
     },
   });
@@ -156,7 +154,7 @@ async function seedSiteNavigation() {
   console.log('[seed-site-navigation] ✅ NAV seed COMPLETADO. Junk /memory reemplazado.');
   console.log('   Header: Cerebro de marca · Cómo trabajamos · Casos + CTA Verlo funcionar');
   console.log('   Footer: Explora · Método');
-  console.log('   ⚠️ TODO D-NAV-11: migrar CTA label → text-cta global (4.C.2)');
+  console.log('   D-NAV-11 CERRADO: headerCta.ctaKey → SiteCtaLibrary (seed-site-cta-library.ts)');
   process.exit(0);
 }
 
