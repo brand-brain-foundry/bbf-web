@@ -64,7 +64,7 @@
 .bbf-case-section__phase-num {
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-md, 0.8125rem);
-  color: var(--bbf-text-on-dark-surface);
+  color: var(--bbf-on-surface-title); /* D-DS-12 */
   flex-shrink: 0;
 }
 
@@ -78,17 +78,17 @@
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs, 0.6875rem);
   letter-spacing: 0.02em;
-  color: var(--bbf-text-on-dark-surface-muted);
+  color: var(--bbf-on-surface-muted); /* D-DS-12 */
   flex-shrink: 0;
 }
 
 .bbf-case-section__phase-title {
   margin: 0 0 14px;
-  color: var(--bbf-text-on-dark-surface);
+  color: var(--bbf-on-surface-title); /* D-DS-12 */
 }
 
 .bbf-case-section__phase-body {
-  color: var(--bbf-text-on-dark-surface-muted);
+  color: var(--bbf-on-surface-body); /* D-DS-12 */
   margin: 0;
   max-width: 32ch;
   line-height: 1.55;

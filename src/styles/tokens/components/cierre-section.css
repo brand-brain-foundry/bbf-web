@@ -47,12 +47,12 @@
   display: flex;
   align-items: center;
   gap: var(--bbf-space-4);
-  color: var(--bbf-text-on-dark-surface-muted);
+  color: var(--bbf-on-surface-muted); /* D-DS-12 */
 }
 
 /* L-BBF-226: Text atom aplica text-[var(--bbf-text-on-light)] directo en span — override con 0,3,0 */
 .bbf-cierre .bbf-cierre__meta [data-component='bbf-text'] {
-  color: var(--bbf-text-on-dark-surface-muted);
+  color: var(--bbf-on-surface-muted); /* D-DS-12 */
 }
 
 .bbf-cierre__meta-rule {
@@ -75,7 +75,7 @@
 
 /* L-BBF-226: specificity 0,2,0 > Tailwind utility 0,1,0 — fuerza color sand en H2 */
 .bbf-cierre .bbf-cierre__title {
-  color: var(--bbf-text-on-dark-surface);
+  color: var(--bbf-on-surface-title); /* D-DS-12 */
 }
 
 .bbf-cierre__title-soft {
@@ -93,7 +93,7 @@
 }
 
 .bbf-cierre__note {
-  color: var(--bbf-text-on-dark-surface-muted);
+  color: var(--bbf-on-surface-muted); /* D-DS-12 */
 }
 
 /* ── Signature pill ───────────────────────────────────────── */
@@ -106,7 +106,7 @@
   background: var(--bbf-surface-dark-elevated);
   border: 1px solid var(--bbf-border-on-dark-surface);
   border-radius: var(--bbf-radius-full); /* D-DS-09 FIX-04 */
-  color: var(--bbf-text-on-dark-surface-muted);
+  color: var(--bbf-on-surface-muted); /* D-DS-12 */
 }
 
 /* D-FIX-S6-02: Logo BBF gradient animado via CSS mask + gradient background */
@@ -144,12 +144,12 @@
   font-weight: var(--bbf-weight-medium, 500);
   font-size: 0.875rem;
   letter-spacing: -0.01em;
-  color: var(--bbf-text-on-dark-surface);
+  color: var(--bbf-on-surface-title); /* D-DS-12 */
 }
 
 .bbf-cierre__sig-tag {
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs, 0.6875rem);
   font-style: italic;
-  color: var(--bbf-text-on-dark-surface-muted);
+  color: var(--bbf-on-surface-muted); /* D-DS-12 */
 }

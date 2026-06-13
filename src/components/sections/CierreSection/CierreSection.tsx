@@ -75,7 +75,7 @@ export function CierreSection({ data }: { data: CierreData }) {
             level="display-hero"
             weight="medium"
             align="center"
-            className="bbf-cierre__title [color:var(--bbf-text-on-dark-surface)]"
+            className="bbf-cierre__title [color:var(--bbf-on-surface-title)]"
           >
             {data.statementLine1 ?? 'Tu marca aprende una vez.'}
             <span className="bbf-cierre__title-soft bbf-gradient-blue-animated">
