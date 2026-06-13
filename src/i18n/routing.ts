@@ -1,4 +1,5 @@
 import { defineRouting } from 'next-intl/routing';
+import { PATHNAMES } from './pathnames';
 
 /**
  * Routing canon BBF — Multilingüe ES/EN
@@ -21,16 +22,7 @@ export const routing = defineRouting({
   defaultLocale: 'es',
   localePrefix: 'as-needed',
 
-  pathnames: {
-    '/': '/',
-    '/cerebro-marca': { es: '/cerebro-marca', en: '/brand-brain' }, // CS-02 + P1
-    '/metodo': { es: '/metodo', en: '/method' }, // CS-03 + P6
-    '/casos': { es: '/casos', en: '/cases' }, // CS-04 + P5
-    '/como-construir': { es: '/como-construir', en: '/how-to-build' }, // P2
-    '/hub-and-spoke': '/hub-and-spoke', // P3
-    '/marca-cognitiva': { es: '/marca-cognitiva', en: '/cognitive-brand' }, // P4
-    '/contacto': { es: '/contacto', en: '/contact' },
-  },
+  pathnames: PATHNAMES, // SSOT compartido: src/i18n/pathnames.ts (C-01)
 
   localeDetection: true,
   localeCookie: {

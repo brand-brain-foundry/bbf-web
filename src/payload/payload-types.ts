@@ -1902,9 +1902,33 @@ export interface SiteNavigation {
     | {
         label: string;
         /**
-         * Path relativo (ej. /metodo o /casos). NO incluir locale prefix.
+         * Destino agnóstico: elegí routeKey (ruta canónica) o page (página dinámica). SSOT, sin texto libre.
          */
-        href: string;
+        linkTarget?: {
+          /**
+           * Ruta canónica (SSOT routing.ts pathnames). Usar para cornerstones / rutas fijas.
+           */
+          routeKey?:
+            | (
+                | '/'
+                | '/cerebro-marca'
+                | '/metodo'
+                | '/casos'
+                | '/como-construir'
+                | '/hub-and-spoke'
+                | '/marca-cognitiva'
+                | '/contacto'
+              )
+            | null;
+          /**
+           * Página dinámica (alternativa a routeKey). Dormido hasta que existan Pages.
+           */
+          page?: (number | null) | Page;
+        };
+        /**
+         * @deprecated — usar linkTarget. Path relativo legacy (transición L1→L2).
+         */
+        href?: string | null;
         /**
          * Si está activo, al hacer hover/click se abre mega-menu con sub-links.
          */
@@ -1936,7 +1960,34 @@ export interface SiteNavigation {
    */
   headerCta: {
     label: string;
-    href: string;
+    /**
+     * Destino agnóstico: elegí routeKey (ruta canónica) o page (página dinámica). SSOT, sin texto libre.
+     */
+    linkTarget?: {
+      /**
+       * Ruta canónica (SSOT routing.ts pathnames). Usar para cornerstones / rutas fijas.
+       */
+      routeKey?:
+        | (
+            | '/'
+            | '/cerebro-marca'
+            | '/metodo'
+            | '/casos'
+            | '/como-construir'
+            | '/hub-and-spoke'
+            | '/marca-cognitiva'
+            | '/contacto'
+          )
+        | null;
+      /**
+       * Página dinámica (alternativa a routeKey). Dormido hasta que existan Pages.
+       */
+      page?: (number | null) | Page;
+    };
+    /**
+     * @deprecated — usar linkTarget. Legacy (transición L1→L2).
+     */
+    href?: string | null;
     intent: 'primary' | 'secondary' | 'outline';
   };
   /**
@@ -1952,9 +2003,33 @@ export interface SiteNavigation {
           | {
               label: string;
               /**
-               * Relative path (e.g. /metodo). No locale prefix.
+               * Destino agnóstico: elegí routeKey (ruta canónica) o page (página dinámica). SSOT, sin texto libre.
                */
-              href: string;
+              linkTarget?: {
+                /**
+                 * Ruta canónica (SSOT routing.ts pathnames). Usar para cornerstones / rutas fijas.
+                 */
+                routeKey?:
+                  | (
+                      | '/'
+                      | '/cerebro-marca'
+                      | '/metodo'
+                      | '/casos'
+                      | '/como-construir'
+                      | '/hub-and-spoke'
+                      | '/marca-cognitiva'
+                      | '/contacto'
+                    )
+                  | null;
+                /**
+                 * Página dinámica (alternativa a routeKey). Dormido hasta que existan Pages.
+                 */
+                page?: (number | null) | Page;
+              };
+              /**
+               * @deprecated — usar linkTarget. Legacy (transición L1→L2).
+               */
+              href?: string | null;
               /**
                * Optional badge text (e.g. "New", "Beta", "Soon"). Empty = no badge.
                */
@@ -2746,6 +2821,12 @@ export interface SiteNavigationSelect<T extends boolean = true> {
     | T
     | {
         label?: T;
+        linkTarget?:
+          | T
+          | {
+              routeKey?: T;
+              page?: T;
+            };
         href?: T;
         hasSubMenu?: T;
         subLinks?:
@@ -2764,6 +2845,12 @@ export interface SiteNavigationSelect<T extends boolean = true> {
     | T
     | {
         label?: T;
+        linkTarget?:
+          | T
+          | {
+              routeKey?: T;
+              page?: T;
+            };
         href?: T;
         intent?: T;
       };
@@ -2775,6 +2862,12 @@ export interface SiteNavigationSelect<T extends boolean = true> {
           | T
           | {
               label?: T;
+              linkTarget?:
+                | T
+                | {
+                    routeKey?: T;
+                    page?: T;
+                  };
               href?: T;
               flag?: T;
               flagVariant?: T;

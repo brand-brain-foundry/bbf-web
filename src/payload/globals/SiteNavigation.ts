@@ -1,6 +1,46 @@
-import type { GlobalConfig } from 'payload';
+import type { GlobalConfig, Field } from 'payload';
 import { publicRead, isAdmin } from '@/payload/lib/access';
+import { ROUTE_KEYS } from '@/i18n/pathnames';
 import { revalidateGlobal } from '../hooks/revalidateGlobal';
+
+/**
+ * Link target polimórfico — L1 Opción C (firma Zavala 2026-06-13).
+ * Reusa el patrón D-ONTOLOGY-03 (Surfaces contentItemRef|globalRef): dos refs, uno activo.
+ *   routeKey → ruta canónica file-based (SSOT = src/i18n/pathnames.ts). Para cornerstones.
+ *   page     → página dinámica (relationship→pages). DORMIDO hasta primera Page dinámica.
+ * Resolución en consumer (L2): getPathname(locale, routeKey ?? page.path).
+ * Factory (no objeto compartido) para evitar mutación de referencia entre campos.
+ */
+const ROUTE_KEY_OPTIONS = ROUTE_KEYS.map((k) => ({ label: k, value: k }));
+
+const linkTargetField = (): Field => ({
+  name: 'linkTarget',
+  type: 'group',
+  label: { en: 'Link target', es: 'Destino del link' },
+  admin: {
+    description:
+      'Destino agnóstico: elegí routeKey (ruta canónica) o page (página dinámica). SSOT, sin texto libre.',
+  },
+  fields: [
+    {
+      name: 'routeKey',
+      type: 'select',
+      options: ROUTE_KEY_OPTIONS,
+      admin: {
+        description:
+          'Ruta canónica (SSOT routing.ts pathnames). Usar para cornerstones / rutas fijas.',
+      },
+    },
+    {
+      name: 'page',
+      type: 'relationship',
+      relationTo: 'pages',
+      admin: {
+        description: 'Página dinámica (alternativa a routeKey). Dormido hasta que existan Pages.',
+      },
+    },
+  ],
+});
 
 export const SiteNavigation: GlobalConfig = {
   slug: 'site-navigation',
@@ -40,12 +80,15 @@ export const SiteNavigation: GlobalConfig = {
           localized: true,
           required: true,
         },
+        // L1 (D-NAV-8 Opción C): destino agnóstico SSOT. Reemplaza href texto libre.
+        linkTargetField(),
         {
           name: 'href',
           type: 'text',
-          required: true,
+          // @deprecated L1 expand-contract: superseded por linkTarget. Consumers migran en L2,
+          //   luego se elimina href. Opcional para no romper data existente durante la transición.
           admin: {
-            description: 'Path relativo (ej. /metodo o /casos). NO incluir locale prefix.',
+            description: '@deprecated — usar linkTarget. Path relativo legacy (transición L1→L2).',
           },
         },
         // === Wave 8: mega-menu sub-links ===
@@ -133,11 +176,16 @@ export const SiteNavigation: GlobalConfig = {
           localized: true,
           required: true,
         },
+        // L1 (D-NAV-8 Opción C): destino agnóstico SSOT. (D-NAV-11 type/text-cta library → L2.)
+        linkTargetField(),
         {
           name: 'href',
           type: 'text',
-          required: true,
+          // @deprecated L1 expand-contract: superseded por linkTarget. Migra en L2.
           defaultValue: '/contacto',
+          admin: {
+            description: '@deprecated — usar linkTarget. Legacy (transición L1→L2).',
+          },
         },
         {
           name: 'intent',
@@ -196,12 +244,14 @@ export const SiteNavigation: GlobalConfig = {
               localized: true,
               required: true,
             },
+            // L1 (D-NAV-8 Opción C): destino agnóstico SSOT.
+            linkTargetField(),
             {
               name: 'href',
               type: 'text',
-              required: true,
+              // @deprecated L1 expand-contract: superseded por linkTarget. Migra en L2.
               admin: {
-                description: 'Relative path (e.g. /metodo). No locale prefix.',
+                description: '@deprecated — usar linkTarget. Legacy (transición L1→L2).',
               },
             },
             {

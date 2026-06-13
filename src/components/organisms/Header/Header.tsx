@@ -134,7 +134,9 @@ export async function Header({ className }: HeaderProps) {
                   headerCta
                     ? {
                         label: headerCta.label,
-                        href: headerCta.href,
+                        // L1 expand-contract: href @deprecated (ahora opcional). Coalesce al default
+                        //   hasta que L2 resuelva linkTarget vía getPathname.
+                        href: headerCta.href ?? '/contacto',
                         intent: headerCta.intent as 'primary' | 'secondary' | 'outline' | undefined,
                       }
                     : undefined
