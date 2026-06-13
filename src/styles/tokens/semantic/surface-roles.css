@@ -1,0 +1,68 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Surface Roles Global Cascade
+ *
+ * D-DS-12 (2026-06-13): cascade global [data-surface] → --bbf-on-surface-{rol}
+ * Componentes leen var(--bbf-on-surface-*) sin prop-drilling de tokens surface-específicos.
+ * Depende de: semantic/colors.css, semantic/colors-warm.css, semantic/colors-dark.css
+ *
+ * 4 surfaces live: sand | warm | dark | white
+ * 8 roles por surface: title, body, muted, link, link-hover, accent, border, highlight
+ *
+ * Tabla Op-A firmada Zavala 2026-06-13:
+ *   sand:  title=#000000, body=#1a1a1a, muted=#666666
+ *   warm:  título=#0a0a0a, body=#2a2a2a, muted=#6b6863
+ *   dark:  title=#f5f3ed, body=#a8a59f, muted=#a8a59f, accent=#ff5949 (OBS-2)
+ *   white: hereda tabla sand (mismos contrastes WCAG)
+ */
+
+/* ── SAND — BG #fdf5ed ── */
+[data-surface='sand'] {
+  --bbf-on-surface-bg: var(--bbf-surface-sand);
+  --bbf-on-surface-title: var(--bbf-text-on-sand);
+  --bbf-on-surface-body: var(--bbf-text-on-sand-muted);
+  --bbf-on-surface-muted: var(--bbf-text-on-sand-subtle);
+  --bbf-on-surface-link: var(--bbf-accent-on-sand);
+  --bbf-on-surface-link-hover: var(--bbf-accent-blue-hover);
+  --bbf-on-surface-accent: var(--bbf-accent-red);
+  --bbf-on-surface-border: var(--bbf-border-on-sand);
+  --bbf-on-surface-highlight: var(--bbf-border-subtle-on-sand);
+}
+
+/* ── WARM — BG #fafaf7 ── */
+[data-surface='warm'] {
+  --bbf-on-surface-bg: var(--bbf-surface-warm-base);
+  --bbf-on-surface-title: var(--bbf-text-on-warm);
+  --bbf-on-surface-body: var(--bbf-text-on-warm-soft);
+  --bbf-on-surface-muted: var(--bbf-text-on-warm-muted);
+  --bbf-on-surface-link: var(--bbf-text-on-warm-accent);
+  --bbf-on-surface-link-hover: var(--bbf-focus-ring-on-warm);
+  --bbf-on-surface-accent: var(--bbf-text-on-warm-accent);
+  --bbf-on-surface-border: var(--bbf-border-on-warm);
+  --bbf-on-surface-highlight: var(--bbf-surface-warm-highlight);
+}
+
+/* ── DARK — BG #0a0a0a (D-CASO-3 canónico, D-DS-10-B) ── */
+[data-surface='dark'] {
+  --bbf-on-surface-bg: var(--bbf-surface-dark-base);
+  --bbf-on-surface-title: var(--bbf-text-on-dark-surface);
+  --bbf-on-surface-body: var(--bbf-text-on-dark-surface-muted);
+  --bbf-on-surface-muted: var(--bbf-text-on-dark-surface-muted);
+  --bbf-on-surface-link: var(--bbf-text-on-dark-surface-accent);
+  --bbf-on-surface-link-hover: var(--bbf-link-hover-on-dark-surface); /* D-DS-17 */
+  --bbf-on-surface-accent: var(--bbf-accent-red); /* OBS-2: rojo ≠ azul link */
+  --bbf-on-surface-border: var(--bbf-border-on-dark-surface);
+  --bbf-on-surface-highlight: var(--bbf-highlight-on-dark-surface); /* D-DS-17 */
+}
+
+/* ── WHITE — BG #ffffff ── */
+[data-surface='white'] {
+  --bbf-on-surface-bg: var(--bbf-surface-white);
+  --bbf-on-surface-title: var(--bbf-text-on-sand);
+  --bbf-on-surface-body: var(--bbf-text-on-sand-muted);
+  --bbf-on-surface-muted: var(--bbf-text-on-sand-subtle);
+  --bbf-on-surface-link: var(--bbf-accent-on-sand);
+  --bbf-on-surface-link-hover: var(--bbf-accent-blue-hover);
+  --bbf-on-surface-accent: var(--bbf-accent-red);
+  --bbf-on-surface-border: var(--bbf-border-on-sand);
+  --bbf-on-surface-highlight: var(--bbf-surface-sand);
+}

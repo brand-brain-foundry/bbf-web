@@ -45,4 +45,11 @@
      WCAG AA: #3b82f6 sobre #0a0a0a = 5.39:1 ✅ (≥4.5 text, ≥3 non-text)
      ============================================================ */
   --bbf-focus-ring-on-dark-surface: var(--bbf-color-blue-accent); /* #3b82f6 */
+
+  /* ============================================================
+     D-DS-17 (2026-06-13): aliases para cascade global [data-surface='dark']
+     Evitan referenciar primitivos directamente desde surface-roles.css.
+     ============================================================ */
+  --bbf-link-hover-on-dark-surface: var(--bbf-color-blue-400); /* #5587fb */
+  --bbf-highlight-on-dark-surface: var(--bbf-surface-dark-elevated); /* #1a1a1a */
 }

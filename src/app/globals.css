@@ -41,6 +41,7 @@
 @import '../styles/tokens/semantic/colors.css';
 @import '../styles/tokens/semantic/colors-warm.css'; /* D-MIG-01: aliases warm coexistentes */
 @import '../styles/tokens/semantic/colors-dark.css'; /* D-CASO-3: aliases dark coexistentes */
+@import '../styles/tokens/semantic/surface-roles.css'; /* D-DS-12: cascade global [data-surface] */
 @import '../styles/tokens/semantic/typography.css';
 @import '../styles/tokens/semantic/spacing.css';
 @import '../styles/tokens/semantic/motion.css';

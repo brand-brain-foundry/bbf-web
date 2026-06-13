@@ -6,8 +6,8 @@
  * Layout: eyebrow + decoration (deco-col izquierda) + H2 + lead (derecha).
  *
  * D-DS-07 (2026-06-12): SURFACE_TOKENS migrado de SectionHeader.tsx a CSS.
- * Surface cascade via [data-surface] attribute ya presente en el wrapper div.
- * Especificidad: (0,3,0) / (0,2,0) > utility Tailwind (0,1,0).
+ * D-DS-12 (2026-06-13): cascade via surface-roles.css — 18 reglas → 3 universales.
+ * Especificidad: (0,2,0) > utility Tailwind (0,1,0).
  */
 
 /* ============================================================
@@ -42,7 +42,6 @@
   width: 6rem; /* 96px desktop */
   height: 6rem;
   flex-shrink: 0;
-  color: var(--bbf-text-on-warm-muted);
 }
 
 @media (max-width: 767px) {
@@ -52,71 +51,21 @@
   }
 }
 
-/* Dark surface — deco Lissajous usa tokens dark (D-CASO-3) */
-[data-surface='dark'] .bbf-section-header__deco {
-  color: var(--bbf-text-on-dark-surface-muted);
-}
-
 /* ============================================================
-   SURFACE CASCADE — D-DS-07 (SURFACE_TOKENS migrado de TSX a CSS)
-   Pattern: data-surface attribute en el wrapper → cascade a hijos.
-   Cubre: heading H2, h2-soft span, lead, eyebrow (deco-col text).
+   COLOR CASCADE — D-DS-12 (2026-06-13)
+   surface-roles.css setea --bbf-on-surface-{rol} vía [data-surface].
+   SectionHeader siempre tiene data-surface (default='warm' en TSX).
+   Especificidad: (0,2,0) > utility Tailwind (0,1,0) ✅
+   Reemplaza: 18 reglas manuales por surface (warm/sand/dark × 5 elementos).
    ============================================================ */
-
-/* H2 soft span — clase fallback cuando no hay gradient class */
-.bbf-section-header__h2-soft {
-  color: var(--bbf-text-on-warm-muted); /* warm default */
+.bbf-section-header [data-component='bbf-heading'] {
+  color: var(--bbf-on-surface-title);
 }
-
-/* WARM — default surface de SectionHeader */
-.bbf-section-header[data-surface='warm'] [data-component='bbf-heading'] {
-  color: var(--bbf-text-on-warm);
+.bbf-section-header .bbf-lede {
+  color: var(--bbf-on-surface-body);
 }
-.bbf-section-header[data-surface='warm'] .bbf-lede {
-  color: var(--bbf-text-on-warm-soft);
-}
-.bbf-section-header[data-surface='warm'] .bbf-section-header__deco-col [data-component='bbf-text'] {
-  color: var(--bbf-text-on-warm-muted);
-}
-.bbf-section-header[data-surface='warm'] .bbf-section-header__h2-soft {
-  color: var(--bbf-text-on-warm-muted);
-}
-[data-surface='warm'] .bbf-section-header__deco {
-  color: var(--bbf-text-on-warm-muted);
-}
-
-/* SAND */
-.bbf-section-header[data-surface='sand'] [data-component='bbf-heading'] {
-  color: var(--bbf-text-on-sand);
-}
-.bbf-section-header[data-surface='sand'] .bbf-lede {
-  color: var(--bbf-text-on-sand-muted);
-}
-.bbf-section-header[data-surface='sand'] .bbf-section-header__deco-col [data-component='bbf-text'] {
-  color: var(--bbf-text-on-sand-subtle);
-}
-.bbf-section-header[data-surface='sand'] .bbf-section-header__h2-soft {
-  color: var(--bbf-text-on-sand-muted);
-}
-[data-surface='sand'] .bbf-section-header__deco {
-  color: var(--bbf-text-on-sand-subtle);
-}
-
-/* DARK — override Tailwind utility color (especificidad 0,3,0 > utility 0,1,0)
-   CVA Heading/Text color="primary" genera text-[var(--bbf-text-on-light)] = black.
-   Estos selectores lo sobreescriben con los tokens dark correctos. */
-.bbf-section-header[data-surface='dark'] [data-component='bbf-heading'] {
-  color: var(--bbf-text-on-dark-surface);
-}
-.bbf-section-header[data-surface='dark'] .bbf-lede {
-  color: var(--bbf-text-on-dark-surface-muted);
-}
-.bbf-section-header[data-surface='dark'] .bbf-section-header__deco-col [data-component='bbf-text'] {
-  color: var(--bbf-text-on-dark-surface-muted);
-}
-.bbf-section-header[data-surface='dark'] .bbf-section-header__h2-soft {
-  color: var(--bbf-text-on-dark-surface-muted);
-}
-[data-surface='dark'] .bbf-section-header__deco {
-  color: var(--bbf-text-on-dark-surface-muted);
+.bbf-section-header .bbf-section-header__deco-col [data-component='bbf-text'],
+.bbf-section-header .bbf-section-header__h2-soft,
+.bbf-section-header .bbf-section-header__deco {
+  color: var(--bbf-on-surface-muted);
 }
