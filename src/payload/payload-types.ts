@@ -2720,7 +2720,7 @@ export interface SiteCtaLibrary {
         key: string;
         label: string;
         type: 'solid' | 'outline';
-        intent: 'primary' | 'secondary' | 'outline' | 'outline-dark';
+        intent: 'primary' | 'secondary' | 'black' | 'red';
         id?: string | null;
       }[]
     | null;
