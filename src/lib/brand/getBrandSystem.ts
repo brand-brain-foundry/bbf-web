@@ -9,7 +9,7 @@
  * Uso:
  *   const bs = await getBrandSystem();
  *   // bs.primaryPalette → 'blue' (data-palette attribute → CSS cascade)
- *   // bs.logoVariant    → 'horizontal' (BrandLogo variant prop)
+ *   // bs.logoVariant    → 'icon' (BrandLogo variant prop)
  *   // bs.accentGradient → 'blue-animated' (className en gradient consumers)
  *   // bs.gradientClass  → 'bbf-gradient-blue-animated' (convenience)
  *
@@ -52,7 +52,7 @@ export async function getBrandSystem(): Promise<BrandSystemSelections> {
   const themeMode: ThemeMode = data.colors?.themeMode ?? 'light';
   const displayFamily: DisplayFamily = data.typography?.displayFamily ?? 'inter';
   const bodyFamily: BodyFamily = data.typography?.bodyFamily ?? 'mulish';
-  const logoVariant: LogoVariant = data.brand?.logoVariant ?? 'horizontal';
+  const logoVariant: LogoVariant = data.brand?.logoVariant ?? 'icon';
   const accentGradient: AccentGradient = data.brand?.accentGradient ?? 'blue-animated';
 
   return {

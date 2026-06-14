@@ -3,9 +3,9 @@ import { getPayload } from 'payload';
 import config from '@/payload-config';
 import Link from 'next/link';
 import { getSiteIdentity } from '@/config/site';
-import { BrandLogo } from '@/components/atoms/BrandLogo';
 import { SkipLink } from '@/components/atoms/SkipLink';
 import { LanguageSwitcher } from '@/components/molecules/LanguageSwitcher';
+import { BrandLogoLink } from '@/components/molecules/BrandLogoLink';
 import { MobileMenu } from '@/components/molecules/MobileMenu';
 import { Button } from '@/components/atoms/Button';
 import { HeaderDesktopNav } from './HeaderDesktopNav';
@@ -65,7 +65,6 @@ export async function Header({ className }: HeaderProps) {
   const headerCtaHref = resolveLinkHref(headerCtaNav?.linkTarget, localeKey, '/contacto');
   // D-NAV-11: label + intent vienen de SiteCtaLibrary, no del nav (C-01 SSOT).
   const headerCta = headerCtaNav?.ctaKey ? await getCtaByKey(headerCtaNav.ctaKey, localeKey) : null;
-  const homeHref = localeKey === 'en' ? '/en' : '/';
 
   return (
     <header
@@ -89,20 +88,8 @@ export async function Header({ className }: HeaderProps) {
           )}
         >
           <div className="flex h-14 items-center gap-3 px-4 sm:h-16 sm:gap-6 sm:px-5 lg:px-6">
-            {/* Logo */}
-            <Link
-              href={homeHref}
-              aria-label={`${siteName} — ${t('logoAriaLabel')}`}
-              className={cn(
-                'inline-flex shrink-0 items-center',
-                'text-[var(--bbf-text-on-sand)]',
-                'transition-all duration-200 ease-out',
-                '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
-                'focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
-              )}
-            >
-              <BrandLogo variant="icon" size="sm" aria-hidden />
-            </Link>
+            {/* Logo — D-NAV-12: BrandLogoLink molecule (href home locale-aware, logoVariant from BrandSystem) */}
+            <BrandLogoLink locale={localeKey} ariaLabel={`${siteName} — ${t('logoAriaLabel')}`} />
 
             {/* Desktop nav — left-aligned, flex-1 para empujar right cluster */}
             <HeaderDesktopNav links={headerLinks} className="hidden flex-1 lg:ml-6 lg:flex" />

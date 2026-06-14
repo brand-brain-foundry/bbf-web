@@ -9,7 +9,7 @@
  *   themeMode:      'light'    — default BBF web
  *   displayFamily:  'inter'    — Inter font canon (D-72..74)
  *   bodyFamily:     'mulish'   — Mulish font canon
- *   logoVariant:    'horizontal' — forma canónica del logo (D-DS-01 proposal §B)
+ *   logoVariant:    'icon' — solo flor en header (D-DS-01 + D-NAV-12 L6 firmado)
  *   accentGradient: 'blue-animated' — rebrand blue (D-DS-05 bbf-gradient-blue-animated)
  *
  * Requires: pnpm payload migrate aplicado
@@ -44,7 +44,7 @@ async function seedBrandSystem() {
         bodyFamily: 'mulish',
       },
       brand: {
-        logoVariant: 'horizontal',
+        logoVariant: 'icon',
         accentGradient: 'blue-animated',
       },
     },
@@ -55,7 +55,7 @@ async function seedBrandSystem() {
   console.log('  themeMode:       light');
   console.log('  displayFamily:   inter');
   console.log('  bodyFamily:      mulish');
-  console.log('  logoVariant:     horizontal');
+  console.log('  logoVariant:     icon');
   console.log('  accentGradient:  blue-animated');
 
   process.exit(0);
