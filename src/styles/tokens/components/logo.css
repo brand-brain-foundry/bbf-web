@@ -41,9 +41,48 @@
    VARIANT: icon (solo flor)
    ============================================================ */
 .bbf-logo--icon {
+  position: relative; /* ::after anchor — D-STATE-03 */
   width: var(--bbf-logo-rendered, 2.5rem);
   height: var(--bbf-logo-rendered, 2.5rem);
   aspect-ratio: 1 / 1;
+}
+
+/* ============================================================
+   LOGO HOVER GRADIENT — D-STATE-03 (2026-06-14)
+   ::after mask overlay: gradient always running, opacity 0→1 on hover.
+   Parent sets color:transparent on hover — SVG fill vanishes,
+   gradient reveals through mask shaped to the icon path.
+   ============================================================ */
+.bbf-logo--icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--bbf-gradient-primary);
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+  mask-image: url('/assets/brand/logos/BBF-Logo-Icon.svg');
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url('/assets/brand/logos/BBF-Logo-Icon.svg');
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--bbf-motion-state-duration-logo) var(--bbf-motion-state-easing);
+}
+
+@media (hover: hover) {
+  [data-component='bbf-brand-logo-link']:hover .bbf-logo--icon::after {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-logo--icon::after {
+    animation: none;
+  }
 }
 
 .bbf-logo--icon .bbf-logo-icon {

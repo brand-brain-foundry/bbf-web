@@ -38,9 +38,8 @@ export async function BrandLogoLink({ locale, ariaLabel, className }: BrandLogoL
       className={cn(
         'inline-flex shrink-0 items-center',
         'text-[var(--bbf-text-on-sand)]',
-        'transition-all duration-200 ease-out',
-        '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
-        'focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
+        '[transition:color_var(--bbf-motion-state-duration-logo)_var(--bbf-motion-state-easing)]',
+        '[@media(hover:hover)]:hover:text-transparent',
         className,
       )}
     >
