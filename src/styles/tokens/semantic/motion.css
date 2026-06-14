@@ -85,6 +85,22 @@
   --bbf-motion-duration-gradient-slow: 6000ms; /* G-02 blue text gradient */
   --bbf-motion-duration-gradient-idle: 8000ms; /* G-01 red accent pulse */
 
+  /* ============================================================
+     STATE SEED — D-STATE-02 (2026-06-14)
+     Madre→variante: cambiar la madre propaga a logo/cta/link/nav.
+     Rige TODOS los cambios de estado interactivo (hover, focus).
+     Distinto de gradient-* (idle continuo): este es puntual, <300ms.
+     ============================================================ */
+  --bbf-motion-state-duration: var(--bbf-motion-duration-fast); /* MADRE — 180ms */
+  --bbf-motion-state-easing: var(
+    --bbf-motion-ease-out-quart
+  ); /* MADRE — cubic-bezier(0.25,1,0.5,1) */
+
+  --bbf-motion-state-duration-logo: var(--bbf-motion-state-duration); /* hereda madre */
+  --bbf-motion-state-duration-cta: var(--bbf-motion-state-duration); /* hereda madre */
+  --bbf-motion-state-duration-link: var(--bbf-motion-state-duration); /* hereda madre */
+  --bbf-motion-state-duration-nav: var(--bbf-motion-state-duration); /* hereda madre */
+
   /* MIGRATION BASE — D-MIG-04 (Claude Design --ease-out) */
   --bbf-easing-organic: cubic-bezier(
     0.2,
@@ -105,5 +121,7 @@
     --bbf-motion-instant: 0ms;
     --bbf-logo-rotation-duration: 0s;
     --bbf-logo-rotation-duration-hover: 0s;
+    /* D-STATE-08: estados interactivos instantáneos (la madre propaga a variantes) */
+    --bbf-motion-state-duration: 0ms;
   }
 }
