@@ -26,7 +26,8 @@
     var(--bbf-color-blue-accent) 100%
   );
 
-  /* G-03 — dark (button dark sweep) */
+  /* G-03 — dark / black (button dark sweep — alias --bbf-gradient-black para CTAs) */
+  --bbf-gradient-black: var(--bbf-gradient-dark); /* CTA black intent hover/normal (D-STATE-04) */
   --bbf-gradient-dark: linear-gradient(
     110deg,
     var(--bbf-color-black-900) 0%,

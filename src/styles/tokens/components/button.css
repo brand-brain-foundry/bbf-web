@@ -14,6 +14,153 @@
   /* Empty — populated on-demand in M5-D */
 }
 
+/* ============================================================
+   SOLID CTA DUAL-LAYER — D-STATE-04 (2026-06-14)
+   Structure: ::before = NORMAL gradient (z:-1, opacity 1→0 on hover)
+              main element = HOVER gradient (always running, revealed on hover)
+   Text sits above both layers via normal flow.
+   Transition: --bbf-motion-state-duration-cta (seed, 180ms / 0ms reduced-motion)
+   ============================================================ */
+
+/* Primary: NORMAL=blue-grad-anim, HOVER=black-grad-anim, FOCUS=blue-flat */
+.bbf-btn-solid-primary {
+  isolation: isolate;
+  background: var(--bbf-gradient-black); /* black/dark — hover target always running */
+  background-size: 200% 200%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-idle) ease infinite;
+  color: var(--bbf-text-on-gradient-blue);
+}
+
+.bbf-btn-solid-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--bbf-gradient-primary); /* blue — normal state */
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+  z-index: -1;
+  opacity: 1;
+  transition: opacity var(--bbf-motion-state-duration-cta) var(--bbf-motion-state-easing);
+  pointer-events: none;
+}
+
+/* Black: NORMAL=dark-grad-anim, HOVER=blue-grad-anim, FOCUS=black-flat */
+.bbf-btn-solid-black {
+  isolation: isolate;
+  background: var(--bbf-gradient-primary); /* blue — hover target */
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+  color: var(--bbf-text-on-gradient-blue);
+}
+
+.bbf-btn-solid-black::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--bbf-gradient-dark); /* dark sweep — normal state */
+  background-size: 300% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-fast) ease-in-out infinite;
+  z-index: -1;
+  opacity: 1;
+  transition: opacity var(--bbf-motion-state-duration-cta) var(--bbf-motion-state-easing);
+  pointer-events: none;
+}
+
+/* Red: NORMAL=black-grad-anim, HOVER=blue-grad-anim, FOCUS=red-flat */
+.bbf-btn-solid-red {
+  isolation: isolate;
+  background: var(--bbf-gradient-primary); /* blue — hover target */
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+  color: var(--bbf-text-on-gradient-blue);
+}
+
+.bbf-btn-solid-red::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--bbf-gradient-black); /* black/dark — normal state */
+  background-size: 200% 200%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-idle) ease infinite;
+  z-index: -1;
+  opacity: 1;
+  transition: opacity var(--bbf-motion-state-duration-cta) var(--bbf-motion-state-easing);
+  pointer-events: none;
+}
+
+/* Secondary: sober sand — no dual-layer (no animation by design) */
+.bbf-btn-solid-secondary {
+  background: var(--bbf-surface-sand);
+}
+
+/* ============================================================
+   HOVER: fade ::before → reveal main element gradient
+   ============================================================ */
+@media (hover: hover) {
+  .bbf-btn-solid-primary:hover::before,
+  .bbf-btn-solid-black:hover::before,
+  .bbf-btn-solid-red:hover::before {
+    opacity: 0;
+  }
+
+  .bbf-btn-solid-secondary:hover {
+    background: var(--bbf-surface-sand-deep);
+  }
+}
+
+/* ============================================================
+   FOCUS: flat color, no animation (D-STATE-05)
+   ::before fades, main element gets flat override.
+   ============================================================ */
+.bbf-btn-solid-primary:focus-visible::before,
+.bbf-btn-solid-black:focus-visible::before,
+.bbf-btn-solid-red:focus-visible::before {
+  opacity: 0;
+}
+
+.bbf-btn-solid-primary:focus-visible {
+  background: var(--bbf-accent-blue);
+  animation: none;
+}
+
+.bbf-btn-solid-black:focus-visible {
+  background: var(--bbf-surface-black);
+  animation: none;
+}
+
+.bbf-btn-solid-red:focus-visible {
+  background: var(--bbf-surface-red);
+  animation: none;
+}
+
+.bbf-btn-solid-secondary:focus-visible {
+  background: var(--bbf-surface-white);
+}
+
+/* ============================================================
+   REDUCED MOTION (D-STATE-08)
+   --bbf-motion-state-duration-cta cascades to 0ms via seed.
+   Stop idle gradient animations; opacity transitions already instant.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .bbf-btn-solid-primary,
+  .bbf-btn-solid-black,
+  .bbf-btn-solid-red {
+    animation: none;
+    background-position: 0% 50%;
+  }
+
+  .bbf-btn-solid-primary::before,
+  .bbf-btn-solid-black::before,
+  .bbf-btn-solid-red::before {
+    animation: none;
+    background-position: 0% 50%;
+  }
+}
+
 /**
  * .bbf-btn-outline-dark — hover border gradient (D-S6-02 Alt 1 firmada)
  *

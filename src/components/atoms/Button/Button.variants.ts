@@ -26,21 +26,34 @@ export const buttonVariants = cva(
   {
     variants: {
       intent: {
+        /* D-STATE-04: 4 pure intents × solid (dual-layer via button.css).
+           CSS classes handle gradient swap; CVA adds layout + lift + ring. */
         primary: [
-          'text-[var(--bbf-text-on-gradient-blue)]',
-          '[background:var(--bbf-accent-gradient)]',
-          '[background-size:200%_200%]',
-          '[background-position:0%_50%]',
+          'bbf-btn-solid-primary' /* blue-grad normal → red-grad hover → blue-flat focus */,
           'shadow-sm',
-          '[@media(hover:hover)]:hover:[background-position:100%_50%] [@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
-          'active:scale-[0.97] active:[background-position:50%_50%]',
+          '[@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
+          'active:scale-[0.97]',
+          'focus-visible:ring-[var(--bbf-color-focus-ring)]',
+        ].join(' '),
+        black: [
+          'bbf-btn-solid-black' /* dark-grad normal → blue-grad hover → black-flat focus */,
+          'shadow-sm',
+          '[@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
+          'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
         secondary: [
-          'text-[var(--bbf-text-on-black)]',
-          'bg-[var(--bbf-surface-black)]',
+          'bbf-btn-solid-secondary' /* sand normal → sand-deep hover → white focus (sober) */,
+          'text-[var(--bbf-text-on-sand)]',
           'shadow-sm',
-          '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-black-elevated)] [@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
+          '[@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
+          'active:scale-[0.97]',
+          'focus-visible:ring-[var(--bbf-color-focus-ring)]',
+        ].join(' '),
+        red: [
+          'bbf-btn-solid-red' /* red-grad normal → blue-grad hover → red-flat focus */,
+          'shadow-sm',
+          '[@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
           'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),

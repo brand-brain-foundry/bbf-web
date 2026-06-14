@@ -102,7 +102,9 @@ export async function Header({ className }: HeaderProps) {
               {headerCta && (
                 <Button
                   asChild
-                  intent={(headerCta.intent as 'primary' | 'secondary' | 'outline') ?? 'primary'}
+                  intent={
+                    (headerCta.intent as 'primary' | 'secondary' | 'black' | 'red') ?? 'primary'
+                  }
                   size="sm"
                   className="hidden sm:inline-flex"
                 >
@@ -130,7 +132,12 @@ export async function Header({ className }: HeaderProps) {
                     ? {
                         label: headerCta.label,
                         href: headerCtaHref, // L2: resuelto desde linkTarget
-                        intent: headerCta.intent as 'primary' | 'secondary' | 'outline' | undefined,
+                        intent: headerCta.intent as
+                          | 'primary'
+                          | 'secondary'
+                          | 'black'
+                          | 'red'
+                          | undefined,
                       }
                     : undefined
                 }

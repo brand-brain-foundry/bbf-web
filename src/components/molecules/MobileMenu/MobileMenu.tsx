@@ -34,7 +34,7 @@ type MobileMenuLink = {
 type MobileMenuCta = {
   label: string;
   href: string;
-  intent?: 'primary' | 'secondary' | 'outline';
+  intent?: 'primary' | 'secondary' | 'black' | 'red';
 };
 
 type MobileMenuProps = {
