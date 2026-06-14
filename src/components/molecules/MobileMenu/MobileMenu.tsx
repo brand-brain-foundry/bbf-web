@@ -34,6 +34,7 @@ type MobileMenuLink = {
 type MobileMenuCta = {
   label: string;
   href: string;
+  fill?: 'solid' | 'outline';
   intent?: 'primary' | 'secondary' | 'black' | 'red';
 };
 
@@ -183,7 +184,13 @@ export function MobileMenu({ links, cta, siteName = 'BBF' }: MobileMenuProps) {
           {/* CTA al pie */}
           {cta && (
             <div className="px-6 pt-2 pb-8">
-              <Button asChild intent={cta.intent ?? 'primary'} size="lg" className="w-full">
+              <Button
+                asChild
+                fill={cta.fill ?? 'solid'}
+                intent={cta.intent ?? 'primary'}
+                size="lg"
+                className="w-full"
+              >
                 <Link href={cta.href} onClick={close} tabIndex={isOpen ? 0 : -1}>
                   {cta.label}
                 </Link>

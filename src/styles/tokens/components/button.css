@@ -68,13 +68,13 @@
   pointer-events: none;
 }
 
-/* Red: NORMAL=black-grad-anim, HOVER=blue-grad-anim, FOCUS=red-flat */
+/* Red: NORMAL=red-grad-anim, HOVER=black-grad-anim, FOCUS=red-flat */
 .bbf-btn-solid-red {
   isolation: isolate;
-  background: var(--bbf-gradient-primary); /* blue — hover target */
-  background-size: 200% 100%;
-  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
-  color: var(--bbf-text-on-gradient-blue);
+  background: var(--bbf-gradient-black); /* dark — hover target always running */
+  background-size: 200% 200%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-idle) ease infinite;
+  color: var(--bbf-text-on-gradient-red); /* black-900 — contraste sobre rojo (6.4:1 WCAG AA) */
 }
 
 .bbf-btn-solid-red::before {
@@ -82,9 +82,9 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: var(--bbf-gradient-black); /* black/dark — normal state */
+  background: var(--bbf-gradient-red); /* red→orange — normal state */
   background-size: 200% 200%;
-  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-idle) ease infinite;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   z-index: -1;
   opacity: 1;
   transition: opacity var(--bbf-motion-state-duration-cta) var(--bbf-motion-state-easing);
@@ -104,6 +104,10 @@
   .bbf-btn-solid-black:hover::before,
   .bbf-btn-solid-red:hover::before {
     opacity: 0;
+  }
+
+  .bbf-btn-solid-red:hover {
+    color: var(--bbf-text-on-black); /* sand-100 — contraste sobre dark hover */
   }
 
   .bbf-btn-solid-secondary:hover {
@@ -134,6 +138,9 @@
 .bbf-btn-solid-red:focus-visible {
   background: var(--bbf-surface-red);
   animation: none;
+  color: var(
+    --bbf-text-on-gradient-red
+  ); /* black-900 — re-asserts dark text sobre red flat (override hover) */
 }
 
 .bbf-btn-solid-secondary:focus-visible {
@@ -156,6 +163,181 @@
   .bbf-btn-solid-primary::before,
   .bbf-btn-solid-black::before,
   .bbf-btn-solid-red::before {
+    animation: none;
+    background-position: 0% 50%;
+  }
+}
+
+/* ============================================================
+   OUTLINE CTA DUAL-PSEUDO BORDER GRADIENT — D-STATE-04 (2026-06-14)
+   Structure: ::before = NORMAL border gradient (opacity 1→0 on hover)
+              ::after  = HOVER border gradient  (opacity 0→1 on hover)
+   Technique: mask-composite exclude — only padding ring visible.
+   padding = --bbf-line-gradient-inset (1.5px, D-DS-14)
+   Transition: --bbf-motion-state-duration-cta (seed madre→variante)
+   secondary: sober — simple CSS border, no pseudo, no animation.
+   ============================================================ */
+
+/* Shared: transparent background */
+.bbf-btn-outline-primary,
+.bbf-btn-outline-black,
+.bbf-btn-outline-secondary,
+.bbf-btn-outline-red {
+  background: transparent;
+}
+
+/* Stacking context for animated intents */
+.bbf-btn-outline-primary,
+.bbf-btn-outline-black,
+.bbf-btn-outline-red {
+  isolation: isolate;
+}
+
+/* Shared pseudo-element base — ring via mask-composite */
+.bbf-btn-outline-primary::before,
+.bbf-btn-outline-primary::after,
+.bbf-btn-outline-black::before,
+.bbf-btn-outline-black::after,
+.bbf-btn-outline-red::before,
+.bbf-btn-outline-red::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--bbf-line-gradient-inset); /* 1.5px — ring thickness (D-DS-14) */
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  z-index: -1;
+  pointer-events: none;
+  transition: opacity var(--bbf-motion-state-duration-cta) var(--bbf-motion-state-easing);
+}
+
+/* Primary: NORMAL=blue-grad, HOVER=dark-grad, FOCUS=ring */
+.bbf-btn-outline-primary {
+  color: var(--bbf-accent-blue);
+}
+
+.bbf-btn-outline-primary::before {
+  background: var(--bbf-gradient-primary); /* blue — normal border */
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+  opacity: 1;
+}
+
+.bbf-btn-outline-primary::after {
+  background: var(--bbf-gradient-black); /* dark/black — hover border */
+  background-size: 300% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-fast) ease-in-out infinite;
+  opacity: 0;
+}
+
+/* Black: NORMAL=dark-grad, HOVER=blue-grad, FOCUS=ring */
+.bbf-btn-outline-black {
+  color: var(--bbf-text-on-sand);
+}
+
+.bbf-btn-outline-black::before {
+  background: var(--bbf-gradient-dark); /* dark sweep — normal border */
+  background-size: 300% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-fast) ease-in-out infinite;
+  opacity: 1;
+}
+
+.bbf-btn-outline-black::after {
+  background: var(--bbf-gradient-primary); /* blue — hover border */
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+  opacity: 0;
+}
+
+/* Red: NORMAL=red-grad border, HOVER=blue-grad border, FOCUS=ring */
+.bbf-btn-outline-red {
+  color: var(
+    --bbf-accent-red-accessible
+  ); /* #c0341d — sync con borde rojo (5.2:1 on sand — WCAG AA) */
+}
+
+.bbf-btn-outline-red::before {
+  background: var(--bbf-gradient-red); /* red→orange — normal border */
+  background-size: 200% 200%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+  opacity: 1;
+}
+
+.bbf-btn-outline-red::after {
+  background: var(--bbf-gradient-primary); /* blue — hover border */
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+  opacity: 0;
+}
+
+/* Secondary: ghost — sand-deep-shade border + text, emerges near-black on hover */
+.bbf-btn-outline-secondary {
+  color: var(--bbf-color-sand-deep-shade); /* #ebe3d4 — sync con borde (ghost sobre sand) */
+  border: var(--bbf-line-gradient-inset) solid var(--bbf-color-sand-deep-shade);
+}
+
+/* ============================================================
+   HOVER: primary text shifts dark; border swap primary/black/red
+   ============================================================ */
+@media (hover: hover) {
+  .bbf-btn-outline-primary:hover {
+    color: var(--bbf-text-on-sand);
+  }
+
+  .bbf-btn-outline-black:hover,
+  .bbf-btn-outline-red:hover {
+    color: var(--bbf-accent-blue); /* sincroniza con --bbf-gradient-primary hover border */
+  }
+
+  .bbf-btn-outline-primary:hover::before,
+  .bbf-btn-outline-black:hover::before,
+  .bbf-btn-outline-red:hover::before {
+    opacity: 0;
+  }
+
+  .bbf-btn-outline-primary:hover::after,
+  .bbf-btn-outline-black:hover::after,
+  .bbf-btn-outline-red:hover::after {
+    opacity: 1;
+  }
+
+  .bbf-btn-outline-secondary:hover {
+    border-color: var(--bbf-color-white);
+    color: var(--bbf-color-white);
+  }
+}
+
+/* ============================================================
+   FOCUS: pseudos fade — external CVA ring provides affordance
+   ============================================================ */
+.bbf-btn-outline-primary:focus-visible::before,
+.bbf-btn-outline-primary:focus-visible::after,
+.bbf-btn-outline-black:focus-visible::before,
+.bbf-btn-outline-black:focus-visible::after,
+.bbf-btn-outline-red:focus-visible::before,
+.bbf-btn-outline-red:focus-visible::after {
+  opacity: 0;
+}
+
+/* ============================================================
+   REDUCED MOTION (D-STATE-08)
+   --bbf-motion-state-duration-cta → 0ms via seed.
+   Stop gradient animations on pseudo-elements.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .bbf-btn-outline-primary::before,
+  .bbf-btn-outline-primary::after,
+  .bbf-btn-outline-black::before,
+  .bbf-btn-outline-black::after,
+  .bbf-btn-outline-red::before,
+  .bbf-btn-outline-red::after {
     animation: none;
     background-position: 0% 50%;
   }

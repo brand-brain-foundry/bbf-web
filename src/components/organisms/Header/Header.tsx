@@ -102,6 +102,7 @@ export async function Header({ className }: HeaderProps) {
               {headerCta && (
                 <Button
                   asChild
+                  fill={(headerCta.type as 'solid' | 'outline') ?? 'solid'}
                   intent={
                     (headerCta.intent as 'primary' | 'secondary' | 'black' | 'red') ?? 'primary'
                   }
@@ -132,6 +133,7 @@ export async function Header({ className }: HeaderProps) {
                     ? {
                         label: headerCta.label,
                         href: headerCtaHref, // L2: resuelto desde linkTarget
+                        fill: (headerCta.type as 'solid' | 'outline') ?? 'solid',
                         intent: headerCta.intent as
                           | 'primary'
                           | 'secondary'

@@ -6,7 +6,10 @@
  *   2. translate-y(-1px) lift
  *   3. shadow-md elevation
  *
- * Intents: primary (gradient red), secondary (black), outline (red border), ghost
+ * 2-ejes canon (D-STATE-04-2AXIS):
+ *   fill:   solid | outline  (default: solid)
+ *   intent: primary | black | secondary | red  (4 puros)
+ * Casos especiales fuera del 2-ejes: ghost, outline-dark
  * Shape: rounded-full (pill canon)
  */
 
@@ -25,46 +28,42 @@ export const buttonVariants = cva(
   ].join(' '),
   {
     variants: {
+      /* ── Eje 1: fill (D-STATE-04-2AXIS) ──────────────────────────────────
+         CSS class + shadow aplicados via compoundVariants.
+         Vacíos aquí — el compound maneja todo. */
+      fill: {
+        solid: '',
+        outline: '',
+      },
+
+      /* ── Eje 2: intent ────────────────────────────────────────────────────
+         4 intents canónicos comparten lift + active + ring.
+         shadow-sm/hover:shadow-md van en compoundVariants (outline×secondary
+         es sobrio, sin shadow — no es posible "quitar" desde base).
+         ghost y outline-dark: fuera del 2-ejes, sin compound fill×intent. */
       intent: {
-        /* D-STATE-04: 4 pure intents × solid (dual-layer via button.css).
-           CSS classes handle gradient swap; CVA adds layout + lift + ring. */
         primary: [
-          'bbf-btn-solid-primary' /* blue-grad normal → red-grad hover → blue-flat focus */,
-          'shadow-sm',
-          '[@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
+          '[@media(hover:hover)]:hover:-translate-y-px',
           'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
         black: [
-          'bbf-btn-solid-black' /* dark-grad normal → blue-grad hover → black-flat focus */,
-          'shadow-sm',
-          '[@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
+          '[@media(hover:hover)]:hover:-translate-y-px',
           'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
         secondary: [
-          'bbf-btn-solid-secondary' /* sand normal → sand-deep hover → white focus (sober) */,
-          'text-[var(--bbf-text-on-sand)]',
-          'shadow-sm',
-          '[@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
+          'text-[var(--bbf-text-on-sand)]' /* shared solid+outline; CSS ya lo setea en outline */,
+          '[@media(hover:hover)]:hover:-translate-y-px',
           'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
         red: [
-          'bbf-btn-solid-red' /* red-grad normal → blue-grad hover → red-flat focus */,
-          'shadow-sm',
-          '[@media(hover:hover)]:hover:-translate-y-px [@media(hover:hover)]:hover:shadow-md',
+          '[@media(hover:hover)]:hover:-translate-y-px',
           'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
-        outline: [
-          'text-[var(--bbf-accent-blue)]',
-          'bg-transparent',
-          'border-2 border-[var(--bbf-accent-blue)]',
-          '[@media(hover:hover)]:hover:bg-[var(--bbf-accent-blue)] [@media(hover:hover)]:hover:text-[var(--bbf-text-on-gradient-blue)] [@media(hover:hover)]:hover:-translate-y-px',
-          'active:scale-[0.97]',
-          'focus-visible:ring-[var(--bbf-color-focus-ring)]',
-        ].join(' '),
+        /* ── Casos especiales — NO parte del 2-ejes matrix ───────────────── */
         ghost: [
           'text-[var(--bbf-text-on-sand)]',
           'bg-transparent',
@@ -72,9 +71,8 @@ export const buttonVariants = cva(
           'active:scale-[0.97]',
           'focus-visible:ring-[var(--bbf-color-focus-ring)]',
         ].join(' '),
-        // D-S6-02 firmada: CTA outline sobre surface dark con hover border-gradient
-        // Hover Alt 1: border red gradient animado + texto sand sólido estable
-        // Técnica CSS en button.css — no expresable en Tailwind arbitrary
+        /* D-S6-02 firmada: CTA outline sobre surface dark con hover border-gradient
+           Diferido L-CASCADE — 1 consumer vivo (CierreSection.tsx) */
         'outline-dark': [
           'bbf-btn-outline-dark',
           'bg-transparent',
@@ -84,6 +82,7 @@ export const buttonVariants = cva(
           'focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-[var(--bbf-surface-dark-base)]',
         ].join(' '),
       },
+
       size: {
         xs: 'h-7  px-3  text-xs   gap-1.5',
         sm: 'h-9  px-4  text-sm   gap-1.5',
@@ -109,6 +108,84 @@ export const buttonVariants = cva(
       },
     },
     compoundVariants: [
+      /* ── SOLID × 4 intents ────────────────────────────────────────────────
+         Cada uno: clase CSS + shadow-sm + hover:shadow-md (elevación on hover) */
+      {
+        fill: 'solid',
+        intent: 'primary',
+        class: [
+          'bbf-btn-solid-primary' /* blue-grad normal → black-grad hover → blue-flat focus */,
+          'shadow-sm',
+          '[@media(hover:hover)]:hover:shadow-md',
+        ].join(' '),
+      },
+      {
+        fill: 'solid',
+        intent: 'black',
+        class: [
+          'bbf-btn-solid-black' /* dark-grad normal → blue-grad hover → black-flat focus */,
+          'shadow-sm',
+          '[@media(hover:hover)]:hover:shadow-md',
+        ].join(' '),
+      },
+      {
+        fill: 'solid',
+        intent: 'secondary',
+        class: [
+          'bbf-btn-solid-secondary' /* sand normal → sand-deep hover → white focus (sober) */,
+          'shadow-sm',
+          '[@media(hover:hover)]:hover:shadow-md',
+        ].join(' '),
+      },
+      {
+        fill: 'solid',
+        intent: 'red',
+        class: [
+          'bbf-btn-solid-red' /* red-grad normal → blue-grad hover → red-flat focus */,
+          'shadow-sm',
+          '[@media(hover:hover)]:hover:shadow-md',
+        ].join(' '),
+      },
+
+      /* ── OUTLINE × 4 intents ──────────────────────────────────────────────
+         primary/black/red: shadow-sm + hover:shadow-md (igual que solid).
+         secondary: sobrio — sin shadow (diseño intencional). */
+      {
+        fill: 'outline',
+        intent: 'primary',
+        class: [
+          'bbf-btn-outline-primary' /* blue-grad border normal → dark-grad hover → ring focus */,
+          'shadow-sm',
+          '[@media(hover:hover)]:hover:shadow-md',
+        ].join(' '),
+      },
+      {
+        fill: 'outline',
+        intent: 'black',
+        class: [
+          'bbf-btn-outline-black' /* dark-grad border normal → blue-grad hover */,
+          'shadow-sm',
+          '[@media(hover:hover)]:hover:shadow-md',
+        ].join(' '),
+      },
+      {
+        fill: 'outline',
+        intent: 'secondary',
+        class: 'bbf-btn-outline-secondary' /* sober — CSS border sand, sin shadow */,
+      },
+      {
+        fill: 'outline',
+        intent: 'red',
+        class: [
+          'bbf-btn-outline-red' /* dark/black-grad border 6s → blue-grad hover */,
+          'shadow-sm',
+          '[@media(hover:hover)]:hover:shadow-md',
+        ].join(' '),
+      },
+
+      /* ── Surface interactions ─────────────────────────────────────────────
+         ghost+dark/black: texto e hover ajustados a superficies oscuras.
+         fill:outline × intent:primary × surface:dark: ring border + bg-hover (diferido L-CASCADE). */
       {
         intent: 'ghost',
         surface: 'dark',
@@ -122,13 +199,15 @@ export const buttonVariants = cva(
           'text-[var(--bbf-text-on-black)] [@media(hover:hover)]:hover:bg-[var(--bbf-surface-black-elevated)]',
       },
       {
-        intent: 'outline',
+        fill: 'outline',
+        intent: 'primary',
         surface: 'dark',
         class:
           'border-[var(--bbf-border-on-dark)] text-[var(--bbf-text-on-dark)] [@media(hover:hover)]:hover:bg-[var(--bbf-surface-black-elevated)]',
       },
     ],
     defaultVariants: {
+      fill: 'solid',
       intent: 'primary',
       size: 'md',
       surface: 'auto',
