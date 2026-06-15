@@ -9,6 +9,7 @@ import { Container } from '@/components/atoms/Container';
 import { NewsletterBox } from '@/components/molecules/NewsletterBox';
 import { BrandLogo } from '@/components/atoms/BrandLogo';
 import { Badge } from '@/components/atoms/Badge';
+import { navLinkBaseVariants, navLinkUnderlineVariants } from '@/components/atoms/NavLink';
 import { cn } from '@/lib/utils';
 
 type FooterProps = {
@@ -178,14 +179,8 @@ export async function Footer({ className }: FooterProps) {
                     <Link
                       href={link.href}
                       className={cn(
-                        'group inline-flex items-center gap-2 py-1',
-                        'min-h-[44px] md:min-h-0',
-                        'text-[length:var(--bbf-text-body-sm)]',
-                        '[font-weight:var(--bbf-weight-regular)]',
-                        'text-[var(--bbf-text-on-sand)]',
-                        'transition-all duration-200 ease-out',
-                        '[@media(hover:hover)]:hover:translate-x-0.5 [@media(hover:hover)]:hover:text-[var(--bbf-accent-red)]',
-                        'focus-visible:translate-x-0.5 focus-visible:text-[var(--bbf-accent-red)] focus-visible:outline-none',
+                        navLinkBaseVariants({ active: false }),
+                        'min-h-[44px] gap-2 py-1 md:min-h-0',
                       )}
                     >
                       <span>{link.label}</span>
@@ -194,6 +189,11 @@ export async function Footer({ className }: FooterProps) {
                           {link.flag}
                         </Badge>
                       )}
+                      <span
+                        aria-hidden="true"
+                        style={{ bottom: 'calc(-1 * var(--bbf-nav-underline-offset))' }}
+                        className={navLinkUnderlineVariants({ active: false })}
+                      />
                     </Link>
                   </li>
                 ))}
