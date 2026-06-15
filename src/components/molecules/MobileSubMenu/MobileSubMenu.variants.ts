@@ -12,10 +12,10 @@ export const mobileSubMenuToggleVariants = cva([
   'group w-full',
   'flex items-center justify-between',
   'min-h-[44px] px-2 py-4',
-  'text-[length:var(--bbf-text-body-lg)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-text-on-sand)]',
+  'text-[length:var(--bbf-text-body-lg)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-on-surface-title)]',
   'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
-  '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
-  'focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
+  '[@media(hover:hover)]:hover:text-[var(--bbf-on-surface-link)]',
+  'focus-visible:text-[var(--bbf-on-surface-link)] focus-visible:outline-none',
 ]);
 
 export const mobileSubMenuPanelVariants = cva(
@@ -36,11 +36,11 @@ export const mobileSubMenuPanelVariants = cva(
 
 export const mobileSubMenuGeneralItemVariants = cva([
   'block min-h-[44px] px-2 py-3',
-  'text-[length:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-text-on-sand-muted)]',
-  'border-b border-[var(--bbf-border-on-sand)]/30',
+  'text-[length:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-on-surface-body)]',
+  'border-b border-[var(--bbf-on-surface-border)]/30',
   'transition-colors [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
-  '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
-  'focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
+  '[@media(hover:hover)]:hover:text-[var(--bbf-on-surface-link)]',
+  'focus-visible:text-[var(--bbf-on-surface-link)] focus-visible:outline-none',
 ]);
 
 export const mobileSubMenuCardVariants = cva([
@@ -48,16 +48,16 @@ export const mobileSubMenuCardVariants = cva([
   'min-h-[44px] px-2 py-3',
   '[border-radius:var(--bbf-radius-card)]',
   'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
-  '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-subtle-on-sand)]',
-  'focus-visible:bg-[var(--bbf-surface-hover-subtle-on-sand)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
+  '[@media(hover:hover)]:hover:bg-[var(--bbf-on-surface-hover-subtle-bg)]',
+  'focus-visible:bg-[var(--bbf-on-surface-hover-subtle-bg)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-on-surface-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
 ]);
 
 export const mobileSubMenuTitleVariants = cva(
   [
     'text-[length:var(--bbf-text-body-md)] [font-weight:var(--bbf-weight-medium)]',
-    'text-[var(--bbf-text-on-sand)]',
+    'text-[var(--bbf-on-surface-title)]',
     'transition-colors [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
-    '[@media(hover:hover)]:group-hover:text-[var(--bbf-accent-blue)] group-focus-visible:text-[var(--bbf-accent-blue)]',
+    '[@media(hover:hover)]:group-hover:text-[var(--bbf-on-surface-link)] group-focus-visible:text-[var(--bbf-on-surface-link)]',
   ],
   {
     variants: {

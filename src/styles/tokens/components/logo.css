@@ -125,6 +125,72 @@
 }
 
 /* ============================================================
+   LOGO HOVER GRADIENT — HORIZONTAL (D-STATE-03 extension, 2026-06-15)
+   Extiende el sistema de .bbf-logo--icon::after para la variante horizontal:
+     1. Ícono: ::after con mask SVG + gradient (mismo sistema que icon)
+     2. Nombre (.bbf-logo-name-text): background-clip:text en hover
+   Ambos triggereados por [data-component='bbf-brand-logo-link']:hover.
+   .bbf-logo--icon sin modificar — menú intacto.
+   ============================================================ */
+
+/* position:relative para anclar el ::after */
+.bbf-logo--horizontal {
+  position: relative;
+}
+
+/* Icon gradient overlay — cubre solo el área del ícono (left:0, tamaño = rendered) */
+.bbf-logo--horizontal::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--bbf-logo-rendered, 2.5rem);
+  height: var(--bbf-logo-rendered, 2.5rem);
+  background: var(--bbf-gradient-primary);
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+  mask-image: url('/assets/brand/logos/BBF-Logo-Icon.svg');
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url('/assets/brand/logos/BBF-Logo-Icon.svg');
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--bbf-motion-state-duration-logo) var(--bbf-motion-state-easing);
+}
+
+@media (hover: hover) {
+  [data-component='bbf-brand-logo-link']:hover .bbf-logo--horizontal::after {
+    opacity: 1;
+  }
+}
+
+/* Nombre: gradient via background-clip:text en hover */
+@media (hover: hover) {
+  [data-component='bbf-brand-logo-link']:hover .bbf-logo--horizontal .bbf-logo-name-text {
+    background: var(--bbf-gradient-primary);
+    background-size: 200% 100%;
+    animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-logo--horizontal::after {
+    animation: none;
+  }
+
+  [data-component='bbf-brand-logo-link']:hover .bbf-logo--horizontal .bbf-logo-name-text {
+    animation: none;
+  }
+}
+
+/* ============================================================
    VARIANT: name-only (solo nombre)
    ============================================================ */
 .bbf-logo--name-only {

@@ -59,7 +59,7 @@ export function MobileSubMenu({
   return (
     <div
       data-component="bbf-mobile-submenu"
-      className="border-b border-[var(--bbf-border-on-sand)]/40"
+      className="border-b border-[var(--bbf-on-surface-border)]/40"
     >
       <button
         type="button"
@@ -102,7 +102,7 @@ export function MobileSubMenu({
                 className={mobileSubMenuCardVariants()}
               >
                 {hasMedia && sub.mediaType === 'image' && (
-                  <div className="h-16 w-16 shrink-0 overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-surface-hover-on-sand)]">
+                  <div className="h-16 w-16 shrink-0 overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-on-surface-hover-bg)]">
                     <Image
                       src={sub.media!.url!}
                       alt={sub.media!.alt ?? sub.label}
@@ -113,7 +113,7 @@ export function MobileSubMenu({
                   </div>
                 )}
                 {hasMedia && sub.mediaType === 'video' && (
-                  <div className="h-16 w-16 shrink-0 overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-surface-hover-on-sand)]">
+                  <div className="h-16 w-16 shrink-0 overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-on-surface-hover-bg)]">
                     <video
                       src={sub.media!.url!}
                       autoPlay
@@ -134,7 +134,7 @@ export function MobileSubMenu({
                     {sub.label}
                   </span>
                   {sub.description && (
-                    <span className="text-[length:var(--bbf-text-xs)] leading-[var(--bbf-leading-snug)] text-[var(--bbf-text-on-sand-muted)]">
+                    <span className="text-[length:var(--bbf-text-xs)] leading-[var(--bbf-leading-snug)] text-[var(--bbf-on-surface-body)]">
                       {sub.description}
                     </span>
                   )}

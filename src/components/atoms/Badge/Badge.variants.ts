@@ -2,7 +2,7 @@
  * BBF Badge atom variants — CVA canon (TD-11-14)
  *
  * Decisiones: D-BBF-KB-118 (vercel-style flag)
- * Tokens: borde 1px + rounded-md + uppercase tracking-wider
+ * Tokens: borde 1px + radius-pill + uppercase tracking-wider
  * Sin hover state — decorativo (label/flag indicator)
  * D-BBF-WEB-AA: [font-weight:var()] pattern aplicado
  */
@@ -21,15 +21,15 @@ export const badgeVariants = cva(
   {
     variants: {
       intent: {
-        default: 'border-[var(--bbf-border-on-sand)] text-[var(--bbf-text-on-sand-muted)]',
+        default: 'border-[var(--bbf-on-surface-border)] text-[var(--bbf-on-surface-body)]',
         accent: 'border-[var(--bbf-accent-blue)] text-[var(--bbf-accent-blue-hover)]',
         success: 'border-[var(--bbf-color-success-border)] text-[var(--bbf-color-success-text)]',
         beta: 'border-[var(--bbf-accent-blue)] text-[var(--bbf-accent-blue-active)]',
       },
       size: {
-        xs: 'text-[9px] leading-none px-1 py-[2px] tracking-normal',
-        sm: 'text-[length:var(--bbf-text-xs)] px-1.5 py-0.5 tracking-wider',
-        md: 'text-[length:var(--bbf-text-body-sm)] px-2 py-1 tracking-wider',
+        xs: '[font-size:var(--bbf-text-micro)] leading-none px-1 py-[2px] tracking-normal',
+        sm: '[font-size:var(--bbf-text-xs)] px-1.5 py-0.5 tracking-wider',
+        md: '[font-size:var(--bbf-text-body-sm)] px-2 py-1 tracking-wider',
       },
     },
     defaultVariants: {

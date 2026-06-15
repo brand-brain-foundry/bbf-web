@@ -17,11 +17,11 @@ type BadgeProps = HTMLAttributes<HTMLSpanElement> &
  *   - beta:    blue border + blue text
  *
  * Sizes:
- *   - xs: 9px px-1 py-[2px]
+ *   - xs: micro (10px) px-1 py-[2px]
  *   - sm: text-xs (12px) px-1.5 py-0.5
  *   - md: text-sm (14px) px-2 py-1
  *
- * Border 1px, rounded-md (8px), uppercase tracking-wider.
+ * Border 1px, radius-pill, uppercase tracking-wider.
  * Decorativo — sin hover state (label/flag indicator).
  */
 export function Badge({ intent, size, className, children, ...rest }: BadgeProps) {

@@ -80,10 +80,11 @@ export async function Header({ className }: HeaderProps) {
       <SkipLink />
       <div className="bbf-container-wide pointer-events-auto mx-auto box-border px-3 pt-3 sm:px-4 sm:pt-4 lg:px-6">
         <div
+          data-surface="sand"
           className={cn(
             'mx-auto [border-radius:var(--bbf-radius-floating)]',
-            'bg-[var(--bbf-surface-sand)]/95 backdrop-blur-xl',
-            'border border-[var(--bbf-border-on-sand)]',
+            'bg-[var(--bbf-on-surface-bg)]/95 backdrop-blur-xl',
+            'border border-[var(--bbf-on-surface-border)]',
             '[box-shadow:var(--bbf-shadow-floating)]',
           )}
         >

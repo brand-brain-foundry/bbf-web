@@ -126,11 +126,12 @@ export function MobileMenu({ links, cta, siteName = 'BBF' }: MobileMenuProps) {
           aria-label="Menú móvil"
           aria-hidden={!isOpen}
           data-component="bbf-mobile-menu-panel"
+          data-surface="sand"
           className={mobileMenuPanelVariants({ open: isOpen })}
         >
           {/* Panel header */}
-          <div className="flex items-center justify-between border-b border-[var(--bbf-border-on-sand)] px-6 py-5">
-            <span className="text-[length:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-bold)] text-[var(--bbf-text-on-sand)]">
+          <div className="flex items-center justify-between border-b border-[var(--bbf-on-surface-border)] px-6 py-5">
+            <span className="text-[length:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-bold)] text-[var(--bbf-on-surface-title)]">
               {siteName}
             </span>
             <button

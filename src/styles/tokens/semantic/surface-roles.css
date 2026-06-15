@@ -6,7 +6,8 @@
  * Depende de: semantic/colors.css, semantic/colors-warm.css, semantic/colors-dark.css
  *
  * 4 surfaces live: sand | warm | dark | white
- * 8 roles por surface: title, body, muted, link, link-hover, accent, border, highlight
+ * 15 roles por surface: title, body, muted, link, link-hover, accent, border, highlight, bg,
+ *   hover-bg, hover-subtle-bg, input-bg, input-border, focus-ring, divider
  *
  * Tabla Op-A firmada Zavala 2026-06-13:
  *   sand:  title=#000000, body=#1a1a1a, muted=#666666
@@ -14,6 +15,27 @@
  *   dark:  title=#f5f3ed, body=#a8a59f, muted=#a8a59f, accent=#ff5949 (OBS-2)
  *   white: hereda tabla sand (mismos contrastes WCAG)
  */
+
+/* ── ROOT DEFAULTS — fallback sand (componentes sin data-surface) ── */
+:root {
+  /* 9 roles originales (D-DS-12) */
+  --bbf-on-surface-bg: var(--bbf-surface-sand);
+  --bbf-on-surface-title: var(--bbf-text-on-sand);
+  --bbf-on-surface-body: var(--bbf-text-on-sand-muted);
+  --bbf-on-surface-muted: var(--bbf-text-on-sand-subtle);
+  --bbf-on-surface-link: var(--bbf-accent-on-sand);
+  --bbf-on-surface-link-hover: var(--bbf-accent-blue-hover);
+  --bbf-on-surface-accent: var(--bbf-accent-red);
+  --bbf-on-surface-border: var(--bbf-border-on-sand);
+  --bbf-on-surface-highlight: var(--bbf-border-subtle-on-sand);
+  /* 6 roles nuevos (D-SURFACE-MIGRATE) */
+  --bbf-on-surface-hover-bg: var(--bbf-surface-hover-on-sand);
+  --bbf-on-surface-hover-subtle-bg: var(--bbf-surface-hover-subtle-on-sand);
+  --bbf-on-surface-input-bg: var(--bbf-surface-white);
+  --bbf-on-surface-input-border: var(--bbf-border-on-light-strong);
+  --bbf-on-surface-focus-ring: var(--bbf-color-focus-ring);
+  --bbf-on-surface-divider: var(--bbf-line-color-divider);
+}
 
 /* ── SAND — BG #fdf5ed ── */
 [data-surface='sand'] {
@@ -26,6 +48,12 @@
   --bbf-on-surface-accent: var(--bbf-accent-red);
   --bbf-on-surface-border: var(--bbf-border-on-sand);
   --bbf-on-surface-highlight: var(--bbf-border-subtle-on-sand);
+  --bbf-on-surface-hover-bg: var(--bbf-surface-hover-on-sand);
+  --bbf-on-surface-hover-subtle-bg: var(--bbf-surface-hover-subtle-on-sand);
+  --bbf-on-surface-input-bg: var(--bbf-surface-white);
+  --bbf-on-surface-input-border: var(--bbf-border-on-light-strong);
+  --bbf-on-surface-focus-ring: var(--bbf-color-focus-ring);
+  --bbf-on-surface-divider: var(--bbf-line-color-divider);
 }
 
 /* ── WARM — BG #fafaf7 ── */
@@ -39,6 +67,12 @@
   --bbf-on-surface-accent: var(--bbf-text-on-warm-accent);
   --bbf-on-surface-border: var(--bbf-border-on-warm);
   --bbf-on-surface-highlight: var(--bbf-surface-warm-highlight);
+  --bbf-on-surface-hover-bg: var(--bbf-surface-warm-hover);
+  --bbf-on-surface-hover-subtle-bg: var(--bbf-surface-warm-elevated-hover);
+  --bbf-on-surface-input-bg: var(--bbf-surface-warm-input);
+  --bbf-on-surface-input-border: var(--bbf-border-on-warm-strong);
+  --bbf-on-surface-focus-ring: var(--bbf-focus-ring-on-warm);
+  --bbf-on-surface-divider: var(--bbf-border-on-warm);
 }
 
 /* ── DARK — BG #0a0a0a (D-CASO-3 canónico, D-DS-10-B) ── */
@@ -52,6 +86,16 @@
   --bbf-on-surface-accent: var(--bbf-accent-red); /* OBS-2: rojo ≠ azul link */
   --bbf-on-surface-border: var(--bbf-border-on-dark-surface);
   --bbf-on-surface-highlight: var(--bbf-highlight-on-dark-surface); /* D-DS-17 */
+  --bbf-on-surface-hover-bg: var(--bbf-surface-dark-elevated);
+  --bbf-on-surface-hover-subtle-bg: var(
+    --bbf-surface-dark-elevated
+  ); /* D-SURFACE-REVIEW: colapsa con hover-bg — firmar si es graduación */
+  --bbf-on-surface-input-bg: var(--bbf-surface-dark-elevated);
+  --bbf-on-surface-input-border: var(
+    --bbf-text-on-dark-surface-muted
+  ); /* #a8a59f — WCAG 3:1 (P3) */
+  --bbf-on-surface-focus-ring: var(--bbf-focus-ring-on-dark-surface);
+  --bbf-on-surface-divider: var(--bbf-border-on-dark-surface);
 }
 
 /* ── WHITE — BG #ffffff ── */
@@ -65,4 +109,12 @@
   --bbf-on-surface-accent: var(--bbf-accent-red);
   --bbf-on-surface-border: var(--bbf-border-on-sand);
   --bbf-on-surface-highlight: var(--bbf-surface-sand);
+  --bbf-on-surface-hover-bg: var(--bbf-surface-hover-on-sand);
+  --bbf-on-surface-hover-subtle-bg: var(--bbf-surface-hover-subtle-on-sand);
+  --bbf-on-surface-input-bg: var(
+    --bbf-surface-sand
+  ); /* P2: sand-100 sobre white = contraste mínimo */
+  --bbf-on-surface-input-border: var(--bbf-border-on-light-strong);
+  --bbf-on-surface-focus-ring: var(--bbf-color-focus-ring);
+  --bbf-on-surface-divider: var(--bbf-border-on-sand);
 }

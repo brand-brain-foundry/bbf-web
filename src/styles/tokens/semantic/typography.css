@@ -209,6 +209,12 @@
    * --bbf-typography-lead-* → usar --bbf-typography-body-lg-* o body-lg token directo
    * --bbf-typography-small-* → usar --bbf-typography-body-sm-* o body-sm token directo
    * --bbf-typography-micro-* → usar --bbf-text-micro + --bbf-weight-medium directo */
+
+  /* ============================================================
+     LEGAL / MICRO — rol semántico para copyright y texto legal
+     Tier 2: micro size = 0.625rem (10px). Consumer: Footer copyright.
+     ============================================================ */
+  --bbf-text-legal: var(--bbf-text-micro); /* 10px — copyright / legal notices */
 }
 
 /* Mobile typography adjustments (D-BBF-KB-105 — ratio 1.333 < 640px) */

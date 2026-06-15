@@ -24,10 +24,23 @@ export interface BrandLogoLinkProps {
   /** Aria label completo: e.g. "Sivar Brains — Ir al inicio" */
   ariaLabel: string;
   className?: string;
+  /** Si se provee, usa este variant en lugar del admin logoVariant.
+   *  Footer lo necesita para forzar horizontal (icon+name).
+   *  Header no lo usa → comportamiento actual intacto. */
+  variantOverride?: 'icon' | 'horizontal' | 'stamp' | 'name-only';
+  /** Nombre del sitio; solo relevante con variant horizontal o name-only. */
+  name?: string;
 }
 
-export async function BrandLogoLink({ locale, ariaLabel, className }: BrandLogoLinkProps) {
+export async function BrandLogoLink({
+  locale,
+  ariaLabel,
+  className,
+  variantOverride,
+  name,
+}: BrandLogoLinkProps) {
   const bs = await getBrandSystem();
+  const logoVariant = variantOverride ?? bs.logoVariant;
   const homeHref = getPathname({ locale, href: '/' });
 
   return (
@@ -37,13 +50,13 @@ export async function BrandLogoLink({ locale, ariaLabel, className }: BrandLogoL
       data-component="bbf-brand-logo-link"
       className={cn(
         'inline-flex shrink-0 items-center',
-        'text-[var(--bbf-text-on-sand)]',
+        'text-[var(--bbf-on-surface-title)]',
         '[transition:color_var(--bbf-motion-state-duration-logo)_var(--bbf-motion-state-easing)]',
         '[@media(hover:hover)]:hover:text-transparent',
         className,
       )}
     >
-      <BrandLogo variant={bs.logoVariant} size="sm" aria-hidden />
+      <BrandLogo variant={logoVariant} name={name} size="sm" aria-hidden />
     </Link>
   );
 }

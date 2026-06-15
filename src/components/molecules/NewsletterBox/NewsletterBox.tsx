@@ -68,7 +68,7 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
         data-component="bbf-newsletter-box"
         data-state="success"
         className={cn(
-          '[border-radius:var(--bbf-radius-2xl)] p-5',
+          '[border-radius:var(--bbf-radius-notification)] p-5',
           'bg-[var(--bbf-color-success-bg)]',
           'border border-[var(--bbf-color-success-border)]',
           className,
@@ -101,7 +101,7 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
         <Heading level="h2" weight="bold" tone="default" asChild>
           <p>{copy.title}</p>
         </Heading>
-        <Text variant="body-sm" className="text-[var(--bbf-text-on-sand-muted)]">
+        <Text variant="body-sm" className="text-[var(--bbf-on-surface-body)]">
           {copy.description}
         </Text>
       </div>
@@ -121,14 +121,14 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
             disabled={state.kind === 'submitting'}
             aria-invalid={state.kind === 'error' ? 'true' : undefined}
             className={cn(
-              'h-12 w-full rounded-full px-5',
-              'text-[length:var(--bbf-text-body-md)]',
-              'bg-[var(--bbf-surface-white)]',
-              'border border-[var(--bbf-border-on-light-strong)]',
-              'text-[var(--bbf-text-on-sand)] placeholder:text-[var(--bbf-text-on-sand-subtle)]',
-              'transition-all duration-200 ease-out',
-              'focus:border-[var(--bbf-accent-blue)] focus:ring-2 focus:ring-[var(--bbf-color-focus-ring)] focus:ring-offset-2 focus:ring-offset-[var(--bbf-surface-sand)] focus:outline-none',
-              'disabled:cursor-not-allowed disabled:opacity-60',
+              'h-12 w-full [border-radius:var(--bbf-radius-interactive)] px-5',
+              '[font-size:var(--bbf-text-body-md)]',
+              'bg-[var(--bbf-on-surface-input-bg)]',
+              'border border-[var(--bbf-on-surface-input-border)]',
+              'text-[var(--bbf-on-surface-title)] placeholder:text-[var(--bbf-on-surface-muted)]',
+              'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
+              'focus:border-[var(--bbf-accent-blue)] focus:ring-2 focus:ring-[var(--bbf-on-surface-focus-ring)] focus:ring-offset-2 focus:ring-offset-[var(--bbf-on-surface-bg)] focus:outline-none',
+              'disabled:cursor-not-allowed disabled:[opacity:var(--bbf-opacity-dim)]',
             )}
           />
           <Button
@@ -142,13 +142,13 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
           </Button>
         </div>
 
-        <Text variant="caption" as="p" className="text-[var(--bbf-text-on-sand-subtle)]">
+        <Text variant="caption" as="p" className="text-[var(--bbf-on-surface-muted)]">
           {copy.privacyNote}
         </Text>
 
         {state.kind === 'error' && (
           <p
-            className="text-[length:var(--bbf-text-body-sm)] text-[var(--bbf-color-error-text)]"
+            className="[font-size:var(--bbf-text-body-sm)] text-[var(--bbf-color-error-text)]"
             role="alert"
             aria-live="assertive"
           >

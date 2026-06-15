@@ -54,4 +54,11 @@
      D-RADIUS-SCALE · Opción B: intención distinta de card contenido.
      ============================================================ */
   --bbf-radius-floating: var(--bbf-radius-xl); /* 16px — floating containers */
+
+  /* ============================================================
+     NOTIFICATION — success/error/info state containers
+     Newsletter success box, toast, alert panels (24px).
+     Consumer: NewsletterBox success state.
+     ============================================================ */
+  --bbf-radius-notification: var(--bbf-radius-2xl); /* 24px — notification panels */
 }

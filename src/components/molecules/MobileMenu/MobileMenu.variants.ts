@@ -12,11 +12,11 @@ export const mobileMenuIconButtonVariants = cva(
   [
     'inline-flex items-center justify-center',
     '[border-radius:var(--bbf-radius-interactive)]',
-    'text-[var(--bbf-text-on-sand)]',
+    'text-[var(--bbf-on-surface-title)]',
     'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
-    '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-on-sand)]',
+    '[@media(hover:hover)]:hover:bg-[var(--bbf-on-surface-hover-bg)]',
     'active:scale-95',
-    'focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:outline-none',
+    'focus-visible:ring-2 focus-visible:ring-[var(--bbf-on-surface-focus-ring)] focus-visible:ring-offset-2 focus-visible:outline-none',
   ],
   {
     variants: {
@@ -50,7 +50,7 @@ export const mobileMenuPanelVariants = cva(
   [
     'fixed top-0 right-0 z-[var(--bbf-z-drawer-panel)] lg:hidden',
     'h-[100dvh] w-[85vw] max-w-[380px]',
-    'bg-[var(--bbf-surface-sand)]',
+    'bg-[var(--bbf-on-surface-bg)]',
     'flex flex-col',
     'overflow-y-auto overscroll-contain',
     'transition-transform [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
@@ -67,11 +67,11 @@ export const mobileMenuPanelVariants = cva(
 );
 
 export const mobileMenuItemVariants = cva([
-  'group block min-h-[44px] border-b border-[var(--bbf-border-on-sand)]/40 px-2 py-4',
-  'text-[length:var(--bbf-text-body-lg)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-text-on-sand)]',
+  'group block min-h-[44px] border-b border-[var(--bbf-on-surface-border)]/40 px-2 py-4',
+  'text-[length:var(--bbf-text-body-lg)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-on-surface-title)]',
   'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
-  '[@media(hover:hover)]:hover:translate-x-1 [@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
-  'focus-visible:translate-x-1 focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
+  '[@media(hover:hover)]:hover:translate-x-1 [@media(hover:hover)]:hover:text-[var(--bbf-on-surface-link)]',
+  'focus-visible:translate-x-1 focus-visible:text-[var(--bbf-on-surface-link)] focus-visible:outline-none',
 ]);
 
 export type MobileMenuIconButtonVariants = VariantProps<typeof mobileMenuIconButtonVariants>;

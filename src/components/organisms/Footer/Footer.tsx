@@ -6,8 +6,9 @@ import { getSiteIdentity } from '@/config/site';
 import { interpolate } from '@/lib/content-interpolation';
 import { resolveLinkHref } from '@/lib/nav/resolveLinkHref';
 import { Container } from '@/components/atoms/Container';
+import { Text } from '@/components/atoms/Text';
 import { NewsletterBox } from '@/components/molecules/NewsletterBox';
-import { BrandLogo } from '@/components/atoms/BrandLogo';
+import { BrandLogoLink } from '@/components/molecules/BrandLogoLink';
 import { Badge } from '@/components/atoms/Badge';
 import { navLinkBaseVariants, navLinkUnderlineVariants } from '@/components/atoms/NavLink';
 import { cn } from '@/lib/utils';
@@ -22,12 +23,12 @@ type FlagVariant = 'default' | 'accent' | 'success' | 'beta';
  * BBF Footer — canon Vercel-style (D-BBF-KB-120)
  *
  * DESKTOP:
- *   Col 1 (2fr): Brand identity — stamp animated + site name + tagline + desc
+ *   Col 1 (1.4fr): Brand identity — stamp animated + site name + tagline + desc
  *   Cols 2..N (1fr each): footerGroups (groupTitle + links + optional badges)
- *   Col last (1.5fr): Newsletter
+ *   Col last (1.4fr): Newsletter
  *
  * MOBILE:
- *   Stack vertical: Brand → Newsletter → Groups → Copyright
+ *   Stack vertical: Newsletter → Brand → Groups → Copyright
  *
  * Tipografía canon:
  *   Site name:   text-base bold (reducido desde h2 — D-BBF-KB-120)
@@ -35,7 +36,7 @@ type FlagVariant = 'default' | 'accent' | 'success' | 'beta';
  *   Desc:        text-sm muted
  *   Group title: text-xs bold uppercase tracking-wider muted
  *   Link:        text-sm regular
- *   Copyright:   text-micro muted
+ *   Copyright:   text-legal muted (--bbf-text-legal = text-micro semantic role)
  */
 export async function Footer({ className }: FooterProps) {
   const locale = await getLocale();
@@ -78,10 +79,11 @@ export async function Footer({ className }: FooterProps) {
   return (
     <footer
       data-component="bbf-footer"
+      data-surface="sand"
       className={cn(
         'bbf-section-mt-default lg:bbf-section-mt-xl',
-        'bg-[var(--bbf-surface-sand)]',
-        'border-t border-[var(--bbf-border-on-sand)]',
+        'bg-[var(--bbf-on-surface-bg)]',
+        'border-t border-[var(--bbf-on-surface-divider)]',
         className,
       )}
     >
@@ -103,40 +105,25 @@ export async function Footer({ className }: FooterProps) {
         >
           {/* Col 1: Brand identity */}
           <div className="order-2 flex flex-col gap-3 md:order-1 md:gap-4">
-            <BrandLogo
-              variant="horizontal"
-              name={siteName}
+            <BrandLogoLink
+              locale={localeKey}
               ariaLabel={siteName}
-              size="sm"
-              className="text-[var(--bbf-text-on-sand)]"
+              variantOverride="horizontal"
+              name={siteName}
             />
             {tagline && (
-              <p
-                className={cn(
-                  'text-[length:var(--bbf-text-body-sm)]',
-                  'leading-[var(--bbf-leading-base)]',
-                  '[font-weight:var(--bbf-weight-medium)]',
-                  'text-[var(--bbf-text-on-sand)]',
-                )}
-              >
+              <Text variant="body-sm" weight="bold" tone="default">
                 {tagline}
-              </p>
+              </Text>
             )}
             {shortDescription && (
-              <p
-                className={cn(
-                  'text-[length:var(--bbf-text-body-sm)]',
-                  'leading-[var(--bbf-leading-snug-small)]',
-                  'text-[var(--bbf-text-on-sand-muted)]',
-                  'max-w-xs',
-                )}
-              >
+              <Text variant="body-sm" tone="muted" className="max-w-xs">
                 {shortDescription}
-              </p>
+              </Text>
             )}
           </div>
 
-          {/* Newsletter — order-2 mobile, last desktop */}
+          {/* Newsletter — order-1 mobile, last desktop */}
           {newsletter.enabled && (
             <div className="order-1 md:order-last">
               <NewsletterBox
@@ -161,18 +148,9 @@ export async function Footer({ className }: FooterProps) {
               className="order-3 flex flex-col gap-3 md:order-2"
               aria-label={group.groupTitle}
             >
-              <p
-                className={cn(
-                  '[font-family:var(--bbf-font-display)]',
-                  'text-[length:var(--bbf-text-xs)]',
-                  'tracking-[var(--bbf-tracking-wider)]',
-                  'uppercase',
-                  '[font-weight:var(--bbf-weight-bold)]',
-                  'text-[var(--bbf-text-on-sand-muted)]',
-                )}
-              >
+              <Text variant="eyebrow" tone="muted">
                 {group.groupTitle}
-              </p>
+              </Text>
               <ul className="flex flex-col gap-2">
                 {group.links.map((link, lidx) => (
                   <li key={`${link.href}-${lidx}`}>
@@ -203,8 +181,8 @@ export async function Footer({ className }: FooterProps) {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col gap-2 border-t border-[var(--bbf-border-on-sand)]/40 pt-6 md:flex-row md:items-center md:justify-between">
-          <p className="text-[length:var(--bbf-text-micro)] text-[var(--bbf-text-on-sand-subtle)]">
+        <div className="flex flex-col gap-2 border-t border-[var(--bbf-on-surface-divider)]/40 pt-6 md:flex-row md:items-center md:justify-between">
+          <p className="[font-size:var(--bbf-text-legal)] text-[var(--bbf-on-surface-muted)]">
             © {year} {siteName}. {t('rights')}
           </p>
         </div>

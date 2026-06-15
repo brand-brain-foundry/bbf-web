@@ -14,16 +14,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const navLinkBaseVariants = cva(
   [
     'group relative inline-flex items-center gap-1',
-    'text-[length:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-medium)]',
-    'text-[var(--bbf-text-on-sand)]',
+    '[font-size:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-medium)]',
+    'text-[var(--bbf-on-surface-title)]',
     'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
-    '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
-    'focus-visible:outline-none focus-visible:text-[var(--bbf-accent-blue)]',
+    '[@media(hover:hover)]:hover:text-[var(--bbf-on-surface-link)]',
+    'focus-visible:outline-none focus-visible:text-[var(--bbf-on-surface-link)]',
   ],
   {
     variants: {
       active: {
-        true: 'text-[var(--bbf-accent-blue)]',
+        true: 'text-[var(--bbf-on-surface-link)]',
         false: '',
       },
     },
@@ -38,7 +38,7 @@ export type NavLinkBaseVariants = VariantProps<typeof navLinkBaseVariants>;
 export const navLinkUnderlineVariants = cva(
   [
     'absolute left-0 h-px',
-    'bg-[var(--bbf-accent-blue)]',
+    'bg-[var(--bbf-on-surface-link)]',
     'transition-all [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
   ],
   {

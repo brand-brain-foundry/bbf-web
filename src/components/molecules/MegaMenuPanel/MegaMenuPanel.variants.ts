@@ -14,16 +14,16 @@ export const megaMenuItemVariants = cva([
   '[border-radius:var(--bbf-radius-card)]',
   'bg-transparent',
   'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
-  '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-subtle-on-sand)]',
-  'focus-visible:bg-[var(--bbf-surface-hover-subtle-on-sand)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
+  '[@media(hover:hover)]:hover:bg-[var(--bbf-on-surface-hover-subtle-bg)]',
+  'focus-visible:bg-[var(--bbf-on-surface-hover-subtle-bg)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-on-surface-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
 ]);
 
 export const megaMenuTitleVariants = cva(
   [
     'text-[length:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-semibold)]',
-    'text-[var(--bbf-text-on-sand)]',
+    'text-[var(--bbf-on-surface-title)]',
     'transition-colors [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
-    '[@media(hover:hover)]:group-hover:text-[var(--bbf-accent-blue)] group-focus-visible:text-[var(--bbf-accent-blue)]',
+    '[@media(hover:hover)]:group-hover:text-[var(--bbf-on-surface-link)] group-focus-visible:text-[var(--bbf-on-surface-link)]',
   ],
   {
     variants: {
@@ -39,7 +39,7 @@ export const megaMenuTitleVariants = cva(
 export const megaMenuDescriptionVariants = cva([
   'text-[length:var(--bbf-text-xs)]',
   'leading-[var(--bbf-leading-snug)]',
-  'text-[var(--bbf-text-on-sand-muted)]',
+  'text-[var(--bbf-on-surface-body)]',
 ]);
 
 export type MegaMenuTitleVariants = VariantProps<typeof megaMenuTitleVariants>;

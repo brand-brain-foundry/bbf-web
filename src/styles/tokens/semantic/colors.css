@@ -240,4 +240,9 @@
   --bbf-text-warning: var(--bbf-color-warning-700);
   --bbf-text-error: var(--bbf-color-error-700);
   --bbf-text-info: var(--bbf-color-info-700);
+
+  /* ============================================================
+     OPACITY — roles semánticos para transparencia
+     ============================================================ */
+  --bbf-opacity-dim: 0.6; /* disabled / suppressed state. Consumer: NewsletterBox input. */
 }

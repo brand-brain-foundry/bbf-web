@@ -85,6 +85,7 @@ export function MegaMenuPanel({
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           data-component="bbf-mega-menu-panel"
+          data-surface="sand"
           layout={!prefersReducedMotion}
           initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -101,8 +102,8 @@ export function MegaMenuPanel({
             'absolute top-[calc(100%+0.5rem)] right-0 left-0',
             'z-[var(--bbf-z-mega-menu)]',
             '[border-radius:var(--bbf-radius-floating)]',
-            'bg-[var(--bbf-surface-sand)]',
-            '[border:1px_solid_var(--bbf-border-on-sand)]',
+            'bg-[var(--bbf-on-surface-bg)]',
+            '[border:1px_solid_var(--bbf-on-surface-border)]',
             '[box-shadow:var(--bbf-shadow-floating)]',
             'overflow-hidden',
           )}
@@ -136,7 +137,7 @@ export function MegaMenuPanel({
                     className={megaMenuItemVariants()}
                   >
                     {hasMedia && sub.mediaType === 'image' && (
-                      <div className="mb-3 aspect-[16/9] overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-surface-hover-on-sand)]">
+                      <div className="mb-3 aspect-[16/9] overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-on-surface-hover-bg)]">
                         <Image
                           src={sub.media!.url!}
                           alt={sub.media!.alt ?? sub.label}
@@ -147,7 +148,7 @@ export function MegaMenuPanel({
                       </div>
                     )}
                     {hasMedia && sub.mediaType === 'video' && (
-                      <div className="mb-3 aspect-[16/9] overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-surface-hover-on-sand)]">
+                      <div className="mb-3 aspect-[16/9] overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-on-surface-hover-bg)]">
                         <video
                           src={sub.media!.url!}
                           autoPlay

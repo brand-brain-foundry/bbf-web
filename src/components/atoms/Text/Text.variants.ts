@@ -60,6 +60,26 @@ export const textVariants = cva(
           '[font-weight:var(--bbf-typography-tagline-weight)]',
           '[font-family:var(--bbf-typography-tagline-font)]',
         ].join(' '),
+        /* ── EYEBROW: una intención, familia como variante ──────────
+         *  eyebrow         → font-display (footer nav groups, default)
+         *  eyebrow-mono    → font-mono    (SectionHeader §N — migra al llegar)
+         *  Ambas: xs + tracking-wider + uppercase + bold (rol invariante).
+         *  Consumer actual: Footer group title (eyebrow display).
+         *  Future: SectionHeader usará eyebrow-mono al migrar. */
+        eyebrow: [
+          '[font-family:var(--bbf-font-display)]',
+          '[font-size:var(--bbf-text-xs)]',
+          'tracking-[var(--bbf-tracking-wider)]',
+          'uppercase',
+          '[font-weight:var(--bbf-weight-bold)]',
+        ].join(' '),
+        'eyebrow-mono': [
+          '[font-family:var(--bbf-font-mono)]',
+          '[font-size:var(--bbf-text-xs)]',
+          'tracking-[var(--bbf-tracking-wider)]',
+          'uppercase',
+          '[font-weight:var(--bbf-weight-bold)]',
+        ].join(' '),
       },
       // === tone: Wave 5 semantic colors (D-BBF-KB-104) ===
       tone: {
