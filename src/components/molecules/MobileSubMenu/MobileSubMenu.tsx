@@ -69,7 +69,7 @@ export function MobileSubMenu({
         <ChevronDown
           aria-hidden="true"
           className={cn(
-            'h-4 w-4 transition-transform duration-200 ease-out',
+            'h-4 w-4 transition-transform [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
             isOpen && 'rotate-180',
           )}
         />
@@ -105,7 +105,7 @@ export function MobileSubMenu({
                       alt={sub.media!.alt ?? sub.label}
                       width={64}
                       height={64}
-                      className="h-full w-full object-cover transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:scale-105"
+                      className="h-full w-full object-cover transition-transform [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)] [@media(hover:hover)]:group-hover:scale-105"
                     />
                   </div>
                 )}

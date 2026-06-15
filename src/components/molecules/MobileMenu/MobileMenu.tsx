@@ -125,6 +125,7 @@ export function MobileMenu({ links, cta, siteName = 'BBF' }: MobileMenuProps) {
           aria-modal="true"
           aria-label="Menú móvil"
           aria-hidden={!isOpen}
+          data-component="bbf-mobile-menu-panel"
           className={mobileMenuPanelVariants({ open: isOpen })}
         >
           {/* Panel header */}
@@ -171,7 +172,7 @@ export function MobileMenu({ links, cta, siteName = 'BBF' }: MobileMenuProps) {
                     <span>{link.label}</span>
                     <span
                       aria-hidden="true"
-                      className="-translate-x-2 opacity-0 transition-all duration-200 ease-out [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:opacity-100"
+                      className="-translate-x-2 opacity-0 transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)] [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:opacity-100"
                     >
                       →
                     </span>

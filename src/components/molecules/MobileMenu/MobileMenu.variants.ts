@@ -11,9 +11,9 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const mobileMenuIconButtonVariants = cva(
   [
     'inline-flex items-center justify-center',
-    'rounded-full',
+    '[border-radius:var(--bbf-radius-interactive)]',
     'text-[var(--bbf-text-on-sand)]',
-    'transition-all duration-200 ease-out',
+    'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
     '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-on-sand)]',
     'active:scale-95',
     'focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:outline-none',
@@ -33,7 +33,7 @@ export const mobileMenuBackdropVariants = cva(
   [
     'fixed inset-0 z-[var(--bbf-z-drawer)] lg:hidden',
     'bg-black/40 backdrop-blur-sm',
-    'transition-opacity duration-[280ms] ease-out',
+    'transition-opacity [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
   ],
   {
     variants: {
@@ -53,12 +53,12 @@ export const mobileMenuPanelVariants = cva(
     'bg-[var(--bbf-surface-sand)]',
     'flex flex-col',
     'overflow-y-auto overscroll-contain',
-    'transition-transform duration-[280ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
+    'transition-transform [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
   ],
   {
     variants: {
       open: {
-        true: 'translate-x-0 shadow-2xl',
+        true: 'translate-x-0 [box-shadow:var(--bbf-shadow-floating)]',
         false: 'translate-x-[105%] shadow-none',
       },
     },
@@ -69,7 +69,7 @@ export const mobileMenuPanelVariants = cva(
 export const mobileMenuItemVariants = cva([
   'group block min-h-[44px] border-b border-[var(--bbf-border-on-sand)]/40 px-2 py-4',
   'text-[length:var(--bbf-text-body-lg)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-text-on-sand)]',
-  'transition-all duration-150 ease-out',
+  'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
   '[@media(hover:hover)]:hover:translate-x-1 [@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
   'focus-visible:translate-x-1 focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
 ]);
