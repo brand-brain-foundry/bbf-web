@@ -15,9 +15,11 @@
 :root {
   /* ============================================================
      SEMANTIC RADIUS (heredado M5-A, decisión autónoma)
+     SSOT movido a semantic/radius.css (D-RADIUS-01, D-RADIUS-SCALE).
+     --bbf-radius-card removido aquí: era duplicado muerto (sobrescrito
+     por semantic/radius.css que importa después — globals.css línea 54).
      ============================================================ */
   --bbf-radius-btn: var(--bbf-radius-full);
-  --bbf-radius-card: var(--bbf-radius-xl);
   --bbf-radius-input: var(--bbf-radius-lg);
 
   /* ============================================================

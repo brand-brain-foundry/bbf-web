@@ -3,18 +3,39 @@
  *
  * Subordinado a: BBF_M5_Framework_Plan.md §2
  * Tier: 1 (PRIMITIVE)
- * Decisión: D-BBF-WEB-55 (3-tier), D-BBF-WEB-59 (namespace)
+ * Decisión: D-BBF-WEB-55 (3-tier), D-BBF-WEB-59 (namespace),
+ *            D-RADIUS-SCALE (madre + razón geométrica, FASE 4.C.2-B)
+ *
+ * ESCALA MADRE — D-RADIUS-SCALE
+ * Base: --bbf-radius-base = 8px = 0.5rem
+ * Razón geométrica suave ≈ 1.5:
+ *   sm = base × 0.5 = 4px
+ *   2xs = base × 0.75 = 6px   (nombre histórico anterior al sistema madre;
+ *                                deuda D-RADIUS-SCALE-v2: alinear a 'xs')
+ *   md  = base × 1   = 8px
+ *   lg  = base × 1.5 = 12px
+ *   xl  = base × 2   = 16px
+ *   2xl = base × 3   = 24px
+ * Si --bbf-radius-base cambia, todos los pasos se reajustan.
  */
 
 @theme {
-  --bbf-radius-2xs: 0.375rem; /* 6px — badge/chip compact (D-RADIUS-PILL-BBF) */
-  --bbf-radius-sm: 0.25rem; /* 4px */
-  --bbf-radius-md: 0.5rem; /* 8px */
-  --bbf-radius-lg: 0.75rem; /* 12px */
-  --bbf-radius-xl: 1rem; /* 16px */
-  --bbf-radius-2xl: 1.5rem; /* 24px */
-  --bbf-radius-full: 9999px;
+  /* MADRE */
+  --bbf-radius-base: 0.5rem; /* 8px */
+
+  /* Escala derivada — valores idénticos a los actuales, cero cambio visual */
+  --bbf-radius-sm: calc(var(--bbf-radius-base) * 0.5); /* 4px */
+  --bbf-radius-2xs: calc(
+    var(--bbf-radius-base) * 0.75
+  ); /* 6px — badge/chip compact (D-RADIUS-PILL-BBF) */
+  --bbf-radius-md: var(--bbf-radius-base); /* 8px */
+  --bbf-radius-lg: calc(var(--bbf-radius-base) * 1.5); /* 12px */
+  --bbf-radius-xl: calc(var(--bbf-radius-base) * 2); /* 16px */
+  --bbf-radius-2xl: calc(var(--bbf-radius-base) * 3); /* 24px */
+  --bbf-radius-full: 9999px; /* pill absoluto — no derivable */
 
   /* MIGRATION BASE — D-MIG-02 (Claude Design section cards 14px) */
-  --bbf-radius-section-card: 0.875rem; /* 14px — cap-scene, media-frame, hiw-steps */
+  --bbf-radius-section-card: calc(
+    var(--bbf-radius-base) * 1.75
+  ); /* 14px — cap-scene, media-frame, hiw-steps */
 }

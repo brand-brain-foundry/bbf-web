@@ -35,9 +35,23 @@
 
   /* ============================================================
      CARD — contenedor de contenido
-     Cards, panels, NewsletterBox wrapper, TableOfContents, MegaMenu
-     Nota: MegaMenuPanel usa rounded-2xl (24px). NewsletterBox ya usa --bbf-radius-2xl.
-     Card se propone en lg (12px) como paso intermedio conservador.
+     Cards, panels, NewsletterBox wrapper, TableOfContents, capabilities scenes.
+     12px — radio sutil; consumers en capabilities.css×3.
      ============================================================ */
   --bbf-radius-card: var(--bbf-radius-lg); /* 12px — cards contenido */
+
+  /* ============================================================
+     MEDIA — thumbnail de imagen/video en menú y cards
+     MegaMenuPanel + MobileSubMenu media thumbs (8px).
+     D-RADIUS-SCALE · B2: rol semántico propio (revoca D-RADIUS-MEDIA-NO,
+     basada en px equivocados — el thumb es 8px, no pill 9999px).
+     ============================================================ */
+  --bbf-radius-media: var(--bbf-radius-md); /* 8px — media thumbnails */
+
+  /* ============================================================
+     FLOATING — container flotante sobre la página
+     Header card + MegaMenu panel (16px).
+     D-RADIUS-SCALE · Opción B: intención distinta de card contenido.
+     ============================================================ */
+  --bbf-radius-floating: var(--bbf-radius-xl); /* 16px — floating containers */
 }

@@ -100,7 +100,7 @@ export function MegaMenuPanel({
           className={cn(
             'absolute top-[calc(100%+0.5rem)] right-0 left-0',
             'z-[var(--bbf-z-mega-menu)]',
-            'rounded-2xl',
+            '[border-radius:var(--bbf-radius-floating)]',
             'bg-[var(--bbf-surface-sand)]',
             '[border:1px_solid_var(--bbf-border-on-sand)]',
             '[box-shadow:var(--bbf-shadow-floating)]',
@@ -136,7 +136,7 @@ export function MegaMenuPanel({
                     className={megaMenuItemVariants()}
                   >
                     {hasMedia && sub.mediaType === 'image' && (
-                      <div className="mb-3 aspect-[16/9] overflow-hidden rounded-lg bg-[var(--bbf-surface-hover-on-sand)]">
+                      <div className="mb-3 aspect-[16/9] overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-surface-hover-on-sand)]">
                         <Image
                           src={sub.media!.url!}
                           alt={sub.media!.alt ?? sub.label}
@@ -147,7 +147,7 @@ export function MegaMenuPanel({
                       </div>
                     )}
                     {hasMedia && sub.mediaType === 'video' && (
-                      <div className="mb-3 aspect-[16/9] overflow-hidden rounded-lg bg-[var(--bbf-surface-hover-on-sand)]">
+                      <div className="mb-3 aspect-[16/9] overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-surface-hover-on-sand)]">
                         <video
                           src={sub.media!.url!}
                           autoPlay

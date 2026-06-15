@@ -21,7 +21,7 @@ type HeaderProps = {
  * BBF Header — floating card pattern canon Wave 8 (D-BBF-KB-111)
  *
  * Wrapper: fixed full-width pointer-events-none (hero clicks-through)
- * Inner: floating card rounded-2xl + sand/95 backdrop-blur + shadow-floating
+ * Inner: floating card [border-radius:var(--bbf-radius-floating)] + sand/95 backdrop-blur + shadow-floating
  * Layout: logo izq → nav izq (HeaderDesktopNav) → LangSwitch+CTA+Mobile der
  */
 export async function Header({ className }: HeaderProps) {
@@ -81,7 +81,7 @@ export async function Header({ className }: HeaderProps) {
       <div className="bbf-container-wide pointer-events-auto mx-auto box-border px-3 pt-3 sm:px-4 sm:pt-4 lg:px-6">
         <div
           className={cn(
-            'mx-auto rounded-2xl',
+            'mx-auto [border-radius:var(--bbf-radius-floating)]',
             'bg-[var(--bbf-surface-sand)]/95 backdrop-blur-xl',
             'border border-[var(--bbf-border-on-sand)]',
             '[box-shadow:var(--bbf-shadow-floating)]',

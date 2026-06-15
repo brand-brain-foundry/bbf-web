@@ -43,7 +43,7 @@ export const mobileSubMenuGeneralItemVariants = cva([
 export const mobileSubMenuCardVariants = cva([
   'group flex items-center gap-3',
   'min-h-[44px] px-2 py-3',
-  'rounded-xl',
+  '[border-radius:var(--bbf-radius-card)]',
   'transition-all duration-150 ease-out',
   '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-subtle-on-sand)]',
   'focus-visible:bg-[var(--bbf-surface-hover-subtle-on-sand)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',

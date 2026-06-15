@@ -99,7 +99,7 @@ export function MobileSubMenu({
                 className={mobileSubMenuCardVariants()}
               >
                 {hasMedia && sub.mediaType === 'image' && (
-                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-[var(--bbf-surface-hover-on-sand)]">
+                  <div className="h-16 w-16 shrink-0 overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-surface-hover-on-sand)]">
                     <Image
                       src={sub.media!.url!}
                       alt={sub.media!.alt ?? sub.label}
@@ -110,7 +110,7 @@ export function MobileSubMenu({
                   </div>
                 )}
                 {hasMedia && sub.mediaType === 'video' && (
-                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-[var(--bbf-surface-hover-on-sand)]">
+                  <div className="h-16 w-16 shrink-0 overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-surface-hover-on-sand)]">
                     <video
                       src={sub.media!.url!}
                       autoPlay

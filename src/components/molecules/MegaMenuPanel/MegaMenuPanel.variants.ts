@@ -11,7 +11,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 export const megaMenuItemVariants = cva([
   'group block p-4',
-  'rounded-xl',
+  '[border-radius:var(--bbf-radius-card)]',
   'bg-transparent',
   'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
   '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-subtle-on-sand)]',
