@@ -1910,18 +1910,7 @@ export interface SiteNavigation {
           /**
            * Ruta canónica (SSOT routing.ts pathnames). Usar para cornerstones / rutas fijas.
            */
-          routeKey?:
-            | (
-                | '/'
-                | '/cerebro-marca'
-                | '/metodo'
-                | '/casos'
-                | '/como-construir'
-                | '/hub-and-spoke'
-                | '/marca-cognitiva'
-                | '/contacto'
-              )
-            | null;
+          routeKey?: ('/' | '/cerebro-marca' | '/metodo' | '/casos' | '/contacto' | '/quienes-somos' | '/blog') | null;
           /**
            * Página dinámica (alternativa a routeKey). Dormido hasta que existan Pages.
            */
@@ -1980,18 +1969,7 @@ export interface SiteNavigation {
       /**
        * Ruta canónica (SSOT routing.ts pathnames). Usar para cornerstones / rutas fijas.
        */
-      routeKey?:
-        | (
-            | '/'
-            | '/cerebro-marca'
-            | '/metodo'
-            | '/casos'
-            | '/como-construir'
-            | '/hub-and-spoke'
-            | '/marca-cognitiva'
-            | '/contacto'
-          )
-        | null;
+      routeKey?: ('/' | '/cerebro-marca' | '/metodo' | '/casos' | '/contacto' | '/quienes-somos' | '/blog') | null;
       /**
        * Página dinámica (alternativa a routeKey). Dormido hasta que existan Pages.
        */
@@ -2018,16 +1996,7 @@ export interface SiteNavigation {
                  * Ruta canónica (SSOT routing.ts pathnames). Usar para cornerstones / rutas fijas.
                  */
                 routeKey?:
-                  | (
-                      | '/'
-                      | '/cerebro-marca'
-                      | '/metodo'
-                      | '/casos'
-                      | '/como-construir'
-                      | '/hub-and-spoke'
-                      | '/marca-cognitiva'
-                      | '/contacto'
-                    )
+                  | ('/' | '/cerebro-marca' | '/metodo' | '/casos' | '/contacto' | '/quienes-somos' | '/blog')
                   | null;
                 /**
                  * Página dinámica (alternativa a routeKey). Dormido hasta que existan Pages.

@@ -145,13 +145,17 @@
   /* ============================================================
      BORDERS / DIVIDERS
      ============================================================ */
-  --bbf-border-on-sand: var(--bbf-color-black-200);
+  --bbf-border-on-sand: var(
+    --bbf-color-sand-400
+  ); /* warm amber — #cccccc eliminado (D-LINE-SYSTEM) */
   --bbf-border-on-black: var(--bbf-color-black-700);
   --bbf-border-on-red: var(--bbf-color-red-700);
 
   /* Legacy aliases */
   --bbf-border-on-light: var(--bbf-border-on-sand);
-  --bbf-border-on-light-strong: var(--bbf-color-sand-400);
+  --bbf-border-on-light-strong: var(
+    --bbf-color-sand-600
+  ); /* #997535 — 3.96:1 WCAG 1.4.11 (D-LINE-SYSTEM) */
   --bbf-border-on-dark: var(--bbf-border-on-black);
   --bbf-border-strong: var(--bbf-color-black-900);
 

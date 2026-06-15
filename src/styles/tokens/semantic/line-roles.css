@@ -1,0 +1,33 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Line Color Roles (D-LINE-SYSTEM)
+ *
+ * Eje COLOR de la grilla 2-ejes de líneas.
+ * El eje GROSOR vive en semantic/lines.css (--bbf-line-border=1px, --bbf-line-focus=2px).
+ *
+ * Uso compuesto:
+ *   border: var(--bbf-line-border) solid var(--bbf-line-color-divider)
+ *   border: var(--bbf-line-border) solid var(--bbf-line-color-border)
+ *
+ * ⚠ Naming: prefijo --bbf-line-color-* para evitar colisión con aliases de GROSOR en
+ * lines.css que son consumidos como width en 15+ archivos CSS de componentes.
+ * Para simplificar a --bbf-line-{role}: renombrar thickness aliases primero (despacho futuro).
+ *
+ * D-LINE-SYSTEM — FASE 4.C.2-B · FOOTER-FOUNDATION-02 · 2026-06-15
+ */
+
+:root {
+  /* DIVIDER: separadores sutiles de sección (footer top, between-rows) */
+  --bbf-line-color-divider: var(--bbf-color-sand-400); /* #d9b87c — 1.70:1 vs sand-100 */
+
+  /* BORDER: límite estructural de componente (input, card) — WCAG 1.4.11 ≥3:1 */
+  --bbf-line-color-border: var(--bbf-color-sand-600); /* #997535 — 3.96:1 vs sand-100 ✓ */
+
+  /* FOCUS: estado de foco keyboard — alto contraste */
+  --bbf-line-color-focus: var(--bbf-color-black-900); /* #000000 — 21:1 vs sand-100 */
+
+  /* ACCENT: decorativo de marca — blue auxiliar BBF */
+  --bbf-line-color-accent: var(--bbf-accent-blue); /* #255ff1 — accent blue */
+
+  /* LIGHT: línea clara sobre superficies dark (inverso de divider) */
+  --bbf-line-color-light: var(--bbf-color-sand-100); /* #fdf5ed — sobre black surface */
+}

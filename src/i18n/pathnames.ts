@@ -13,13 +13,12 @@
  */
 export const PATHNAMES = {
   '/': '/',
-  '/cerebro-marca': { es: '/cerebro-marca', en: '/brand-brain' }, // CS-02 + P1
-  '/metodo': { es: '/metodo', en: '/method' }, // CS-03 + P6
-  '/casos': { es: '/casos', en: '/cases' }, // CS-04 + P5
-  '/como-construir': { es: '/como-construir', en: '/how-to-build' }, // P2
-  '/hub-and-spoke': '/hub-and-spoke', // P3
-  '/marca-cognitiva': { es: '/marca-cognitiva', en: '/cognitive-brand' }, // P4
+  '/cerebro-marca': { es: '/cerebro-marca', en: '/brand-brain' },
+  '/metodo': { es: '/metodo', en: '/method' }, // ⛔ TAREA-METODO-MIGRATION → /como-trabajamos
+  '/casos': { es: '/casos', en: '/cases' },
   '/contacto': { es: '/contacto', en: '/contact' },
+  '/quienes-somos': { es: '/quienes-somos', en: '/about' }, // P1 — enum migration pendiente
+  '/blog': '/blog', // P6 — enum migration pendiente
 } as const;
 
 /** Claves de ruta canónicas (para options del select routeKey en SiteNavigation). */

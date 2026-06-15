@@ -13,7 +13,7 @@ export const badgeVariants = cva(
   [
     'inline-flex items-center justify-center',
     'border border-solid',
-    'rounded-md',
+    '[border-radius:var(--bbf-radius-pill)]',
     '[font-weight:var(--bbf-weight-medium)]',
     'uppercase',
     'whitespace-nowrap',

@@ -1,0 +1,43 @@
+/**
+ * BBF Design System — TIER 2 SEMANTIC: Radius
+ *
+ * Capa semántica madre→variante para border-radius.
+ * Los componentes consumen el ROL semántico, nunca el primitivo directo.
+ *
+ * Primitivos en: tokens/primitives/radius.css
+ * Decisión: D-RADIUS-01 (FASE 4.C.2-B · FOOTER-FOUNDATION-01 · 2026-06-15)
+ *
+ * Roles definidos:
+ *   interactive — pill de acción primaria (Button CTA, text input pill)
+ *   pill        — badge, flag, chip compacto [PENDIENTE FIRMA: md 8px vs full pill]
+ *   card        — contenedor de contenido (cards, panels, NewsletterBox)
+ *
+ * Uso en componentes:
+ *   Button.variants.ts:  rounded-full → migrar a [border-radius:var(--bbf-radius-interactive)]
+ *   Badge.variants.ts:   rounded-md   → migrar a [border-radius:var(--bbf-radius-pill)]
+ *   NewsletterBox.tsx:   rounded-full → migrar a [border-radius:var(--bbf-radius-interactive)]
+ *   (migración a tokens BBF pendiente de firma de los 3 roles abajo)
+ */
+
+:root {
+  /* ============================================================
+     INTERACTIVE — pill de acción: Button, text input, search input
+     Forma pill canónica BBF — botones son siempre redondeados al máximo.
+     ============================================================ */
+  --bbf-radius-interactive: var(--bbf-radius-full); /* 9999px — pill shape */
+
+  /* ============================================================
+     PILL — badge, flag, chip
+     D-RADIUS-PILL-BBF (SIGNED): 6px BBF canon — matches Tailwind rounded-md visual
+     pero vía token propio (--bbf-radius-2xs) en lugar de la utilidad de Tailwind.
+     ============================================================ */
+  --bbf-radius-pill: var(--bbf-radius-2xs); /* 6px — compact badge (D-RADIUS-PILL-BBF) */
+
+  /* ============================================================
+     CARD — contenedor de contenido
+     Cards, panels, NewsletterBox wrapper, TableOfContents, MegaMenu
+     Nota: MegaMenuPanel usa rounded-2xl (24px). NewsletterBox ya usa --bbf-radius-2xl.
+     Card se propone en lg (12px) como paso intermedio conservador.
+     ============================================================ */
+  --bbf-radius-card: var(--bbf-radius-lg); /* 12px — cards contenido */
+}

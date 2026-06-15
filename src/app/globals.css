@@ -50,6 +50,8 @@
 @import '../styles/tokens/semantic/shadows.css';
 @import '../styles/tokens/semantic/feedback.css';
 @import '../styles/tokens/semantic/lines.css'; /* D-DS-14: semantic line aliases + focus-ring wire */
+@import '../styles/tokens/semantic/line-roles.css'; /* D-LINE-SYSTEM: line color intention axis */
+@import '../styles/tokens/semantic/radius.css'; /* D-RADIUS-01: semantic radius roles madre→variante */
 
 /* === TIER 3: COMPONENT === */
 @import '../styles/tokens/components/hero.css';
