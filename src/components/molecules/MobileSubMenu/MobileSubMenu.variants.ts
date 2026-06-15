@@ -13,13 +13,16 @@ export const mobileSubMenuToggleVariants = cva([
   'flex items-center justify-between',
   'min-h-[44px] px-2 py-4',
   'text-[length:var(--bbf-text-body-lg)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-text-on-sand)]',
-  'transition-all duration-200 ease-out',
+  'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
   '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
   'focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
 ]);
 
 export const mobileSubMenuPanelVariants = cva(
-  ['overflow-hidden', 'transition-all duration-[280ms] ease-[cubic-bezier(0.32,0.72,0,1)]'],
+  [
+    'overflow-hidden',
+    'transition-all [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
+  ],
   {
     variants: {
       open: {
@@ -35,7 +38,7 @@ export const mobileSubMenuGeneralItemVariants = cva([
   'block min-h-[44px] px-2 py-3',
   'text-[length:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-text-on-sand-muted)]',
   'border-b border-[var(--bbf-border-on-sand)]/30',
-  'transition-colors duration-150 ease-out',
+  'transition-colors [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
   '[@media(hover:hover)]:hover:text-[var(--bbf-accent-blue)]',
   'focus-visible:text-[var(--bbf-accent-blue)] focus-visible:outline-none',
 ]);
@@ -44,7 +47,7 @@ export const mobileSubMenuCardVariants = cva([
   'group flex items-center gap-3',
   'min-h-[44px] px-2 py-3',
   '[border-radius:var(--bbf-radius-card)]',
-  'transition-all duration-150 ease-out',
+  'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
   '[@media(hover:hover)]:hover:bg-[var(--bbf-surface-hover-subtle-on-sand)]',
   'focus-visible:bg-[var(--bbf-surface-hover-subtle-on-sand)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-color-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
 ]);
@@ -53,7 +56,7 @@ export const mobileSubMenuTitleVariants = cva(
   [
     'text-[length:var(--bbf-text-body-md)] [font-weight:var(--bbf-weight-medium)]',
     'text-[var(--bbf-text-on-sand)]',
-    'transition-colors duration-150 ease-out',
+    'transition-colors [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
     '[@media(hover:hover)]:group-hover:text-[var(--bbf-accent-blue)] group-focus-visible:text-[var(--bbf-accent-blue)]',
   ],
   {

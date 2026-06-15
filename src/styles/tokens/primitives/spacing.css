@@ -1,42 +1,44 @@
 /**
- * BBF Design System — TIER 1 PRIMITIVE: Spacing
+ * BBF Design System — TIER 1 PRIMITIVE: Spacing — D-SPACING-SCALE (FASE 4.C.2-B)
+ *
+ * Escala VIVA: MADRE = --bbf-space-base (4px / 0.25rem), grid lineal ×N.
+ * 0 y px anclados (0 no derivable; px = hairline 1px, no-rem).
+ * SEED only — consumers de Tailwind utilities migran en despacho futuro.
  *
  * Subordinado a: BBF_M5_Framework_Plan.md §4.3 (M5-C extension)
- * Tier: 1 (PRIMITIVE)
- * Decisiones: D-BBF-WEB-55 (3-tier), D-BBF-WEB-59 (namespace)
- *
- * Sistema 4pt base con preferencia 8pt grid.
- * Canon Material/Atlassian/IBM Carbon.
- * Extendido en M5-C con gaps (5/7/10/14/20/28/32/40/48/56/64).
+ * Decisiones: D-BBF-WEB-55 (3-tier), D-BBF-WEB-59 (namespace), D-SPACING-SCALE
  */
 
 @theme {
-  /* Base */
+  /* Anclados */
   --bbf-space-0: 0;
-  --bbf-space-px: 1px;
-  --bbf-space-0\.5: 0.125rem; /* 2px */
+  --bbf-space-px: 1px; /* hairline — no-rem, no derivable */
 
-  /* 4pt grid (fine-grain) */
-  --bbf-space-1: 0.25rem; /* 4px */
-  --bbf-space-1\.5: 0.375rem; /* 6px */
-  --bbf-space-2: 0.5rem; /* 8px */
-  --bbf-space-2\.5: 0.625rem; /* 10px */
-  --bbf-space-3: 0.75rem; /* 12px */
-  --bbf-space-4: 1rem; /* 16px */
-  --bbf-space-5: 1.25rem; /* 20px */
-  --bbf-space-6: 1.5rem; /* 24px */
-  --bbf-space-7: 1.75rem; /* 28px */
-  --bbf-space-8: 2rem; /* 32px */
-  --bbf-space-10: 2.5rem; /* 40px */
-  --bbf-space-12: 3rem; /* 48px */
-  --bbf-space-14: 3.5rem; /* 56px */
-  --bbf-space-16: 4rem; /* 64px */
-  --bbf-space-20: 5rem; /* 80px */
-  --bbf-space-24: 6rem; /* 96px */
-  --bbf-space-28: 7rem; /* 112px */
-  --bbf-space-32: 8rem; /* 128px */
-  --bbf-space-40: 10rem; /* 160px */
-  --bbf-space-48: 12rem; /* 192px */
-  --bbf-space-56: 14rem; /* 224px */
-  --bbf-space-64: 16rem; /* 256px */
+  /* MADRE */
+  --bbf-space-base: 0.25rem; /* 4px — MADRE del grid 4pt */
+
+  /* Escala VIVA — calc(base × N) */
+  --bbf-space-0\.5: calc(var(--bbf-space-base) * 0.5); /* 2px */
+  --bbf-space-1: var(--bbf-space-base); /* 4px = base */
+  --bbf-space-1\.5: calc(var(--bbf-space-base) * 1.5); /* 6px */
+  --bbf-space-2: calc(var(--bbf-space-base) * 2); /* 8px */
+  --bbf-space-2\.5: calc(var(--bbf-space-base) * 2.5); /* 10px */
+  --bbf-space-3: calc(var(--bbf-space-base) * 3); /* 12px */
+  --bbf-space-4: calc(var(--bbf-space-base) * 4); /* 16px */
+  --bbf-space-5: calc(var(--bbf-space-base) * 5); /* 20px */
+  --bbf-space-6: calc(var(--bbf-space-base) * 6); /* 24px */
+  --bbf-space-7: calc(var(--bbf-space-base) * 7); /* 28px */
+  --bbf-space-8: calc(var(--bbf-space-base) * 8); /* 32px */
+  --bbf-space-10: calc(var(--bbf-space-base) * 10); /* 40px */
+  --bbf-space-12: calc(var(--bbf-space-base) * 12); /* 48px */
+  --bbf-space-14: calc(var(--bbf-space-base) * 14); /* 56px */
+  --bbf-space-16: calc(var(--bbf-space-base) * 16); /* 64px */
+  --bbf-space-20: calc(var(--bbf-space-base) * 20); /* 80px */
+  --bbf-space-24: calc(var(--bbf-space-base) * 24); /* 96px */
+  --bbf-space-28: calc(var(--bbf-space-base) * 28); /* 112px */
+  --bbf-space-32: calc(var(--bbf-space-base) * 32); /* 128px */
+  --bbf-space-40: calc(var(--bbf-space-base) * 40); /* 160px */
+  --bbf-space-48: calc(var(--bbf-space-base) * 48); /* 192px */
+  --bbf-space-56: calc(var(--bbf-space-base) * 56); /* 224px */
+  --bbf-space-64: calc(var(--bbf-space-base) * 64); /* 256px */
 }

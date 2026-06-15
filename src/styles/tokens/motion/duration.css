@@ -1,33 +1,28 @@
 /* ============================================================
- * BBF Motion Duration Tokens — Wave 11.8-A
+ * BBF Motion Duration Tokens — D-MOTION-SCALE (FASE 4.C.2-B)
  * ============================================================
  *
- * Canon BBF motion durations. Use estas variables en lugar de
- * hardcoded values (e.g. NO usar "300ms" directo).
+ * Escala VIVA: MADRE = --bbf-motion-duration-base (240ms).
+ * Familia reveal deriva via calc() × 1.5. Piso interactivo
+ * (instant/fast) anclado: R-BBF-09 percepción + fast = MADRE
+ * de --bbf-motion-state-duration (no puede derivarse vía ratio).
  *
- * Reference: BBF_MotionArchitectureProposal_v1 §4.1
- * Decision: D-BBF-WEB-PP:A (stack motion canon)
+ * Reference: BBF_MotionArchitectureProposal_v1 §4.1, D-MOTION-SCALE
  */
 
 :root {
-  /* Instant feedback — toggles, color shifts inmediatos */
-  --bbf-motion-duration-instant: 100ms;
+  /* Piso interactivo — anclados (R-BBF-09: snappy, no derivables vía ratio) */
+  --bbf-motion-duration-instant: 100ms; /* anclado — toggles, color shifts */
+  --bbf-motion-duration-fast: 180ms; /* anclado — MADRE de --bbf-motion-state-duration */
 
-  /* Fast — hover states, focus rings, micro-interactions */
-  --bbf-motion-duration-fast: 180ms;
+  /* MADRE de la familia reveal */
+  --bbf-motion-duration-base: 240ms; /* MADRE — default transitions, simple reveals */
 
-  /* Base — default transitions, simple reveals */
-  --bbf-motion-duration-base: 240ms;
+  /* Familia reveal — escala VIVA ×1.5 */
+  --bbf-motion-duration-medium: calc(var(--bbf-motion-duration-base) * 1.5); /* 360ms */
+  --bbf-motion-duration-slow: calc(var(--bbf-motion-duration-medium) * 1.5); /* 540ms */
 
-  /* Medium — mega menu expand, card hover lift */
-  --bbf-motion-duration-medium: 360ms;
-
-  /* Slow — section reveals, hero entrance, page transitions */
-  --bbf-motion-duration-slow: 540ms;
-
-  /* Cinematic — loading complete, success states, special moments */
-  --bbf-motion-duration-cinematic: 800ms;
-
-  /* Ambient — Lissajous loop, background animations sutiles */
-  --bbf-motion-duration-ambient: 1200ms;
+  /* Decorativos — anclados exactos (calc daría 810ms/1215ms, preferimos exactitud) */
+  --bbf-motion-duration-cinematic: 800ms; /* anclado — loading complete, success states */
+  --bbf-motion-duration-ambient: 1200ms; /* anclado — Lissajous loop, background sutiles */
 }
