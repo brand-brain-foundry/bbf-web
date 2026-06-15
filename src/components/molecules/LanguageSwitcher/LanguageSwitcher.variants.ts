@@ -9,7 +9,11 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
 export const languageSwitcherVariants = cva(
-  ['inline-flex items-center gap-1', 'text-sm', 'transition-opacity duration-150 ease-out'],
+  [
+    'inline-flex items-center gap-1',
+    'text-[length:var(--bbf-text-body-sm)]',
+    'transition-opacity [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
+  ],
   {
     variants: {
       pending: {
@@ -22,11 +26,14 @@ export const languageSwitcherVariants = cva(
 );
 
 export const languageSwitcherButtonVariants = cva(
-  ['px-1 py-1', 'transition-opacity duration-150 ease-out'],
+  [
+    'px-1 py-1',
+    'transition-opacity [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
+  ],
   {
     variants: {
       active: {
-        true: 'cursor-default font-semibold text-[var(--bbf-text-on-light)]',
+        true: 'cursor-default [font-weight:var(--bbf-weight-semibold)] text-[var(--bbf-text-on-light)]',
         false: [
           'text-[var(--bbf-text-on-light)] opacity-60',
           '[@media(hover:hover)]:hover:opacity-100',

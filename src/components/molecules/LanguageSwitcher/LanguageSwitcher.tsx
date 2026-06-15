@@ -36,6 +36,7 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
   return (
     <nav
       aria-label="Language switcher"
+      data-component="bbf-language-switcher"
       className={cn(languageSwitcherVariants({ pending: isPending }), className)}
     >
       {LOCALES.map((loc, idx) => {

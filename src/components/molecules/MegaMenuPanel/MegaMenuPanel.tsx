@@ -5,6 +5,11 @@ import Image from 'next/image';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import {
+  BBF_EASE_OUT_QUART,
+  BBF_DURATION_BASE_S,
+  BBF_DURATION_FAST_S,
+} from '@/lib/motion/constants';
+import {
   megaMenuItemVariants,
   megaMenuTitleVariants,
   megaMenuDescriptionVariants,
@@ -85,9 +90,12 @@ export function MegaMenuPanel({
           animate={{ opacity: 1, y: 0 }}
           exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
           transition={{
-            duration: prefersReducedMotion ? 0.01 : 0.24,
-            ease: [0.25, 1, 0.5, 1], // --bbf-motion-ease-out-quart
-            layout: { duration: prefersReducedMotion ? 0.01 : 0.24, ease: [0.25, 1, 0.5, 1] },
+            duration: prefersReducedMotion ? 0.01 : BBF_DURATION_BASE_S,
+            ease: BBF_EASE_OUT_QUART,
+            layout: {
+              duration: prefersReducedMotion ? 0.01 : BBF_DURATION_BASE_S,
+              ease: BBF_EASE_OUT_QUART,
+            },
           }}
           className={cn(
             'absolute top-[calc(100%+0.5rem)] right-0 left-0',
@@ -106,8 +114,8 @@ export function MegaMenuPanel({
               animate={{ opacity: 1, x: 0 }}
               exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -8 }}
               transition={{
-                duration: prefersReducedMotion ? 0.01 : 0.18,
-                ease: [0.25, 1, 0.5, 1],
+                duration: prefersReducedMotion ? 0.01 : BBF_DURATION_FAST_S,
+                ease: BBF_EASE_OUT_QUART,
               }}
               className="grid gap-3 p-4 lg:gap-4 lg:p-6"
               style={{
@@ -134,7 +142,7 @@ export function MegaMenuPanel({
                           alt={sub.media!.alt ?? sub.label}
                           width={sub.media!.width ?? 320}
                           height={sub.media!.height ?? 180}
-                          className="h-full w-full object-cover transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:scale-105"
+                          className="h-full w-full object-cover transition-transform [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)] [@media(hover:hover)]:group-hover:scale-105"
                         />
                       </div>
                     )}
