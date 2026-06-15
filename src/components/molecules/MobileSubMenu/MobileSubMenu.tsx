@@ -57,7 +57,10 @@ export function MobileSubMenu({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-b border-[var(--bbf-border-on-sand)]/40">
+    <div
+      data-component="bbf-mobile-submenu"
+      className="border-b border-[var(--bbf-border-on-sand)]/40"
+    >
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
