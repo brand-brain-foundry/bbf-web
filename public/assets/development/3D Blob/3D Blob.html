@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>3D Blob — Mercurio Negro</title>
+<style>
+  :root { color-scheme: dark; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", sans-serif; }
+
+  #stage { position: fixed; inset: 0; }
+  #gl { display: block; width: 100%; height: 100%; }
+
+  /* elegant grain + vignette layered above the canvas */
+  .overlay { position: fixed; inset: 0; pointer-events: none; }
+  .grain {
+    opacity: .055; mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    animation: grainShift 4s steps(6) infinite;
+  }
+  @keyframes grainShift {
+    0%{transform:translate(0,0)} 16%{transform:translate(-3%,2%)}
+    33%{transform:translate(2%,-3%)} 50%{transform:translate(-2%,3%)}
+    66%{transform:translate(3%,1%)} 83%{transform:translate(-1%,-2%)}
+    100%{transform:translate(0,0)}
+  }
+  .vignette {
+    background: radial-gradient(120% 120% at 50% 46%, transparent 52%, rgba(0,0,0,.55) 100%);
+  }
+
+  /* minimal hint, fades out */
+  .hint {
+    position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 18px;
+    font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    color: rgba(253,245,237,.42); pointer-events: none;
+    animation: hintFade 1s ease .6s both, hintOut 1.2s ease 6.5s forwards;
+  }
+  .hint .dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(253,245,237,.32); }
+  @keyframes hintFade { from{opacity:0;transform:translateX(-50%) translateY(8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  @keyframes hintOut { to { opacity: 0; } }
+
+  #root { position: fixed; inset: 0; pointer-events: none; }
+  #root [data-omelette-chrome] { pointer-events: auto; }
+</style>
+</head>
+<body>
+  <div id="stage"><canvas id="gl"></canvas></div>
+  <div class="overlay grain"></div>
+  <div class="overlay vignette"></div>
+  <div class="hint">
+    <span>Mueve el cursor</span><span class="dot"></span><span>Click para transformar</span>
+  </div>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="blob-scene.js?v=38"></script>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+
+  <script type="text/babel">
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "matcap": "c",
+      "glowColor": "#fdf5ed",
+      "lightIntensity": 5,
+      "speed": 220,
+      "deform": 0,
+      "bgColor": "#000000",
+      "camera": true
+    }/*EDITMODE-END*/;
+
+    // boot the WebGL scene with the persisted defaults
+    BlobScene.setTweaks(TWEAK_DEFAULTS);
+    BlobScene.init(document.getElementById('gl'));
+
+    const MATCAP_LABELS = { a: 'Cálido', b: 'Noche', c: 'Cromo', d: 'Plata', e: 'Acero', f: 'Níquel' };
+    const labelToKey = (l) => Object.keys(MATCAP_LABELS).find((k) => MATCAP_LABELS[k] === l) || 'b';
+
+    function App() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+      React.useEffect(() => { BlobScene.setTweaks(t); }, [t]);
+      return (
+        <TweaksPanel title="Tweaks">
+          <TweakSection label="Material" />
+          <TweakSelect label="Matcap" value={MATCAP_LABELS[t.matcap] || 'Noche'}
+            options={Object.values(MATCAP_LABELS)}
+            onChange={(v) => setTweak('matcap', labelToKey(v))} />
+          <TweakSection label="Luz" />
+          <TweakColor label="Color de la luz" value={t.glowColor}
+            options={["#fdf5ed", "#ffffff", "#79d3ff", "#ff7ad9", "#ffc46b", "#9b8cff"]}
+            onChange={(v) => setTweak('glowColor', v)} />
+          <TweakSlider label="Intensidad del matcap" value={t.lightIntensity}
+            min={0} max={200} step={5} unit="%"
+            onChange={(v) => setTweak('lightIntensity', v)} />
+          <TweakSection label="Movimiento" />
+          <TweakToggle label="Cámara orbital" value={t.camera}
+            onChange={(v) => setTweak('camera', v)} />
+          <TweakSlider label="Velocidad" value={t.speed}
+            min={0} max={220} step={5} unit="%"
+            onChange={(v) => setTweak('speed', v)} />
+          <TweakSlider label="Deformación" value={t.deform}
+            min={0} max={100} step={1} unit="%"
+            onChange={(v) => setTweak('deform', v)} />
+          <TweakSection label="Escena" />
+          <TweakColor label="Color de fondo" value={t.bgColor}
+            options={["#000000", "#070708", "#0a0910", "#0b0d12"]}
+            onChange={(v) => setTweak('bgColor', v)} />
+          <TweakButton label="Transformar forma" onClick={() => BlobScene.morph()} />
+        </TweaksPanel>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
