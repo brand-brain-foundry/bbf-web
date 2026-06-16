@@ -28,7 +28,7 @@ export const BLOB_INTENTS: Record<string, BlobIntent> = {
     bgColor: '#000000', // --bbf-color-black-900 (canon black D-BBF-KB-104)
     glowColor: '#fdf5ed', // --bbf-color-sand-100  (canon sand  D-BBF-KB-104)
     lightIntensity: 5,
-    matcap: 'b', // matcap-b.png local — NO 'c' (CDN GitHub)
+    matcap: 'c', // matcap-c.png local (Cromo) — validado por Zavala, movido de CDN a local en v40
     speed: 220,
     deform: 0,
     camera: true,

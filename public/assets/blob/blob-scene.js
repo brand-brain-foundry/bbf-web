@@ -6,7 +6,9 @@
    v38: pause/resume/destroy API; maxDpr + morphDur extracted to cfg;
         setTweaks no longer touches document.body.
    v39: assetBase + bindInput extracted to cfg; pointer handler refs stored
-        for complete cleanup in destroy(). */
+        for complete cleanup in destroy().
+   v40: matcap-c moved from CDN to local assetBase (matcap-c.png).
+   v41: trackPointer(nx,ny) — exposes cursor-to-light from React (bindInput:false mode). */
 (function () {
   'use strict';
 
@@ -267,6 +269,14 @@
     quad = null;
   };
 
+  // Exposes cursor coordinates from React when bindInput:false.
+  // React owns pointermove; calls this each frame so the studio light follows the cursor.
+  BlobScene.trackPointer = function (nx, ny) {
+    mouse.x = nx;
+    mouse.y = ny;
+    hasPointer = true;
+  };
+
   BlobScene.init = function (canvas) {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cfg.maxDpr));
@@ -293,7 +303,7 @@
     }
     matcaps.a = loadMatcap(cfg.assetBase + 'matcap-a.png');
     matcaps.b = loadMatcap(cfg.assetBase + 'matcap-b.png');
-    matcaps.c = loadMatcap('https://raw.githubusercontent.com/nidorx/matcaps/master/1024/0A0A0A_A9A9A9_525252_747474.png');
+    matcaps.c = loadMatcap(cfg.assetBase + 'matcap-c.png');
     matcaps.d = loadMatcap('https://raw.githubusercontent.com/nidorx/matcaps/master/1024/2D2D2F_C6C2C5_727176_94949B.png');
     matcaps.e = loadMatcap('https://raw.githubusercontent.com/nidorx/matcaps/master/1024/2A2A2A_DBDBDB_6A6A6A_949494.png');
     matcaps.f = loadMatcap('https://raw.githubusercontent.com/nidorx/matcaps/master/1024/2A2A2A_B3B3B3_6D6D6D_848C8C.png');

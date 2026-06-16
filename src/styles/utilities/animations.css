@@ -56,7 +56,33 @@
   }
 }
 
-/* === Reduced motion canon WCAG 2.2 — hero animations === */
+/* === BlobBackground grain shift === */
+
+@keyframes bbf-blob-grain {
+  0% {
+    transform: translate(0, 0);
+  }
+  16% {
+    transform: translate(-3%, 2%);
+  }
+  33% {
+    transform: translate(2%, -3%);
+  }
+  50% {
+    transform: translate(-2%, 3%);
+  }
+  66% {
+    transform: translate(3%, 1%);
+  }
+  83% {
+    transform: translate(-1%, -2%);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* === Reduced motion canon WCAG 2.2 — hero animations + blob grain === */
 @media (prefers-reduced-motion: reduce) {
   .hero-entrance,
   .hero-entrance--delay-1,
@@ -79,6 +105,11 @@
 
   .bbf-hero-media-frame__rec-dot,
   .bbf-hero-ticker__track {
+    animation: none !important;
+  }
+
+  /* Grain overlay stops shifting — blob WebGL itself already freezes via JS */
+  [style*='bbf-blob-grain'] {
     animation: none !important;
   }
 }
