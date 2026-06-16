@@ -4,7 +4,9 @@
    pause(), resume(), destroy(). The React Tweaks panel pushes values via
    setTweaks; the render loop reads from the internal `cfg` object every frame.
    v38: pause/resume/destroy API; maxDpr + morphDur extracted to cfg;
-        setTweaks no longer touches document.body. */
+        setTweaks no longer touches document.body.
+   v39: assetBase + bindInput extracted to cfg; pointer handler refs stored
+        for complete cleanup in destroy(). */
 (function () {
   'use strict';
 
@@ -24,6 +26,8 @@
     camera: true,       // orbit camera around the blobs
     maxDpr: 1.75,       // devicePixelRatio cap
     morphDur: 1800,     // ms — morph transition duration
+    assetBase: '',      // base path for local matcaps ('' = relative, '/assets/blob/' = prod)
+    bindInput: true,    // set false from React — React handles pointer events instead
   };
 
   const matcaps = {}; // loaded THREE textures by key
@@ -32,6 +36,7 @@
   let raf = 0, simTime = 0, camTime = 0;
 
   const mouse = { x: 0, y: 0 };  const lightSmooth = { x: -0.35, y: 0.55 };
+  const boundHandlers = { move: null, down: null }; // stored for destroy() cleanup
   const lightTarget = { x: -0.35, y: 0.55 };
   let hasPointer = false;
 
@@ -253,6 +258,8 @@
   BlobScene.destroy = function () {
     BlobScene.pause();
     window.removeEventListener('resize', resize);
+    if (boundHandlers.move) { window.removeEventListener('pointermove', boundHandlers.move); boundHandlers.move = null; }
+    if (boundHandlers.down) { window.removeEventListener('pointerdown', boundHandlers.down); boundHandlers.down = null; }
     if (mat) { mat.dispose(); mat = null; }
     if (renderer) { renderer.dispose(); renderer = null; }
     scene = null;
@@ -284,8 +291,8 @@
       t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
       return t;
     }
-    matcaps.a = loadMatcap('matcap-a.png');
-    matcaps.b = loadMatcap('matcap-b.png');
+    matcaps.a = loadMatcap(cfg.assetBase + 'matcap-a.png');
+    matcaps.b = loadMatcap(cfg.assetBase + 'matcap-b.png');
     matcaps.c = loadMatcap('https://raw.githubusercontent.com/nidorx/matcaps/master/1024/0A0A0A_A9A9A9_525252_747474.png');
     matcaps.d = loadMatcap('https://raw.githubusercontent.com/nidorx/matcaps/master/1024/2D2D2F_C6C2C5_727176_94949B.png');
     matcaps.e = loadMatcap('https://raw.githubusercontent.com/nidorx/matcaps/master/1024/2A2A2A_DBDBDB_6A6A6A_949494.png');
@@ -317,23 +324,24 @@
     clock = new THREE.Clock();
     resize();
     window.addEventListener('resize', resize);
-    bindPointer();
+    if (cfg.bindInput) bindPointer();
     loop();
   };
 
   function bindPointer() {
-    const onMove = (e) => {
+    boundHandlers.move = (e) => {
       const px = (e.touches ? e.touches[0].clientX : e.clientX);
       const py = (e.touches ? e.touches[0].clientY : e.clientY);
       mouse.x = (px / window.innerWidth) * 2 - 1;
       mouse.y = -((py / window.innerHeight) * 2 - 1);
       hasPointer = true;
     };
-    window.addEventListener('pointermove', onMove, { passive: true });
-    window.addEventListener('pointerdown', (e) => {
+    boundHandlers.down = (e) => {
       if (e.target && e.target.closest && e.target.closest('[data-omelette-chrome]')) return;
       BlobScene.morph();
-    });
+    };
+    window.addEventListener('pointermove', boundHandlers.move, { passive: true });
+    window.addEventListener('pointerdown', boundHandlers.down);
   }
 
   function resize() {
