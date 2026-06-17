@@ -17,7 +17,7 @@ import * as migration_20260603_074045_method_section from './20260603_074045_met
 import * as migration_20260603_111230_closing_section from './20260603_111230_closing_section';
 import * as migration_20260603_132034_drop_como_funciona_orphan from './20260603_132034_drop_como_funciona_orphan';
 import * as migration_20260605_090223_add_site_config_global from './20260605_090223_add_site_config_global';
-import * as migration_20260605_191000_merge_site_identity from './20260605_191000_merge_site_identity_into_site_config_then_rename';
+import * as migration_20260605_191000_merge_site_identity_into_site_config_then_rename from './20260605_191000_merge_site_identity_into_site_config_then_rename';
 import * as migration_20260605_211913_add_cascade_to_capabilities_scene_tables from './20260605_211913_add_cascade_to_capabilities_scene_tables';
 import * as migration_20260606_225445_refactor_founder_group_to_founders_array from './20260606_225445_refactor_founder_group_to_founders_array';
 import * as migration_20260611_000100_site_identity_knows_about_relationship from './20260611_000100_site_identity_knows_about_relationship';
@@ -30,6 +30,7 @@ import * as migration_20260613_120000_wave_4c1_linktarget from './20260613_12000
 import * as migration_20260613_130000_wave_4c1_drop_legacy_href from './20260613_130000_wave_4c1_drop_legacy_href';
 import * as migration_20260613_140000_wave_4c1_sublink_linktarget from './20260613_140000_wave_4c1_sublink_linktarget';
 import * as migration_20260614_000100_site_cta_library from './20260614_000100_site_cta_library';
+import * as migration_20260616_235419_baseline_sync from './20260616_235419_baseline_sync';
 
 export const migrations = [
   {
@@ -128,8 +129,8 @@ export const migrations = [
     name: '20260605_090223_add_site_config_global',
   },
   {
-    up: migration_20260605_191000_merge_site_identity.up,
-    down: migration_20260605_191000_merge_site_identity.down,
+    up: migration_20260605_191000_merge_site_identity_into_site_config_then_rename.up,
+    down: migration_20260605_191000_merge_site_identity_into_site_config_then_rename.down,
     name: '20260605_191000_merge_site_identity_into_site_config_then_rename',
   },
   {
@@ -191,5 +192,10 @@ export const migrations = [
     up: migration_20260614_000100_site_cta_library.up,
     down: migration_20260614_000100_site_cta_library.down,
     name: '20260614_000100_site_cta_library',
+  },
+  {
+    up: migration_20260616_235419_baseline_sync.up,
+    down: migration_20260616_235419_baseline_sync.down,
+    name: '20260616_235419_baseline_sync',
   },
 ];

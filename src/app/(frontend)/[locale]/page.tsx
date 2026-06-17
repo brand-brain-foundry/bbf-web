@@ -158,19 +158,19 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
             <Reveal variant="up" delay={120}>
               <div className="bbf-hero__lede flex flex-col items-start gap-5">
-                <Text className="bbf-lede [max-width:38ch] [color:var(--bbf-text-on-warm-muted)]">
+                <Text className="bbf-lede max-w-[38ch] [color:var(--bbf-text-on-warm-muted)]">
                   {ledeBody}
                   {ledeEmphasis && (
                     <>
                       <br />
-                      <span className="bbf-hero__lede-em font-medium text-[var(--bbf-text-on-warm)]">
+                      <span className="bbf-hero__lede-em font-medium [color:var(--bbf-text-on-warm)]">
                         {ledeEmphasis}
                       </span>
                     </>
                   )}
                 </Text>
 
-                <div className="bbf-hero__ctas flex flex-wrap gap-[10px]">
+                <div className="bbf-hero__ctas flex flex-wrap gap-2.5">
                   <Button intent="primary" size="md" asChild className="bbf-gradient-dark-animated">
                     <a href={hero.ctaPrimary.href}>
                       {hero.ctaPrimary.label}

@@ -2670,6 +2670,27 @@ export interface SiteHomepage {
      */
     signatureTagline?: string | null;
   };
+  /**
+   * GEO Answer Capsules for AI citation (Perplexity, ChatGPT, Claude). One 40-60-word capsule per homepage section, ES + EN. Fill after TP-SEO-01 sign-off.
+   */
+  seo?: {
+    /**
+     * One capsule per homepage section (§1 Hero, §2 Capabilities, §3 Case, §4 Why, §5 Method). Fill ES + EN for each. 40-60 words each.
+     */
+    answerCapsules?:
+      | {
+          /**
+           * Sección del homepage a la que responde esta cápsula.
+           */
+          sectionId: 'hero' | 'capabilities' | 'caseStudy' | 'comparison' | 'method';
+          /**
+           * Texto de citación IA: responde directamente la pregunta implícita de la sección. 40-60 palabras. Sin filler. Sin marca registrada.
+           */
+          capsule: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -3181,6 +3202,17 @@ export interface SiteHomepageSelect<T extends boolean = true> {
             };
         ctaNote?: T;
         signatureTagline?: T;
+      };
+  seo?:
+    | T
+    | {
+        answerCapsules?:
+          | T
+          | {
+              sectionId?: T;
+              capsule?: T;
+              id?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;

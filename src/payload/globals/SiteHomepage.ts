@@ -1138,6 +1138,61 @@ export const SiteHomepage: GlobalConfig = {
         },
       ],
     },
+    // ─── SEO / GEO — separado del contenido editorial ────────────────────────
+    {
+      name: 'seo',
+      type: 'group',
+      label: { en: 'SEO + GEO Optimization', es: 'Optimización SEO + GEO' },
+      admin: {
+        description: {
+          en: 'GEO Answer Capsules for AI citation (Perplexity, ChatGPT, Claude). One 40-60-word capsule per homepage section, ES + EN. Fill after TP-SEO-01 sign-off.',
+          es: 'Answer Capsules GEO para citación IA (Perplexity, ChatGPT, Claude). Una cápsula de 40-60 palabras por sección del homepage, ES + EN. Completar tras firma TP-SEO-01.',
+        },
+      },
+      fields: [
+        {
+          name: 'answerCapsules',
+          type: 'array',
+          label: { en: 'Answer Capsules', es: 'Answer Capsules' },
+          maxRows: 6,
+          admin: {
+            description: {
+              en: 'One capsule per homepage section (§1 Hero, §2 Capabilities, §3 Case, §4 Why, §5 Method). Fill ES + EN for each. 40-60 words each.',
+              es: 'Una cápsula por sección del homepage (§1 Hero, §2 Capacidades, §3 Caso, §4 Por qué, §5 Método). Completar ES + EN en cada una. 40-60 palabras.',
+            },
+          },
+          fields: [
+            {
+              name: 'sectionId',
+              type: 'select',
+              required: true,
+              options: [
+                { label: '§1 · Hero', value: 'hero' },
+                { label: '§2 · Capabilities', value: 'capabilities' },
+                { label: '§3 · Case Study', value: 'caseStudy' },
+                { label: '§4 · Why / Comparison', value: 'comparison' },
+                { label: '§5 · Method', value: 'method' },
+              ],
+              admin: {
+                description: 'Sección del homepage a la que responde esta cápsula.',
+              },
+            },
+            {
+              name: 'capsule',
+              type: 'textarea',
+              localized: true,
+              required: true,
+              maxLength: 400,
+              admin: {
+                description:
+                  'Texto de citación IA: responde directamente la pregunta implícita de la sección. 40-60 palabras. Sin filler. Sin marca registrada.',
+              },
+            },
+          ],
+        },
+      ],
+    },
+    // ─── FIN SEO / GEO ────────────────────────────────────────────────────────
   ],
   hooks: {
     afterChange: [revalidateGlobal],
