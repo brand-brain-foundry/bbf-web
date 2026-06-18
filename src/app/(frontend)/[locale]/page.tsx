@@ -22,6 +22,8 @@ import { Icon, Icons } from '@/components/atoms/Icon';
 import { Reveal } from '@/components/atoms/Reveal';
 import type { Media } from '@/payload/payload-types';
 import { interpolate } from '@/lib/content-interpolation';
+import { buildFaqPageJsonLd } from '@/lib/seo/jsonLd/faqPage';
+import { getSiteIdentity } from '@/config/site';
 
 export const revalidate = 3600;
 
@@ -29,12 +31,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   setRequestLocale(locale);
 
+  const l = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
+
   const payload = await getPayload({ config });
-  const site = await payload.findGlobal({
-    slug: 'site-homepage',
-    locale: locale as 'es' | 'en',
-    depth: 1,
-  });
+  const [site, siteId] = await Promise.all([
+    payload.findGlobal({ slug: 'site-homepage', locale: l, depth: 1 }),
+    getSiteIdentity(l),
+  ]);
 
   const {
     hero,
@@ -46,7 +49,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   } = site;
 
   // Pre-interpolate all editorial {{placeholder}} fields across §1-§6
-  const l = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
   const [
     // §1 Hero
     h1Line1,
@@ -133,6 +135,53 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       ? ((cs.videoPoster as Media).url ?? undefined)
       : undefined;
   const caseVideoSources = cs?.videoSources ?? [];
+
+  // FIX-CAPSULES-RENDER: FAQPage JSON-LD from answerCapsules (TP-SEO-01, FASE 3B)
+  const FAQ_QUESTIONS: Record<string, { es: string; en: string }> = {
+    hero: {
+      es: '¿Qué es el cerebro de marca de Sivar Brains?',
+      en: "What is Sivar Brains' brand brain?",
+    },
+    capabilities: {
+      es: '¿Qué servicios integra el cerebro de marca?',
+      en: 'What services does the brand brain include?',
+    },
+    caseStudy: {
+      es: '¿Cómo opera el cerebro de marca en la práctica?',
+      en: 'How does the brand brain operate in practice?',
+    },
+    comparison: {
+      es: '¿Por qué un cerebro de marca propio y no un servicio externo?',
+      en: 'Why build your own brand brain instead of renting a service?',
+    },
+    method: {
+      es: '¿Cómo funciona el proceso de implementación de Sivar Brains?',
+      en: 'What does the Sivar Brains implementation process look like?',
+    },
+  };
+  const faqItems = (site.seo?.answerCapsules ?? [])
+    .filter((c) => c.sectionId && FAQ_QUESTIONS[c.sectionId] && c.capsule)
+    .map((c) => ({
+      question: FAQ_QUESTIONS[c.sectionId as keyof typeof FAQ_QUESTIONS][l],
+      answer: c.capsule as string,
+    }));
+  const faqSchema = faqItems.length > 0 ? buildFaqPageJsonLd(faqItems) : null;
+
+  // FIX-WEBPAGE-SCHEMA: WebPage JSON-LD (helper URL logic incorrecta para ES sin prefijo)
+  const webPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${siteId.siteDomain}/#webpage`,
+    url: l === 'en' ? `${siteId.siteDomain}/en` : siteId.siteDomain,
+    name: siteId.siteName,
+    inLanguage: l === 'es' ? 'es-SV' : 'en-US',
+    dateModified: site.updatedAt,
+    isPartOf: {
+      '@type': 'WebSite',
+      '@id': `${siteId.siteDomain}/#website`,
+      url: siteId.siteDomain,
+    },
+  };
 
   return (
     <>
@@ -399,6 +448,17 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           }}
         />
       )}
+
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
     </>
   );
 }

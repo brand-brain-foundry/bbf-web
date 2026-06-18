@@ -26,9 +26,18 @@ const mulish = Mulish({
   display: 'swap',
 });
 
-export const viewport: Viewport = {
-  themeColor: '#0a0a0a',
-};
+export async function generateViewport({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Viewport> {
+  const { locale } = await params;
+  const l = (locale === 'es' || locale === 'en' ? locale : 'es') as 'es' | 'en';
+  const site = await getSiteIdentity(l);
+  return {
+    themeColor: site.seo?.themeColor ?? '#255FF1',
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -49,7 +58,7 @@ export async function generateMetadata({
     interpolate(site.siteTagline, l),
     interpolate(site.siteDescription, l),
   ]);
-  const title = `${site.siteName} — ${siteTagline}`;
+  const title = `${site.siteName} · ${siteTagline}`;
   const ogLocale = l === 'es' ? (seo.defaultLocale ?? 'es_SV') : 'en_US';
   const ogImage = seo.ogImagePath ?? '/og-image.png';
 
