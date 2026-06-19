@@ -7,8 +7,8 @@ import { revalidateGlobal } from '../hooks/revalidateGlobal';
  * SiteCtaLibrary — fuente única de CTAs cross-site (D-DS-18, D-NAV-11)
  *
  * Catálogo de CTAs con key canónico. Consumers (nav, homepage, etc.) referencian
- * el key y obtienen label localizado + intent/type desde aquí.
- * linkTarget es responsabilidad del consumer (contexto-específico).
+ * el key y obtienen label localizado + type + intent + href desde aquí.
+ * SSOT completa: label + estilo + destino por CTA (D-E2-09 rev).
  *
  * Ejemplo: key='watch-it-run' → label ES/EN + type=solid + intent=primary.
  */
@@ -75,6 +75,14 @@ export const SiteCtaLibrary: GlobalConfig = {
             { label: 'Black', value: 'black' },
             { label: 'Red', value: 'red' },
           ],
+        },
+        {
+          name: 'href',
+          type: 'text',
+          admin: {
+            description:
+              'URL o anchor destino (ej: #proceso, /contacto). SSOT del destino del CTA.',
+          },
         },
       ],
     },

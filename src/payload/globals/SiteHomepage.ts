@@ -66,44 +66,27 @@ export const SiteHomepage: GlobalConfig = {
           },
         },
         {
-          name: 'ctaPrimary',
-          type: 'group',
-          label: { en: 'Primary CTA', es: 'CTA Principal' },
+          name: 'ctas',
+          type: 'array',
+          maxRows: 2,
+          label: { en: 'Hero CTAs', es: 'CTAs del Hero' },
+          labels: {
+            singular: { en: 'CTA', es: 'CTA' },
+            plural: { en: 'CTAs', es: 'CTAs' },
+          },
+          admin: {
+            description:
+              'Selecciona 0–2 CTAs de la Library. Primer ítem = CTA principal. Label/type/intent/href vienen de SiteCtaLibrary.',
+          },
           fields: [
             {
-              name: 'label',
-              type: 'text',
-              localized: true,
-              required: true,
-              admin: { description: 'Texto del botón primario.' },
-            },
-            {
-              name: 'href',
+              name: 'ctaKey',
               type: 'text',
               required: true,
-              defaultValue: '#proceso',
-              admin: { description: 'URL o anchor destino.' },
-            },
-          ],
-        },
-        {
-          name: 'ctaSecondary',
-          type: 'group',
-          label: { en: 'Secondary CTA', es: 'CTA Secundario' },
-          fields: [
-            {
-              name: 'label',
-              type: 'text',
-              localized: true,
-              required: true,
-              admin: { description: 'Texto del botón secundario (ghost).' },
-            },
-            {
-              name: 'href',
-              type: 'text',
-              required: true,
-              defaultValue: '#metodo',
-              admin: { description: 'URL o anchor destino.' },
+              admin: {
+                description:
+                  'Key de SiteCtaLibrary (ej: hero-cta-primary). Ver Catálogo de CTAs para keys disponibles.',
+              },
             },
           ],
         },

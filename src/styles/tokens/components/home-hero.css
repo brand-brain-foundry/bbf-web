@@ -42,7 +42,7 @@
   inset: 0;
   background-image: linear-gradient(
     to right,
-    var(--bbf-border-on-warm) var(--bbf-space-px),
+    var(--bbf-hero-border) var(--bbf-space-px),
     transparent var(--bbf-space-px)
   ); /* 1px hairline */
   background-size: calc(100% / 12) 100%;
@@ -98,11 +98,11 @@
   letter-spacing: var(--bbf-typography-display-hero-tracking); /* -0.045em */
   margin: 0;
   font-family: var(--bbf-font-display);
-  color: var(--bbf-text-on-warm);
+  color: var(--bbf-hero-text);
 }
 
 .bbf-hero__title-soft {
-  color: var(--bbf-text-on-warm-muted);
+  color: var(--bbf-hero-text-muted);
 }
 
 /* ============================================================================
@@ -116,8 +116,13 @@
   align-items: flex-start;
 }
 
+/* Lede body: override Text atom default (light) → surface-aware hero text */
+.bbf-hero__lede .bbf-lede {
+  color: var(--bbf-hero-text);
+}
+
 .bbf-hero__lede-em {
-  color: var(--bbf-text-on-warm);
+  color: var(--bbf-hero-text);
   font-weight: var(--bbf-weight-medium); /* 500 */
 }
 
@@ -133,10 +138,10 @@
 
 .bbf-hero__media {
   margin-top: var(--bbf-space-6); /* 24px */
-  border: var(--bbf-line-border) solid var(--bbf-border-on-warm);
+  border: var(--bbf-line-border) solid var(--bbf-hero-border);
   border-radius: var(--bbf-radius-section-card); /* 14px */
   overflow: hidden;
-  background: var(--bbf-surface-warm-elevated);
+  background: var(--bbf-hero-surface-frame);
 }
 
 .bbf-hero__media-frame {
@@ -149,16 +154,16 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--bbf-space-3) var(--bbf-space-4); /* 12px 16px */
-  border-bottom: var(--bbf-line-border) solid var(--bbf-border-on-warm);
-  background: var(--bbf-surface-warm-base);
-  color: var(--bbf-text-on-warm-muted);
+  border-bottom: var(--bbf-line-border) solid var(--bbf-hero-border);
+  background: var(--bbf-hero-surface-chrome);
+  color: var(--bbf-hero-text-muted);
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
   letter-spacing: var(--bbf-tracking-wide); /* 0.02em */
 }
 
 .bbf-hero__rec {
-  color: var(--bbf-text-on-warm);
+  color: var(--bbf-hero-text);
   display: inline-flex;
   align-items: center;
   gap: var(--bbf-space-1\.5); /* 6px */
@@ -180,18 +185,18 @@
   align-items: center;
   gap: var(--bbf-space-6); /* 24px */
   padding: var(--bbf-space-4) var(--bbf-space-5); /* 16px 20px */
-  border-top: var(--bbf-line-border) solid var(--bbf-border-on-warm);
-  background: var(--bbf-surface-warm-base);
+  border-top: var(--bbf-line-border) solid var(--bbf-hero-border);
+  background: var(--bbf-hero-surface-chrome);
 }
 
 .bbf-hero__media-foot .mono-xs {
-  color: var(--bbf-text-on-warm-muted);
+  color: var(--bbf-hero-text-muted);
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
 }
 
 .bbf-hero__media-foot .mono {
-  color: var(--bbf-text-on-warm);
+  color: var(--bbf-hero-text);
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
   margin-top: var(--bbf-space-1); /* 4px — UNLISTED encontrado Etapa 1 */
@@ -205,7 +210,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: var(--bbf-surface-warm-deep);
+  background: var(--bbf-hero-surface-deep);
   overflow: hidden;
 }
 
@@ -215,7 +220,7 @@
   width: 100%;
   height: 100%;
   display: block;
-  background: var(--bbf-surface-warm-deep);
+  background: var(--bbf-hero-surface-deep);
 }
 
 /* ============================================================================
@@ -237,19 +242,19 @@
   gap: var(--bbf-space-4); /* 16px — B5: 14→16 FIRMADO */
   padding: var(--bbf-space-6); /* 24px */
   text-align: center;
-  color: var(--bbf-text-on-warm-muted);
+  color: var(--bbf-hero-text-muted);
   pointer-events: none;
   /* Gradient overlay with tinted grid — using color-mix for warm tone */
   background:
     radial-gradient(
       ellipse at 50% 40%,
-      color-mix(in srgb, var(--bbf-text-on-warm) 6%, transparent),
+      color-mix(in srgb, var(--bbf-hero-text) 6%, transparent),
       transparent 70%
     ),
     repeating-linear-gradient(
       45deg,
       transparent 0 12px,
-      color-mix(in srgb, var(--bbf-text-on-warm) 2%, transparent) 12px 13px
+      color-mix(in srgb, var(--bbf-hero-text) 2%, transparent) 12px 13px
     );
   opacity: 1;
   transition: opacity var(--bbf-motion-base) var(--bbf-easing-in-out); /* 240ms — B3: 0.3s→base FIRMADO */
@@ -262,12 +267,12 @@
 
 /* Play button mark */
 .bbf-hero__video-empty-mark {
-  color: var(--bbf-text-on-warm);
+  color: var(--bbf-hero-text);
   width: var(--bbf-space-14); /* 56px */
   height: var(--bbf-space-14); /* 56px */
   border-radius: var(--bbf-radius-full);
-  border: var(--bbf-line-border) solid var(--bbf-border-on-warm);
-  background: var(--bbf-surface-warm-base);
+  border: var(--bbf-line-border) solid var(--bbf-hero-border);
+  background: var(--bbf-hero-surface-chrome);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -279,7 +284,7 @@
   letter-spacing: var(--bbf-tracking-wide); /* 0.02em */
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
-  color: var(--bbf-text-on-warm-muted);
+  color: var(--bbf-hero-text-muted);
 }
 
 /* ============================================================================
@@ -288,9 +293,9 @@
 
 .bbf-hero__ticker {
   overflow: hidden;
-  border-top: var(--bbf-line-border) solid var(--bbf-border-on-warm);
+  border-top: var(--bbf-line-border) solid var(--bbf-hero-border);
   padding-block: var(--bbf-space-3); /* 12px */
-  background: var(--bbf-surface-warm-base);
+  background: var(--bbf-hero-surface-chrome);
 }
 
 .bbf-hero__ticker-track {
@@ -300,7 +305,7 @@
   white-space: nowrap;
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
-  color: var(--bbf-text-on-warm-muted);
+  color: var(--bbf-hero-text-muted);
   letter-spacing: var(--bbf-tracking-wide); /* 0.02em */
 }
 
@@ -314,7 +319,7 @@
 .bbf-hero__ticker-dot {
   width: var(--bbf-space-1); /* 4px */
   height: var(--bbf-space-1); /* 4px */
-  background: var(--bbf-text-on-warm);
+  background: var(--bbf-hero-text);
   border-radius: 50%;
   opacity: var(--bbf-hero-grid-overlay-opacity); /* 0.4 */
   flex-shrink: 0;

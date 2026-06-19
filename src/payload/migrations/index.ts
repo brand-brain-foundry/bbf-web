@@ -31,6 +31,7 @@ import * as migration_20260613_130000_wave_4c1_drop_legacy_href from './20260613
 import * as migration_20260613_140000_wave_4c1_sublink_linktarget from './20260613_140000_wave_4c1_sublink_linktarget';
 import * as migration_20260614_000100_site_cta_library from './20260614_000100_site_cta_library';
 import * as migration_20260616_235419_baseline_sync from './20260616_235419_baseline_sync';
+import * as migration_20260619_163628_refactor_hero_ctas from './20260619_163628_refactor_hero_ctas';
 
 export const migrations = [
   {
@@ -197,5 +198,10 @@ export const migrations = [
     up: migration_20260616_235419_baseline_sync.up,
     down: migration_20260616_235419_baseline_sync.down,
     name: '20260616_235419_baseline_sync',
+  },
+  {
+    up: migration_20260619_163628_refactor_hero_ctas.up,
+    down: migration_20260619_163628_refactor_hero_ctas.down,
+    name: '20260619_163628_refactor_hero_ctas'
   },
 ];

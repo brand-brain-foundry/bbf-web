@@ -185,12 +185,26 @@ export const buttonVariants = cva(
 
       /* ── Surface interactions ─────────────────────────────────────────────
          ghost+dark/black: texto e hover ajustados a superficies oscuras.
-         fill:outline × intent:primary × surface:dark: ring border + bg-hover (diferido L-CASCADE). */
+         fill:outline × intent:primary × surface:dark: ring border + bg-hover (diferido L-CASCADE).
+         fill:solid/outline × intent:secondary × surface:dark: sand→dark-sand gradient normal,
+           blue gradient hover. D-E2-HERO-BTN firmada (2026-06-19). */
       {
         intent: 'ghost',
         surface: 'dark',
         class:
           'text-[var(--bbf-text-on-black)] [@media(hover:hover)]:hover:bg-[var(--bbf-surface-black-elevated)]',
+      },
+      {
+        fill: 'solid',
+        intent: 'secondary',
+        surface: 'dark',
+        class: 'bbf-btn-solid-secondary-dark',
+      },
+      {
+        fill: 'outline',
+        intent: 'secondary',
+        surface: 'dark',
+        class: 'bbf-btn-outline-secondary-dark',
       },
       {
         intent: 'ghost',

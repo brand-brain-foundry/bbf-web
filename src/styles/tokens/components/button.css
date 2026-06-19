@@ -379,6 +379,174 @@
   }
 }
 
+/* ============================================================
+   SOLID SECONDARY DARK — D-E2-HERO-BTN (2026-06-19)
+   Normal: sand→dark-sand gradient animated.
+   Hover: blue gradient animated + white text.
+   Compound: fill:solid × intent:secondary × surface:dark
+   ============================================================ */
+.bbf-btn-solid-secondary-dark {
+  isolation: isolate;
+  background: var(--bbf-gradient-primary); /* blue — hover target (always running) */
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+}
+
+.bbf-btn-solid-secondary-dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    110deg,
+    var(--bbf-surface-sand) 0%,
+    var(--bbf-surface-sand-deep) 50%,
+    var(--bbf-surface-sand) 100%
+  );
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift 6s ease-in-out infinite;
+  z-index: -1;
+  opacity: 1;
+  transition: opacity var(--bbf-motion-state-duration-cta) var(--bbf-motion-state-easing);
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .bbf-btn-solid-secondary-dark:hover::before {
+    opacity: 0; /* sand fades → reveals blue */
+  }
+  .bbf-btn-solid-secondary-dark:hover {
+    color: var(--bbf-text-on-gradient-blue);
+  }
+}
+
+.bbf-btn-solid-secondary-dark:focus-visible {
+  background: var(--bbf-accent-blue);
+  animation: none;
+  color: var(--bbf-text-on-gradient-blue);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-btn-solid-secondary-dark,
+  .bbf-btn-solid-secondary-dark::before {
+    animation: none;
+    background-position: 0% 50%;
+  }
+}
+
+/* ============================================================
+   OUTLINE SECONDARY DARK — D-E2-HERO-BTN (2026-06-19)
+   Border: sand→dark-sand gradient (dual-pseudo, mask-composite).
+   Text: same gradient via background-clip:text.
+   Hover: blue gradient border + blue gradient text.
+   Compound: fill:outline × intent:secondary × surface:dark
+   ============================================================ */
+.bbf-btn-outline-secondary-dark {
+  isolation: isolate;
+  border: none; /* override base .bbf-btn-outline-secondary solid border */
+  background: linear-gradient(
+    110deg,
+    var(--bbf-surface-sand) 0%,
+    var(--bbf-surface-sand-deep) 50%,
+    var(--bbf-surface-sand) 100%
+  );
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift 6s ease-in-out infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ::before = normal state border: sand→dark-sand */
+.bbf-btn-outline-secondary-dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--bbf-line-gradient-inset);
+  background: linear-gradient(
+    110deg,
+    var(--bbf-surface-sand) 0%,
+    var(--bbf-surface-sand-deep) 50%,
+    var(--bbf-surface-sand) 100%
+  );
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift 6s ease-in-out infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  opacity: 1;
+  transition: opacity var(--bbf-motion-state-duration-cta) var(--bbf-motion-state-easing);
+  pointer-events: none;
+}
+
+/* ::after = hover state border: blue gradient */
+.bbf-btn-outline-secondary-dark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--bbf-line-gradient-inset);
+  background: var(--bbf-gradient-primary);
+  background-size: 200% 100%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity var(--bbf-motion-state-duration-cta) var(--bbf-motion-state-easing);
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .bbf-btn-outline-secondary-dark:hover::before {
+    opacity: 0;
+  }
+  .bbf-btn-outline-secondary-dark:hover::after {
+    opacity: 1;
+  }
+  .bbf-btn-outline-secondary-dark:hover {
+    background: var(--bbf-gradient-primary);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.bbf-btn-outline-secondary-dark:focus-visible::before,
+.bbf-btn-outline-secondary-dark:focus-visible::after {
+  opacity: 0;
+}
+.bbf-btn-outline-secondary-dark:focus-visible {
+  border: var(--bbf-line-gradient-inset) solid var(--bbf-accent-blue);
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: var(--bbf-surface-sand);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-btn-outline-secondary-dark,
+  .bbf-btn-outline-secondary-dark::before,
+  .bbf-btn-outline-secondary-dark::after {
+    animation: none;
+    background-position: 0% 50%;
+  }
+}
+
 /* Arrow icon translate on button hover — matches design-preview .btn:hover .btn__arrow */
 [data-component='bbf-button'] [data-component='bbf-icon'] {
   transition: transform var(--bbf-motion-duration-fast, 200ms)

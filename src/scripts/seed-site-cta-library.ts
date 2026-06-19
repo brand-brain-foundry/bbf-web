@@ -31,6 +31,23 @@ const CTA_ITEMS = [
     en: 'Watch it run',
     type: 'solid' as const,
     intent: 'primary' as const,
+    href: '/casos',
+  },
+  {
+    key: 'hero-cta-primary',
+    es: 'Verlo funcionar',
+    en: 'Watch it run',
+    type: 'solid' as const,
+    intent: 'secondary' as const,
+    href: '#proceso',
+  },
+  {
+    key: 'hero-cta-secondary',
+    es: 'Conocer el método',
+    en: 'Learn the method',
+    type: 'outline' as const,
+    intent: 'secondary' as const,
+    href: '#metodo',
   },
 ] as const;
 
@@ -44,6 +61,7 @@ async function seedSiteCtaLibrary() {
       label: cta[loc],
       type: cta.type,
       intent: cta.intent,
+      href: cta.href,
     }));
 
   await payload.updateGlobal({
@@ -81,6 +99,10 @@ async function seedSiteCtaLibrary() {
 
   console.log('[seed-site-cta-library] ✅ SiteCtaLibrary seed COMPLETADO.');
   console.log('   CTAs: watch-it-run → Verlo funcionar / Watch it run (solid, primary)');
+  console.log('   CTAs: hero-cta-primary → Verlo funcionar / Watch it run (solid, secondary)');
+  console.log(
+    '   CTAs: hero-cta-secondary → Conocer el método / Learn the method (outline, secondary)',
+  );
   process.exit(0);
 }
 

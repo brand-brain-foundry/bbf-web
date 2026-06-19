@@ -24,6 +24,7 @@ import type { Media } from '@/payload/payload-types';
 import { interpolate } from '@/lib/content-interpolation';
 import { buildFaqPageJsonLd } from '@/lib/seo/jsonLd/faqPage';
 import { getSiteIdentity } from '@/config/site';
+import { getCtaByKey } from '@/lib/payload/getSiteCtaLibrary';
 
 export const revalidate = 3600;
 
@@ -124,6 +125,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         ),
       )
     : undefined;
+  // §1 Hero CTAs — resolved from SiteCtaLibrary (D-E2-09 rev: array, max 2)
+  const heroCtas = (
+    await Promise.all(
+      (hero.ctas ?? []).slice(0, 2).map(({ ctaKey }) => (ctaKey ? getCtaByKey(ctaKey, l) : null)),
+    )
+  ).filter((cta): cta is NonNullable<typeof cta> => cta !== null);
+
   const posterUrl =
     hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
       ? ((hero.media.videoPoster as Media).url ?? undefined)
@@ -186,7 +194,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <>
       <HeroSection
-        surface="warm"
+        surface="dark"
         height="auto"
         data-hero-decoration="grid-cols-12"
         className="bbf-hero"
@@ -196,7 +204,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           {/* Head row — 2-col: title left, lede+CTAs right */}
           <HeroSection.Grid cols="2-1.4-1" className="bbf-hero__head">
             <div>
-              <Heading level="display-hero" color="primary" align="left" weight="medium">
+              <Heading
+                level="display-hero"
+                color="primary"
+                align="left"
+                weight="medium"
+                className="bbf-hero__title"
+              >
                 {h1Line1}
                 <br />
                 <span data-tone="soft" className="bbf-gradient-blue-animated">
@@ -207,32 +221,39 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
             <Reveal variant="up" delay={120}>
               <div className="bbf-hero__lede flex flex-col items-start gap-5">
-                <Text className="bbf-lede max-w-[38ch] [color:var(--bbf-text-on-warm-muted)]">
+                <Text className="bbf-lede max-w-[38ch]">
                   {ledeBody}
                   {ledeEmphasis && (
                     <>
                       <br />
-                      <span className="bbf-hero__lede-em font-medium [color:var(--bbf-text-on-warm)]">
+                      <span className="bbf-hero__lede-em font-medium [color:var(--bbf-on-surface-bright)]">
                         {ledeEmphasis}
                       </span>
                     </>
                   )}
                 </Text>
 
-                <div className="bbf-hero__ctas flex flex-wrap gap-2.5">
-                  <Button intent="primary" size="md" asChild className="bbf-gradient-dark-animated">
-                    <a href={hero.ctaPrimary.href}>
-                      {hero.ctaPrimary.label}
-                      <Icon icon={Icons.arrowRight} size="sm" />
-                    </a>
-                  </Button>
-                  <Button intent="ghost" size="md" asChild className="bbf-gradient-border-animated">
-                    <a href={hero.ctaSecondary.href}>
-                      {hero.ctaSecondary.label}
-                      <Icon icon={Icons.arrowRight} size="sm" />
-                    </a>
-                  </Button>
-                </div>
+                {heroCtas.length > 0 && (
+                  <div className="bbf-hero__ctas flex flex-wrap gap-2.5">
+                    {heroCtas.map((cta) => (
+                      <Button
+                        key={cta.key}
+                        fill={(cta.type as 'solid' | 'outline') ?? 'solid'}
+                        intent={
+                          (cta.intent as 'primary' | 'secondary' | 'black' | 'red') ?? 'secondary'
+                        }
+                        surface="dark"
+                        size="md"
+                        asChild
+                      >
+                        <a href={cta.href ?? '#'}>
+                          {cta.label}
+                          <Icon icon={Icons.arrowRight} size="sm" />
+                        </a>
+                      </Button>
+                    ))}
+                  </div>
+                )}
               </div>
             </Reveal>
           </HeroSection.Grid>

@@ -2102,26 +2102,18 @@ export interface SiteHomepage {
      * Frase de énfasis al final del lede (peso 500, color primario).
      */
     ledeEmphasis: string;
-    ctaPrimary: {
-      /**
-       * Texto del botón primario.
-       */
-      label: string;
-      /**
-       * URL o anchor destino.
-       */
-      href: string;
-    };
-    ctaSecondary: {
-      /**
-       * Texto del botón secundario (ghost).
-       */
-      label: string;
-      /**
-       * URL o anchor destino.
-       */
-      href: string;
-    };
+    /**
+     * Selecciona 0–2 CTAs de la Library. Primer ítem = CTA principal. Label/type/intent/href vienen de SiteCtaLibrary.
+     */
+    ctas?:
+      | {
+          /**
+           * Key de SiteCtaLibrary (ej: hero-cta-primary). Ver Catálogo de CTAs para keys disponibles.
+           */
+          ctaKey: string;
+          id?: string | null;
+        }[]
+      | null;
     media: {
       /**
        * Etiqueta decorativa del chrome superior del frame (sintético, hardcoded canon).
@@ -2711,6 +2703,10 @@ export interface SiteCtaLibrary {
         label: string;
         type: 'solid' | 'outline';
         intent: 'primary' | 'secondary' | 'black' | 'red';
+        /**
+         * URL o anchor destino (ej: #proceso, /contacto). SSOT del destino del CTA.
+         */
+        href?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -2941,17 +2937,11 @@ export interface SiteHomepageSelect<T extends boolean = true> {
         h1Line2Soft?: T;
         ledeBody?: T;
         ledeEmphasis?: T;
-        ctaPrimary?:
+        ctas?:
           | T
           | {
-              label?: T;
-              href?: T;
-            };
-        ctaSecondary?:
-          | T
-          | {
-              label?: T;
-              href?: T;
+              ctaKey?: T;
+              id?: T;
             };
         media?:
           | T
@@ -3230,6 +3220,7 @@ export interface SiteCtaLibrarySelect<T extends boolean = true> {
         label?: T;
         type?: T;
         intent?: T;
+        href?: T;
         id?: T;
       };
   updatedAt?: T;

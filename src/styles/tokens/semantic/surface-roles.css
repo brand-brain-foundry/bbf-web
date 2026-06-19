@@ -6,8 +6,11 @@
  * Depende de: semantic/colors.css, semantic/colors-warm.css, semantic/colors-dark.css
  *
  * 4 surfaces live: sand | warm | dark | white
- * 15 roles por surface: title, body, muted, link, link-hover, accent, border, highlight, bg,
+ * 16 roles por surface: title, body, muted, bright, link, link-hover, accent, border, highlight, bg,
  *   hover-bg, hover-subtle-bg, input-bg, input-border, focus-ring, divider
+ *
+ * D-E2-06 (2026-06-19): bright — texto máxima luminosidad sobre surface.
+ *   dark: --bbf-color-white (#ffffff). sand/warm/white: alias --bbf-on-surface-title.
  *
  * Tabla Op-A firmada Zavala 2026-06-13:
  *   sand:  title=#000000, body=#1a1a1a, muted=#666666
@@ -23,6 +26,7 @@
   --bbf-on-surface-title: var(--bbf-text-on-sand);
   --bbf-on-surface-body: var(--bbf-text-on-sand-muted);
   --bbf-on-surface-muted: var(--bbf-text-on-sand-subtle);
+  --bbf-on-surface-bright: var(--bbf-on-surface-title); /* D-E2-06: sand default = title */
   --bbf-on-surface-link: var(--bbf-accent-on-sand);
   --bbf-on-surface-link-hover: var(--bbf-accent-blue-hover);
   --bbf-on-surface-accent: var(--bbf-accent-red);
@@ -43,6 +47,7 @@
   --bbf-on-surface-title: var(--bbf-text-on-sand);
   --bbf-on-surface-body: var(--bbf-text-on-sand-muted);
   --bbf-on-surface-muted: var(--bbf-text-on-sand-subtle);
+  --bbf-on-surface-bright: var(--bbf-on-surface-title); /* D-E2-06: sand = title */
   --bbf-on-surface-link: var(--bbf-accent-on-sand);
   --bbf-on-surface-link-hover: var(--bbf-accent-blue-hover);
   --bbf-on-surface-accent: var(--bbf-accent-red);
@@ -62,6 +67,7 @@
   --bbf-on-surface-title: var(--bbf-text-on-warm);
   --bbf-on-surface-body: var(--bbf-text-on-warm-soft);
   --bbf-on-surface-muted: var(--bbf-text-on-warm-muted);
+  --bbf-on-surface-bright: var(--bbf-on-surface-title); /* D-E2-06: warm = title */
   --bbf-on-surface-link: var(--bbf-text-on-warm-accent);
   --bbf-on-surface-link-hover: var(--bbf-focus-ring-on-warm);
   --bbf-on-surface-accent: var(--bbf-text-on-warm-accent);
@@ -81,6 +87,9 @@
   --bbf-on-surface-title: var(--bbf-text-on-dark-surface);
   --bbf-on-surface-body: var(--bbf-text-on-dark-surface-muted);
   --bbf-on-surface-muted: var(--bbf-text-on-dark-surface-muted);
+  --bbf-on-surface-bright: var(
+    --bbf-color-white
+  ); /* D-E2-06: dark = #ffffff (máxima luminosidad) */
   --bbf-on-surface-link: var(--bbf-text-on-dark-surface-accent);
   --bbf-on-surface-link-hover: var(--bbf-link-hover-on-dark-surface); /* D-DS-17 */
   --bbf-on-surface-accent: var(--bbf-accent-red); /* OBS-2: rojo ≠ azul link */
@@ -104,6 +113,7 @@
   --bbf-on-surface-title: var(--bbf-text-on-sand);
   --bbf-on-surface-body: var(--bbf-text-on-sand-muted);
   --bbf-on-surface-muted: var(--bbf-text-on-sand-subtle);
+  --bbf-on-surface-bright: var(--bbf-on-surface-title); /* D-E2-06: white = title */
   --bbf-on-surface-link: var(--bbf-accent-on-sand);
   --bbf-on-surface-link-hover: var(--bbf-accent-blue-hover);
   --bbf-on-surface-accent: var(--bbf-accent-red);

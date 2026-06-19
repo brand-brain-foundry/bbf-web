@@ -127,9 +127,29 @@
   will-change: auto;
 }
 
-/* === Hero section background — --bbf-surface-hero (Q1-Op-A T6.7 2026-05-28) === */
+/* === Hero section background + surface-aware tokens (D-E2-APPLY-SYSTEM 2026-06-19) === */
+/* Puente Tier-3: --bbf-hero-* mapea a roles del sistema (--bbf-on-surface-*).
+ * home-hero.css referencia estos tokens en 27 lugares. El puente permanece (A-01 scope mínimo).
+ * Sistema paralelo --bbf-text-on-black-* ELIMINADO. Ahora usa roles canónicos.
+ * WARM + DARK: ambos bloques leen --bbf-on-surface-* del cascade [data-surface]. */
 [data-component='bbf-hero-section'] {
-  background: var(--bbf-surface-hero);
+  background: var(--bbf-on-surface-bg);
+  --bbf-hero-text: var(--bbf-on-surface-title);
+  --bbf-hero-text-muted: var(--bbf-on-surface-body);
+  --bbf-hero-border: var(--bbf-on-surface-border);
+  --bbf-hero-surface-chrome: var(--bbf-on-surface-hover-bg);
+  --bbf-hero-surface-frame: var(--bbf-on-surface-highlight);
+  --bbf-hero-surface-deep: var(--bbf-on-surface-bg);
+}
+
+[data-component='bbf-hero-section'][data-surface='dark'] {
+  background: var(--bbf-on-surface-bg); /* --bbf-surface-dark-base #0a0a0a */
+  --bbf-hero-text: var(--bbf-on-surface-title); /* #f5f3ed cream */
+  --bbf-hero-text-muted: var(--bbf-on-surface-body); /* #a8a59f muted */
+  --bbf-hero-border: var(--bbf-on-surface-border); /* #2a2a2a */
+  --bbf-hero-surface-chrome: var(--bbf-on-surface-hover-bg); /* #1a1a1a elevated */
+  --bbf-hero-surface-frame: transparent; /* excepción visual: blob composition */
+  --bbf-hero-surface-deep: var(--bbf-on-surface-bg); /* #0a0a0a deepest */
 }
 
 /* === Vertical grid decoration (12 cols — D-FASE2-Q3 firmada) === */
@@ -143,7 +163,7 @@
 
 /* === Title soft tone — scoped to HeroSection (D-FASE2-05) === */
 [data-component='bbf-hero-section'] [data-tone='soft'] {
-  color: var(--bbf-text-on-sand-subtle);
+  color: var(--bbf-on-surface-muted);
 }
 
 /* === CTA pill — scale + shadow lift === */
