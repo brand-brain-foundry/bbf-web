@@ -9,6 +9,15 @@
  * TODOS los valores tokenizados. CERO hardcoded colors.
  * Paleta: tokens warm (D-MIG-01) + existentes BBF.
  *
+ * ETAPA 1 (2026-06-19, FIRMADO): sanear literales → tokens madre→fórmula→valor.
+ * B1: padding-top max 132→128px (space-32, -4px a viewport ancho, FIRMADO).
+ * B2: ticker gap 36→40px (space-10, +4px más aire, FIRMADO).
+ * B3: video-empty transition 0.3s→motion-base (240ms, FIRMADO).
+ * B4: video-empty-msg line-height 1.5→leading-base (1.55, FIRMADO).
+ * B5: video-empty gap 14→16px (space-4, +2px, FIRMADO).
+ * UNLISTED encontrados y tokenizados: .bbf-hero__ctas gap 10px→space-2.5,
+ *   .bbf-hero__media-foot .mono margin-top 4px→space-1.
+ *
  * Refs: .claude/plans/migracion-s1-hero.md, BBF_DesignSystemMigrationCanon_v1 §8
  */
 
@@ -17,8 +26,12 @@
  * ============================================================================ */
 
 .bbf-hero {
-  padding-top: clamp(96px, 11vw, 132px);
-  padding-bottom: clamp(48px, 6vw, 96px);
+  padding-top: clamp(
+    var(--bbf-space-24),
+    11vw,
+    var(--bbf-space-32)
+  ); /* 96 → 128px — B1: 132→128 FIRMADO */
+  padding-bottom: clamp(var(--bbf-space-12), 6vw, var(--bbf-space-24)); /* 48 → 96px */
   border-top: 0 !important;
   position: relative;
   overflow: hidden;
@@ -31,7 +44,7 @@
   inset: 0;
   background-image: linear-gradient(to right, var(--bbf-border-on-warm) 1px, transparent 1px);
   background-size: calc(100% / 12) 100%;
-  opacity: 0.4;
+  opacity: var(--bbf-hero-grid-overlay-opacity); /* 0.4 */
   pointer-events: none;
   mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
 }
@@ -46,7 +59,7 @@
     0,
     1fr
   ); /* minmax(0) prevents content from expanding beyond container */
-  gap: clamp(28px, 3.5vw, 48px);
+  /* gap: CVA HeroSection.Grid cols="1" → gap-[clamp(28px,3.5vw,48px)] (A9) */
   position: relative;
   padding-inline: var(
     --bbf-space-section-gutter
@@ -60,14 +73,14 @@
 .bbf-hero__head {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: clamp(32px, 6vw, 96px);
+  /* gap: CVA HeroSection.Grid cols="2-1.4-1" → gap-[clamp(32px,6vw,96px)] (A10) */
   align-items: end;
 }
 
 @media (max-width: 920px) {
   .bbf-hero__head {
     grid-template-columns: 1fr;
-    gap: var(--bbf-space-6); /* 24px */
+    gap: var(--bbf-space-6); /* 24px — mobile override, not in CVA */
     align-items: start;
   }
 }
@@ -108,7 +121,7 @@
 
 .bbf-hero__ctas {
   display: flex;
-  gap: 10px;
+  gap: var(--bbf-space-2\.5); /* 10px — UNLISTED encontrado Etapa 1 */
   flex-wrap: wrap;
 }
 
@@ -133,7 +146,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: var(--bbf-space-3) var(--bbf-space-4); /* 12px 16px */
   border-bottom: var(--bbf-line-border) solid var(--bbf-border-on-warm);
   background: var(--bbf-surface-warm-base);
   color: var(--bbf-text-on-warm-muted);
@@ -146,12 +159,12 @@
   color: var(--bbf-text-on-warm);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--bbf-space-1\.5); /* 6px */
 }
 
 .bbf-hero__rec-dot {
-  width: 6px;
-  height: 6px;
+  width: var(--bbf-space-1\.5); /* 6px */
+  height: var(--bbf-space-1\.5); /* 6px */
   background: var(--bbf-accent-red);
   border-radius: 50%;
   animation: bbf-rec-pulse 1.6s ease-in-out infinite;
@@ -179,7 +192,7 @@
   color: var(--bbf-text-on-warm);
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
-  margin-top: 4px;
+  margin-top: var(--bbf-space-1); /* 4px — UNLISTED encontrado Etapa 1 */
 }
 
 /* ============================================================================
@@ -219,8 +232,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  padding: 24px;
+  gap: var(--bbf-space-4); /* 16px — B5: 14→16 FIRMADO */
+  padding: var(--bbf-space-6); /* 24px */
   text-align: center;
   color: var(--bbf-text-on-warm-muted);
   pointer-events: none;
@@ -237,7 +250,7 @@
       color-mix(in srgb, var(--bbf-text-on-warm) 2%, transparent) 12px 13px
     );
   opacity: 1;
-  transition: opacity 0.3s var(--bbf-easing-in-out); /* --bbf-easing-soft equivalent */
+  transition: opacity var(--bbf-motion-base) var(--bbf-easing-in-out); /* 240ms — B3: 0.3s→base FIRMADO */
 }
 
 .bbf-hero__video[src] ~ .bbf-hero__video-empty,
@@ -248,8 +261,8 @@
 /* Play button mark */
 .bbf-hero__video-empty-mark {
   color: var(--bbf-text-on-warm);
-  width: 56px;
-  height: 56px;
+  width: var(--bbf-space-14); /* 56px */
+  height: var(--bbf-space-14); /* 56px */
   border-radius: var(--bbf-radius-full);
   border: var(--bbf-line-border) solid var(--bbf-border-on-warm);
   background: var(--bbf-surface-warm-base);
@@ -260,7 +273,7 @@
 
 .bbf-hero__video-empty-msg {
   max-width: 44ch;
-  line-height: 1.5;
+  line-height: var(--bbf-leading-base); /* 1.55 — B4: 1.5→1.55 FIRMADO */
   letter-spacing: var(--bbf-tracking-wide); /* 0.02em */
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
@@ -274,14 +287,14 @@
 .bbf-hero__ticker {
   overflow: hidden;
   border-top: var(--bbf-line-border) solid var(--bbf-border-on-warm);
-  padding-block: 12px;
+  padding-block: var(--bbf-space-3); /* 12px */
   background: var(--bbf-surface-warm-base);
 }
 
 .bbf-hero__ticker-track {
   display: flex;
-  gap: 36px;
-  animation: bbf-marquee 50s linear infinite;
+  gap: var(--bbf-space-10); /* 40px — B2: 36→40 (space-10) FIRMADO */
+  animation: bbf-marquee var(--bbf-hero-ticker-duration) linear infinite; /* 50s */
   white-space: nowrap;
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
@@ -297,11 +310,11 @@
 }
 
 .bbf-hero__ticker-dot {
-  width: 4px;
-  height: 4px;
+  width: var(--bbf-space-1); /* 4px */
+  height: var(--bbf-space-1); /* 4px */
   background: var(--bbf-text-on-warm);
   border-radius: 50%;
-  opacity: 0.4;
+  opacity: var(--bbf-hero-grid-overlay-opacity); /* 0.4 */
   flex-shrink: 0;
 }
 

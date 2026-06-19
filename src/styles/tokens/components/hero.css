@@ -90,6 +90,10 @@
   /* === Hero video overlay (deshabilitado — video raw) === */
   --bbf-hero-overlay-color: transparent;
   --bbf-hero-overlay-opacity: 0;
+
+  /* === Home hero §1 specific (Tier 3 — no semantic equivalent) === */
+  --bbf-hero-ticker-duration: 50s; /* marquee speed — not a UI transition */
+  --bbf-hero-grid-overlay-opacity: 0.4; /* 12-col grid + ticker-dot overlay */
 }
 
 /* === Hero entrance stagger — M5-E: tokens canon motion (D-98, TD-M5-D4-01 resuelta) === */
@@ -132,21 +136,9 @@
   position: relative;
 }
 
-[data-hero-decoration='grid-cols-12']::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(
-    to right,
-    var(--bbf-border-on-sand, #e5ddd6) 1px,
-    transparent 1px
-  );
-  background-size: calc(100% / 12) 100%;
-  opacity: 0.25;
-  pointer-events: none;
-  mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
-  z-index: 0;
-}
+/* NOTE: ::before decoration owned by .bbf-hero::before in home-hero.css
+ * (same specificity 0,1,1; home-hero.css imported after → wins).
+ * Removed A13 per ETAPA-1 sanear despacho (2026-06-19). */
 
 /* === Title soft tone — scoped to HeroSection (D-FASE2-05) === */
 [data-component='bbf-hero-section'] [data-tone='soft'] {
