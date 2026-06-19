@@ -94,6 +94,7 @@
   /* === Home hero §1 specific (Tier 3 — no semantic equivalent) === */
   --bbf-hero-ticker-duration: 50s; /* marquee speed — not a UI transition */
   --bbf-hero-grid-overlay-opacity: 0.4; /* 12-col grid + ticker-dot overlay */
+  --bbf-hero-rec-pulse-duration: 1.6s; /* REC dot heartbeat — not a UI transition */
 }
 
 /* === Hero entrance stagger — M5-E: tokens canon motion (D-98, TD-M5-D4-01 resuelta) === */

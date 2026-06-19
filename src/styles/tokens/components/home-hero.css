@@ -9,14 +9,12 @@
  * TODOS los valores tokenizados. CERO hardcoded colors.
  * Paleta: tokens warm (D-MIG-01) + existentes BBF.
  *
- * ETAPA 1 (2026-06-19, FIRMADO): sanear literales → tokens madre→fórmula→valor.
- * B1: padding-top max 132→128px (space-32, -4px a viewport ancho, FIRMADO).
- * B2: ticker gap 36→40px (space-10, +4px más aire, FIRMADO).
- * B3: video-empty transition 0.3s→motion-base (240ms, FIRMADO).
- * B4: video-empty-msg line-height 1.5→leading-base (1.55, FIRMADO).
- * B5: video-empty gap 14→16px (space-4, +2px, FIRMADO).
- * UNLISTED encontrados y tokenizados: .bbf-hero__ctas gap 10px→space-2.5,
- *   .bbf-hero__media-foot .mono margin-top 4px→space-1.
+ * ETAPA 1+1-bis (2026-06-19, CERRADA): sanear literales → tokens madre→fórmula→valor.
+ * Cero arbitrario restante (excepto 13px texture + 920px breakpoint — diferidos Etapa 2).
+ * B1: padding-top max 132→128px (space-32). B2: ticker gap 36→40px (space-10).
+ * B3: transition 0.3s→motion-base. B4: line-height 1.5→leading-base. B5: gap 14→16px.
+ * UNLISTED tokenizados: ctas gap 10px→space-2.5, mono margin-top 4px→space-1,
+ *   grid-line 1px→space-px, rec-pulse 1.6s→--bbf-hero-rec-pulse-duration.
  *
  * Refs: .claude/plans/migracion-s1-hero.md, BBF_DesignSystemMigrationCanon_v1 §8
  */
@@ -42,7 +40,11 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(to right, var(--bbf-border-on-warm) 1px, transparent 1px);
+  background-image: linear-gradient(
+    to right,
+    var(--bbf-border-on-warm) var(--bbf-space-px),
+    transparent var(--bbf-space-px)
+  ); /* 1px hairline */
   background-size: calc(100% / 12) 100%;
   opacity: var(--bbf-hero-grid-overlay-opacity); /* 0.4 */
   pointer-events: none;
@@ -167,7 +169,7 @@
   height: var(--bbf-space-1\.5); /* 6px */
   background: var(--bbf-accent-red);
   border-radius: 50%;
-  animation: bbf-rec-pulse 1.6s ease-in-out infinite;
+  animation: bbf-rec-pulse var(--bbf-hero-rec-pulse-duration) ease-in-out infinite; /* 1.6s */
   flex-shrink: 0;
 }
 
