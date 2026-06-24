@@ -1,6 +1,7 @@
 import type { GlobalConfig, Field } from 'payload';
 import { publicRead, isAdmin } from '@/payload/lib/access';
 import { ROUTE_KEYS } from '@/i18n/pathnames';
+import { Icons } from '@/components/atoms/Icon';
 import { revalidateGlobal } from '../hooks/revalidateGlobal';
 
 /**
@@ -103,12 +104,12 @@ export const SiteNavigation: GlobalConfig = {
         singular: { en: 'Link', es: 'Link' },
         plural: { en: 'Links', es: 'Links' },
       },
+      admin: { initCollapsed: true },
       fields: [
         {
           name: 'label',
           type: 'text',
           localized: true,
-          required: true,
         },
         // D-NAV-8 Opción C: destino agnóstico SSOT (href texto libre eliminado en L2).
         linkTargetField(),
@@ -126,6 +127,7 @@ export const SiteNavigation: GlobalConfig = {
           type: 'array',
           maxRows: 8,
           admin: {
+            initCollapsed: true,
             condition: (_, siblingData) => Boolean(siblingData?.hasSubMenu),
             description: 'Sub-links del mega-menu (visibles al hacer hover/click en desktop).',
           },
@@ -138,7 +140,6 @@ export const SiteNavigation: GlobalConfig = {
               name: 'label',
               type: 'text',
               localized: true,
-              required: true,
             },
             // L3 (D-NAV-9): destino agnóstico SSOT del sub-link (href texto libre eliminado).
             subLinkTargetField(),
@@ -149,6 +150,17 @@ export const SiteNavigation: GlobalConfig = {
               maxLength: 120,
               admin: {
                 description: 'Descripción corta opcional (ej: "El proceso paso a paso").',
+              },
+            },
+            {
+              name: 'icon',
+              type: 'select',
+              label: { en: 'Icon (optional)', es: 'Ícono (opcional)' },
+              required: false,
+              options: Object.keys(Icons).map((key) => ({ label: key, value: key })),
+              admin: {
+                description:
+                  'Ícono Lucide opcional en la card del mega-menu. Reutiliza registry.ts D-108 SSOT.',
               },
             },
             {
@@ -214,6 +226,7 @@ export const SiteNavigation: GlobalConfig = {
         plural: { en: 'Footer Groups', es: 'Grupos de Footer' },
       },
       admin: {
+        initCollapsed: true,
         description: {
           en: 'Footer link groups (e.g. Navigation, Resources, Company)',
           es: 'Grupos de links del footer (e.g. Navegación, Recursos, Empresa)',
@@ -224,7 +237,6 @@ export const SiteNavigation: GlobalConfig = {
           name: 'groupTitle',
           type: 'text',
           localized: true,
-          required: true,
           admin: {
             description: 'Title of the group (e.g. "Navigation"). Shown in uppercase canon.',
           },
@@ -238,12 +250,12 @@ export const SiteNavigation: GlobalConfig = {
             singular: { en: 'Link', es: 'Link' },
             plural: { en: 'Links', es: 'Links' },
           },
+          admin: { initCollapsed: true },
           fields: [
             {
               name: 'label',
               type: 'text',
               localized: true,
-              required: true,
             },
             // D-NAV-8 Opción C: destino agnóstico SSOT (href eliminado en L2).
             linkTargetField(),

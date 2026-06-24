@@ -38,6 +38,7 @@ export const SiteCtaLibrary: GlobalConfig = {
         singular: { en: 'CTA', es: 'CTA' },
         plural: { en: 'CTAs', es: 'CTAs' },
       },
+      admin: { initCollapsed: true },
       fields: [
         {
           name: 'key',
@@ -52,7 +53,6 @@ export const SiteCtaLibrary: GlobalConfig = {
           name: 'label',
           type: 'text',
           localized: true,
-          required: true,
         },
         {
           name: 'type',

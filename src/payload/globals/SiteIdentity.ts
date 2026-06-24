@@ -134,6 +134,7 @@ export const SiteIdentity: GlobalConfig = {
       type: 'array',
       label: { es: 'Áreas atendidas', en: 'Areas served' },
       admin: {
+        initCollapsed: true,
         description: {
           es: 'Geografías que Sivar Brains atiende (Schema.org Organization.areaServed)',
           en: 'Geographies Sivar Brains serves (Schema.org Organization.areaServed)',
@@ -151,7 +152,6 @@ export const SiteIdentity: GlobalConfig = {
           name: 'name',
           type: 'text',
           localized: true,
-          required: true,
         },
         {
           name: 'iso2',
@@ -169,6 +169,7 @@ export const SiteIdentity: GlobalConfig = {
       minRows: 1,
       required: true,
       admin: {
+        initCollapsed: true,
         description:
           'Co-fundadores de la organización. Schema.org Person array. Multi-founder amplifica entity signal AEO/LLMO 2026 (Knowledge Panel + AI citations). El primer founder (índice 0) alimenta {{founderName}}. Todos alimentan {{foundersList}}.',
       },
