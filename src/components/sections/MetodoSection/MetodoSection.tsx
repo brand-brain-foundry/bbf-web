@@ -1,33 +1,31 @@
 /**
  * MetodoSection — §5 Método homepage BBF
  *
- * Compound: SectionHeader + ProcessBar + ServiceCards grid + QuoteBlock + CTA link-warm.
- * Surface: warm (--bbf-surface-warm-base) — mismo que §2 Capabilities.
+ * Compound: SectionHeader + ProcessBar + CaseSection.Phases + CTA link.
+ * Surface: dark (cascade --bbf-on-surface-bg) — como §2/§3.
  *
  * D-S5-01: ComoFuncionaSection eliminado (35% similitud, no reutilizable).
  * D-S5-02: Lissajous metodo-2d (a=2,b=3,δ=π/2).
- * D-S5-03: surface="warm".
+ * D-S5-03: surface="dark" (D-S5-SURFACE-DARK firmada).
  * D-S5-04: ProcessBar Tier 3 inline (one-shot).
- * D-S5-05: ServiceCard local (NOT variant de CapabilityCard).
- * D-S5-06: QuoteBlock molecule variant="manifesto".
- * D-S5-07: .bbf-cta-link-warm utility.
- * D-S5-08: Deliverables schema simple {text}.
+ * D-S5-05: ServiceCard preservado en T-METODO-CARDS (sale del render, código intacto).
+ * D-S5-RECOMPOSE: mth__cards → CaseSection.Phases (Opción A: services[]→Phase, sin schema change).
+ * D-S5-07: .bbf-cta-link utility (D-S5-UNIF: unificado, bbf-cta-link-warm eliminado).
  */
 
 import { Fragment, type ReactNode } from 'react';
 import { SectionHeader } from '@/components/molecules/SectionHeader';
-import { QuoteBlock } from '@/components/molecules/QuoteBlock';
+import { CaseSection } from '@/components/sections/CaseSection';
 import { Lissajous } from '@/components/atoms/Lissajous';
 import { Reveal } from '@/components/atoms/Reveal';
 import { Icon, Icons } from '@/components/atoms/Icon';
-import { ServiceCard } from './ServiceCard';
 import type { ServiceCardProps } from './ServiceCard';
 
 /* ── Types ─────────────────────────────────────────────────── */
 
 interface ProcessPhase {
   number: string;
-  shortLabel: string;
+  shortLabel?: string | null;
   id?: string | null;
 }
 
@@ -37,9 +35,6 @@ export interface MetodoData {
   h2Line2Soft?: string | null;
   phases?: ProcessPhase[] | null;
   services?: ServiceCardProps[] | null;
-  quoteText?: string | null;
-  quoteTextSoft?: string | null;
-  quoteAttribution?: string | null;
   ctaLabel?: string | null;
   ctaHref?: string | null;
 }
@@ -77,7 +72,7 @@ function Root({ children }: RootProps) {
     <section
       className="bbf-mth-section"
       data-component="bbf-metodo-section"
-      data-surface="warm"
+      data-surface="dark"
       id="metodo"
     >
       <div className="bbf-section-wrap">{children}</div>
@@ -98,7 +93,7 @@ export function MetodoSection({ data }: { data: MetodoData }) {
           eyebrow={data.eyebrow ?? '§5 · MÉTODO'}
           h2Line1={data.h2Line1 ?? 'Tres servicios coordinados.'}
           h2Line2Soft={data.h2Line2Soft ?? 'Sin sorpresas.'}
-          surface="warm"
+          surface="dark"
           h2Line2SoftClassName="bbf-gradient-blue-animated"
           decoration={<Lissajous name="figure8-2d" animation="traveling" />}
         />
@@ -111,31 +106,25 @@ export function MetodoSection({ data }: { data: MetodoData }) {
       )}
 
       {services.length > 0 && (
-        <div className="bbf-mth__cards">
+        <CaseSection.Phases>
           {services.map((service, i) => (
             <Reveal key={i} delay={i * 100}>
-              <ServiceCard {...service} />
+              <CaseSection.Phase
+                index={i}
+                tag={service.number}
+                title={service.name ?? ''}
+                body={service.body ?? ''}
+                icon={null}
+              />
             </Reveal>
           ))}
-        </div>
-      )}
-
-      {data.quoteText && (
-        <Reveal>
-          <QuoteBlock
-            text={data.quoteText}
-            textSoft={data.quoteTextSoft ?? undefined}
-            attribution={data.quoteAttribution}
-            surface="warm"
-            variant="manifesto"
-          />
-        </Reveal>
+        </CaseSection.Phases>
       )}
 
       {data.ctaLabel && data.ctaHref && (
         <Reveal>
           <div className="bbf-mth__cta">
-            <a href={data.ctaHref} className="bbf-cta-link-warm">
+            <a href={data.ctaHref} className="bbf-cta-link">
               {data.ctaLabel}
               <Icon icon={Icons.arrowRight} size="sm" aria-hidden />
             </a>

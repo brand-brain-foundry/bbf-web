@@ -8,7 +8,6 @@ import { PorqueSection } from '@/components/sections/PorqueSection';
 import { MetodoSection } from '@/components/sections/MetodoSection';
 import { CierreSection } from '@/components/sections/CierreSection';
 import { SectionHeader } from '@/components/molecules/SectionHeader';
-import { CaseMediaFrame } from '@/components/molecules/CaseMediaFrame';
 import { Lissajous } from '@/components/atoms/Lissajous';
 import { HeroMediaFrame, HeroRecTimer } from '@/components/molecules/HeroMediaFrame';
 import { HeroTicker } from '@/components/molecules/HeroTicker';
@@ -25,6 +24,7 @@ import { interpolate } from '@/lib/content-interpolation';
 import { buildFaqPageJsonLd } from '@/lib/seo/jsonLd/faqPage';
 import { getSiteIdentity } from '@/config/site';
 import { getCtaByKey } from '@/lib/payload/getSiteCtaLibrary';
+import { Timeline } from '@/components/molecules/Timeline';
 
 export const revalidate = 3600;
 
@@ -66,22 +66,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     csH2Line1,
     csH2Line2Soft,
     csLead,
-    csQuoteText,
-    csQuoteCaption,
     // §5 Método
     mthEyebrow,
     mthH2Line1,
     mthH2Line2Soft,
-    mthQuoteText,
-    mthQuoteTextSoft,
-    mthQuoteAttribution,
     mthCtaLabel,
     // §6 Cierre
     clsEyebrow,
     clsBrandLine,
     clsStatementLine1,
     clsStatementLine2Soft,
-    clsCtaLabel,
     clsCtaNote,
     clsSignatureTagline,
   ] = await Promise.all([
@@ -97,20 +91,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     interpolate(cs?.h2Line1, l),
     interpolate(cs?.h2Line2Soft, l),
     interpolate(cs?.lead, l),
-    interpolate(cs?.quoteText, l),
-    interpolate(cs?.quoteCaption, l),
     interpolate(mth?.eyebrow, l),
     interpolate(mth?.h2Line1, l),
     interpolate(mth?.h2Line2Soft, l),
-    interpolate(mth?.quoteText, l),
-    interpolate(mth?.quoteTextSoft, l),
-    interpolate(mth?.quoteAttribution, l),
     interpolate(mth?.ctaLabel, l),
     interpolate(cls?.eyebrow, l),
     interpolate(cls?.brandLine, l),
     interpolate(cls?.statementLine1, l),
     interpolate(cls?.statementLine2Soft, l),
-    interpolate(cls?.cta?.label, l),
     interpolate(cls?.ctaNote, l),
     interpolate(cls?.signatureTagline, l),
   ]);
@@ -131,6 +119,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       (hero.ctas ?? []).slice(0, 2).map(({ ctaKey }) => (ctaKey ? getCtaByKey(ctaKey, l) : null)),
     )
   ).filter((cta): cta is NonNullable<typeof cta> => cta !== null);
+
+  // §6 Cierre CTA — resolved from SiteCtaLibrary (D-S456-02: outline+secondary via ctaKey)
+  const closingCta = cls?.ctaKey ? await getCtaByKey(cls.ctaKey, l) : null;
 
   const posterUrl =
     hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
@@ -201,7 +192,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       >
         {/* Outer single-col grid — outer spacing container */}
         <HeroSection.Grid cols="1" className="bbf-hero__grid bbf-container-wide mx-auto w-full">
-          {/* Head row — 2-col: title left, lede+CTAs right */}
           <HeroSection.Grid cols="2-1.4-1" className="bbf-hero__head">
             <div>
               <Heading
@@ -300,7 +290,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </HeroSection.Grid>
       </HeroSection>
 
-      <CapabilitiesSection surface="warm">
+      <CapabilitiesSection surface="dark">
         <Reveal variant="up">
           <CapabilitiesSection.Header
             eyebrow={capEyebrow || undefined}
@@ -308,6 +298,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             h2Line2Soft={capH2Line2Soft}
             h2Line2SoftClassName="bbf-gradient-blue-animated"
             lead={capLead}
+            surface="dark"
           />
         </Reveal>
 
@@ -316,7 +307,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         />
 
         <CapabilitiesSection.Grid>
-          {(cap.items ?? []).map((c, i) => (
+          {(cap?.items ?? []).map((c, i) => (
             <Reveal key={c.id ?? `cap-${i}`} variant="fade">
               <CapabilityCard align={i % 2 === 0 ? 'l' : 'r'} index={i + 1}>
                 <CapabilityCard.Txt
@@ -353,13 +344,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
           <Reveal variant="up" delay={80}>
             <CaseSection.Media>
-              <CaseMediaFrame>
-                <CaseMediaFrame.Chrome
+              <HeroMediaFrame>
+                <HeroMediaFrame.Chrome
+                  status="live"
                   label={cs.mediaChromeLabel ?? 'SIVAR-BRAINS · WhatsApp Business · live'}
                   timestamp={cs.mediaTimestamp ?? 'captura · 23:04 viernes'}
-                  live
                 />
-                <CaseMediaFrame.Body>
+                <HeroMediaFrame.VideoShell>
                   {caseVideoSources.length > 0 ? (
                     <HeroVideo controls preload="metadata" poster={casePosterUrl}>
                       {caseVideoSources.map((s) => (
@@ -367,38 +358,22 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                       ))}
                     </HeroVideo>
                   ) : null}
-                </CaseMediaFrame.Body>
-              </CaseMediaFrame>
+                </HeroMediaFrame.VideoShell>
+              </HeroMediaFrame>
             </CaseSection.Media>
           </Reveal>
 
-          <CaseSection.Phases>
-            {(cs.phases ?? []).map((phase, i) => (
-              <Reveal key={phase.id ?? `case-phase-${i}`} variant="up" delay={i * 100}>
-                <CaseSection.Phase
-                  index={i}
-                  tag={phase.tag ?? ''}
-                  title={phase.title ?? ''}
-                  body={phase.body ?? ''}
-                />
-              </Reveal>
-            ))}
-          </CaseSection.Phases>
-
-          {csQuoteText && (
-            <Reveal variant="up">
-              <CaseSection.Quote caption={csQuoteCaption || undefined}>
-                {csQuoteText}
-              </CaseSection.Quote>
-            </Reveal>
-          )}
-
-          <Reveal variant="up">
-            <CaseSection.Cta
-              href={cs.ctaHref ?? '/casos/sivar-brains'}
-              label={cs.ctaLabel ?? 'Leer el caso completo'}
-            />
-          </Reveal>
+          <Timeline
+            milestones={(cs.milestones ?? []).map((m) => ({
+              ...m,
+              title: m.title ?? '',
+              note: m.note ?? '',
+              statusLabel: m.statusLabel ?? '',
+            }))}
+            attribution={cs.timelineAttribution || undefined}
+            ctaHref={cs.ctaHref ?? '/casos/sivar-brains'}
+            ctaLabel={cs.ctaLabel ?? 'Leer el caso completo'}
+          />
         </CaseSection>
       )}
 
@@ -407,7 +382,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <PorqueSection>
           <Reveal variant="up">
             <SectionHeader
-              surface="warm"
+              surface="sand"
               eyebrow={cmp.eyebrow ?? '§4 · POR QUÉ'}
               h2Line1={cmp.h2Line1 ?? ''}
               h2Line2Soft={cmp.h2Line2Soft ?? undefined}
@@ -418,10 +393,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
           <Reveal variant="fade">
             <PorqueSection.Comparison columns={cmp.columns} rows={cmp.rows} />
-          </Reveal>
-
-          <Reveal variant="up">
-            <PorqueSection.Epilogue title={cmp.epilogue?.title} body={cmp.epilogue?.body} />
           </Reveal>
         </PorqueSection>
       )}
@@ -445,9 +416,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               body: s.body,
               deliverables: s.deliverables,
             })),
-            quoteText: mthQuoteText || undefined,
-            quoteTextSoft: mthQuoteTextSoft || undefined,
-            quoteAttribution: mthQuoteAttribution || undefined,
             ctaLabel: mthCtaLabel || undefined,
             ctaHref: mth.ctaHref,
           }}
@@ -463,7 +431,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             brandYear: cls.brandYear,
             statementLine1: clsStatementLine1 || undefined,
             statementLine2Soft: clsStatementLine2Soft || undefined,
-            cta: cls.cta ? { ...cls.cta, label: clsCtaLabel || cls.cta.label } : undefined,
+            cta: closingCta ?? undefined,
             ctaNote: clsCtaNote || undefined,
             signatureTagline: clsSignatureTagline || undefined,
           }}

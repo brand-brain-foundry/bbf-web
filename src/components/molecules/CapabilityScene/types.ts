@@ -4,7 +4,9 @@
  */
 import type { SiteHomepage } from '@/payload/payload-types';
 
-type CapabilityItem = NonNullable<NonNullable<SiteHomepage['capabilities']['items']>[number]>;
+type CapabilityItem = NonNullable<
+  NonNullable<NonNullable<SiteHomepage['capabilities']>['items']>[number]
+>;
 
 export type SceneData = CapabilityItem['scene'];
 export type SceneKind = SceneData['kind'];

@@ -13,12 +13,13 @@
 import type { CSSProperties } from 'react';
 import { useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import { Icon, Icons } from '@/components/atoms/Icon';
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
 
 interface Column {
   id?: string | null;
-  label: string;
+  label?: string | null;
   sub?: string | null;
   isHighlighted?: boolean | null;
 }
@@ -31,7 +32,7 @@ interface Cell {
 
 interface Row {
   id?: string | null;
-  attribute: string;
+  attribute?: string | null;
   cells?: Cell[] | null;
 }
 
@@ -42,41 +43,17 @@ interface ComparisonProps {
 
 /* ── Cell icons ─────────────────────────────────────────────────────────── */
 
+const CELL_ICON_MAP = {
+  yes: { cls: 'bbf-cmp__cell--yes', icon: Icons.check },
+  no: { cls: 'bbf-cmp__cell--no', icon: Icons.close },
+  mid: { cls: 'bbf-cmp__cell--mid', icon: Icons.minus },
+} as const;
+
 function CellIcon({ state }: { state: 'yes' | 'no' | 'mid' }) {
-  if (state === 'yes') {
-    return (
-      <span className="bbf-cmp__cell-icon bbf-cmp__cell--yes" aria-hidden="true">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path
-            d="M2 7.5L6 11L12 3.5"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
-    );
-  }
-  if (state === 'no') {
-    return (
-      <span className="bbf-cmp__cell-icon bbf-cmp__cell--no" aria-hidden="true">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path
-            d="M3 3L11 11M11 3L3 11"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-          />
-        </svg>
-      </span>
-    );
-  }
+  const { cls, icon } = CELL_ICON_MAP[state];
   return (
-    <span className="bbf-cmp__cell-icon bbf-cmp__cell--mid" aria-hidden="true">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path d="M2 7H12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      </svg>
+    <span className={`bbf-cmp__cell-icon ${cls}`} aria-hidden="true">
+      <Icon icon={icon} size="sm" />
     </span>
   );
 }

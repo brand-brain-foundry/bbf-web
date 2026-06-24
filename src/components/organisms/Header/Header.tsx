@@ -6,9 +6,11 @@ import { getSiteIdentity } from '@/config/site';
 import { SkipLink } from '@/components/atoms/SkipLink';
 import { LanguageSwitcher } from '@/components/molecules/LanguageSwitcher';
 import { BrandLogoLink } from '@/components/molecules/BrandLogoLink';
+import { BrandLogo } from '@/components/atoms/BrandLogo';
 import { MobileMenu } from '@/components/molecules/MobileMenu';
 import { Button } from '@/components/atoms/Button';
 import { HeaderDesktopNav } from './HeaderDesktopNav';
+import { HeaderScrollWrapper } from './HeaderScrollWrapper';
 import { resolveLinkHref } from '@/lib/nav/resolveLinkHref';
 import { getCtaByKey } from '@/lib/payload/getSiteCtaLibrary';
 import { cn } from '@/lib/utils';
@@ -51,6 +53,7 @@ export async function Header({ className }: HeaderProps) {
       label: string;
       href: string;
       description?: string | null;
+      icon?: string | null;
       mediaType: 'none' | 'image' | 'video';
       media?: {
         url?: string;
@@ -77,10 +80,27 @@ export async function Header({ className }: HeaderProps) {
         className,
       )}
     >
+      {/* Progressive blur layer — B-BBF-WEB-HEADER-PROGRESSIVE-BLUR.
+          backdrop-filter + mask-gradient: difumina el contenido de la página al pasar bajo el menú.
+          Posición: absolute top-0 (franja del header), NO top-full.
+          DOM order: primer hijo → pinta antes que el card → card sand queda ENCIMA.
+          mask-image: blur opaco en la zona del header card → se desvanece hacia abajo (progressive).
+          pointer-events-none + aria-hidden: no interfiere con interacción ni a11y. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[var(--bbf-header-blur-height)]"
+        style={{
+          backdropFilter: 'blur(var(--bbf-header-blur-radius))',
+          WebkitBackdropFilter: 'blur(var(--bbf-header-blur-radius))',
+          maskImage:
+            'linear-gradient(to bottom, black 0%, black var(--bbf-header-blur-mask-solid), transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(to bottom, black 0%, black var(--bbf-header-blur-mask-solid), transparent 100%)',
+        }}
+      />
       <SkipLink />
       <div className="bbf-container-wide pointer-events-auto mx-auto box-border px-3 pt-3 sm:px-4 sm:pt-4 lg:px-6">
-        <div
-          data-surface="sand"
+        <HeaderScrollWrapper
           className={cn(
             'mx-auto [border-radius:var(--bbf-radius-floating)]',
             'bg-[var(--bbf-on-surface-bg)]/95 backdrop-blur-xl',
@@ -125,6 +145,7 @@ export async function Header({ className }: HeaderProps) {
                     label: s.label,
                     href: s.href,
                     description: s.description,
+                    icon: s.icon,
                     mediaType: s.mediaType,
                     media: s.media,
                   })),
@@ -132,7 +153,7 @@ export async function Header({ className }: HeaderProps) {
                 cta={
                   headerCta
                     ? {
-                        label: headerCta.label,
+                        label: headerCta.label ?? '',
                         href: headerCtaHref, // L2: resuelto desde linkTarget
                         fill: (headerCta.type as 'solid' | 'outline') ?? 'solid',
                         intent: headerCta.intent as
@@ -145,10 +166,11 @@ export async function Header({ className }: HeaderProps) {
                     : undefined
                 }
                 siteName={siteName}
+                logo={<BrandLogo variant="icon" size="sm" ariaLabel={siteName} />}
               />
             </div>
           </div>
-        </div>
+        </HeaderScrollWrapper>
       </div>
     </header>
   );

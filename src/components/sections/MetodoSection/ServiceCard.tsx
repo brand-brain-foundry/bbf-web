@@ -12,11 +12,11 @@ import { Icon, Icons } from '@/components/atoms/Icon';
 
 export interface ServiceCardProps {
   number: string;
-  name: string;
+  name?: string | null;
   duration?: string | null;
   commitment?: string | null;
   body?: string | null;
-  deliverables?: { text: string; id?: string | null }[] | null;
+  deliverables?: { text?: string | null; id?: string | null }[] | null;
 }
 
 export function ServiceCard({
