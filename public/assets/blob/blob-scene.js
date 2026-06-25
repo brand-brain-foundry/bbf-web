@@ -8,7 +8,9 @@
    v39: assetBase + bindInput extracted to cfg; pointer handler refs stored
         for complete cleanup in destroy().
    v40: matcap-c moved from CDN to local assetBase (matcap-c.png).
-   v41: trackPointer(nx,ny) — exposes cursor-to-light from React (bindInput:false mode). */
+   v41: trackPointer(nx,ny) — exposes cursor-to-light from React (bindInput:false mode).
+   v42: canvas-relative resize — renderer uses canvas.clientWidth/Height instead of window dimensions.
+   v43: fix canvas scope — canvas declared at module level so resize() can access it from event listener. */
 (function () {
   'use strict';
 
@@ -34,7 +36,7 @@
 
   const matcaps = {}; // loaded THREE textures by key
 
-  let renderer, scene, camera, quad, mat, clock;
+  let renderer, scene, camera, quad, mat, clock, canvas;
   let raf = 0, simTime = 0, camTime = 0;
 
   const mouse = { x: 0, y: 0 };  const lightSmooth = { x: -0.35, y: 0.55 };
@@ -160,7 +162,7 @@
       }
 
       col = clamp(col, 0.0, 1.0);
-      gl_FragColor = vec4(pow(col, vec3(1.0/2.2)), 1.0);
+      gl_FragColor = vec4(pow(col, vec3(1.0/2.2)), hit); // hit=0 → transparent bg; hit=1 → opaque sphere
     }`;
 
   // ── helpers ───────────────────────────────────────────────────────────────
@@ -233,7 +235,7 @@
   // ── public API ─────────────────────────────────────────────────────────────
   BlobScene.setTweaks = function (t) {
     Object.assign(cfg, t);
-    if (renderer) renderer.setClearColor(cfg.bgColor, 1);
+    if (renderer) renderer.setClearColor(cfg.bgColor, 0); // mantener alpha 0 (transparente) al cambiar intent
     if (mat) mat.uniforms.uBg.value.set(...hexToRGB(cfg.bgColor));
     if (mat && matcaps[cfg.matcap]) mat.uniforms.uMatcap.value = matcaps[cfg.matcap];
   };
@@ -277,12 +279,13 @@
     hasPointer = true;
   };
 
-  BlobScene.init = function (canvas) {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
+  BlobScene.init = function (el) {
+    canvas = el;
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true }); // alpha:true → canvas transparente (surface CSS visible detrás)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cfg.maxDpr));
     THREE.ColorManagement.enabled = false;
     renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
-    renderer.setClearColor(cfg.bgColor, 1);
+    renderer.setClearColor(cfg.bgColor, 0); // alpha 0 → clear transparente (fondo = --bbf-on-surface-bg de la sección)
 
     scene = new THREE.Scene();
     camera = new THREE.Camera();
@@ -355,7 +358,7 @@
   }
 
   function resize() {
-    const w = window.innerWidth, h = window.innerHeight;
+    const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
     renderer.setSize(w, h, false);
     const pr = renderer.getPixelRatio();
     mat.uniforms.uRes.value.set(w * pr, h * pr);

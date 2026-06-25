@@ -20,7 +20,7 @@ declare global {
 }
 
 const THREE_SCRIPT = '/assets/blob/three.min.js';
-const BLOB_SCRIPT = '/assets/blob/blob-scene.js?v=41';
+const BLOB_SCRIPT = '/assets/blob/blob-scene.js?v=43';
 const BLOB_ASSET_BASE = '/assets/blob/';
 const MOBILE_WIDTH = 768;
 
@@ -78,12 +78,15 @@ interface BlobBackgroundProps {
   className?: string;
   /** Skip all rendering (useful for tests or forced override). */
   disabled?: boolean;
+  /** Render grain + vignette overlay layers (default true). Set false for clean black bg. */
+  overlays?: boolean;
 }
 
 export function BlobBackground({
   surface: surfaceProp,
   className,
   disabled = false,
+  overlays = true,
 }: BlobBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -235,11 +238,7 @@ export function BlobBackground({
           inset: 0,
           zIndex: 0,
           pointerEvents: 'none',
-          // CSS fallback: black base + PNG when available
           backgroundColor: '#000000',
-          backgroundImage: 'url(/assets/blob/blob-dark-fallback.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
         }}
         aria-hidden="true"
       />
@@ -257,29 +256,33 @@ export function BlobBackground({
         ref={canvasRef}
         style={{ display: 'block', width: '100%', height: '100%', pointerEvents: 'none' }}
       />
-      {/* Grain — SVG fractalNoise at 5.5% opacity, mix-blend:screen. Keyframe in animations.css. */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          opacity: 0.055,
-          mixBlendMode: 'screen',
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundSize: '200px 200px',
-          animation: 'bbf-blob-grain 4s steps(6) infinite',
-          pointerEvents: 'none',
-        }}
-      />
-      {/* Vignette — radial-gradient darkening edges for depth */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background:
-            'radial-gradient(120% 120% at 50% 46%, transparent 52%, rgba(0,0,0,.55) 100%)',
-          pointerEvents: 'none',
-        }}
-      />
+      {overlays && (
+        <>
+          {/* Grain — SVG fractalNoise at 5.5% opacity, mix-blend:screen. Keyframe in animations.css. */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              opacity: 0.055,
+              mixBlendMode: 'screen',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+              backgroundSize: '200px 200px',
+              animation: 'bbf-blob-grain 4s steps(6) infinite',
+              pointerEvents: 'none',
+            }}
+          />
+          {/* Vignette — radial-gradient darkening edges for depth */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background:
+                'radial-gradient(120% 120% at 50% 46%, transparent 52%, rgba(0,0,0,.55) 100%)',
+              pointerEvents: 'none',
+            }}
+          />
+        </>
+      )}
     </div>
   );
 }
