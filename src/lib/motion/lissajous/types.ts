@@ -70,6 +70,7 @@ export interface LissajousVariant {
   dimension: LissajousDimension;
   preset: LissajousPreset3D | LissajousPreset2D;
   defaultLabel: string;
+  colorMode?: 'surface' | 'gradient-primary'; // ausente = 'surface' implícito (motor default)
 }
 
 /**
@@ -85,4 +86,5 @@ export interface LissajousRuntimeOptions {
   bloom?: boolean;
   showFloatingDot?: boolean;
   showGuides?: boolean;
+  colorMode?: 'surface' | 'gradient-primary'; // override del registry por variante
 }

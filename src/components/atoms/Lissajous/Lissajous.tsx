@@ -96,6 +96,8 @@ export function Lissajous({
         container,
         animation: animation ?? 'traveling',
         ...runtimeOptions,
+        // prop wins → registry variant → motor config default ('surface')
+        colorMode: runtimeOptions.colorMode ?? variant.colorMode,
       });
       motor.start();
       return () => motor.stop();

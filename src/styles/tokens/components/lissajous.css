@@ -3,15 +3,24 @@
  *
  * Subordinado a: D-99 (Server+Client split) + D-BBF-KB-145 (DS discipline)
  * Tier: 3 (COMPONENT)
- * Decisiones: DS-Refinement Q-LIS-4 firmada (default + thick, sin escala completa)
- * Despacho: B-BBF-WEB-DS-REFINEMENT-LISSAJOUS-SCENES
+ * Despacho: B-BBF-WEB-LISSAJOUS-2D-SSOT · B-BBF-WEB-LISSAJOUS-2D-COLOR
  *
- * Stroke widths canon para curvas Lissajous 2D.
- * Default = 1.5 (alineado con refinamiento visual Wave 14+).
- * Thick = 2.5 (uso editorial alto contraste / hero scale).
- * Override consumer: [--bbf-lissajous-stroke-default:var(--bbf-lissajous-stroke-thick)]
+ * SSOT: config.ts (LISSAJOUS_2D_DEFAULTS). El motor lee de ahí.
+ * Estos tokens DOCUMENTAN los valores default — NO controlan el motor en runtime.
+ * Para cambiar el grosor: editar curveWidth en config.ts, no estos tokens.
+ *
+ * COLOR (curveColor: 'gradient-primary'):
+ *   SVG linearGradient inline · mismos tokens que --bbf-gradient-primary:
+ *   stop 0%/100%: var(--bbf-color-blue-accent)       — #3b82f6 (colors-dark.css Tier-1)
+ *   stop 50%:     var(--bbf-color-blue-accent-deep)  — #1e40af (colors-dark.css Tier-1)
+ *   Animación: gradientTransform rotate 45°/s (8s por vuelta)
+ *   Sin duplicación: stroke NO usa currentColor, dot usa style.fill directo.
+ *
+ * Fórmula de escalado: rendered_px = stroke_svg × (container_px / viewBox)
+ * Con container 96px y viewBox 340: factor = 0.282
  */
 :root {
-  --bbf-lissajous-stroke-default: 2.5; /* corrige viewBox scaling: viewBox 340 + 96px container = 0.28x → 2.5 rende ~0.7px */
-  --bbf-lissajous-stroke-thick: 3.5;
+  --bbf-lissajous-stroke-default: 7.1; /* config.ts curveWidth · intención 2.0px @ container 96px */
+  --bbf-lissajous-stroke-thick: 8.9; /* uso editorial · intención 2.5px @ container 96px */
+  --bbf-lissajous-deco-size: 6rem; /* container SectionHeader decoration (96px desktop) — override por consumer */
 }

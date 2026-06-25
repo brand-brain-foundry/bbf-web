@@ -18,7 +18,7 @@ export default function LissajousLabPage() {
   const names = getAllLissajousNames();
 
   return (
-    <div className="min-h-screen [background-color:var(--bbf-surface-ink)] p-8">
+    <div className="min-h-screen [background-color:var(--bbf-surface-ink)] p-8" data-surface="dark">
       <h1 className="mb-2 [font-family:var(--bbf-font-display)] text-3xl [color:var(--bbf-text-on-ink)]">
         Lissajous Variants Lab
       </h1>
