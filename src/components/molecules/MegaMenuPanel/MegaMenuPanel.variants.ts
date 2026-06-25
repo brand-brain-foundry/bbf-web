@@ -14,8 +14,8 @@ export const megaMenuItemVariants = cva([
   '[border-radius:var(--bbf-radius-card)]',
   'bg-transparent',
   'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
-  '[@media(hover:hover)]:hover:bg-[var(--bbf-on-surface-hover-subtle-bg)]',
-  'focus-visible:bg-[var(--bbf-on-surface-hover-subtle-bg)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-on-surface-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
+  '[@media(hover:hover)]:hover:bg-[var(--bbf-on-surface-hover-bg)]',
+  'focus-visible:bg-[var(--bbf-on-surface-hover-bg)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-on-surface-focus-ring)] focus-visible:ring-offset-1 focus-visible:outline-none',
 ]);
 
 export const megaMenuTitleVariants = cva(
@@ -39,7 +39,7 @@ export const megaMenuTitleVariants = cva(
 export const megaMenuDescriptionVariants = cva([
   'text-[length:var(--bbf-text-xs)]',
   'leading-[var(--bbf-leading-snug)]',
-  'text-[var(--bbf-on-surface-body)]',
+  'text-[var(--bbf-on-surface-muted)]',
 ]);
 
 export type MegaMenuTitleVariants = VariantProps<typeof megaMenuTitleVariants>;

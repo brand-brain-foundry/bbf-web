@@ -9,6 +9,7 @@ type SubLink = {
   label: string;
   href: string;
   description?: string | null;
+  icon?: string | null;
   mediaType: 'none' | 'image' | 'video';
   media?: {
     url?: string;

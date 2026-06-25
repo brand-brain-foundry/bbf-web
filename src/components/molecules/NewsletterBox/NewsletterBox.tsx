@@ -101,7 +101,7 @@ export function NewsletterBox({ copy, className }: NewsletterBoxProps) {
         <Heading level="h2" weight="bold" tone="default" asChild>
           <p>{copy.title}</p>
         </Heading>
-        <Text variant="body-sm" className="text-[var(--bbf-on-surface-body)]">
+        <Text variant="body-md" className="text-[var(--bbf-on-surface-body)]">
           {copy.description}
         </Text>
       </div>

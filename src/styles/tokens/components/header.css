@@ -1,0 +1,60 @@
+/**
+ * BBF Design System — Tier 3 Component: Header
+ *
+ * Tokens para la capa de progressive blur bajo el header sticky.
+ * Técnica: backdrop-filter blur + mask-image gradient (B-BBF-WEB-HEADER-PROGRESSIVE-BLUR).
+ * Linaje obligatorio madre → fórmula → valor. Altura responsive derivada del header real.
+ */
+
+:root {
+  /* Header outer height (card + top padding) — espeja las clases Tailwind del header.
+   * Mobile: pt-3 (var(--bbf-space-3)=12px) + h-14 (var(--bbf-space-14)=56px) = 68px.
+   * Madre: --bbf-space-3 + --bbf-space-14. Fórmula: suma directa. */
+  --bbf-header-height: calc(var(--bbf-space-3) + var(--bbf-space-14));
+
+  /* Blur fade zone — distancia debajo del card donde el blur se desvanece.
+   * Mobile: --bbf-space-3 (12px) — fade corto, no invade el hero. */
+  --bbf-header-blur-fade: var(--bbf-space-3);
+
+  /* Progressive blur layer height = header-height + fade-zone.
+   * Derivado automático: recalcula en cada breakpoint cuando cambian las madres.
+   * Mobile: 68px + 12px = 80px. */
+  --bbf-header-blur-height: calc(var(--bbf-header-height) + var(--bbf-header-blur-fade));
+
+  /* Mask solid stop — hasta dónde el blur es opaco (zona del card).
+   * Derivado automático: = --bbf-header-height (el card + padding, no más).
+   * Mobile: 68px. */
+  --bbf-header-blur-mask-solid: var(--bbf-header-height);
+
+  /* Blur radius — intensidad del backdropFilter. Sin escala madre (efecto).
+   * Valor: 12px ≈ mitad del backdrop-blur-xl del card (24px), para no rivalizar. */
+  --bbf-header-blur-radius: 12px;
+}
+
+/* sm (640px): header crece — sm:pt-4 + sm:h-16 = 80px. Fade más amplio en desktop.
+ * Espeja el breakpoint sm: de Tailwind (mismo valor, sin magic number). */
+@media (min-width: 640px) {
+  :root {
+    /* sm:pt-4 (16px) + sm:h-16 (64px) = 80px */
+    --bbf-header-height: calc(var(--bbf-space-4) + var(--bbf-space-16));
+    /* Fade más amplio en desktop: --bbf-space-12 (48px). blur-height → 128px, mask-solid → 80px. */
+    --bbf-header-blur-fade: var(--bbf-space-12);
+    /* --bbf-header-blur-height y --bbf-header-blur-mask-solid recalculan automáticamente ✓ */
+  }
+}
+
+/* D-NAV-SCROLL-02: transición elegante sand ↔ sand-elevated (#ebe3d4).
+ * Madre: --bbf-motion-duration-base (240ms). Easing: --bbf-easing-entrance (premium feel).
+ * background-color + border-color — las que mutan al cambiar data-surface.
+ * box-shadow excluido (--bbf-shadow-floating es igual en ambas pieles). */
+.bbf-header-card {
+  transition:
+    background-color var(--bbf-motion-duration-base) var(--bbf-easing-entrance),
+    border-color var(--bbf-motion-duration-base) var(--bbf-easing-entrance);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-header-card {
+    transition: none;
+  }
+}

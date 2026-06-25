@@ -9,6 +9,7 @@ import {
   BBF_DURATION_BASE_S,
   BBF_DURATION_FAST_S,
 } from '@/lib/motion/constants';
+import { Icon, Icons, type IconCanon } from '@/components/atoms/Icon';
 import {
   megaMenuItemVariants,
   megaMenuTitleVariants,
@@ -27,6 +28,7 @@ type SubLink = {
   label: string;
   href: string;
   description?: string | null;
+  icon?: string | null;
   mediaType: 'none' | 'image' | 'video';
   media?: SubLinkMedia | null;
 };
@@ -128,50 +130,68 @@ export function MegaMenuPanel({
                   (sub.mediaType === 'image' || sub.mediaType === 'video') && sub.media?.url;
 
                 return (
-                  <Link
+                  <motion.div
                     key={`${sub.href}-${idx}`}
-                    href={sub.href}
-                    onClick={onClose}
-                    role="menuitem"
-                    tabIndex={isOpen ? 0 : -1}
-                    className={megaMenuItemVariants()}
+                    initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: prefersReducedMotion ? 0 : idx * 0.04,
+                      duration: prefersReducedMotion ? 0.01 : BBF_DURATION_FAST_S,
+                      ease: BBF_EASE_OUT_QUART,
+                    }}
                   >
-                    {hasMedia && sub.mediaType === 'image' && (
-                      <div className="mb-3 aspect-[16/9] overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-on-surface-hover-bg)]">
-                        <Image
-                          src={sub.media!.url!}
-                          alt={sub.media!.alt ?? sub.label}
-                          width={sub.media!.width ?? 320}
-                          height={sub.media!.height ?? 180}
-                          className="h-full w-full object-cover transition-transform [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)] [@media(hover:hover)]:group-hover:scale-105"
-                        />
-                      </div>
-                    )}
-                    {hasMedia && sub.mediaType === 'video' && (
-                      <div className="mb-3 aspect-[16/9] overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-on-surface-hover-bg)]">
-                        <video
-                          src={sub.media!.url!}
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                    )}
-
-                    <p
-                      className={megaMenuTitleVariants({
-                        hasDescription: Boolean(sub.description),
-                      })}
+                    <Link
+                      href={sub.href}
+                      onClick={onClose}
+                      role="menuitem"
+                      tabIndex={isOpen ? 0 : -1}
+                      className={megaMenuItemVariants()}
                     >
-                      {sub.label}
-                    </p>
+                      {!hasMedia && sub.icon && sub.icon in Icons && (
+                        <Icon
+                          icon={Icons[sub.icon as IconCanon]}
+                          size="sm"
+                          aria-hidden
+                          className="mb-2 text-[var(--bbf-on-surface-icon-accent)]"
+                        />
+                      )}
+                      {hasMedia && sub.mediaType === 'image' && (
+                        <div className="mb-3 aspect-[16/9] overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-on-surface-hover-bg)]">
+                          <Image
+                            src={sub.media!.url!}
+                            alt={sub.media!.alt ?? sub.label}
+                            width={sub.media!.width ?? 320}
+                            height={sub.media!.height ?? 180}
+                            className="h-full w-full object-cover transition-transform [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)] [@media(hover:hover)]:group-hover:scale-105"
+                          />
+                        </div>
+                      )}
+                      {hasMedia && sub.mediaType === 'video' && (
+                        <div className="mb-3 aspect-[16/9] overflow-hidden [border-radius:var(--bbf-radius-media)] bg-[var(--bbf-on-surface-hover-bg)]">
+                          <video
+                            src={sub.media!.url!}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      )}
 
-                    {sub.description && (
-                      <p className={megaMenuDescriptionVariants()}>{sub.description}</p>
-                    )}
-                  </Link>
+                      <p
+                        className={megaMenuTitleVariants({
+                          hasDescription: Boolean(sub.description),
+                        })}
+                      >
+                        {sub.label}
+                      </p>
+
+                      {sub.description && (
+                        <p className={megaMenuDescriptionVariants()}>{sub.description}</p>
+                      )}
+                    </Link>
+                  </motion.div>
                 );
               })}
             </motion.div>

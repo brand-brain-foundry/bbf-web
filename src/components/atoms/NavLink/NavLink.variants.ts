@@ -14,7 +14,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const navLinkBaseVariants = cva(
   [
     'group relative inline-flex items-center gap-1',
-    '[font-size:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-medium)]',
+    '[font-size:var(--bbf-text-body-md)] [font-weight:var(--bbf-weight-medium)]' /* D-5: 14px→16px (piso cuerpo mobile, footer + desktop nav) */,
     'text-[var(--bbf-on-surface-title)]',
     'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
     '[@media(hover:hover)]:hover:text-[var(--bbf-on-surface-link)]',

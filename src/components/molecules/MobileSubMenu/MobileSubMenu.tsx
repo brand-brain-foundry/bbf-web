@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Icon, Icons, type IconCanon } from '@/components/atoms/Icon';
 import {
   mobileSubMenuToggleVariants,
   mobileSubMenuPanelVariants,
@@ -25,6 +26,7 @@ type SubLink = {
   label: string;
   href: string;
   description?: string | null;
+  icon?: string | null;
   mediaType?: 'none' | 'image' | 'video';
   media?: SubLinkMedia | null;
 };
@@ -86,7 +88,7 @@ export function MobileSubMenu({
             tabIndex={isOpen ? 0 : -1}
             className={mobileSubMenuGeneralItemVariants()}
           >
-            ↗ {label} (general)
+            ↗ Ver todo
           </Link>
 
           {subLinks.map((sub, idx) => {
@@ -121,6 +123,16 @@ export function MobileSubMenu({
                       muted
                       playsInline
                       className="h-full w-full object-cover"
+                    />
+                  </div>
+                )}
+                {!hasMedia && sub.icon && sub.icon in Icons && (
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center [border-radius:var(--bbf-radius-interactive)] bg-[var(--bbf-on-surface-hover-bg)]">
+                    <Icon
+                      icon={Icons[sub.icon as IconCanon]}
+                      size="sm"
+                      aria-hidden
+                      className="text-[var(--bbf-on-surface-title)]"
                     />
                   </div>
                 )}

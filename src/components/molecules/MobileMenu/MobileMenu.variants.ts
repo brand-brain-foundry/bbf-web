@@ -1,9 +1,9 @@
 /**
- * BBF MobileMenu variants — CVA canon multi-export (Wave 11.6-C)
+ * BBF MobileMenu variants — CVA canon multi-export (Wave 11.6-C / F3b drill-down)
  *
- * 4 exports: iconButton (trigger+close, size variant) + backdrop (isOpen) + panel (isOpen) + item link.
+ * 5 exports: iconButton (trigger+close) + backdrop + panel + item link + subMenuTrigger (V1 drill-down).
+ * F3b: panel sin overflow-y-auto — cada vista controla su propio scroll (absolute inset-0 overflow-y-auto).
  * Hover D-BBF-WEB-ZZ canonical preserved: [@media(hover:hover)]:hover:
- * Arrow span inline en MobileMenu.tsx (static group-hover, no variant needed).
  */
 
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -51,8 +51,8 @@ export const mobileMenuPanelVariants = cva(
     'fixed top-0 right-0 z-[var(--bbf-z-drawer-panel)] lg:hidden',
     'h-[100dvh] w-[85vw] max-w-[380px]',
     'bg-[var(--bbf-on-surface-bg)]',
+    '[border-top-left-radius:var(--bbf-radius-floating)] [border-bottom-left-radius:var(--bbf-radius-floating)]',
     'flex flex-col',
-    'overflow-y-auto overscroll-contain',
     'transition-transform [transition-duration:var(--bbf-motion-duration-base)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
   ],
   {
@@ -69,6 +69,16 @@ export const mobileMenuPanelVariants = cva(
 export const mobileMenuItemVariants = cva([
   'group block min-h-[44px] border-b border-[var(--bbf-on-surface-border)]/40 px-2 py-4',
   'text-[length:var(--bbf-text-body-lg)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-on-surface-title)]',
+  'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
+  '[@media(hover:hover)]:hover:translate-x-1 [@media(hover:hover)]:hover:text-[var(--bbf-on-surface-link)]',
+  'focus-visible:translate-x-1 focus-visible:text-[var(--bbf-on-surface-link)] focus-visible:outline-none',
+]);
+
+// V1 drill-down: ítem con subLinks — button full-width con ChevronRight
+export const mobileMenuSubMenuTriggerVariants = cva([
+  'group flex w-full items-center justify-between',
+  'min-h-[44px] border-b border-[var(--bbf-on-surface-border)]/40 px-2 py-4',
+  'text-left text-[length:var(--bbf-text-body-lg)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-on-surface-title)]',
   'transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)]',
   '[@media(hover:hover)]:hover:translate-x-1 [@media(hover:hover)]:hover:text-[var(--bbf-on-surface-link)]',
   'focus-visible:translate-x-1 focus-visible:text-[var(--bbf-on-surface-link)] focus-visible:outline-none',
