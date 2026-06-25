@@ -349,9 +349,6 @@ async function seed() {
               ],
             },
           ],
-          quoteText: 'No hay urgencia.',
-          quoteTextSoft: 'Hay método.',
-          quoteAttribution: 'Canon BBF · 01',
           ctaLabel: 'Conocer el método completo',
           ctaHref: '/metodo',
         },
@@ -386,6 +383,129 @@ async function seed() {
     payload.logger.info('  ✓ closing §6 (es) seeded con valores canónicos web-copy');
   } catch (err) {
     payload.logger.error(`  ✗ closing §6 seed failed: ${err}`);
+  }
+
+  // === SiteNavigation — Cerebro de marca subLinks (F4b · Zavala firma 2026-06-23) ===
+  // Patrón: findGlobal primero para preservar links existentes + ser idempotente.
+  // Solo modifica Cerebro de marca (routeKey '/cerebro-marca'). headerCta + footerGroups: intactos.
+  try {
+    // ── ES ─────────────────────────────────────────────────────────────────────
+    const currentNavEs = await payload.findGlobal({
+      slug: 'site-navigation',
+      locale: 'es',
+      depth: 1,
+    });
+    const currentLinksEs = (currentNavEs as any)?.headerLinks ?? [];
+
+    const SUBLINKS_ES = [
+      {
+        label: 'La arquitectura',
+        linkTarget: { external: '/cerebro-marca#la-arquitectura' },
+        description:
+          'Memoria central + 5 servicios que coordinan tu marca en cada canal con tu voz',
+        icon: 'layers',
+        mediaType: 'none',
+        media: null,
+      },
+      {
+        label: 'Qué lo diferencia',
+        linkTarget: { external: '/cerebro-marca#que-lo-diferencia' },
+        description:
+          'Cómo se separa del chatbot y el SaaS: propiedad, voz, escalabilidad sin costo extra',
+        icon: 'target',
+        mediaType: 'none',
+        media: null,
+      },
+      {
+        label: 'Cuándo tiene sentido',
+        linkTarget: { external: '/cerebro-marca#cuando-construir-uno' },
+        description:
+          'Tres condiciones concretas para saber si tu empresa está lista para construir uno',
+        icon: 'checkCircle',
+        mediaType: 'none',
+        media: null,
+      },
+      {
+        label: 'Un activo propio',
+        linkTarget: { external: '/cerebro-marca#por-que-es-un-activo' },
+        description: 'Tuyo: código, datos, configuración. Sin costos que suben al escalar',
+        icon: 'award',
+        mediaType: 'none',
+        media: null,
+      },
+    ];
+
+    const SUBLINKS_EN_LABELS = [
+      'The architecture',
+      'What sets it apart',
+      'When it makes sense',
+      'An asset of your own',
+    ];
+    const SUBLINKS_EN_DESCS = [
+      'Central memory + 5 services that coordinate your brand across every channel in your voice',
+      'How it differs from chatbot and SaaS: ownership, voice, scale without extra cost',
+      'Three concrete conditions to know if your company is ready to build one',
+      'Yours: code, data, configuration. No costs that rise as you scale',
+    ];
+
+    // Idempotency: preserve existing subLink IDs if already seeded
+    const cerebroEs = currentLinksEs.find((l: any) => l?.linkTarget?.routeKey === '/cerebro-marca');
+    const existingSubsEs: any[] = cerebroEs?.subLinks ?? [];
+
+    const subLinksEsWithIds = SUBLINKS_ES.map((sub, i) => ({
+      ...(existingSubsEs[i]?.id ? { id: existingSubsEs[i].id } : {}),
+      ...sub,
+    }));
+
+    const updatedLinksEs = currentLinksEs.map((link: any) => {
+      if (link?.linkTarget?.routeKey === '/cerebro-marca') {
+        return { ...link, hasSubMenu: true, subLinks: subLinksEsWithIds };
+      }
+      return link;
+    });
+
+    await payload.updateGlobal({
+      slug: 'site-navigation',
+      locale: 'es',
+      data: { headerLinks: updatedLinksEs } as any,
+    });
+    payload.logger.info('  ✓ site-navigation Cerebro de marca subLinks (es) seeded');
+
+    // ── EN ─────────────────────────────────────────────────────────────────────
+    // Read back ES state to get Payload-assigned IDs (avoid array duplication on EN call)
+    const afterEsNav = await payload.findGlobal({
+      slug: 'site-navigation',
+      locale: 'es',
+      depth: 1,
+    });
+    const afterEsLinks = (afterEsNav as any)?.headerLinks ?? [];
+    const cerebroAfterEs = afterEsLinks.find(
+      (l: any) => l?.linkTarget?.routeKey === '/cerebro-marca',
+    );
+    const subsWithIds: any[] = cerebroAfterEs?.subLinks ?? [];
+
+    const updatedLinksEn = afterEsLinks.map((link: any) => {
+      if (link?.linkTarget?.routeKey === '/cerebro-marca') {
+        return {
+          ...link,
+          subLinks: subsWithIds.map((sub: any, i: number) => ({
+            ...sub,
+            label: SUBLINKS_EN_LABELS[i] ?? sub.label,
+            description: SUBLINKS_EN_DESCS[i] ?? sub.description,
+          })),
+        };
+      }
+      return link;
+    });
+
+    await payload.updateGlobal({
+      slug: 'site-navigation',
+      locale: 'en',
+      data: { headerLinks: updatedLinksEn } as any,
+    });
+    payload.logger.info('  ✓ site-navigation Cerebro de marca subLinks (en) seeded');
+  } catch (err) {
+    payload.logger.error(`  ✗ site-navigation subLinks seed failed: ${err}`);
   }
 
   // Pillars + cluster articles: B-BBF-12-SEED-EXPANSION
