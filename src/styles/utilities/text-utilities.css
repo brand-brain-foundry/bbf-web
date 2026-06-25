@@ -13,7 +13,7 @@
   font-family: var(--bbf-font-body);
   font-size: clamp(16px, 1.4vw, 18px);
   font-weight: var(--bbf-weight-regular);
-  line-height: 1.45;
+  line-height: var(--bbf-leading-base); /* C-1: 1.45→1.55 (Mulish x-height alto, piso 1.5–1.6) */
   letter-spacing: -0.01em;
   margin: 0;
 }
@@ -23,18 +23,18 @@
 }
 
 /**
- * .bbf-cta-link-dark — CTA link sobre surface dark
+ * .bbf-cta-link — CTA link surface-aware (D-S3-ALIGN: rename de bbf-cta-link-dark)
  *
- * Sand claro + hover azul acento + background transparente.
- * Reutilizable en §5 Método, §6 Cierre, cualquier section dark.
+ * Usa --bbf-on-surface-* → reutilizable en cualquier surface (dark, warm, sand).
  * Siempre con Icon atom (arrowRight) como hermano.
  *
  * D-AUDIT-01: movido de case-section.css (scope §3) a utility canónica.
+ * D-S3-ALIGN: renombrado + on-surface-* (antes: bbf-cta-link-dark hardcoded dark).
  * Refs: D-CASO-3, AUDIT-S3-CASO.md P-01
  */
-.bbf-cta-link-dark {
+.bbf-cta-link {
   background: transparent;
-  color: var(--bbf-text-on-dark-surface);
+  color: var(--bbf-on-surface-title);
   border: none;
   padding: 0;
   text-decoration: none;
@@ -43,88 +43,25 @@
   gap: var(--bbf-space-2);
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-md, 0.8125rem);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--bbf-tracking-wider);
   transition: color 200ms var(--bbf-easing-hover, ease-out);
 }
 
-.bbf-cta-link-dark:hover {
-  color: var(--bbf-text-on-dark-surface-accent);
+.bbf-cta-link:hover {
+  color: var(--bbf-on-surface-link);
 }
 
-.bbf-cta-link-dark:hover svg {
+.bbf-cta-link:hover svg {
   transform: translateX(3px);
 }
 
-.bbf-cta-link-dark svg {
+.bbf-cta-link svg {
   transition: transform 200ms var(--bbf-easing-hover, ease-out);
   flex-shrink: 0;
 }
 
-/**
- * .bbf-cta-link-warm — CTA link sobre warm surface
- *
- * Paralelo a .bbf-cta-link-dark para surface warm.
- * §5 Método y §6 Cierre. D-S5-07 firmada.
- */
-.bbf-cta-link-warm {
-  background: transparent;
-  color: var(--bbf-text-on-warm);
-  border: none;
-  padding: 0;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--bbf-space-2);
-  font-family: var(--bbf-font-mono);
-  font-size: var(--bbf-text-mono-md, 0.8125rem);
-  letter-spacing: 0.04em;
-  transition: color 200ms var(--bbf-easing-hover, ease-out);
-  cursor: pointer;
-}
-
-/* D-FIX-S5-05 firmada: hover canónico = blue gradient animado (SB PRIMARY D-REBRAND-01).
-   Cualquier .bbf-cta-link-warm en el sistema hereda este hover.
-   M-03: prefers-reduced-motion → fallback color sólido (WCAG 2.3.3). */
-.bbf-cta-link-warm:hover {
-  background: linear-gradient(
-    90deg,
-    var(--bbf-accent-blue) 0%,
-    color-mix(in srgb, var(--bbf-accent-blue) 70%, var(--bbf-color-blue-300) 30%) 50%,
-    var(--bbf-accent-blue) 100%
-  );
-  background-size: 200% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  animation: bbf-gradient-shift 4s ease-in-out infinite;
-}
-
-.bbf-cta-link-warm:hover svg {
-  transform: translateX(3px);
-  /* SVG no hereda text-fill-color — mantiene color sólido legible */
-  color: var(--bbf-accent-blue);
-  -webkit-text-fill-color: unset;
-}
-
-.bbf-cta-link-warm svg {
-  transition: transform 200ms var(--bbf-easing-hover, ease-out);
-  flex-shrink: 0;
-}
-
-.bbf-cta-link-warm:focus-visible {
-  outline: var(--bbf-line-focus) solid var(--bbf-interactive-focus-warm, var(--bbf-text-on-warm)); /* D-DS-14 */
+.bbf-cta-link:focus-visible {
+  outline: var(--bbf-line-focus) solid var(--bbf-on-surface-title); /* D-DS-14 surface-aware */
   outline-offset: 2px;
   border-radius: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bbf-cta-link-warm:hover {
-    animation: none;
-    background-image: none;
-    background-clip: unset;
-    -webkit-background-clip: unset;
-    color: var(--bbf-text-on-warm-accent);
-    -webkit-text-fill-color: var(--bbf-text-on-warm-accent);
-  }
 }

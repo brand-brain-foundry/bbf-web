@@ -32,6 +32,7 @@
      ============================================================ */
   --bbf-color-dark-ink: #f5f3ed; /* texto principal — warm off-white */
   --bbf-color-dark-ink-muted: #a8a59f; /* texto secundario — gris warm */
+  --bbf-color-dark-ink-faint: #4a4844; /* texto ghost — por debajo de ink-muted, casi decorativo */
 
   /* ============================================================
      BLUE ACCENT PARA DARK SURFACE

@@ -27,6 +27,9 @@
      ============================================================ */
   --bbf-text-on-dark-surface: var(--bbf-color-dark-ink); /* #f5f3ed */
   --bbf-text-on-dark-surface-muted: var(--bbf-color-dark-ink-muted); /* #a8a59f */
+  --bbf-text-on-dark-surface-faint: var(
+    --bbf-color-dark-ink-faint
+  ); /* #4a4844 — ghost, debajo de muted */
 
   /* Acento blue — legible sobre dark (5.39:1 WCAG AA verificado) */
   --bbf-text-on-dark-surface-accent: var(--bbf-color-blue-accent); /* #3b82f6 */

@@ -24,6 +24,7 @@
 /* === BASE LAYER === */
 @import '../styles/base/reset.css';
 @import '../styles/base/focus.css';
+@import '../styles/base/scrollbar.css'; /* D-S6-POLISH: scrollbar global dark base */
 
 /* === TIER 1: PRIMITIVES === */
 @import '../styles/tokens/primitives/colors.css';
@@ -81,6 +82,6 @@
 @import '../styles/utilities/gradient-animations.css';
 @import '../styles/utilities/containers.css';
 @import '../styles/utilities/section-paddings.css';
-@import '../styles/utilities/text-utilities.css'; /* D-AUD-01: .bbf-lede + D-AUDIT-01: .bbf-cta-link-dark */
+@import '../styles/utilities/text-utilities.css'; /* D-AUD-01: .bbf-lede + D-AUDIT-01: .bbf-cta-link (D-S3-ALIGN: era bbf-cta-link-dark) */
 @import '../styles/utilities/section-wrap.css'; /* D-AUDIT-03: .bbf-section-wrap canónico */
 @import '../styles/utilities/view-transitions.css';

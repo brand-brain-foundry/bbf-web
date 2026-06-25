@@ -91,6 +91,8 @@
      ============================================================ */
   --bbf-leading-tight: 1.05; /* display headlines (antes 1.1) */
   --bbf-leading-snug: 1.15; /* headings (antes 1.3) */
+  --bbf-leading-compact: 1.4; /* UI compacta — chat bubbles, pills, badges inline */
+  --bbf-leading-quote: 1.3; /* cita testimonial (entre snug y compact — perceptible en font-size clamp) */
   --bbf-leading-snug-small: 1.45; /* small body */
   --bbf-leading-base: 1.55; /* body (≈ √φ adjusted) */
   --bbf-leading-relaxed: 1.65; /* prose long-form */
@@ -104,6 +106,8 @@
   --bbf-tracking-normal: 0; /* body */
   --bbf-tracking-wide: 0.02em; /* small caps */
   --bbf-tracking-wider: 0.04em; /* eyebrow text */
+  --bbf-tracking-loose: 0.06em; /* mono labels — example-lbl, card microcopy */
+  --bbf-tracking-looser: 0.08em; /* chrome bars, stack group labels (mono UI) */
   --bbf-tracking-tagline: 0.15em; /* Tagline pattern BBF — all-caps + medium/semibold weight.
                                      Consumer: HeroSection tagline (hero.css --bbf-tagline-tracking).
                                      R-BBF-12 §1.4 estrategia impacto copy. */

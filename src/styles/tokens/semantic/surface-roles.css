@@ -6,8 +6,13 @@
  * Depende de: semantic/colors.css, semantic/colors-warm.css, semantic/colors-dark.css
  *
  * 4 surfaces live: sand | warm | dark | white
- * 16 roles por surface: title, body, muted, bright, link, link-hover, accent, border, highlight, bg,
+ * 17 roles por surface: title, body, muted, faint, bright, link, link-hover, accent, border, highlight, bg,
  *   hover-bg, hover-subtle-bg, input-bg, input-border, focus-ring, divider
+ *
+ * D-TIMELINE-01 (2026-06-21): faint — escalón ghost por debajo de muted. Madre = muted.
+ *   sand/white: --bbf-color-black-300 (#999999).
+ *   warm:       --bbf-color-warm-ink-faint (#a8a59f).
+ *   dark:       --bbf-color-dark-ink-faint (#4a4844).
  *
  * D-E2-06 (2026-06-19): bright — texto máxima luminosidad sobre surface.
  *   dark: --bbf-color-white (#ffffff). sand/warm/white: alias --bbf-on-surface-title.
@@ -26,6 +31,9 @@
   --bbf-on-surface-title: var(--bbf-text-on-sand);
   --bbf-on-surface-body: var(--bbf-text-on-sand-muted);
   --bbf-on-surface-muted: var(--bbf-text-on-sand-subtle);
+  --bbf-on-surface-faint: var(
+    --bbf-color-black-300
+  ); /* D-TIMELINE-01: ghost #999999, debajo de muted */
   --bbf-on-surface-bright: var(--bbf-on-surface-title); /* D-E2-06: sand default = title */
   --bbf-on-surface-link: var(--bbf-accent-on-sand);
   --bbf-on-surface-link-hover: var(--bbf-accent-blue-hover);
@@ -35,10 +43,19 @@
   /* 6 roles nuevos (D-SURFACE-MIGRATE) */
   --bbf-on-surface-hover-bg: var(--bbf-surface-hover-on-sand);
   --bbf-on-surface-hover-subtle-bg: var(--bbf-surface-hover-subtle-on-sand);
+  --bbf-on-surface-elevated-bg: var(
+    --bbf-surface-hover-on-sand
+  ); /* card/quote elevated (D-S3-ALIGN) */
   --bbf-on-surface-input-bg: var(--bbf-surface-white);
   --bbf-on-surface-input-border: var(--bbf-border-on-light-strong);
   --bbf-on-surface-focus-ring: var(--bbf-color-focus-ring);
   --bbf-on-surface-divider: var(--bbf-line-color-divider);
+  --bbf-on-surface-icon-accent: var(
+    --bbf-accent-blue
+  ); /* D-E2-S01: brand icon (checklist, actions) */
+  --bbf-on-surface-icon: var(
+    --bbf-text-on-sand-muted
+  ); /* D-S3-ICON: neutral icon sand-dimmed, surface-aware */
 }
 
 /* ── SAND — BG #fdf5ed ── */
@@ -47,6 +64,7 @@
   --bbf-on-surface-title: var(--bbf-text-on-sand);
   --bbf-on-surface-body: var(--bbf-text-on-sand-muted);
   --bbf-on-surface-muted: var(--bbf-text-on-sand-subtle);
+  --bbf-on-surface-faint: var(--bbf-color-black-300); /* D-TIMELINE-01: ghost #999999 */
   --bbf-on-surface-bright: var(--bbf-on-surface-title); /* D-E2-06: sand = title */
   --bbf-on-surface-link: var(--bbf-accent-on-sand);
   --bbf-on-surface-link-hover: var(--bbf-accent-blue-hover);
@@ -55,10 +73,13 @@
   --bbf-on-surface-highlight: var(--bbf-border-subtle-on-sand);
   --bbf-on-surface-hover-bg: var(--bbf-surface-hover-on-sand);
   --bbf-on-surface-hover-subtle-bg: var(--bbf-surface-hover-subtle-on-sand);
+  --bbf-on-surface-elevated-bg: var(--bbf-surface-hover-on-sand);
   --bbf-on-surface-input-bg: var(--bbf-surface-white);
   --bbf-on-surface-input-border: var(--bbf-border-on-light-strong);
   --bbf-on-surface-focus-ring: var(--bbf-color-focus-ring);
   --bbf-on-surface-divider: var(--bbf-line-color-divider);
+  --bbf-on-surface-icon-accent: var(--bbf-accent-blue);
+  --bbf-on-surface-icon: var(--bbf-text-on-sand-muted); /* D-S3-ICON */
 }
 
 /* ── WARM — BG #fafaf7 ── */
@@ -67,6 +88,7 @@
   --bbf-on-surface-title: var(--bbf-text-on-warm);
   --bbf-on-surface-body: var(--bbf-text-on-warm-soft);
   --bbf-on-surface-muted: var(--bbf-text-on-warm-muted);
+  --bbf-on-surface-faint: var(--bbf-color-warm-ink-faint); /* D-TIMELINE-01: ghost #a8a59f */
   --bbf-on-surface-bright: var(--bbf-on-surface-title); /* D-E2-06: warm = title */
   --bbf-on-surface-link: var(--bbf-text-on-warm-accent);
   --bbf-on-surface-link-hover: var(--bbf-focus-ring-on-warm);
@@ -75,10 +97,13 @@
   --bbf-on-surface-highlight: var(--bbf-surface-warm-highlight);
   --bbf-on-surface-hover-bg: var(--bbf-surface-warm-hover);
   --bbf-on-surface-hover-subtle-bg: var(--bbf-surface-warm-elevated-hover);
+  --bbf-on-surface-elevated-bg: var(--bbf-surface-warm-elevated);
   --bbf-on-surface-input-bg: var(--bbf-surface-warm-input);
   --bbf-on-surface-input-border: var(--bbf-border-on-warm-strong);
   --bbf-on-surface-focus-ring: var(--bbf-focus-ring-on-warm);
   --bbf-on-surface-divider: var(--bbf-border-on-warm);
+  --bbf-on-surface-icon-accent: var(--bbf-accent-blue);
+  --bbf-on-surface-icon: var(--bbf-text-on-warm); /* D-S3-ICON: warm = title (no dimming) */
 }
 
 /* ── DARK — BG #0a0a0a (D-CASO-3 canónico, D-DS-10-B) ── */
@@ -87,6 +112,7 @@
   --bbf-on-surface-title: var(--bbf-text-on-dark-surface);
   --bbf-on-surface-body: var(--bbf-text-on-dark-surface-muted);
   --bbf-on-surface-muted: var(--bbf-text-on-dark-surface-muted);
+  --bbf-on-surface-faint: var(--bbf-text-on-dark-surface-faint); /* D-TIMELINE-01: ghost #4a4844 */
   --bbf-on-surface-bright: var(
     --bbf-color-white
   ); /* D-E2-06: dark = #ffffff (máxima luminosidad) */
@@ -99,12 +125,26 @@
   --bbf-on-surface-hover-subtle-bg: var(
     --bbf-surface-dark-elevated
   ); /* D-SURFACE-REVIEW: colapsa con hover-bg — firmar si es graduación */
+  --bbf-on-surface-elevated-bg: var(--bbf-surface-dark-elevated);
   --bbf-on-surface-input-bg: var(--bbf-surface-dark-elevated);
   --bbf-on-surface-input-border: var(
     --bbf-text-on-dark-surface-muted
   ); /* #a8a59f — WCAG 3:1 (P3) */
   --bbf-on-surface-focus-ring: var(--bbf-focus-ring-on-dark-surface);
   --bbf-on-surface-divider: var(--bbf-border-on-dark-surface);
+  --bbf-on-surface-icon-accent: var(--bbf-text-on-dark-surface-accent);
+  --bbf-on-surface-icon: var(
+    --bbf-text-on-dark-surface-sand
+  ); /* D-S3-ICON: #ebe3d4 — levemente más oscuro que title #f5f3ed */
+}
+
+/* ── SAND-ELEVATED — BG #ebe3d4 (D-NAV-SCROLL-02: nav scrolled sobre sand)
+   Madre: [data-surface="sand"] (roles heredan de :root — mismos que sand).
+   Fórmula: override SOLO --bbf-on-surface-bg → --bbf-surface-sand-shade.
+   Valor: --bbf-surface-sand-shade = var(--bbf-color-sand-deep-shade) = #ebe3d4.
+   Misma bg que §4 PorqueSection (D-S4-01). Todos los demás roles = sand normal. ── */
+[data-surface='sand-elevated'] {
+  --bbf-on-surface-bg: var(--bbf-surface-sand-shade); /* #ebe3d4 — único override */
 }
 
 /* ── WHITE — BG #ffffff ── */
@@ -113,6 +153,7 @@
   --bbf-on-surface-title: var(--bbf-text-on-sand);
   --bbf-on-surface-body: var(--bbf-text-on-sand-muted);
   --bbf-on-surface-muted: var(--bbf-text-on-sand-subtle);
+  --bbf-on-surface-faint: var(--bbf-color-black-300); /* D-TIMELINE-01: ghost #999999 */
   --bbf-on-surface-bright: var(--bbf-on-surface-title); /* D-E2-06: white = title */
   --bbf-on-surface-link: var(--bbf-accent-on-sand);
   --bbf-on-surface-link-hover: var(--bbf-accent-blue-hover);
@@ -121,10 +162,13 @@
   --bbf-on-surface-highlight: var(--bbf-surface-sand);
   --bbf-on-surface-hover-bg: var(--bbf-surface-hover-on-sand);
   --bbf-on-surface-hover-subtle-bg: var(--bbf-surface-hover-subtle-on-sand);
+  --bbf-on-surface-elevated-bg: var(--bbf-surface-hover-on-sand);
   --bbf-on-surface-input-bg: var(
     --bbf-surface-sand
   ); /* P2: sand-100 sobre white = contraste mínimo */
   --bbf-on-surface-input-border: var(--bbf-border-on-light-strong);
   --bbf-on-surface-focus-ring: var(--bbf-color-focus-ring);
   --bbf-on-surface-divider: var(--bbf-border-on-sand);
+  --bbf-on-surface-icon-accent: var(--bbf-accent-blue);
+  --bbf-on-surface-icon: var(--bbf-text-on-sand-muted); /* D-S3-ICON */
 }

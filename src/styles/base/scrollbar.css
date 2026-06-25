@@ -1,0 +1,36 @@
+/**
+ * BBF Design System — BASE: Scrollbar Global
+ *
+ * Scrollbar de ventana, fijo al dark base. No sigue cascade de surface.
+ * W3C standard (Firefox/modernos) + -webkit-scrollbar (Chrome/Safari/Edge).
+ *
+ * Tokens — todos :root-level (no dependen de [data-surface]):
+ *   Track/corner : --bbf-surface-dark-base  (#0a0a0a) — semantic/colors-dark.css :root
+ *   Thumb Firefox: --bbf-accent-blue         (sólido — scrollbar-color W3C no soporta gradients)
+ *   Thumb WebKit : --bbf-gradient-primary    (estático — keyframe animation en pseudo-elementos no fiable)
+ *   Thumb hover  : --bbf-surface-sand        (#fdf5ed)
+ */
+
+/* W3C — Firefox + modernos */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bbf-accent-blue) var(--bbf-surface-dark-base);
+}
+
+/* WebKit — Chrome / Safari / Edge */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: var(--bbf-surface-dark-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bbf-gradient-primary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bbf-surface-sand);
+}

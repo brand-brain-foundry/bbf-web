@@ -212,9 +212,11 @@
 
   /* ============================================================
      LEGAL / MICRO — rol semántico para copyright y texto legal
-     Tier 2: micro size = 0.625rem (10px). Consumer: Footer copyright.
+     Tier 2: xs = 0.75rem (12px). Consumer: Footer copyright.
+     C-3: separado de --bbf-text-micro (10px) que sigue en uso decorativo
+     (Badge xs, hub diagram labels, workflow SVG text).
      ============================================================ */
-  --bbf-text-legal: var(--bbf-text-micro); /* 10px — copyright / legal notices */
+  --bbf-text-legal: var(--bbf-text-xs); /* 12px — copyright / legal notices (piso absoluto) */
 }
 
 /* Mobile typography adjustments (D-BBF-KB-105 — ratio 1.333 < 640px) */
@@ -223,5 +225,16 @@
     --bbf-typography-display-1-size: var(--bbf-text-display-1-mobile);
     --bbf-typography-display-2-size: var(--bbf-text-display-2-mobile);
     --bbf-typography-h1-size: var(--bbf-text-h1-mobile);
+  }
+}
+
+/* C-4: Hero H1 leading — mobile override ONLY (desktop 0.94 pixel-perfect intacto)
+ * ≤920px = single-column hero layout (breakpoint home-hero.css .bbf-hero__head).
+ * 0.94 en desktop: título raramente wrappea (1.4fr de la columna full). ✅ intacto.
+ * 0.94 en mobile: título 48px wrappea a 2–3 líneas → superposición visual.
+ * 1.05 (--bbf-leading-tight) = piso canónico display headings, ≥ piso 1.0 para titulares. */
+@media (max-width: 920px) {
+  :root {
+    --bbf-typography-display-hero-leading: 1.05;
   }
 }

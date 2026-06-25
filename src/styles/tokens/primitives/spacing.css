@@ -24,6 +24,7 @@
   --bbf-space-2: calc(var(--bbf-space-base) * 2); /* 8px */
   --bbf-space-2\.5: calc(var(--bbf-space-base) * 2.5); /* 10px */
   --bbf-space-3: calc(var(--bbf-space-base) * 3); /* 12px */
+  --bbf-space-3\.5: calc(var(--bbf-space-base) * 3.5); /* 14px — 4pt grid intermedio */
   --bbf-space-4: calc(var(--bbf-space-base) * 4); /* 16px */
   --bbf-space-5: calc(var(--bbf-space-base) * 5); /* 20px */
   --bbf-space-6: calc(var(--bbf-space-base) * 6); /* 24px */

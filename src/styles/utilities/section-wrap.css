@@ -6,17 +6,15 @@
  *   - .bbf-case-section__wrap (case-section.css)
  *   - .bbf-hiw-section__wrap (como-funciona.css)
  *
- * NOTA sobre padding-block (D-AUDIT-03):
- *   §1 Hero: padding asimétrico (top ≠ bottom) — no unificable aquí.
- *   §2 Capabilities: ya usa var(--bbf-space-section-pad-fluid) canónico — no requiere cambio.
- *   §3 Case: usa var(--bbf-case-section-pad) = clamp(80px,8vw,144px) — distinto a §2.
- *   Padding-block permanece en cada sección (valores de diseño distintos).
- *   Si se decide unificar en el futuro, agregar token --bbf-section-padding-block aquí.
+ * NOTA sobre padding-block (D-AUDIT-03, B-BBF-WEB-SECTION-SPACING-SYSTEM):
+ *   Padding-block se gestiona por sección via --bbf-section-pad-standard / --bbf-section-pad-accent.
+ *   §1 Hero: asimétrico propio (pb = standard × 2/3) — home-hero.css.
+ *   §2/§3/§4/§5: --bbf-section-pad-standard. §6 Cierre: top=accent / bottom=standard.
  *
  * Refs: D-AUDIT-03, AUDIT-S3-CASO.md P-05
  */
 .bbf-section-wrap {
-  max-width: 1280px; /* = var(--bbf-container-wide) en rem */
+  max-width: var(--bbf-container-wide); /* 80rem = 1280px — SSOT única */
   margin-inline: auto;
-  padding-inline: clamp(1rem, 4vw, 3rem);
+  padding-inline: var(--bbf-space-section-gutter); /* clamp(20px, 4vw, 48px) — SSOT única */
 }

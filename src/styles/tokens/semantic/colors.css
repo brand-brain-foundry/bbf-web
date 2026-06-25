@@ -87,6 +87,9 @@
   --bbf-surface-hero: var(
     --bbf-color-sand-deep-shade
   ); /* #ebe3d4 — Hero section bg (Q1-Op-A T6.7) */
+  --bbf-surface-sand-shade: var(
+    --bbf-color-sand-deep-shade
+  ); /* #ebe3d4 — sand oscuro canónico §4 bg (D-S4-01) */
   --bbf-surface-white: var(--bbf-color-white);
   --bbf-surface-black: var(--bbf-color-black-900);
   --bbf-surface-black-elevated: var(--bbf-color-black-800);
@@ -113,6 +116,9 @@
   --bbf-text-on-gradient-blue: var(
     --bbf-text-on-black
   ); /* sand-100 — blue-500 es dark, necesita texto claro */
+  --bbf-text-on-accent-blue: var(
+    --bbf-color-white
+  ); /* white puro — contraste sobre --bbf-accent-blue sólido (5.8:1 WCAG AA) */
 
   /* Legacy aliases (compatibilidad — componentes existentes) */
   --bbf-text-on-light: var(--bbf-text-on-sand);

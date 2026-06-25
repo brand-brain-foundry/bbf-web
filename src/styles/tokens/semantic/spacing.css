@@ -65,9 +65,18 @@
      Coexisten con tokens fixed (no breaking). Opt-in por consumer.
      Decisión Q-SP-1 + Q-SP-2 firmadas: sufijo -fluid, Tier 2 semantic.
      ============================================================ */
-  --bbf-space-section-pad-fluid: clamp(96px, 13vw, 180px); /* section padding-block */
   --bbf-space-section-gap-fluid: clamp(80px, 10vw, 140px); /* gap card-to-card */
   --bbf-space-card-grid-gap-fluid: clamp(32px, 5vw, 72px); /* gap interno card l/r columns */
+
+  /* ============================================================
+     SECTION PAD SYSTEM — madre + derivaciones (B-BBF-WEB-SECTION-SPACING-SYSTEM)
+     Una madre, todas las secciones derivan. Cero token huérfano.
+     madre-min: --bbf-space-12 (48px) · madre-max: --bbf-space-20 (80px) · fórmula: 6vw
+     ============================================================ */
+  --bbf-section-pad-standard: clamp(48px, 6vw, 80px); /* §2/§3/§4/§5 padding-block */
+  --bbf-section-pad-accent: calc(
+    var(--bbf-section-pad-standard) * 1.4
+  ); /* §6 top — clamp(67.2px,8.4vw,112px) · max=space-28 exacto */
 
   /* Navigation */
   --bbf-nav-underline-offset: 0.25rem; /* 4px — underline offset bajo baseline */
