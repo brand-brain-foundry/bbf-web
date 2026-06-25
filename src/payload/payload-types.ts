@@ -1802,7 +1802,7 @@ export interface SiteIdentity {
   areaServed?:
     | {
         type: 'Country' | 'AdministrativeArea' | 'Region' | 'Place';
-        name: string;
+        name?: string | null;
         /**
          * ISO 3166-1 alpha-2 (e.g. SV, US, MX)
          */
@@ -1902,7 +1902,7 @@ export interface SiteNavigation {
   id: number;
   headerLinks?:
     | {
-        label: string;
+        label?: string | null;
         /**
          * Destino agnóstico: elegí routeKey (ruta canónica) o page (página dinámica). SSOT, sin texto libre.
          */
@@ -1925,7 +1925,7 @@ export interface SiteNavigation {
          */
         subLinks?:
           | {
-              label: string;
+              label?: string | null;
               /**
                * Destino agnóstico: page (página hija) o external (URL externa). Anchors → 4.C.3.
                */
@@ -1943,6 +1943,76 @@ export interface SiteNavigation {
                * Descripción corta opcional (ej: "El proceso paso a paso").
                */
               description?: string | null;
+              /**
+               * Ícono Lucide opcional en la card del mega-menu. Reutiliza registry.ts D-108 SSOT.
+               */
+              icon?:
+                | (
+                    | 'arrowRight'
+                    | 'arrowLeft'
+                    | 'arrowUp'
+                    | 'arrowDown'
+                    | 'chevronRight'
+                    | 'chevronLeft'
+                    | 'chevronDown'
+                    | 'chevronUp'
+                    | 'menu'
+                    | 'close'
+                    | 'externalLink'
+                    | 'home'
+                    | 'search'
+                    | 'plus'
+                    | 'minus'
+                    | 'edit'
+                    | 'trash'
+                    | 'download'
+                    | 'upload'
+                    | 'share'
+                    | 'copy'
+                    | 'check'
+                    | 'refresh'
+                    | 'filter'
+                    | 'checkCircle'
+                    | 'error'
+                    | 'warning'
+                    | 'alert'
+                    | 'info'
+                    | 'loading'
+                    | 'eye'
+                    | 'eyeOff'
+                    | 'mail'
+                    | 'phone'
+                    | 'message'
+                    | 'send'
+                    | 'bell'
+                    | 'file'
+                    | 'image'
+                    | 'video'
+                    | 'play'
+                    | 'pause'
+                    | 'bookOpen'
+                    | 'calendar'
+                    | 'clock'
+                    | 'star'
+                    | 'bookmark'
+                    | 'link'
+                    | 'user'
+                    | 'users'
+                    | 'settings'
+                    | 'logout'
+                    | 'login'
+                    | 'globe'
+                    | 'sparkles'
+                    | 'zap'
+                    | 'building'
+                    | 'briefcase'
+                    | 'target'
+                    | 'layers'
+                    | 'award'
+                    | 'trending'
+                    | 'heart'
+                  )
+                | null;
               mediaType: 'none' | 'image' | 'video';
               /**
                * Imagen o video preview (solo si mediaType ≠ none).
@@ -1984,10 +2054,10 @@ export interface SiteNavigation {
         /**
          * Title of the group (e.g. "Navigation"). Shown in uppercase canon.
          */
-        groupTitle: string;
+        groupTitle?: string | null;
         links?:
           | {
-              label: string;
+              label?: string | null;
               /**
                * Destino agnóstico: elegí routeKey (ruta canónica) o page (página dinámica). SSOT, sin texto libre.
                */
@@ -2097,11 +2167,11 @@ export interface SiteHomepage {
     /**
      * Párrafo principal bajo el H1 (max 280 chars).
      */
-    ledeBody: string;
+    ledeBody?: string | null;
     /**
      * Frase de énfasis al final del lede (peso 500, color primario).
      */
-    ledeEmphasis: string;
+    ledeEmphasis?: string | null;
     /**
      * Selecciona 0–2 CTAs de la Library. Primer ítem = CTA principal. Label/type/intent/href vienen de SiteCtaLibrary.
      */
@@ -2146,7 +2216,7 @@ export interface SiteHomepage {
       /**
        * Descripción de la demo visible en el footer del frame.
        */
-      footCaption: string;
+      footCaption?: string | null;
     };
     /**
      * Items del ticker marquee decorativo (min 4, max 12). Se duplican automáticamente para el loop.
@@ -2161,7 +2231,7 @@ export interface SiteHomepage {
         }[]
       | null;
   };
-  capabilities: {
+  capabilities?: {
     /**
      * Eyebrow label sobre el H2 (ej: §2 · Capacidades).
      */
@@ -2169,15 +2239,15 @@ export interface SiteHomepage {
     /**
      * Primera línea del H2 de sección (color primario).
      */
-    h2Line1: string;
+    h2Line1?: string | null;
     /**
      * Segunda línea del H2 (tono muted).
      */
-    h2Line2Soft: string;
+    h2Line2Soft?: string | null;
     /**
      * Párrafo introductorio de la sección (max ~200 chars).
      */
-    lead: string;
+    lead?: string | null;
     /**
      * 5 spokes del Hub MEMORIA (orden = ángulo 0°→72°→144°→216°→288°). Defaults: Conversa/Genera/Automatiza/Integra/Aprende.
      */
@@ -2186,7 +2256,7 @@ export interface SiteHomepage {
           /**
            * Nombre del spoke (ej: Conversa). Uppercase automático en UI.
            */
-          name: string;
+          name?: string | null;
           /**
            * Sub-labels del spoke (ej: WhatsApp · Web · Voz).
            */
@@ -2206,15 +2276,15 @@ export interface SiteHomepage {
           /**
            * Nombre de la capacidad (ej: Conversa).
            */
-          title: string;
+          title?: string | null;
           /**
            * Frase de impacto (1-2 líneas, peso medio).
            */
-          lede: string;
+          lede?: string | null;
           /**
            * Descripción desarrollada (2-3 párrafos breves).
            */
-          body: string;
+          body?: string | null;
           /**
            * Lista de características clave (3-5 items).
            */
@@ -2230,7 +2300,7 @@ export interface SiteHomepage {
           /**
            * Ejemplo concreto de uso (1-2 líneas, blockquote).
            */
-          example: string;
+          example?: string | null;
           scene: {
             /**
              * Tipo de visualización para esta capacidad.
@@ -2239,7 +2309,7 @@ export interface SiteHomepage {
             /**
              * Metadato contextual del scene (ej: "WhatsApp · Web · Voz").
              */
-            meta: string;
+            meta?: string | null;
             chat?: {
               messages?:
                 | {
@@ -2278,7 +2348,7 @@ export interface SiteHomepage {
                 | {
                     x: number;
                     y: number;
-                    label: string;
+                    label?: string | null;
                     kind: 'in' | 'step' | 'branch' | 'auto' | 'human';
                     id?: string | null;
                   }[]
@@ -2418,15 +2488,183 @@ export interface SiteHomepage {
           /**
            * Tag temporal del phase (ej: Antes, 12 semanas, Hoy).
            */
-          tag: string;
+          tag?: string | null;
           /**
            * Título de la fase (ej: Situación, Construcción, Operación).
            */
-          title: string;
+          title?: string | null;
           /**
            * Descripción de la fase (2-3 líneas).
            */
-          body: string;
+          body?: string | null;
+          /**
+           * Ícono Lucide opcional junto al título de la fase (registry.ts D-108).
+           */
+          icon?:
+            | (
+                | 'arrowRight'
+                | 'arrowLeft'
+                | 'arrowUp'
+                | 'arrowDown'
+                | 'chevronRight'
+                | 'chevronLeft'
+                | 'chevronDown'
+                | 'chevronUp'
+                | 'menu'
+                | 'close'
+                | 'externalLink'
+                | 'home'
+                | 'search'
+                | 'plus'
+                | 'minus'
+                | 'edit'
+                | 'trash'
+                | 'download'
+                | 'upload'
+                | 'share'
+                | 'copy'
+                | 'check'
+                | 'refresh'
+                | 'filter'
+                | 'checkCircle'
+                | 'error'
+                | 'warning'
+                | 'alert'
+                | 'info'
+                | 'loading'
+                | 'eye'
+                | 'eyeOff'
+                | 'mail'
+                | 'phone'
+                | 'message'
+                | 'send'
+                | 'bell'
+                | 'file'
+                | 'image'
+                | 'video'
+                | 'play'
+                | 'pause'
+                | 'bookOpen'
+                | 'calendar'
+                | 'clock'
+                | 'star'
+                | 'bookmark'
+                | 'link'
+                | 'user'
+                | 'users'
+                | 'settings'
+                | 'logout'
+                | 'login'
+                | 'globe'
+                | 'sparkles'
+                | 'zap'
+                | 'building'
+                | 'briefcase'
+                | 'target'
+                | 'layers'
+                | 'award'
+                | 'trending'
+                | 'heart'
+              )
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Atribución del Timeline (ej: En operación · Sivar Brains). Pill mono-xs con dot azul sobre el scroller.
+     */
+    timelineAttribution?: string | null;
+    /**
+     * Hitos de trayectoria §4·B (Timeline). Independiente de phases[] (fases narrativas). Orden = orden visual en el scroller.
+     */
+    milestones?:
+      | {
+          /**
+           * Título del hito (ej: Primer cliente del cerebro de marca).
+           */
+          title?: string | null;
+          /**
+           * Nota descriptiva breve del hito (1-2 líneas).
+           */
+          note?: string | null;
+          /**
+           * Ícono Lucide del hito. Reutiliza el mismo registry que phase.icon (D-108 SSOT).
+           */
+          icon?:
+            | (
+                | 'arrowRight'
+                | 'arrowLeft'
+                | 'arrowUp'
+                | 'arrowDown'
+                | 'chevronRight'
+                | 'chevronLeft'
+                | 'chevronDown'
+                | 'chevronUp'
+                | 'menu'
+                | 'close'
+                | 'externalLink'
+                | 'home'
+                | 'search'
+                | 'plus'
+                | 'minus'
+                | 'edit'
+                | 'trash'
+                | 'download'
+                | 'upload'
+                | 'share'
+                | 'copy'
+                | 'check'
+                | 'refresh'
+                | 'filter'
+                | 'checkCircle'
+                | 'error'
+                | 'warning'
+                | 'alert'
+                | 'info'
+                | 'loading'
+                | 'eye'
+                | 'eyeOff'
+                | 'mail'
+                | 'phone'
+                | 'message'
+                | 'send'
+                | 'bell'
+                | 'file'
+                | 'image'
+                | 'video'
+                | 'play'
+                | 'pause'
+                | 'bookOpen'
+                | 'calendar'
+                | 'clock'
+                | 'star'
+                | 'bookmark'
+                | 'link'
+                | 'user'
+                | 'users'
+                | 'settings'
+                | 'logout'
+                | 'login'
+                | 'globe'
+                | 'sparkles'
+                | 'zap'
+                | 'building'
+                | 'briefcase'
+                | 'target'
+                | 'layers'
+                | 'award'
+                | 'trending'
+                | 'heart'
+              )
+            | null;
+          /**
+           * Estado del hito: active=en producción, demo=conectando/en pruebas, next=próximo.
+           */
+          status: 'active' | 'demo' | 'next';
+          /**
+           * Texto del badge de estado (ej: Activo · En demo, conectándose · Próximo). Localized.
+           */
+          statusLabel?: string | null;
           id?: string | null;
         }[]
       | null;
@@ -2475,7 +2713,7 @@ export interface SiteHomepage {
           /**
            * Nombre de la columna (ej: Cerebro de marca).
            */
-          label: string;
+          label?: string | null;
           /**
            * Sub-label de la columna (ej: Sistema propio).
            */
@@ -2495,7 +2733,7 @@ export interface SiteHomepage {
           /**
            * Nombre de la dimensión (ej: Aprende tu empresa).
            */
-          attribute: string;
+          attribute?: string | null;
           /**
            * Una celda por columna, en el mismo orden que las columnas definidas arriba.
            */
@@ -2554,7 +2792,7 @@ export interface SiteHomepage {
           /**
            * Etiqueta corta del nodo (ej: Diagnóstico).
            */
-          shortLabel: string;
+          shortLabel?: string | null;
           id?: string | null;
         }[]
       | null;
@@ -2570,7 +2808,7 @@ export interface SiteHomepage {
           /**
            * Nombre del servicio (ej: Diagnóstico).
            */
-          name: string;
+          name?: string | null;
           /**
            * Duración (ej: 2 – 3 semanas).
            */
@@ -2591,25 +2829,13 @@ export interface SiteHomepage {
                 /**
                  * Texto del entregable.
                  */
-                text: string;
+                text?: string | null;
                 id?: string | null;
               }[]
             | null;
           id?: string | null;
         }[]
       | null;
-    /**
-     * Texto principal del quote (ej: No hay urgencia.).
-     */
-    quoteText?: string | null;
-    /**
-     * Segunda línea del quote en tono soft (ej: Hay método.).
-     */
-    quoteTextSoft?: string | null;
-    /**
-     * Atribución del quote (ej: Canon BBF · 01).
-     */
-    quoteAttribution?: string | null;
     /**
      * Texto del CTA link-arrow (ej: Conocer el método completo).
      */
@@ -2643,16 +2869,10 @@ export interface SiteHomepage {
      * Segunda línea del statement H2 (red gradient animado — D-S6-06).
      */
     statementLine2Soft?: string | null;
-    cta?: {
-      /**
-       * Texto del CTA principal (ej: Sentémonos a pensar).
-       */
-      label?: string | null;
-      /**
-       * URL destino del CTA.
-       */
-      href?: string | null;
-    };
+    /**
+     * Key de SiteCtaLibrary (ej: cierre-cta). Mismo patrón que hero.ctas[].ctaKey. Requiere que el item exista en admin → SiteCtaLibrary.
+     */
+    ctaKey?: string | null;
     /**
      * Nota bajo el CTA (ej: Diagnóstico cerrado · 2-3 semanas · sin compromiso).
      */
@@ -2678,7 +2898,7 @@ export interface SiteHomepage {
           /**
            * Texto de citación IA: responde directamente la pregunta implícita de la sección. 40-60 palabras. Sin filler. Sin marca registrada.
            */
-          capsule: string;
+          capsule?: string | null;
           id?: string | null;
         }[]
       | null;
@@ -2700,7 +2920,7 @@ export interface SiteCtaLibrary {
          * Identificador único (e.g. "watch-it-run"). Usado como ctaKey en nav y consumers.
          */
         key: string;
-        label: string;
+        label?: string | null;
         type: 'solid' | 'outline';
         intent: 'primary' | 'secondary' | 'black' | 'red';
         /**
@@ -2852,6 +3072,7 @@ export interface SiteNavigationSelect<T extends boolean = true> {
                     external?: T;
                   };
               description?: T;
+              icon?: T;
               mediaType?: T;
               media?: T;
               id?: T;
@@ -3099,6 +3320,18 @@ export interface SiteHomepageSelect<T extends boolean = true> {
               tag?: T;
               title?: T;
               body?: T;
+              icon?: T;
+              id?: T;
+            };
+        timelineAttribution?: T;
+        milestones?:
+          | T
+          | {
+              title?: T;
+              note?: T;
+              icon?: T;
+              status?: T;
+              statusLabel?: T;
               id?: T;
             };
         quoteText?: T;
@@ -3170,9 +3403,6 @@ export interface SiteHomepageSelect<T extends boolean = true> {
                   };
               id?: T;
             };
-        quoteText?: T;
-        quoteTextSoft?: T;
-        quoteAttribution?: T;
         ctaLabel?: T;
         ctaHref?: T;
       };
@@ -3184,12 +3414,7 @@ export interface SiteHomepageSelect<T extends boolean = true> {
         brandYear?: T;
         statementLine1?: T;
         statementLine2Soft?: T;
-        cta?:
-          | T
-          | {
-              label?: T;
-              href?: T;
-            };
+        ctaKey?: T;
         ctaNote?: T;
         signatureTagline?: T;
       };

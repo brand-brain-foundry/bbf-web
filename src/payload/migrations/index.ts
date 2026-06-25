@@ -32,6 +32,11 @@ import * as migration_20260613_140000_wave_4c1_sublink_linktarget from './202606
 import * as migration_20260614_000100_site_cta_library from './20260614_000100_site_cta_library';
 import * as migration_20260616_235419_baseline_sync from './20260616_235419_baseline_sync';
 import * as migration_20260619_163628_refactor_hero_ctas from './20260619_163628_refactor_hero_ctas';
+import * as migration_20260620_200916_add_phase_icon from './20260620_200916_add_phase_icon';
+import * as migration_20260621_100817_add_milestones_to_site_homepage from './20260621_100817_add_milestones_to_site_homepage';
+import * as migration_20260621_200640_remove_method_quote_fields from './20260621_200640_remove_method_quote_fields';
+import * as migration_20260623_083009_add_nav_sublink_icon from './20260623_083009_add_nav_sublink_icon';
+import * as migration_20260623_cierre_cta_to_ctakey from './20260623_cierre_cta_to_ctakey';
 
 export const migrations = [
   {
@@ -202,6 +207,31 @@ export const migrations = [
   {
     up: migration_20260619_163628_refactor_hero_ctas.up,
     down: migration_20260619_163628_refactor_hero_ctas.down,
-    name: '20260619_163628_refactor_hero_ctas'
+    name: '20260619_163628_refactor_hero_ctas',
+  },
+  {
+    up: migration_20260620_200916_add_phase_icon.up,
+    down: migration_20260620_200916_add_phase_icon.down,
+    name: '20260620_200916_add_phase_icon',
+  },
+  {
+    up: migration_20260621_100817_add_milestones_to_site_homepage.up,
+    down: migration_20260621_100817_add_milestones_to_site_homepage.down,
+    name: '20260621_100817_add_milestones_to_site_homepage',
+  },
+  {
+    up: migration_20260621_200640_remove_method_quote_fields.up,
+    down: migration_20260621_200640_remove_method_quote_fields.down,
+    name: '20260621_200640_remove_method_quote_fields',
+  },
+  {
+    up: migration_20260623_083009_add_nav_sublink_icon.up,
+    down: migration_20260623_083009_add_nav_sublink_icon.down,
+    name: '20260623_083009_add_nav_sublink_icon',
+  },
+  {
+    up: migration_20260623_cierre_cta_to_ctakey.up,
+    down: migration_20260623_cierre_cta_to_ctakey.down,
+    name: '20260623_cierre_cta_to_ctakey',
   },
 ];
