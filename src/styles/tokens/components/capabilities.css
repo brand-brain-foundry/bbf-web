@@ -13,26 +13,31 @@
    LAYOUT TOKENS — Capabilities section
    ============================================================ */
 :root {
-  --bbf-capabilities-hub-max-w: 36rem; /* 576px — hub diagram max width */
+  --bbf-capabilities-hub-max-w: 36rem; /* 576px = 36 × 16px — hub diagram max width (preview home.css) */
+  --bbf-capabilities-hub-label-max-w: calc(
+    var(--bbf-capabilities-hub-max-w) / 4
+  ); /* 144px — hub-max-w ÷4, contiene meta sin invadir centro (D-S456-01) */
   --bbf-capabilities-grid-gap: clamp(
-    80px,
+    var(--bbf-space-20),
     10vw,
-    140px
-  ); /* DA-02: gap entre items (preview .caps gap) */
-  --bbf-capabilities-card-cols: 1; /* mobile: 1 col */
-  --bbf-capabilities-scene-min-h: 18rem; /* scene shell min height */
-  --bbf-capabilities-scene-bg: var(
-    --bbf-color-sand-deep-shade
-  ); /* #ebe3d4 — Bug 2, Tier 3 específico */
-  --bbf-capabilities-num-size: var(--bbf-text-display-2); /* número de capability */
+    calc(var(--bbf-space-base) * 35)
+  ); /* DA-02: 80px→140px gap entre items (preview .caps gap) */
+  --bbf-capabilities-scene-min-h: 18rem; /* 288px = 18 × 16px — scene shell min height (preview) */
+  --bbf-capabilities-scene-bg: var(--bbf-surface-sand-deep); /* Tier 2 via semantic/colors.css */
+  --bbf-capabilities-lede-measure: 38ch; /* lede max-width (preview) */
+  --bbf-capabilities-body-measure: 50ch; /* body + example-text max-width (preview) */
+  /* Chat sequential animation — Tier-3 with linaje */
+  --bbf-chat-msg-stagger: 600ms; /* delay entre burbujas — motion-slow × 1.5 */
+  --bbf-chat-msg-appear-duration: 400ms; /* fade-in por burbuja — motion-slow */
+  --bbf-chat-msg-pause: 2400ms; /* pausa lectora post-secuencia — gradient-medium × 0.6 */
 }
 
 /* ============================================================
    SECTION ROOT
    ============================================================ */
 .bbf-capabilities-section {
-  background-color: var(--bbf-surface-warm-base);
-  padding-block: var(--bbf-space-section-pad-fluid);
+  background-color: var(--bbf-on-surface-bg);
+  padding-block: var(--bbf-section-pad-standard);
 }
 
 /* ============================================================
@@ -43,6 +48,7 @@
   margin-inline: auto;
   padding-block: var(--bbf-space-section-gap-sm);
   aspect-ratio: 1;
+  color: var(--bbf-on-surface-title); /* SVG currentColor (rings/spokes/particles) inherits this */
 }
 
 /* ============================================================
@@ -58,26 +64,56 @@
 
 .bbf-capabilities-hub__label {
   position: absolute;
-  transform: translate(-50%, -50%);
-  text-align: center;
+  /* posición via CSS vars emitidas por HubDiagram.tsx (--hub-lx/--hub-ly)
+   * para que reglas mobile puedan overridear con mayor especificidad */
+  left: var(--hub-lx);
+  top: var(--hub-ly);
+  /* transform + text-align por tipo (data-spoke-pos) — ver reglas [data-spoke-pos=...] abajo */
   pointer-events: none;
+  /* D-S456-01: flex-col con gap evita solapamiento entre name y meta. */
+  display: flex;
+  flex-direction: column;
+  gap: var(--bbf-space-1); /* 4px — separación name↔meta */
+  max-width: var(
+    --bbf-capabilities-hub-label-max-w
+  ); /* D-S456-01: contiene metas, elimina solapamiento horizontal */
+}
+
+/* D-S456-07: 3 tipos por posición real — transform ancla el bloque, text-align cae en cascada */
+.bbf-capabilities-hub__label[data-spoke-pos='lat-r'] {
+  transform: translate(0, -50%);
+  text-align: left;
+}
+.bbf-capabilities-hub__label[data-spoke-pos='lat-l'] {
+  transform: translate(-100%, -50%);
+  text-align: right;
+}
+.bbf-capabilities-hub__label[data-spoke-pos='v-sup'] {
+  transform: translate(-50%, -100%);
+  text-align: center;
+}
+.bbf-capabilities-hub__label[data-spoke-pos='v-inf'] {
+  transform: translate(-50%, 0);
+  text-align: center;
 }
 
 .bbf-capabilities-hub__label-name {
   font-family: var(--bbf-font-display); /* Fix 2: era mono → Inter */
   font-size: 0.9375rem; /* Fix 2: era --bbf-text-mono-xs (11px) → 15px */
   font-weight: var(--bbf-weight-medium); /* Fix 2: era 600 → 500 (alineado diseño Claude T-18) */
-  color: var(--bbf-text-on-sand);
+  color: var(--bbf-on-surface-title);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
+  /* text-align heredado del container [data-spoke-pos] rule */
 }
 
 .bbf-capabilities-hub__label-meta {
   font-family: var(--bbf-font-mono);
-  font-size: var(--bbf-text-micro);
-  color: var(--bbf-text-on-sand-subtle);
-  white-space: nowrap;
+  font-size: var(--bbf-text-xs); /* D-7: 10px→12px (caption funcional, piso absoluto) */
+  color: var(--bbf-on-surface-muted);
+  white-space: normal; /* D-S456-01: permite wrap dentro del max-width */
+  /* text-align heredado del container [data-spoke-pos] rule */
 }
 
 /* Sonar animation — Fix 4: prefers-reduced-motion */
@@ -94,7 +130,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--bbf-capabilities-grid-gap);
-  padding-top: clamp(2rem, 4vw, 3rem); /* D-FIX-S6-03: separación hub → grid */
+  padding-top: clamp(
+    var(--bbf-space-8),
+    4vw,
+    var(--bbf-space-12)
+  ); /* D-FIX-S6-03: separación hub → grid (32px→48px) */
 }
 
 /* ============================================================
@@ -138,20 +178,20 @@
   display: flex;
   align-items: center;
   gap: var(--bbf-space-3); /* 12px — preview */
-  color: var(--bbf-text-on-warm-muted); /* #6b6863 */
-  margin-bottom: 18px; /* preview .h3 margin-top: 18px */
+  color: var(--bbf-on-surface-muted);
+  margin-bottom: var(--bbf-space-5); /* 20px — preview 18px → space-5 (Δ2px firmado E-01) */
 }
 
 .bbf-capability-card__num-line {
   flex: 1;
   height: var(--bbf-line-border);
-  background: var(--bbf-border-on-warm);
+  background: var(--bbf-on-surface-border);
   max-width: 80px; /* Tier 3 — preview */
 }
 
 /* Title H3 */
 .bbf-capability-card__title {
-  margin-bottom: 18px; /* preview .cap__title margin-bottom: 18px */
+  margin-bottom: var(--bbf-space-5); /* 20px — preview 18px → space-5 (Δ2px firmado E-01) */
 }
 
 /* Lede */
@@ -172,7 +212,7 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  border-top: var(--bbf-line-border) solid var(--bbf-border-on-warm); /* preview */
+  border-top: var(--bbf-line-border) solid var(--bbf-on-surface-border); /* preview */
   padding-top: var(--bbf-space-5); /* 20px — preview */
   margin-bottom: var(--bbf-space-8); /* 32px — preview */
 }
@@ -182,29 +222,33 @@
   grid-template-columns: 20px 1fr; /* preview */
   gap: var(--bbf-space-2\.5); /* 10px — preview */
   align-items: start;
-  line-height: 1.5; /* preview */
+  line-height: var(--bbf-leading-snug-small); /* 1.45 — closest token (preview: 1.5, Δ0.05) */
+}
+
+.bbf-capability-card__bullet [data-component='bbf-icon'] {
+  color: var(--bbf-on-surface-icon-accent); /* S-01: brand blue, surface-aware */
 }
 
 /* Example block */
 .bbf-capability-card__example {
-  border-left: var(--bbf-line-focus) solid var(--bbf-text-on-warm); /* preview: var(--ink) — D-DS-14 */
+  border-left: var(--bbf-line-focus) solid var(--bbf-on-surface-title); /* preview: var(--ink) — D-DS-14 */
   padding: var(--bbf-space-6); /* 24px — DA-05 (preview: 22px 24px ≈ space-6) */
-  background-color: var(--bbf-surface-warm-elevated); /* preview: var(--bg-elev) */
+  background-color: var(--bbf-on-surface-highlight); /* preview: var(--bg-elev) */
   border-radius: 0 var(--bbf-radius-md) var(--bbf-radius-md) 0; /* preview: 0 8px 8px 0 */
 }
 
 .bbf-capability-card__example-lbl {
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs); /* 11px */
-  letter-spacing: 0.06em; /* Tier 3 — preview */
-  color: var(--bbf-text-on-warm-muted);
+  letter-spacing: var(--bbf-tracking-loose); /* 0.06em — T-03 */
+  color: var(--bbf-on-surface-muted);
 }
 
 .bbf-capability-card__example-text {
   font-size: var(--bbf-text-body-md); /* 16px — explícito, D-TIP-03 */
   font-style: italic; /* preview */
-  color: var(--bbf-text-on-warm-soft); /* preview: var(--ink-soft) */
-  max-width: 50ch; /* preview */
+  color: var(--bbf-on-surface-body); /* preview: var(--ink-soft) */
+  max-width: var(--bbf-capabilities-body-measure); /* T-01 */
   margin-top: var(--bbf-space-2); /* 8px — preview */
 }
 
@@ -219,7 +263,7 @@
 @media (min-width: 920px) {
   .bbf-capability-card__viz {
     position: sticky;
-    top: 120px; /* DA-04: preview usa 120px (era 96px) */
+    top: calc(var(--bbf-space-base) * 30); /* 120px = base × 30 — DA-04 */
   }
 }
 
@@ -230,8 +274,8 @@
   width: 100%;
   min-height: var(--bbf-capabilities-scene-min-h);
   border-radius: var(--bbf-radius-card);
-  border: var(--bbf-line-border) solid var(--bbf-border-on-warm); /* preview: var(--line) */
-  background-color: var(--bbf-surface-warm-elevated); /* revert Bug 2 — #f3f1ec */
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-border);
+  background-color: var(--bbf-on-surface-bg);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -239,12 +283,12 @@
 
 .bbf-cap-scene__head {
   padding: var(--bbf-space-component-padding-md) var(--bbf-space-component-padding-lg);
-  border-bottom: var(--bbf-line-border) solid var(--bbf-border-on-warm);
-  color: var(--bbf-text-on-warm-muted); /* preview: var(--ink-muted) */
-  background-color: var(--bbf-surface-warm-base); /* preview: var(--bg) */
+  border-bottom: var(--bbf-line-border) solid var(--bbf-on-surface-border);
+  color: var(--bbf-on-surface-muted);
+  background-color: var(--bbf-on-surface-hover-bg);
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
-  letter-spacing: 0.08em;
+  letter-spacing: var(--bbf-tracking-looser);
   text-transform: uppercase;
 }
 
@@ -254,13 +298,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--bbf-space-content-gap-tight);
+  background-color: var(
+    --bbf-capabilities-scene-bg
+  ); /* sand-deep #f7e8d2 — warm island in dark chrome */
 }
 
 .bbf-cap-scene__footer {
   padding: var(--bbf-space-component-padding-md) var(--bbf-space-component-padding-lg);
-  border-top: var(--bbf-line-border) solid var(--bbf-border-on-warm);
-  color: var(--bbf-text-on-warm-faint); /* preview: var(--ink-muted) */
-  background-color: var(--bbf-surface-warm-base); /* preview: var(--bg) */
+  border-top: var(--bbf-line-border) solid var(--bbf-on-surface-border);
+  color: var(--bbf-on-surface-muted);
+  background-color: var(--bbf-on-surface-hover-bg);
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs);
 }
@@ -320,36 +367,75 @@
   display: flex;
   flex-direction: column;
   gap: var(--bbf-space-content-gap-tight);
+  background: var(--bbf-accent-gradient); /* identidad fija — gradiente BBF en el body */
+  background-size: 200% 200%;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
+}
+
+/* Sequential animation — ChatSequence.tsx controla data-seq-active */
+.bbf-cap-chat__messages:not([data-seq-active='true']) .bbf-cap-chat__msg {
+  opacity: 0;
+}
+
+.bbf-cap-chat__messages[data-seq-active='true'] .bbf-cap-chat__msg {
+  animation: bbf-chat-bubble-appear var(--bbf-chat-msg-appear-duration) ease both;
+}
+
+@keyframes bbf-chat-bubble-appear {
+  from {
+    opacity: 0;
+    transform: translateY(
+      var(--bbf-space-1)
+    ); /* V-CHAT-02: 4px → token (madre --bbf-space-base 4px) */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .bbf-cap-chat__msg {
-  max-width: 80%;
+  max-width: min(
+    80%,
+    var(--bbf-capabilities-lede-measure)
+  ); /* D-CHAT-02: 80% del scene, tope = lede-measure (38ch) */
   padding: var(--bbf-space-component-padding-sm) var(--bbf-space-component-padding-md);
   border-radius: var(--bbf-radius-card);
-  font-size: var(--bbf-text-h5);
-  line-height: 1.4;
+  font-size: var(
+    --bbf-text-mono-md
+  ); /* D-CHAT-01: 13px compacto — era --bbf-text-h5 (16px, token heading mal usado) */
+  line-height: var(
+    --bbf-leading-base
+  ); /* D-8: 1.4→1.55 (cuerpo de lectura, piso ≥1.5, escena flexible) */
 }
 
 .bbf-cap-chat__msg--user {
   align-self: flex-end;
   background-color: var(--bbf-surface-black);
   color: var(--bbf-text-on-black);
-  border-bottom-right-radius: var(--bbf-radius-sm, 0.25rem);
+  border-bottom-right-radius: var(
+    --bbf-radius-sm
+  ); /* V-CHAT-03: token resuelve a 4px, fallback redundante eliminado */
 }
 
 .bbf-cap-chat__msg--brain {
   align-self: flex-start;
-  background: var(--bbf-accent-gradient);
-  background-size: 200% 200%;
-  animation: bbf-gradient-shift 6s ease-in-out infinite;
-  color: var(--bbf-text-on-gradient-blue);
-  border-bottom-left-radius: var(--bbf-radius-sm, 0.25rem);
+  background-color: var(--bbf-surface-sand); /* #fdf5ed — warm contra gradiente azul */
+  color: var(--bbf-text-on-sand); /* #000000 — negro, máximo contraste */
+  border-bottom-left-radius: var(
+    --bbf-radius-sm
+  ); /* V-CHAT-03: token resuelve a 4px, fallback redundante eliminado */
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bbf-cap-chat__msg--brain {
+  .bbf-cap-chat__messages {
     animation: none;
     background-position: 0% 50%;
+  }
+
+  .bbf-cap-chat__messages .bbf-cap-chat__msg {
+    opacity: 1;
+    animation: none;
   }
 }
 
@@ -544,6 +630,24 @@
 }
 
 /* ============================================================
+   D-DS-12 — COLOR CASCADE para CapabilityCard (chrome Txt)
+   Especificidad (0,2,0) > Tailwind utility (0,1,0).
+   Reemplaza tokens on-warm hardcodeados en Heading/Text CVA defaults.
+   Aplica SOLO al subtree .bbf-capability-card__txt (NO al Viz/Scene).
+   ============================================================ */
+.bbf-capability-card__txt [data-component='bbf-heading'],
+.bbf-capability-card__lede[data-component='bbf-text'],
+.bbf-capability-card__lede [data-component='bbf-text'] {
+  color: var(--bbf-on-surface-title);
+}
+
+.bbf-capability-card__body[data-component='bbf-text'],
+.bbf-capability-card__body [data-component='bbf-text'],
+.bbf-capability-card__bullets [data-component='bbf-text'] {
+  color: var(--bbf-on-surface-body);
+}
+
+/* ============================================================
    HUB MOBILE FIX 2 — patrón del /design-preview canónico
    Sub-A: gap Hub → primer CapabilityItem (era 0px).
    Sub-B: label width 100px → texto meta largo wrappea en lugar de
@@ -551,18 +655,52 @@
    Solo mobile ≤767px. Desktop intocado. HubDiagram.tsx INTOCABLE.
    ============================================================ */
 @media (max-width: 767px) {
+  /* Ajuste 3: example oculto en mobile — sin hueco (display:none elimina el elemento del flujo) */
+  .bbf-capability-card__example {
+    display: none;
+  }
+
   .bbf-capabilities-hub-wrapper {
-    margin-block-end: 72px; /* Sub-A: gap al primer CapabilityItem */
+    margin-block-end: clamp(
+      var(--bbf-space-8),
+      9vw,
+      calc(var(--bbf-space-base) * 18)
+    ); /* 32px→72px responsive — Sub-A: gap hub → primer CapabilityItem */
   }
 
   .bbf-capabilities-hub-wrapper .bbf-capabilities-hub__label {
     width: 100px; /* Sub-B: permite wrap de label-meta largos — replica preview */
   }
 
-  /* label-meta wrappea dentro del contenedor de 100px.
-     Contenido Payload más largo que defaults — white-space: nowrap lo haría
-     overflowear visualmente aunque el div mide 100px. */
+  /* label-meta oculto en mobile — diagrama crece proporcional sin texto que cortar. */
   .bbf-capabilities-hub-wrapper .bbf-capabilities-hub__label-meta {
-    white-space: normal;
+    display: none;
+  }
+
+  /* font-size mobile — deriva del desktop 0.9375rem × 0.8 */
+  .bbf-capabilities-hub__label-name {
+    font-size: calc(0.9375rem * 0.8); /* 0.75rem = desktop × (4/5) */
+  }
+
+  /* D-S456-10: laterales en mobile → ARRIBA del nodo, centrados (mismo patrón v-sup).
+   * No hay espacio lateral en ~375px → eliminar la lógica outward de desktop.
+   * left = --hub-nx (centro-x del nodo), top = nodeY - CLEARANCE (3.2% = NODE_R+LABEL_NODE_GAP en 100-unit viewBox).
+   * Especificidad (0,3,0) > base left/top (0,1,0) → gana sin !important. */
+  .bbf-capabilities-hub-wrapper .bbf-capabilities-hub__label[data-spoke-pos='lat-r'],
+  .bbf-capabilities-hub-wrapper .bbf-capabilities-hub__label[data-spoke-pos='lat-l'] {
+    left: var(--hub-nx);
+    top: calc(
+      var(--hub-ly) - 3.2%
+    ); /* nodeY - CLEARANCE; 3.2 = NODE_R(1.6) + LABEL_NODE_GAP(1.6) SVG units = 3.2% */
+    transform: translate(-50%, -100%);
+    text-align: center;
+  }
+
+  /* D-S456-09: padding-block dentro de aspect-ratio:1 + box-sizing:border-box
+   * letterboxeaba el SVG a 239px (border-box 335 − 96 padding) → franjas laterales.
+   * A 0, el content-box vuelve cuadrado (335×335) → SVG llena el container.
+   * El border-box no cambia → espaciado exterior intacto. */
+  .bbf-capabilities-hub {
+    padding-block: 0;
   }
 }

@@ -7,6 +7,7 @@ import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import type { SceneData } from './types';
+import { ChatSequence } from './ChatSequence';
 
 interface CapabilitySceneProps {
   scene: SceneData;
@@ -24,13 +25,13 @@ export async function CapabilityScene({ scene }: CapabilitySceneProps) {
         className="bbf-cap-scene bbf-cap-chat"
       >
         <div className="bbf-cap-scene__head">{scene.meta}</div>
-        <div className="bbf-cap-scene__body bbf-cap-chat__messages">
+        <ChatSequence msgCount={chat?.messages?.length ?? 0}>
           {chat?.messages?.map((msg, i) => (
             <div key={msg.id ?? i} className={`bbf-cap-chat__msg bbf-cap-chat__msg--${msg.who}`}>
               {msg.text}
             </div>
           ))}
-        </div>
+        </ChatSequence>
         {chat?.footer && <div className="bbf-cap-scene__footer">{chat.footer}</div>}
       </div>
     );
