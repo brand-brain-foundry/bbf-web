@@ -67,6 +67,7 @@
 @import '../styles/tokens/components/capabilities.css';
 @import '../styles/tokens/components/lissajous.css';
 @import '../styles/tokens/components/case-section.css';
+@import '../styles/tokens/components/timeline.css'; /* §4·B Timeline — D-TIMELINE-01 */
 @import '../styles/tokens/components/quote-block.css'; /* D-S5-06: QuoteBlock molecule */
 @import '../styles/tokens/components/porque-section.css'; /* §4 Por qué — D-S4-01..04 */
 @import '../styles/tokens/components/metodo-section.css'; /* §5 Método — D-S5-01..08 */

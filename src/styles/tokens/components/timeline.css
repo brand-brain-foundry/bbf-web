@@ -1,0 +1,466 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: Timeline §4·B Trayectoria
+ *
+ * Tier: 3 (COMPONENT)
+ * Scope: .bbf-timeline-* (timeline = §4·B Trayectoria)
+ * Surface: surface-aware — semantic/surface-roles.css (--bbf-on-surface-*)
+ * Despacho: B-BBF-WEB-TIMELINE (D-TIMELINE-01 firmada 2026-06-21)
+ * Design: public/assets/development/Timeline/trayectoria/timeline.jsx
+ *
+ * Estados de hito:
+ *   --active  nodo filled + check, rail sólido, badge dot azul (--bbf-accent-blue)
+ *   --demo    nodo hollow + pulse, rail gradient, badge dot blink
+ *   --next    nodo hollow faint, rail dashed, badge hollow faint
+ *
+ * D-TIMELINE-01: --bbf-on-surface-faint = ghost escalón debajo de muted
+ *   Usado en: num "01 · hito", stop--next, badge--next, connector--next.
+ */
+
+/* ── Tier-3 tokens ───────────────────────────────────────────── */
+
+:root {
+  --bbf-timeline-card-min: 272px; /* min-width de cada card */
+  --bbf-timeline-card-pad: var(--bbf-space-6); /* 24px — padding interno */
+  --bbf-timeline-stop-size: 20px; /* diámetro del nodo */
+  --bbf-timeline-connector-h: 1px; /* grosor del rail */
+  --bbf-timeline-demo-pulse-dur: 2s;
+  --bbf-timeline-blink-dur: 1.5s;
+}
+
+/* ── Component root ───────────────────────────────────────────── */
+/* Sin padding-block ni background: CaseSection (o el wrapper de lab) los provee. */
+
+.bbf-timeline {
+}
+
+/* ── Controls row: attribution pill + arrows ─────────────────── */
+
+.bbf-timeline__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bbf-space-4);
+  margin-block-end: var(--bbf-space-8);
+}
+
+.bbf-timeline__attribution {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bbf-space-2);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs, 0.6875rem);
+  letter-spacing: var(--bbf-tracking-wider);
+  color: var(--bbf-on-surface-muted);
+}
+
+.bbf-timeline__live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--bbf-accent-blue); /* firmado: azul = activo/live */
+  flex-shrink: 0;
+}
+
+.bbf-timeline__arrows {
+  display: flex;
+  gap: var(--bbf-space-2);
+}
+
+.bbf-timeline__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-border);
+  background: transparent;
+  color: var(--bbf-on-surface-title);
+  cursor: pointer;
+  transition:
+    background 150ms var(--bbf-easing-hover, ease-out),
+    border-color 150ms var(--bbf-easing-hover, ease-out),
+    color 150ms var(--bbf-easing-hover, ease-out);
+}
+
+/* Hover = blue sólido (AJUSTE PIEL 1 — D-TIMELINE-P3) */
+.bbf-timeline__arrow:hover:not(:disabled) {
+  background: var(--bbf-accent-blue);
+  border-color: var(--bbf-accent-blue);
+  color: var(--bbf-on-surface-bright); /* contraste sobre azul */
+}
+
+.bbf-timeline__arrow:disabled {
+  color: var(--bbf-on-surface-faint);
+  border-color: var(--bbf-on-surface-faint);
+  cursor: default;
+}
+
+/* ── Scroller ─────────────────────────────────────────────────── */
+
+.bbf-timeline__scroller {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  margin-block-end: var(--bbf-space-8);
+}
+
+.bbf-timeline__scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Track: flex row de cards ─────────────────────────────────── */
+
+.bbf-timeline__track {
+  display: flex;
+  gap: 0; /* gap vía padding-end de cada card — rail necesita continuidad */
+}
+
+/* ── Card ─────────────────────────────────────────────────────── */
+
+.bbf-timeline__card {
+  min-width: var(--bbf-timeline-card-min);
+  flex: 1;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  padding-inline-end: var(--bbf-space-4); /* gap visual entre cards */
+}
+
+.bbf-timeline__card:last-child {
+  padding-inline-end: 0;
+}
+
+.bbf-timeline__card-inner {
+  flex: 1;
+  padding: var(--bbf-timeline-card-pad);
+  border-radius: var(--bbf-radius-section-card);
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bbf-space-5);
+  transition: border-color 150ms var(--bbf-easing-hover, ease-out);
+}
+
+/* Card hover → borde azul (AJUSTE PIEL 1) */
+.bbf-timeline__card-inner:hover {
+  border-color: var(--bbf-accent-blue);
+}
+
+.bbf-timeline__card--active .bbf-timeline__card-inner,
+.bbf-timeline__card--demo .bbf-timeline__card-inner {
+  background: var(--bbf-on-surface-elevated-bg);
+}
+
+.bbf-timeline__card--next .bbf-timeline__card-inner {
+  background: var(--bbf-on-surface-bg);
+}
+
+/* ── Card head: número + badge ────────────────────────────────── */
+
+.bbf-timeline__card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bbf-space-3);
+}
+
+.bbf-timeline__num {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs, 0.6875rem);
+  letter-spacing: var(--bbf-tracking-wider);
+  color: var(--bbf-on-surface-faint); /* ghost — D-TIMELINE-01 */
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Badge: dot + statusLabel ─────────────────────────────────── */
+
+.bbf-timeline__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bbf-space-1\.5);
+  padding: var(--bbf-space-1) var(--bbf-space-2\.5);
+  border-radius: var(--bbf-radius-pill);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs, 0.6875rem);
+  letter-spacing: var(--bbf-tracking-wide);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bbf-timeline__badge--active {
+  color: var(--bbf-on-surface-title);
+  border: var(--bbf-line-border) solid var(--bbf-accent-blue);
+}
+
+.bbf-timeline__badge--demo {
+  color: var(--bbf-on-surface-body);
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-muted);
+}
+
+.bbf-timeline__badge--next {
+  color: var(--bbf-on-surface-faint);
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-faint);
+}
+
+.bbf-timeline__badge-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bbf-timeline__badge--active .bbf-timeline__badge-dot {
+  background-color: var(--bbf-accent-blue); /* firmado: azul = activo */
+}
+
+.bbf-timeline__badge--demo .bbf-timeline__badge-dot {
+  background-color: var(--bbf-on-surface-title);
+  animation: bbf-timeline-blink var(--bbf-timeline-blink-dur) ease-in-out infinite;
+}
+
+.bbf-timeline__badge--next .bbf-timeline__badge-dot {
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-faint);
+  background: transparent;
+}
+
+/* ── Card body: icon + title + note ──────────────────────────── */
+
+.bbf-timeline__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bbf-space-3);
+  flex: 1;
+}
+
+.bbf-timeline__icon {
+  color: var(--bbf-on-surface-icon);
+}
+
+.bbf-timeline__card--active .bbf-timeline__icon,
+.bbf-timeline__card--demo .bbf-timeline__icon {
+  color: var(--bbf-on-surface-body);
+}
+
+.bbf-timeline__title {
+  margin: 0;
+  font-family: var(--bbf-font-display);
+  font-size: var(--bbf-text-body-lg, 1rem);
+  font-weight: var(--bbf-weight-medium);
+  line-height: var(--bbf-leading-tight);
+  color: var(--bbf-on-surface-title);
+}
+
+.bbf-timeline__card--next .bbf-timeline__title {
+  color: var(--bbf-on-surface-muted);
+}
+
+.bbf-timeline__note {
+  margin: 0;
+  font-size: var(--bbf-text-body-sm, 0.875rem);
+  color: var(--bbf-on-surface-body);
+  line-height: var(--bbf-leading-base);
+}
+
+.bbf-timeline__card--next .bbf-timeline__note {
+  color: var(--bbf-on-surface-faint);
+}
+
+/* ── Stop area: [connector-left][stop][connector-right] ──────── */
+
+.bbf-timeline__stop-area {
+  display: flex;
+  align-items: center;
+  padding-block-start: var(--bbf-space-5);
+}
+
+.bbf-timeline__connector-left,
+.bbf-timeline__connector-right {
+  flex: 1;
+  height: var(--bbf-timeline-connector-h);
+}
+
+/* active — rail azul (AJUSTE PIEL 2 — D-TIMELINE-P3: activo = azul) */
+.bbf-timeline__card--active .bbf-timeline__connector-left,
+.bbf-timeline__card--active .bbf-timeline__connector-right {
+  background: var(--bbf-accent-blue);
+}
+
+/* demo — gradient difuminado hacia los extremos */
+.bbf-timeline__card--demo .bbf-timeline__connector-left {
+  background: linear-gradient(to left, var(--bbf-on-surface-muted), transparent);
+}
+
+.bbf-timeline__card--demo .bbf-timeline__connector-right {
+  background: linear-gradient(
+    to right,
+    var(--bbf-on-surface-muted),
+    var(--bbf-on-surface-faint) 60%,
+    transparent
+  );
+}
+
+/* next — dashed faint */
+.bbf-timeline__card--next .bbf-timeline__connector-left,
+.bbf-timeline__card--next .bbf-timeline__connector-right {
+  background: repeating-linear-gradient(
+    to right,
+    var(--bbf-on-surface-faint) 0,
+    var(--bbf-on-surface-faint) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+/* Extremos: no connector fuera del primer/último card */
+.bbf-timeline__card:first-child .bbf-timeline__connector-left {
+  display: none;
+}
+
+.bbf-timeline__card:last-child .bbf-timeline__connector-right {
+  display: none;
+}
+
+/* ── Stop (nodo) ──────────────────────────────────────────────── */
+
+.bbf-timeline__stop {
+  width: var(--bbf-timeline-stop-size);
+  height: var(--bbf-timeline-stop-size);
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* AJUSTE PIEL 2 — D-TIMELINE-P3: nodo active = azul, check AA sobre azul */
+.bbf-timeline__stop--active {
+  background: var(--bbf-accent-blue);
+  color: var(--bbf-on-surface-bright); /* blanco en dark: 5.8:1 sobre #255ff1 ✅ WCAG AA */
+}
+
+.bbf-timeline__stop--demo {
+  border: 2px solid var(--bbf-on-surface-muted);
+  background: transparent;
+}
+
+/* Anillo de pulse exterior — animation scoped aquí */
+.bbf-timeline__stop--demo::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid var(--bbf-on-surface-muted);
+  opacity: 0.4;
+  animation: bbf-timeline-pulse var(--bbf-timeline-demo-pulse-dur) ease-out infinite;
+}
+
+.bbf-timeline__stop--next {
+  border: 1.5px solid var(--bbf-on-surface-faint);
+  background: transparent;
+}
+
+/* ── Footer: progress dinámico + CTA ─────────────────────────── */
+
+.bbf-timeline__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bbf-space-6);
+}
+
+/* Wrap: label + barra — ocupa el espacio libre a la izquierda del CTA */
+.bbf-timeline__progress-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--bbf-space-3);
+}
+
+/* Label "01 / 04" — mono-xs, muted */
+.bbf-timeline__progress-label {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-mono-xs, 0.6875rem);
+  letter-spacing: var(--bbf-tracking-wider);
+  color: var(--bbf-on-surface-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bbf-timeline__progress {
+  flex: 1;
+  height: 2px;
+  background: var(--bbf-on-surface-border);
+  border-radius: var(--bbf-radius-full);
+  overflow: hidden;
+}
+
+/* ancho dinámico — JS (Parte 3) via style prop */
+.bbf-timeline__progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--bbf-on-surface-title);
+  transition: width 300ms var(--bbf-easing-hover, ease-out);
+}
+
+/* ── Responsive — mobile ──────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .bbf-timeline__card {
+    min-width: 80vw; /* 80% viewport: un card domina + peek del siguiente */
+  }
+
+  .bbf-timeline__footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--bbf-space-4);
+  }
+
+  .bbf-timeline__progress-wrap {
+    width: 100%;
+  }
+}
+
+/* ── Animaciones (component-scoped) ──────────────────────────── */
+
+@keyframes bbf-timeline-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  60% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes bbf-timeline-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-timeline__stop--demo::after {
+    animation: none;
+    opacity: 0.3;
+  }
+
+  .bbf-timeline__badge--demo .bbf-timeline__badge-dot {
+    animation: none;
+  }
+}
