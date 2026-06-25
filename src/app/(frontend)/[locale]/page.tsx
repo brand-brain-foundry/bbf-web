@@ -20,7 +20,7 @@ import { Button } from '@/components/atoms/Button';
 import { Icon, Icons } from '@/components/atoms/Icon';
 import { Reveal } from '@/components/atoms/Reveal';
 import type { Media } from '@/payload/payload-types';
-import { interpolate } from '@/lib/content-interpolation';
+import { interpolateDeep } from '@/lib/content-interpolation';
 import { buildFaqPageJsonLd } from '@/lib/seo/jsonLd/faqPage';
 import { getSiteIdentity } from '@/config/site';
 import { getCtaByKey } from '@/lib/payload/getSiteCtaLibrary';
@@ -35,10 +35,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const l = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
 
   const payload = await getPayload({ config });
-  const [site, siteId] = await Promise.all([
+  const [rawSite, siteId] = await Promise.all([
     payload.findGlobal({ slug: 'site-homepage', locale: l, depth: 1 }),
     getSiteIdentity(l),
   ]);
+  // D-PLACEHOLDER-01: interpolateDeep cubre TODOS los campos del global en una pasada.
+  // Campos futuros quedan cubiertos automáticamente — sin listas manuales.
+  const site = await interpolateDeep(rawSite, l);
 
   const {
     hero,
@@ -48,71 +51,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     method: mth,
     closing: cls,
   } = site;
-
-  // Pre-interpolate all editorial {{placeholder}} fields across §1-§6
-  const [
-    // §1 Hero
-    h1Line1,
-    h1Line2Soft,
-    ledeBody,
-    ledeEmphasis,
-    // §2 Capabilities header
-    capEyebrow,
-    capH2Line1,
-    capH2Line2Soft,
-    capLead,
-    // §3 Case Study
-    csEyebrow,
-    csH2Line1,
-    csH2Line2Soft,
-    csLead,
-    // §5 Método
-    mthEyebrow,
-    mthH2Line1,
-    mthH2Line2Soft,
-    mthCtaLabel,
-    // §6 Cierre
-    clsEyebrow,
-    clsBrandLine,
-    clsStatementLine1,
-    clsStatementLine2Soft,
-    clsCtaNote,
-    clsSignatureTagline,
-  ] = await Promise.all([
-    interpolate(hero?.h1Line1, l),
-    interpolate(hero?.h1Line2Soft, l),
-    interpolate(hero?.ledeBody, l),
-    interpolate(hero?.ledeEmphasis, l),
-    interpolate(cap?.eyebrow, l),
-    interpolate(cap?.h2Line1, l),
-    interpolate(cap?.h2Line2Soft, l),
-    interpolate(cap?.lead, l),
-    interpolate(cs?.eyebrow, l),
-    interpolate(cs?.h2Line1, l),
-    interpolate(cs?.h2Line2Soft, l),
-    interpolate(cs?.lead, l),
-    interpolate(mth?.eyebrow, l),
-    interpolate(mth?.h2Line1, l),
-    interpolate(mth?.h2Line2Soft, l),
-    interpolate(mth?.ctaLabel, l),
-    interpolate(cls?.eyebrow, l),
-    interpolate(cls?.brandLine, l),
-    interpolate(cls?.statementLine1, l),
-    interpolate(cls?.statementLine2Soft, l),
-    interpolate(cls?.ctaNote, l),
-    interpolate(cls?.signatureTagline, l),
-  ]);
-
-  // §2 Hub spokes — names and metas interpolated
-  const capHubSpokes = cap?.hubSpokes
-    ? await Promise.all(
-        cap.hubSpokes.map((s) =>
-          Promise.all([interpolate(s.name ?? '', l), interpolate(s.meta ?? '', l)]).then(
-            ([name, meta]) => ({ ...s, name, meta: meta || null }),
-          ),
-        ),
-      )
-    : undefined;
   // §1 Hero CTAs — resolved from SiteCtaLibrary (D-E2-09 rev: array, max 2)
   const heroCtas = (
     await Promise.all(
@@ -201,10 +139,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 weight="medium"
                 className="bbf-hero__title"
               >
-                {h1Line1}
+                {hero.h1Line1 ?? ''}
                 <br />
                 <span data-tone="soft" className="bbf-gradient-blue-animated">
-                  {h1Line2Soft}
+                  {hero.h1Line2Soft ?? ''}
                 </span>
               </Heading>
             </div>
@@ -212,12 +150,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <Reveal variant="up" delay={120}>
               <div className="bbf-hero__lede flex flex-col items-start gap-5">
                 <Text className="bbf-lede max-w-[38ch]">
-                  {ledeBody}
-                  {ledeEmphasis && (
+                  {hero.ledeBody ?? ''}
+                  {hero.ledeEmphasis && (
                     <>
                       <br />
                       <span className="bbf-hero__lede-em font-medium [color:var(--bbf-on-surface-bright)]">
-                        {ledeEmphasis}
+                        {hero.ledeEmphasis}
                       </span>
                     </>
                   )}
@@ -293,17 +231,17 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <CapabilitiesSection surface="dark">
         <Reveal variant="up">
           <CapabilitiesSection.Header
-            eyebrow={capEyebrow || undefined}
-            h2Line1={capH2Line1}
-            h2Line2Soft={capH2Line2Soft}
+            eyebrow={cap?.eyebrow || undefined}
+            h2Line1={cap?.h2Line1 ?? ''}
+            h2Line2Soft={cap?.h2Line2Soft ?? ''}
             h2Line2SoftClassName="bbf-gradient-blue-animated"
-            lead={capLead}
+            lead={cap?.lead ?? ''}
             surface="dark"
           />
         </Reveal>
 
         <CapabilitiesSection.Hub
-          spokes={capHubSpokes?.map((s) => ({ name: s.name, meta: s.meta })) ?? undefined}
+          spokes={cap?.hubSpokes?.map((s) => ({ name: s.name ?? '', meta: s.meta })) ?? undefined}
         />
 
         <CapabilitiesSection.Grid>
@@ -333,11 +271,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <Reveal variant="up">
             <SectionHeader
               surface="dark"
-              eyebrow={csEyebrow || '§3 · CASO'}
-              h2Line1={csH2Line1 || 'El cerebro'}
-              h2Line2Soft={csH2Line2Soft || 'en producción.'}
+              eyebrow={cs.eyebrow || '§3 · CASO'}
+              h2Line1={cs.h2Line1 || 'El cerebro'}
+              h2Line2Soft={cs.h2Line2Soft || 'en producción.'}
               h2Line2SoftClassName="bbf-gradient-blue-animated"
-              lead={csLead || undefined}
+              lead={cs.lead || undefined}
               decoration={<Lissajous name="case-2d" animation="traveling" />}
             />
           </Reveal>
@@ -400,9 +338,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       {mth && (
         <MetodoSection
           data={{
-            eyebrow: mthEyebrow || undefined,
-            h2Line1: mthH2Line1 || undefined,
-            h2Line2Soft: mthH2Line2Soft || undefined,
+            eyebrow: mth.eyebrow || undefined,
+            h2Line1: mth.h2Line1 || undefined,
+            h2Line2Soft: mth.h2Line2Soft || undefined,
             phases: mth.phases?.map((p) => ({
               number: p.number,
               shortLabel: p.shortLabel,
@@ -416,7 +354,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               body: s.body,
               deliverables: s.deliverables,
             })),
-            ctaLabel: mthCtaLabel || undefined,
+            ctaLabel: mth.ctaLabel || undefined,
             ctaHref: mth.ctaHref,
           }}
         />
@@ -426,14 +364,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       {cls && (
         <CierreSection
           data={{
-            eyebrow: clsEyebrow || undefined,
-            brandLine: clsBrandLine || undefined,
+            eyebrow: cls.eyebrow || undefined,
+            brandLine: cls.brandLine || undefined,
             brandYear: cls.brandYear,
-            statementLine1: clsStatementLine1 || undefined,
-            statementLine2Soft: clsStatementLine2Soft || undefined,
+            statementLine1: cls.statementLine1 || undefined,
+            statementLine2Soft: cls.statementLine2Soft || undefined,
             cta: closingCta ?? undefined,
-            ctaNote: clsCtaNote || undefined,
-            signatureTagline: clsSignatureTagline || undefined,
+            ctaNote: cls.ctaNote || undefined,
+            signatureTagline: cls.signatureTagline || undefined,
           }}
         />
       )}
