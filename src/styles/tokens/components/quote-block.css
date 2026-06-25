@@ -5,7 +5,22 @@
  * Scope: .bbf-quote-block
  * Variants: testimonial (§3 dark) + manifesto (§5 warm)
  * D-S5-06: molecule canónico extraído en 2da ocurrencia §3 + §5
+ * D-S3-ALIGN (2026-06-20): surface-aware via --bbf-on-surface-* + --bbf-on-surface-elevated-bg.
+ *   Eliminados modifiers --dark / --warm. Cascade del ancestor ([data-surface]) resuelve automático.
+ *   §3 → data-surface="dark" (CaseSection), §5 → data-surface="warm" (MetodoSection).
  */
+
+/* ── Tier-3 tokens ──────────────────────────────────────────── */
+
+:root {
+  --bbf-quote-testimonial-size: clamp(1.25rem, 2.4vw, 1.875rem);
+  --bbf-quote-testimonial-pad-block: clamp(2.5rem, 6vw, 4.5rem);
+  --bbf-quote-testimonial-pad-inline: clamp(2rem, 6vw, 5rem);
+  --bbf-quote-manifesto-pad-block: clamp(3rem, 8vw, 6rem);
+  --bbf-quote-manifesto-pad-inline: clamp(2rem, 6vw, 5rem);
+  --bbf-quote-mark-gap: 1.125rem; /* 18px — entre space-4=16 y space-5=20, deliberado */
+  --bbf-quote-mark-size: 3rem; /* ❝ testimonial — equivalente al SVG 48px (D-S3-MARK) */
+}
 
 /* ── Base ─────────────────────────────────────────────────── */
 
@@ -13,57 +28,61 @@
   margin: 0;
 }
 
-/* ── Variant: testimonial + surface: dark (§3 Caso) ──────── */
+/* ── Variant: testimonial — surface-aware (§3 dark via cascade) ── */
 
-.bbf-quote-block--testimonial.bbf-quote-block--dark {
-  margin-block-end: 32px;
-  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(2rem, 6vw, 5rem);
-  border: var(--bbf-line-border) solid var(--bbf-border-on-dark-surface);
-  background: var(--bbf-surface-dark-elevated);
+.bbf-quote-block--testimonial {
+  margin-block-end: var(--bbf-space-8);
+  padding: var(--bbf-quote-testimonial-pad-block) var(--bbf-quote-testimonial-pad-inline);
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-border);
+  background: var(--bbf-on-surface-elevated-bg);
   border-radius: var(--bbf-radius-section-card);
   position: relative;
   max-width: 920px;
 }
 
-.bbf-quote-block--testimonial.bbf-quote-block--dark .bbf-quote-block__mark {
-  color: var(--bbf-text-on-dark-surface-muted);
-  margin-block-end: 18px;
-  opacity: 0.4;
+.bbf-quote-block--testimonial .bbf-quote-block__mark {
+  /* D-S3-MARK: <span>❝</span> + .bbf-gradient-blue-animated (background-clip:text) */
+  display: block;
+  font-family: var(--bbf-font-display);
+  font-size: var(--bbf-quote-mark-size);
+  line-height: 1;
+  margin-block-end: var(--bbf-quote-mark-gap);
+  /* color + opacity eliminados — gradient-blue-animated los maneja */
 }
 
-.bbf-quote-block--testimonial.bbf-quote-block--dark .bbf-quote-block__blockquote {
+.bbf-quote-block--testimonial .bbf-quote-block__blockquote {
   margin: 0;
   font-family: var(--bbf-font-display);
-  font-size: clamp(1.25rem, 2.4vw, 1.875rem);
-  line-height: 1.3;
-  letter-spacing: -0.02em;
-  color: var(--bbf-text-on-dark-surface);
+  font-size: var(--bbf-quote-testimonial-size);
+  line-height: var(--bbf-leading-quote);
+  letter-spacing: var(--bbf-tracking-tight);
+  color: var(--bbf-on-surface-title);
   font-weight: 400;
 }
 
-.bbf-quote-block--testimonial.bbf-quote-block--dark .bbf-quote-block__text {
-  margin: 0 0 18px;
+.bbf-quote-block--testimonial .bbf-quote-block__text {
+  margin: 0 0 var(--bbf-quote-mark-gap);
   text-wrap: balance;
 }
 
-.bbf-quote-block--testimonial.bbf-quote-block--dark .bbf-quote-block__attribution {
+.bbf-quote-block--testimonial .bbf-quote-block__attribution {
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs, 0.6875rem);
-  letter-spacing: 0.02em;
-  color: var(--bbf-text-on-dark-surface-muted);
+  letter-spacing: var(--bbf-tracking-wide);
+  color: var(--bbf-on-surface-muted);
 }
 
-/* ── Variant: manifesto + surface: warm (§5 Método) ──────── */
+/* ── Variant: manifesto — surface-aware (§5 warm via cascade) ── */
 
-.bbf-quote-block--manifesto.bbf-quote-block--warm {
-  padding: clamp(3rem, 8vw, 6rem) clamp(2rem, 6vw, 5rem);
-  border: var(--bbf-line-border) solid var(--bbf-border-on-warm);
-  background: var(--bbf-surface-warm-elevated);
+.bbf-quote-block--manifesto {
+  padding: var(--bbf-quote-manifesto-pad-block) var(--bbf-quote-manifesto-pad-inline);
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-border);
+  background: var(--bbf-on-surface-elevated-bg);
   border-radius: var(--bbf-radius-section-card);
   text-align: center;
 }
 
-.bbf-quote-block--manifesto.bbf-quote-block--warm .bbf-quote-block__blockquote {
+.bbf-quote-block--manifesto .bbf-quote-block__blockquote {
   /* D-FIX-S5-04: iguala display-section-h2 (SectionHeader H2 parity) */
   margin: 0;
   font-family: var(--bbf-typography-display-section-h2-font, var(--bbf-font-display));
@@ -71,19 +90,19 @@
   line-height: var(--bbf-typography-display-section-h2-line);
   letter-spacing: var(--bbf-typography-display-section-h2-tracking);
   font-weight: var(--bbf-typography-display-section-h2-weight);
-  color: var(--bbf-text-on-warm);
+  color: var(--bbf-on-surface-title);
 }
 
-.bbf-quote-block--manifesto.bbf-quote-block--warm .bbf-quote-block__text {
+.bbf-quote-block--manifesto .bbf-quote-block__text {
   margin: 0;
   text-wrap: balance;
 }
 
-.bbf-quote-block--manifesto.bbf-quote-block--warm .bbf-quote-block__attribution {
+.bbf-quote-block--manifesto .bbf-quote-block__attribution {
   display: block;
   margin-block-start: clamp(1.5rem, 3vw, 2rem);
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs, 0.6875rem);
-  letter-spacing: 0.08em;
-  color: var(--bbf-text-on-warm-muted);
+  letter-spacing: var(--bbf-tracking-looser);
+  color: var(--bbf-on-surface-muted);
 }

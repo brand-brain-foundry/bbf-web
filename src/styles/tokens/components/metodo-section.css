@@ -3,15 +3,33 @@
  *
  * Tier: 3 (COMPONENT)
  * Scope: .bbf-mth-section + .bbf-service-card + .bbf-mth__*
- * Surface: warm — semantic/colors-warm.css
+ * Surface: dark — cascade via [data-surface="dark"] (D-S5-SURFACE-DARK)
  * D-S5-01..08 firmadas
  */
+
+/* ── Tier-3 tokens ─────────────────────────────────────────── */
+
+:root {
+  --mth-bar-pad-block: var(--bbf-space-5); /* 20px = 1.25rem */
+  --mth-bar-pad-inline: var(--bbf-space-6); /* 24px = 1.5rem */
+  --mth-bar-mb: clamp(var(--bbf-space-10), 5vw, var(--bbf-space-16)); /* clamp(40px,5vw,64px) */
+  --mth-dot-size: var(--bbf-space-2); /* 8px — marker dot */
+  --mth-bar-line-min: var(--bbf-space-8); /* 32px = 2rem — min line length */
+  /* ServiceCard + grid */
+  --mth-card-pad: clamp(var(--bbf-space-7), 3.5vw, 2.75rem); /* clamp(28px,3.5vw,44px) */
+  --mth-card-head-gap: var(--bbf-space-3\.5); /* 14px — SSOT → primitives/spacing.css */
+  --mth-card-num-optical: 0.35em; /* optical align num baseline with h3 cap-height */
+  --mth-card-meta-value-size: var(
+    --bbf-text-body-md
+  ); /* D-3: 15px off-token → body-md (16px, piso + linaje canónico) */
+  --mth-cards-mb: clamp(var(--bbf-space-20), 10vw, 8.75rem); /* clamp(80px,10vw,140px) */
+}
 
 /* ── Section root ─────────────────────────────────────────── */
 
 .bbf-mth-section {
-  background-color: var(--bbf-surface-warm-base);
-  padding-block: var(--bbf-space-section-pad-fluid, clamp(5rem, 8vw, 9rem));
+  background-color: var(--bbf-on-surface-bg);
+  padding-block: var(--bbf-section-pad-standard);
 }
 
 /* ── Process Bar (Tier 3 — one-shot, D-S5-04) ────────────── */
@@ -19,35 +37,35 @@
 .bbf-mth__bar {
   display: flex;
   align-items: center;
-  border: var(--bbf-line-border) solid var(--bbf-border-on-warm);
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-border);
   border-radius: var(--bbf-radius-full); /* D-DS-09 FIX-04 */
-  background: var(--bbf-surface-warm-base);
-  padding: 1.25rem 1.5rem;
-  margin-block-end: clamp(2.5rem, 5vw, 4rem);
+  background: var(--bbf-on-surface-elevated-bg); /* eleva del fondo dark */
+  padding: var(--mth-bar-pad-block) var(--mth-bar-pad-inline);
+  margin-block-end: var(--mth-bar-mb);
   overflow-x: auto;
 }
 
 .bbf-mth__bar-node {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--bbf-space-2);
   flex-shrink: 0;
 }
 
 .bbf-mth__bar-dot {
   display: block;
-  width: 8px;
-  height: 8px;
+  width: var(--mth-dot-size);
+  height: var(--mth-dot-size);
   border-radius: 50%;
-  background: var(--bbf-text-on-warm);
+  background: var(--bbf-on-surface-title);
   flex-shrink: 0;
 }
 
 .bbf-mth__bar-label {
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs, 0.6875rem);
-  letter-spacing: 0.04em;
-  color: var(--bbf-text-on-warm);
+  letter-spacing: var(--bbf-tracking-wider);
+  color: var(--bbf-on-surface-title);
   white-space: nowrap;
 }
 
@@ -57,27 +75,21 @@
 
 .bbf-mth__bar-divider {
   display: inline;
-  color: var(--bbf-text-on-warm-muted);
+  color: var(--bbf-on-surface-muted);
 }
 
 .bbf-mth__bar-line {
   flex: 1;
-  min-width: 2rem;
+  min-width: var(--mth-bar-line-min);
   height: 0;
-  border-top: var(--bbf-line-border) dashed var(--bbf-border-on-warm);
-  margin-inline: 1rem;
+  border-top: var(--bbf-line-border) dashed var(--bbf-on-surface-border);
+  margin-inline: var(--bbf-space-4);
 }
 
 @media (max-width: 720px) {
+  /* B-BBF-WEB-S456-FIXES: barra de proceso oculta en mobile.
+   * display:none elimina el margin-block-end también → sin gap entre SectionHeader y cards. */
   .bbf-mth__bar {
-    flex-direction: column;
-    align-items: flex-start;
-    border-radius: var(--bbf-radius-section-card);
-    padding: 1.25rem;
-    gap: 0.75rem;
-  }
-
-  .bbf-mth__bar-line {
     display: none;
   }
 }
@@ -88,11 +100,11 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
-  background: var(--bbf-border-on-warm);
-  border: var(--bbf-line-border) solid var(--bbf-border-on-warm);
+  background: var(--bbf-on-surface-border);
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-border);
   border-radius: var(--bbf-radius-section-card);
   overflow: hidden;
-  margin-block-end: clamp(5rem, 10vw, 8.75rem);
+  margin-block-end: var(--mth-cards-mb);
 }
 
 @media (max-width: 880px) {
@@ -104,8 +116,8 @@
 /* ── Service Card ─────────────────────────────────────────── */
 
 .bbf-service-card {
-  background: var(--bbf-surface-warm-base);
-  padding: clamp(1.75rem, 3.5vw, 2.75rem);
+  background: var(--bbf-on-surface-bg);
+  padding: var(--mth-card-pad);
   height: 100%; /* fill grid cell — Reveal wrapper stretches but card needs 100% */
   box-sizing: border-box;
 }
@@ -113,59 +125,59 @@
 .bbf-service-card__head {
   display: flex;
   align-items: flex-start;
-  gap: 0.875rem;
-  margin-block-end: 1.5rem;
+  gap: var(--mth-card-head-gap);
+  margin-block-end: var(--bbf-space-6);
 }
 
 .bbf-service-card__number {
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs, 0.6875rem);
-  color: var(--bbf-text-on-warm-muted);
-  letter-spacing: 0.04em;
-  padding-top: 0.35em; /* optical alignment with h3 */
+  color: var(--bbf-on-surface-muted);
+  letter-spacing: var(--bbf-tracking-wider);
+  padding-top: var(--mth-card-num-optical); /* optical alignment with h3 */
   flex-shrink: 0;
 }
 
 .bbf-service-card__name {
   margin: 0;
-  color: var(--bbf-text-on-warm);
+  color: var(--bbf-on-surface-title);
 }
 
 .bbf-service-card__divider {
   border: none;
-  border-top: var(--bbf-line-border) solid var(--bbf-border-on-warm);
-  margin-block: 1.25rem;
+  border-top: var(--bbf-line-border) solid var(--bbf-on-surface-border);
+  margin-block: var(--bbf-space-5);
 }
 
 .bbf-service-card__meta {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.25rem 0.75rem;
+  gap: var(--bbf-space-1) var(--bbf-space-3);
   margin: 0;
-  margin-block-end: 1.25rem;
+  margin-block-end: var(--bbf-space-5);
 }
 
 .bbf-service-card__meta-label {
   font-family: var(--bbf-font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.04em;
-  color: var(--bbf-text-on-warm-muted);
+  font-size: var(--bbf-text-mono-xs, 0.6875rem);
+  letter-spacing: var(--bbf-tracking-wider);
+  color: var(--bbf-on-surface-muted);
   text-transform: uppercase;
   align-self: center;
 }
 
 .bbf-service-card__meta-value {
-  font-size: 0.9375rem;
+  font-size: var(--mth-card-meta-value-size);
   font-weight: var(--bbf-weight-medium); /* D-DS-09 FIX-05 */
-  color: var(--bbf-text-on-warm);
+  color: var(--bbf-on-surface-title);
   align-self: center;
-  line-height: 1.3;
+  line-height: var(--bbf-leading-quote); /* 1.3 — snug for short meta values */
 }
 
 .bbf-service-card__body {
-  color: var(--bbf-text-on-warm-soft);
+  color: var(--bbf-on-surface-body);
   margin: 0;
-  line-height: 1.55;
+  line-height: var(--bbf-leading-base); /* 1.55 — base body leading */
 }
 
 .bbf-service-card__deliverables {
@@ -174,15 +186,21 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: var(--bbf-space-2\.5);
 }
 
 .bbf-service-card__deliverable {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: var(--bbf-text-body-sm, 0.875rem);
-  color: var(--bbf-text-on-warm);
+  gap: var(--bbf-space-2);
+  font-size: var(--bbf-text-body-md); /* D-2: 14px→16px (piso cuerpo mobile) */
+  line-height: var(--bbf-leading-base); /* D-2: leading-base 1.55 (Mulish x-height alto) */
+  color: var(--bbf-on-surface-title);
+}
+
+.bbf-service-card__deliverable svg {
+  color: var(--bbf-on-surface-icon-accent); /* check icon — surface-aware brand accent */
+  flex-shrink: 0;
 }
 
 /* ── CTA container ────────────────────────────────────────── */

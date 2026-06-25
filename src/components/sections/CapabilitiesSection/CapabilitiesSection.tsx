@@ -41,9 +41,17 @@ interface HeaderProps {
   h2Line2Soft: string;
   lead: string;
   h2Line2SoftClassName?: string;
+  surface?: 'warm' | 'sand' | 'dark';
 }
 
-function Header({ eyebrow, h2Line1, h2Line2Soft, lead, h2Line2SoftClassName }: HeaderProps) {
+function Header({
+  eyebrow,
+  h2Line1,
+  h2Line2Soft,
+  lead,
+  h2Line2SoftClassName,
+  surface,
+}: HeaderProps) {
   return (
     <SectionHeader
       eyebrow={eyebrow}
@@ -51,6 +59,7 @@ function Header({ eyebrow, h2Line1, h2Line2Soft, lead, h2Line2SoftClassName }: H
       h2Line2Soft={h2Line2Soft}
       h2Line2SoftClassName={h2Line2SoftClassName}
       lead={lead}
+      surface={surface}
       decoration={<Lissajous name="trefoil-2d" animation="traveling-dot" />}
     />
   );

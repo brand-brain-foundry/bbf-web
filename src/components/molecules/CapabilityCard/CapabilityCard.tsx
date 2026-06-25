@@ -56,7 +56,7 @@ async function Txt({ num, title, lede, body, bullets, example }: TxtProps) {
           {String(num).padStart(2, '0')}
         </span>
         <span className="bbf-capability-card__num-line" />
-        <span className="[font-family:var(--bbf-font-mono)] [font-size:var(--bbf-text-mono-xs)] [color:var(--bbf-text-on-warm-faint)]">
+        <span className="[font-family:var(--bbf-font-mono)] [font-size:var(--bbf-text-mono-xs)] [color:var(--bbf-on-surface-muted)]">
           {capabilityLabel}
         </span>
       </div>
@@ -67,18 +67,18 @@ async function Txt({ num, title, lede, body, bullets, example }: TxtProps) {
         level="display-card-title"
         color="primary"
         weight="medium"
-        className="bbf-capability-card__title [font-feature-settings:'ss01','cv11'] text-balance [color:var(--bbf-text-on-warm)]"
+        className="bbf-capability-card__title [font-feature-settings:'ss01','cv11'] text-balance [color:var(--bbf-on-surface-title)]"
       >
         {title}
       </Heading>
 
       {/* Lede — .bbf-lede--medium: 18px/16px, weight 500 — D-AUD-01 */}
-      <Text className="bbf-capability-card__lede bbf-lede bbf-lede--medium [max-width:38ch] [color:var(--bbf-text-on-warm)]">
+      <Text className="bbf-capability-card__lede bbf-lede bbf-lede--medium [max-width:var(--bbf-capabilities-lede-measure)] [color:var(--bbf-on-surface-title)]">
         {lede}
       </Text>
 
       {/* Body — .bbf-lede: 18px/16px, weight 400 — D-AUD-01 */}
-      <Text className="bbf-capability-card__body bbf-lede [max-width:50ch] [color:var(--bbf-text-on-warm-muted)]">
+      <Text className="bbf-capability-card__body bbf-lede [max-width:var(--bbf-capabilities-body-measure)] [color:var(--bbf-on-surface-body)]">
         {body}
       </Text>
 
@@ -87,8 +87,8 @@ async function Txt({ num, title, lede, body, bullets, example }: TxtProps) {
         <ul className="bbf-capability-card__bullets">
           {bullets.map((bullet, i) => (
             <li key={bullet.id ?? i} className="bbf-capability-card__bullet">
-              <Icon icon={Icons.checkCircle} size="sm" color="primary" aria-hidden />
-              <Text as="span" variant="body-md" className="[color:var(--bbf-text-on-warm-soft)]">
+              <Icon icon={Icons.checkCircle} size="sm" aria-hidden />
+              <Text as="span" variant="body-md" className="[color:var(--bbf-on-surface-body)]">
                 {bullet.text}
               </Text>
             </li>

@@ -3,31 +3,41 @@
  *
  * Tier: 3 (COMPONENT)
  * Scope: .bbf-cierre + .bbf-cierre__*
- * Surface: DARK (D-S6-05) — --bbf-surface-dark-base = #0a0a0a
- * D-S6-01..08 firmadas
+ * Surface: DARK (D-S6-05) — cascade via [data-surface="dark"] → --bbf-on-surface-*
+ * D-S6-01..08 firmadas · D-S6-P1: tokens dark-specific → on-surface, hardcodes → Tier-3
  */
+
+/* ── Tier-3 tokens ─────────────────────────────────────────── */
+
+:root {
+  --cierre-wrap-gap: clamp(var(--bbf-space-8), 5vw, var(--bbf-space-16)); /* clamp(32px,5vw,64px) */
+  --cierre-title-tracking: -0.045em; /* ultra-tight tracking para display-hero statement */
+  --cierre-title-leading: 1.05; /* D-4: 1→1.05 (margen dentro piso 1.0–1.35 titulares; 1.0 = borde sin margen) */
+  --cierre-title-measure: 16ch; /* max-width: balance para statement 2 líneas */
+  --cierre-rule-width: var(--bbf-space-20); /* 80px — longitud regla decorativa meta row */
+  --cierre-min-h: clamp(
+    700px,
+    85vh,
+    1200px
+  ); /* madre: vh — 85% viewport, mín 700px blob visible, máx 1200px */
+}
 
 /* ── Section root ─────────────────────────────────────────── */
 
 .bbf-cierre {
   position: relative;
   overflow: hidden;
-  background-color: var(--bbf-surface-dark-base);
-  border-top: var(--bbf-line-border) solid var(--bbf-border-on-dark-surface);
-  padding-block: clamp(7.5rem, 18vw, 13.75rem) clamp(6rem, 12vw, 10rem);
-}
-
-.bbf-cierre::before {
-  /* Radial vignette sutil decorativo — ink leve desde top center */
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at 50% 0%,
-    color-mix(in srgb, var(--bbf-text-on-dark-surface) 6%, transparent) 0%,
-    transparent 60%
-  );
-  pointer-events: none;
+  min-height: var(--cierre-min-h);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bbf-on-surface-bg);
+  border-top: var(--bbf-line-border) solid var(--bbf-on-surface-border);
+  padding-block-start: var(
+    --bbf-section-pad-accent
+  ); /* top generoso = respiro antes del CTA (R-BBF-CLOSING-SECTION) */
+  padding-block-end: var(
+    --bbf-section-pad-standard
+  ); /* bottom menor = el footer sigue con su ritmo */
 }
 
 /* ── Wrap layout ──────────────────────────────────────────── */
@@ -37,8 +47,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  gap: clamp(2rem, 5vw, 4rem);
+  flex: 1;
+  gap: var(--cierre-wrap-gap);
 }
 
 /* ── Meta row (eyebrow) ───────────────────────────────────── */
@@ -56,26 +68,26 @@
 }
 
 .bbf-cierre__meta-rule {
-  width: 80px;
+  width: var(--cierre-rule-width);
   height: var(--bbf-line-border);
-  background: var(--bbf-border-on-dark-surface);
+  background: var(--bbf-on-surface-border);
   flex-shrink: 0;
 }
 
 /* ── Statement H2 ─────────────────────────────────────────── */
 
 .bbf-cierre__title {
-  /* D-S6-08: H2 puro sin container */
-  max-width: 16ch;
+  /* D-S6-08: H2 puro sin container — D-S6-P3: level display-card-title */
+  max-width: var(--cierre-title-measure);
   text-wrap: balance;
-  letter-spacing: -0.045em;
-  line-height: 0.98;
-  /* font-size, font-weight, font-family via Heading atom level="display-hero" */
+  /* font-size, font-weight, font-family via Heading atom level="display-card-title" */
 }
 
-/* L-BBF-226: specificity 0,2,0 > Tailwind utility 0,1,0 — fuerza color sand en H2 */
+/* L-BBF-226: specificity 0,2,0 > Tailwind utility 0,1,0 — override tracking/leading/color */
 .bbf-cierre .bbf-cierre__title {
-  color: var(--bbf-on-surface-title); /* D-DS-12 */
+  color: var(--bbf-text-on-dark); /* D-S6-P3: blob siempre negro, no surface-aware */
+  letter-spacing: var(--cierre-title-tracking);
+  line-height: var(--cierre-title-leading); /* 1 — D-S6-P3 */
 }
 
 .bbf-cierre__title-soft {
@@ -103,8 +115,8 @@
   align-items: center;
   gap: var(--bbf-space-3);
   padding: var(--bbf-space-3) var(--bbf-space-5);
-  background: var(--bbf-surface-dark-elevated);
-  border: var(--bbf-line-border) solid var(--bbf-border-on-dark-surface);
+  background: var(--bbf-on-surface-elevated-bg);
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-border);
   border-radius: var(--bbf-radius-full); /* D-DS-09 FIX-04 */
   color: var(--bbf-on-surface-muted); /* D-DS-12 */
 }
@@ -113,12 +125,7 @@
 /* D-REBRAND-01: blue PRIMARY sobre surface dark (era red). */
 .bbf-cierre__signature [data-component='brand-logo'] {
   color: transparent; /* oculta currentColor del SVG inline */
-  background-image: linear-gradient(
-    110deg,
-    var(--bbf-color-blue-accent) 0%,
-    var(--bbf-color-blue-accent-deep) 50%,
-    var(--bbf-color-blue-accent) 100%
-  );
+  background-image: var(--bbf-gradient-primary); /* SSOT → semantic/gradients.css */
   background-size: 200% 100%;
   animation: bbf-gradient-shift 6s ease-in-out infinite;
   -webkit-mask-image: url('/assets/brand/logos/BBF-Logo-Icon.svg');
@@ -131,18 +138,31 @@
   mask-position: center;
 }
 
+@media (max-width: 767px) {
+  /* D-S456-03: pill de firma contiene en mobile sin truncar tagline */
+  .bbf-cierre__signature {
+    display: flex; /* de inline-flex → flex, permite max-width */
+    max-width: 100%;
+    flex-wrap: wrap; /* tagline baja a segunda línea si no cabe */
+    gap: var(--bbf-space-2); /* 8px — reducido vs desktop space-3 */
+    padding: var(--bbf-space-2) var(--bbf-space-4); /* 8px 16px — reducido vs desktop */
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bbf-cierre__signature [data-component='brand-logo'] {
     animation: none;
     background-image: none;
-    background-color: var(--bbf-color-blue-accent);
+    background-color: var(
+      --bbf-accent-blue
+    ); /* Tier-2 semantic — #255ff1 (≈ blue-accent #3b82f6, reduced-motion fallback) */
   }
 }
 
 .bbf-cierre__sig-name {
   font-family: var(--bbf-font-display);
   font-weight: var(--bbf-weight-medium, 500);
-  font-size: 0.875rem;
+  font-size: var(--bbf-text-body-sm, 0.875rem);
   letter-spacing: -0.01em;
   color: var(--bbf-on-surface-title); /* D-DS-12 */
 }

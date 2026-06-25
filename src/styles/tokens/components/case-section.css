@@ -3,21 +3,20 @@
  *
  * Tier: 3 (COMPONENT)
  * Scope: .bbf-case-section-* (case = §3 Caso)
- * Surface: dark — semantic/colors-dark.css
+ * Surface: surface-aware — semantic/surface-roles.css (--bbf-on-surface-*)
  * Despacho: B-BBF-WEB-S3-CASO-EJECUTAR (D-CASO-3 firmada 2026-06-02)
  * Design: home-case.jsx (LEY visual)
  */
 
 :root {
-  --bbf-case-section-pad: clamp(5rem, 8vw, 9rem); /* padding-block */
   --bbf-case-phase-pad: clamp(1.5rem, 3vw, 2.5rem); /* padding card */
 }
 
 /* ── Section root ─────────────────────────────────────────── */
 
 .bbf-case-section {
-  background-color: var(--bbf-surface-dark-base);
-  padding-block: var(--bbf-case-section-pad);
+  background-color: var(--bbf-on-surface-bg);
+  padding-block: var(--bbf-section-pad-standard);
 }
 
 /* .bbf-case-section__wrap → reemplazado por utility .bbf-section-wrap (D-AUDIT-03) */
@@ -34,8 +33,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
-  background: var(--bbf-border-on-dark-surface);
-  border: var(--bbf-line-border) solid var(--bbf-border-on-dark-surface);
+  background: var(--bbf-on-surface-border);
+  border: var(--bbf-line-border) solid var(--bbf-on-surface-border);
   border-radius: var(--bbf-radius-section-card); /* 14px */
   overflow: hidden;
   margin-block-end: clamp(3rem, 6vw, 5rem);
@@ -50,48 +49,56 @@
 /* ── Phase card ──────────────────────────────────────────── */
 
 .bbf-case-section__phase {
-  background: var(--bbf-surface-dark-base);
+  background: var(--bbf-on-surface-bg);
   padding: var(--bbf-case-phase-pad);
 }
 
 .bbf-case-section__phase-head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-block-end: 28px;
+  gap: var(--bbf-space-3);
+  margin-block-end: var(--bbf-space-7);
 }
 
 .bbf-case-section__phase-num {
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-md, 0.8125rem);
-  color: var(--bbf-on-surface-title); /* D-DS-12 */
+  color: var(--bbf-on-surface-link); /* D-S3-SKIN: blue phase-head (D-DS-12) */
   flex-shrink: 0;
 }
 
 .bbf-case-section__phase-divider {
   flex: 1;
   height: var(--bbf-line-border);
-  background: var(--bbf-border-on-dark-surface);
+  background: var(--bbf-on-surface-border);
 }
 
 .bbf-case-section__phase-tag {
   font-family: var(--bbf-font-mono);
   font-size: var(--bbf-text-mono-xs, 0.6875rem);
-  letter-spacing: 0.02em;
-  color: var(--bbf-on-surface-muted); /* D-DS-12 */
+  letter-spacing: var(--bbf-tracking-wide);
+  color: var(--bbf-on-surface-link); /* D-S3-SKIN: blue phase-head (D-DS-12) */
   flex-shrink: 0;
 }
 
 .bbf-case-section__phase-title {
-  margin: 0 0 14px;
+  margin: 0 0 var(--bbf-space-3\.5); /* 14px — SSOT → primitives/spacing.css */
   color: var(--bbf-on-surface-title); /* D-DS-12 */
+  display: flex;
+  align-items: center;
+  gap: var(--bbf-space-2); /* D-S3-ICON: icon + title inline */
+}
+
+.bbf-case-section__phase-icon {
+  color: var(--bbf-on-surface-icon); /* D-S3-ICON: sand-oscuro surface-aware */
+  flex-shrink: 0;
 }
 
 .bbf-case-section__phase-body {
   color: var(--bbf-on-surface-body); /* D-DS-12 */
   margin: 0;
   max-width: 32ch;
-  line-height: 1.55;
+  line-height: var(--bbf-leading-base);
   font-size: var(--bbf-text-body-md);
 }
 
@@ -102,4 +109,4 @@
   justify-content: flex-start;
 }
 
-/* .bbf-cta-link-dark → movida a utilities/text-utilities.css (D-AUDIT-01) */
+/* .bbf-cta-link → utilities/text-utilities.css (D-AUDIT-01, D-S3-ALIGN: renombrado de bbf-cta-link-dark) */

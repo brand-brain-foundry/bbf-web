@@ -7,8 +7,10 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const capabilitiesSectionVariants = cva('bbf-capabilities-section', {
   variants: {
     surface: {
-      sand: 'bg-[var(--bbf-surface-sand)]',
-      warm: 'bg-[var(--bbf-surface-warm-base)]',
+      // Background via --bbf-on-surface-bg cascade in capabilities.css. CVA must NOT set bg.
+      sand: '',
+      warm: '',
+      dark: '',
       auto: '',
     },
   },

@@ -39,12 +39,18 @@
 }
 
 .bbf-section-header__deco {
-  width: 6rem; /* 96px desktop */
-  height: 6rem;
+  width: var(--bbf-lissajous-deco-size); /* SSOT → lissajous.css:25 */
+  height: var(--bbf-lissajous-deco-size);
   flex-shrink: 0;
 }
 
 @media (max-width: 767px) {
+  /* Switch mobile: deco arriba, bbf-text (eyebrow) debajo — B-BBF-WEB-S2-RESPONSIVE-ADJUSTMENTS.
+   * DOM order: eyebrow → deco. column-reverse los invierte: deco pintado primero (arriba). */
+  .bbf-section-header__deco-col {
+    flex-direction: column-reverse;
+  }
+
   .bbf-section-header__deco {
     width: 72px; /* preview home.css:137 */
     height: 72px;
@@ -68,4 +74,7 @@
 .bbf-section-header .bbf-section-header__h2-soft,
 .bbf-section-header .bbf-section-header__deco {
   color: var(--bbf-on-surface-muted);
+  /* Nota: el Lissajous 2D dentro de .bbf-section-header__deco usa SVG linearGradient
+     (stroke="url(#id)") y dot style.fill directo — no usa currentColor.
+     Este color aplica a otros posibles elementos en el slot. */
 }

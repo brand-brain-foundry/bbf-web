@@ -1,10 +1,10 @@
 /**
  * PorqueSection — D-89 section compound, Server Component
- * §4 Por qué — surface sand-deep (#ebe3d4 via --bbf-color-sand-deep-shade, D-S4-01).
+ * §4 Por qué — data-surface="sand" + bg sand-shade (#ebe3d4 via --bbf-surface-sand-shade, D-S4-01).
  *
  * Compound:
  *   <PorqueSection>
- *     <SectionHeader surface="warm" ... decoration={<Lissajous name="cross-2d" />} />
+ *     <SectionHeader surface="sand" ... decoration={<Lissajous name="cross-2d" />} />
  *     <PorqueSection.Comparison columns={...} rows={...} />
  *     <PorqueSection.Epilogue title={...} body={...} />
  *   </PorqueSection>
@@ -28,7 +28,7 @@ function Root({ children, className }: RootProps) {
   return (
     <section
       data-component="bbf-porque-section"
-      data-surface="warm"
+      data-surface="sand"
       className={`bbf-porque-section${className ? ` ${className}` : ''}`}
     >
       <div className="bbf-section-wrap">{children}</div>
@@ -55,7 +55,7 @@ function Epilogue({ title, body }: EpilogueProps) {
   return (
     <div className="bbf-porque-epilogue" data-component="bbf-porque-epilogue">
       <div className="bbf-porque-epilogue__title">
-        <Heading as="h3" level="display-step-title" className="[color:var(--bbf-text-on-warm)]">
+        <Heading as="h3" level="display-step-title">
           {title}
         </Heading>
       </div>

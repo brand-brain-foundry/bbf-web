@@ -4,8 +4,8 @@
  * Última sección. Surface dark. Statement H2 + CTA outline-dark + firma brand.
  * NO SectionHeader, NO Lissajous, NO container statement.
  *
- * D-S6-01: H2 level="display-hero" as="h2" weight="medium"
- * D-S6-02: Button intent="outline-dark" size="xl" — hover border blue gradient (D-REBRAND-01)
+ * D-S6-01: H2 level="display-card-title" as="h2" weight="medium" (D-S6-P3: era display-hero)
+ * D-S6-02: Button fill="outline" intent="secondary" surface="dark" size="md" — bbf-btn-outline-secondary-dark, paridad Hero (D-S456-02/04/05)
  * D-S6-05: Surface DARK (--bbf-surface-dark-base = #0a0a0a)
  * D-S6-06: H2 line2 soft con .bbf-gradient-blue-animated (D-DS-05 rename, era .bbf-text-gradient-blue-animated)
  * D-S6-07: Pill firma con BrandLogo atom + nombre hardcoded + tagline Payload
@@ -13,6 +13,7 @@
  */
 
 import Link from 'next/link';
+import { BlobBackground } from '@/components/atoms/BlobBackground/BlobBackground';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { Button } from '@/components/atoms/Button';
@@ -28,6 +29,8 @@ export interface CierreData {
   statementLine2Soft?: string | null;
   cta?: {
     label?: string | null;
+    type?: 'solid' | 'outline' | null;
+    intent?: 'primary' | 'secondary' | 'black' | 'red' | null;
     href?: string | null;
   } | null;
   ctaNote?: string | null;
@@ -46,7 +49,9 @@ export function CierreSection({ data }: { data: CierreData }) {
       data-surface="dark"
       id="cierre"
     >
-      <div className="bbf-section-wrap bbf-cierre__wrap">
+      {/* D-S6-P3: blob fondo — z:0, absoluto, auto-detecta dark, fondo negro limpio */}
+      <BlobBackground overlays={false} />
+      <div className="bbf-section-wrap bbf-cierre__wrap z-10">
         {/* Meta row */}
         <Reveal>
           <div className="bbf-cierre__meta">
@@ -72,10 +77,10 @@ export function CierreSection({ data }: { data: CierreData }) {
         <Reveal>
           <Heading
             as="h2"
-            level="display-hero"
+            level="display-card-title"
             weight="medium"
             align="center"
-            className="bbf-cierre__title [color:var(--bbf-on-surface-title)]"
+            className="bbf-cierre__title"
           >
             {data.statementLine1 ?? 'Tu marca aprende una vez.'}
             <span className="bbf-cierre__title-soft bbf-gradient-blue-animated">
@@ -87,7 +92,13 @@ export function CierreSection({ data }: { data: CierreData }) {
         {/* CTA principal + nota — D-S6-02 + D-S6-03 */}
         <Reveal>
           <div className="bbf-cierre__cta-wrap">
-            <Button intent="outline-dark" size="xl" asChild>
+            <Button
+              fill={data.cta?.type ?? 'outline'}
+              intent={data.cta?.intent ?? 'secondary'}
+              surface="dark"
+              size="md"
+              asChild
+            >
               <Link href={data.cta?.href ?? '/contacto'}>
                 {data.cta?.label ?? 'Sentémonos a pensar'}
                 <Icon icon={Icons.arrowRight} size="sm" aria-hidden />

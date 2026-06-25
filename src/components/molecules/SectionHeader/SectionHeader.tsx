@@ -9,6 +9,22 @@
  * Valores firmados: B-BBF-WEB-S2-N1-HEADER-VALORES-EXACTOS.
  * Surface dark: D-CASO-3 firmada 2026-06-02.
  * D-DS-07 (2026-06-12): SURFACE_TOKENS eliminado — colores via CSS [data-surface] cascade.
+ *
+ * ## Template contract — uso canónico por sección
+ *
+ * | Sección               | surface | Lissajous name  | animation      |
+ * |-----------------------|---------|-----------------|----------------|
+ * | §2 Capabilities       | dark    | trefoil-2d      | traveling-dot  |
+ * | §3 Caso               | dark    | case-2d         | traveling      |
+ * | §4 PorQué             | warm    | cross-2d        | traveling      |
+ * | §5 Método             | warm    | figure8-2d      | traveling      |
+ * | §6 Cierre             | —       | (no usa header) | —              |
+ *
+ * ⚠️ SectionHeader pone su propio data-surface (default 'warm'): crea burbuja CSS
+ * que ignora el data-surface del padre. Siempre pasar surface explícito cuando
+ * el section padre no es warm.
+ *
+ * h2Line2SoftClassName: usar 'bbf-gradient-blue-animated' en §2–§5 BBF canon.
  */
 import type { ReactNode } from 'react';
 import { Heading } from '@/components/atoms/Heading';

@@ -6,7 +6,7 @@
  *   <CaseSection surface="dark">
  *     <SectionHeader surface="dark" h2Line2SoftClassName="bbf-gradient-blue-animated" ... />
  *     <CaseSection.Media>
- *       <CaseMediaFrame> ... </CaseMediaFrame>
+ *       <HeroMediaFrame status="live" ...> ... </HeroMediaFrame>
  *     </CaseSection.Media>
  *     <CaseSection.Phases>
  *       <CaseSection.Phase index={0} tag="Antes" title="Situación" body="..." />
@@ -21,7 +21,7 @@
 
 import type { ReactNode } from 'react';
 import { Heading } from '@/components/atoms/Heading';
-import { Icon, Icons } from '@/components/atoms/Icon';
+import { Icon, Icons, type IconCanon } from '@/components/atoms/Icon';
 import { QuoteBlock } from '@/components/molecules/QuoteBlock';
 
 /* ── Root ─────────────────────────────────────────────────── */
@@ -63,9 +63,10 @@ interface PhaseProps {
   tag?: string | null;
   title: string;
   body: string;
+  icon?: string | null;
 }
 
-function Phase({ index, tag, title, body }: PhaseProps) {
+function Phase({ index, tag, title, body, icon }: PhaseProps) {
   return (
     <article className="bbf-case-section__phase">
       <div className="bbf-case-section__phase-head">
@@ -74,6 +75,14 @@ function Phase({ index, tag, title, body }: PhaseProps) {
         {tag && <span className="bbf-case-section__phase-tag">{tag}</span>}
       </div>
       <Heading level="display-step-title" as="h3" className="bbf-case-section__phase-title">
+        {icon && icon in Icons && (
+          <Icon
+            icon={Icons[icon as IconCanon]}
+            size="md"
+            aria-hidden
+            className="bbf-case-section__phase-icon"
+          />
+        )}
         {title}.
       </Heading>
       <p className="bbf-case-section__phase-body">{body}</p>
@@ -89,7 +98,7 @@ interface QuoteProps {
 }
 
 function Quote({ children, caption }: QuoteProps) {
-  return <QuoteBlock text={children} attribution={caption} surface="dark" variant="testimonial" />;
+  return <QuoteBlock text={children} attribution={caption} variant="testimonial" />;
 }
 
 /* ── Cta ──────────────────────────────────────────────────── */
@@ -102,7 +111,7 @@ interface CtaProps {
 function Cta({ href, label }: CtaProps) {
   return (
     <div className="bbf-case-section__cta">
-      <a href={href} className="bbf-cta-link-dark">
+      <a href={href} className="bbf-cta-link">
         {label}
         <Icon icon={Icons.arrowRight} size="sm" />
       </a>
