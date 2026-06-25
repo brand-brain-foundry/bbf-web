@@ -29,7 +29,11 @@
     11vw,
     var(--bbf-space-32)
   ); /* 96 → 128px — B1: 132→128 FIRMADO */
-  padding-bottom: clamp(var(--bbf-space-12), 6vw, var(--bbf-space-24)); /* 48 → 96px */
+  padding-bottom: clamp(
+    32px,
+    4vw,
+    53px
+  ); /* = --bbf-section-pad-standard × 2/3 — Hero asimétrico justificado (min=space-8 exacto, max≈space-14) */
   border-top: 0 !important;
   position: relative;
   overflow: hidden;

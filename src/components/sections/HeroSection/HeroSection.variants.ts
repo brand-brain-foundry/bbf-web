@@ -10,10 +10,13 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const heroSectionVariants = cva(['bbf-hero-section', 'relative', 'overflow-hidden'], {
   variants: {
     surface: {
-      auto: 'bg-[var(--bbf-surface-sand)]',
-      dark: 'bg-[var(--bbf-surface-black)]',
-      sand: 'bg-[var(--bbf-surface-sand)]',
-      warm: 'bg-[var(--bbf-surface-warm-base)]',
+      // Background comes from surface-roles.css cascade via [data-surface] → --bbf-on-surface-bg.
+      // hero.css [data-component='bbf-hero-section'] reads --bbf-on-surface-bg and is the SSOT.
+      // CVA must NOT set bg directly — different tokens + dead code (cascade specificity wins).
+      auto: '',
+      dark: '',
+      sand: '',
+      warm: '',
       transparent: '',
     },
     height: {
