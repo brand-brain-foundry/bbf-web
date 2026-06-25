@@ -39,18 +39,23 @@ function HeroMediaFrameRoot({ className, children }: HeroMediaFrameProps) {
 HeroMediaFrameRoot.displayName = 'HeroMediaFrame';
 
 /* ============================================================
-   CHROME (sub-component — top bar with label + REC indicator)
+   CHROME (sub-component — top bar with label + status indicator)
    ============================================================ */
 interface HeroMediaFrameChromeProps {
   /** Decorative label. Default: "// brand-brain.foundry · live feed" */
   label?: string;
-  /** Show REC indicator with pulse dot. Default: false */
+  /** Show REC indicator with pulse dot. Default: false. (backward compat — use status instead) */
   recording?: boolean;
   /** Fallback REC display when no children provided. Default: "00:42" */
   recDuration?: string;
   /** Slot for HeroRecTimer Client leaf (replaces recDuration when provided). */
   children?: ReactNode;
   className?: string;
+  /** Explicit status variant. Takes precedence over `recording` boolean.
+   *  'recording' (default): red dot + REC + timer. 'live': green dot + timestamp text. */
+  status?: 'recording' | 'live';
+  /** Right-side text in live mode (e.g. "captura · 23:04 viernes"). */
+  timestamp?: string;
 }
 
 function HeroMediaFrameChrome({
@@ -59,14 +64,24 @@ function HeroMediaFrameChrome({
   recDuration = '00:42',
   children,
   className,
+  status,
+  timestamp,
 }: HeroMediaFrameChromeProps) {
+  const isLive = status === 'live';
+  const isRec = !isLive && recording;
   return (
     <div
       data-component="bbf-hero-media-frame-chrome"
       className={cn('bbf-hero-media-frame__chrome', className)}
     >
       <span>{label}</span>
-      {recording && (
+      {isLive && (
+        <span className="bbf-hero-media-frame__live" aria-hidden="true">
+          <span className="bbf-hero-media-frame__live-dot" />
+          {timestamp}
+        </span>
+      )}
+      {isRec && (
         <span className="bbf-hero-media-frame__rec" aria-hidden="true">
           <span className="bbf-hero-media-frame__rec-dot" />
           REC&nbsp;{children ?? recDuration}

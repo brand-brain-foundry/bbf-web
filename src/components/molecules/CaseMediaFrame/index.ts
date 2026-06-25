@@ -1,1 +1,0 @@
-export { CaseMediaFrame } from './CaseMediaFrame';

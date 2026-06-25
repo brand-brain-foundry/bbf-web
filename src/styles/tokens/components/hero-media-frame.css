@@ -65,6 +65,11 @@
   overflow: hidden;
 }
 
+/* accent-color → blue madre para controles nativos (scrubber, volume) */
+.bbf-hero-media-frame__video-shell video {
+  accent-color: var(--bbf-accent-blue);
+}
+
 /* Foot bar — bottom strip with captions */
 .bbf-hero-media-frame__foot {
   display: flex;
@@ -117,4 +122,42 @@
   border-radius: 50%;
   opacity: 0.4;
   flex-shrink: 0;
+}
+
+/* ============================================================================
+ * LIVE INDICATOR — status='live' (§3 Caso)
+ * ============================================================================ */
+
+.bbf-hero-media-frame__live {
+  color: var(--bbf-on-surface-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bbf-hero-media-frame__live-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--bbf-accent-blue); /* #255ff1 — blue madre D-BBF-KB-104 */
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: bbf-live-pulse 2s ease-out infinite;
+}
+
+@keyframes bbf-live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--bbf-accent-blue) 40%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbf-hero-media-frame__live-dot {
+    animation: none;
+  }
 }
