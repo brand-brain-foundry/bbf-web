@@ -26,16 +26,12 @@ const mulish = Mulish({
   display: 'swap',
 });
 
-export async function generateViewport({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Viewport> {
-  const { locale } = await params;
-  const l = (locale === 'es' || locale === 'en' ? locale : 'es') as 'es' | 'en';
-  const site = await getSiteIdentity(l);
+export function generateViewport(): Viewport {
   return {
-    themeColor: site.seo?.themeColor ?? '#255FF1',
+    // #0a0a0a = valor resuelto de --bbf-surface-dark-base (dark surface bg)
+    // theme-color no acepta var() — hex literal obligatorio.
+    // Consistente con manifest theme_color. CMS field ignorado (admin tenía #255ff1 erróneo).
+    themeColor: '#0a0a0a',
   };
 }
 
@@ -79,12 +75,14 @@ export async function generateMetadata({
     publisher: site.siteName,
     icons: {
       icon: [
-        { url: '/favicon.ico', sizes: 'any' },
+        { url: '/favicon.ico', sizes: '16x16 32x32 48x48' },
+        { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+        { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
         { url: '/favicon.svg', type: 'image/svg+xml' },
         { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
         { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
       ],
-      apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+      apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
     },
     manifest: '/site.webmanifest',
     robots: {
