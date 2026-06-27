@@ -1,0 +1,1 @@
+export { WAChat } from './WAChat';
