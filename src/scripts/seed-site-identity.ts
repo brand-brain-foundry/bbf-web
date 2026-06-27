@@ -63,6 +63,11 @@ async function seedSiteIdentity() {
       // NOTA-FUTURE: actualizar PlaceholdersCanon §3.5 + OntologyPrimitives en sub-fase futura
       siteTagline: 'Construimos tu cerebro de marca',
 
+      // siteDescription ES (155c) — SEO-AEO-home-SB §1.2 + ContentMaster canonical (Sprint 1 G-16)
+      // Fix L-BBF-253 gap: valor anterior vacío/~105c, nuevo valor cumple 150-160c meta description
+      siteDescription:
+        'Construimos tu cerebro de marca: una sola fuente para tu voz, tu contenido y tus respuestas, consistente en cada canal. Tú diriges. Tu marca ejecuta.',
+
       // longDescription ES: DERIVADO desde CM-HP v1.2 §6.2 (§6.3 clean)
       // Estructura "No es agencia/consultora/SaaS" validada en CM-HP.
       // Eliminado: "Knowledge Brain" (§6.3 prohibido), "factorías" (§6.3 prohibido),
@@ -146,6 +151,10 @@ async function seedSiteIdentity() {
       siteShortName: 'SB',
 
       siteTagline: 'We build your brand brain',
+
+      // siteDescription EN (141c) — SEO-AEO-home-SB §1.2 + ContentMaster canonical (Sprint 1 G-17)
+      siteDescription:
+        'We build your brand brain: a single source for your voice, content and answers, consistent across every channel. You drive. Your brand runs.',
 
       // longDescription EN: DERIVADO desde CM-HP v1.2 (§6.3 clean, sujeto {{siteName}})
       // Corrige: sujeto "Brand Brain Foundry" incorrecto del FASE 3 DB

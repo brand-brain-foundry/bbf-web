@@ -60,6 +60,14 @@
   grid-template-columns: var(--cmp-row-head-width) repeat(var(--cmp-cols, 3), 1fr);
 }
 
+/* G-07 Sprint 1: <table> semántico con CSS Grid.
+   thead/tbody son display:contents → sus hijos (tr) participan directamente en el grid.
+   tr tiene display:contents (via .bbf-cmp__row) → th/td son los grid items reales. */
+.bbf-cmp__grid thead,
+.bbf-cmp__grid tbody {
+  display: contents;
+}
+
 /* ── Header row ────────────────────────────────────────────────────────── */
 
 .bbf-cmp__row--head {

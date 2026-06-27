@@ -3,9 +3,10 @@
 /**
  * PorqueSection.Comparison — ComparisonTable Tier 3
  *
- * Desktop (≥768px): CSS Grid completo (attr col + N data cols).
+ * Desktop (≥768px): CSS Grid via <table> semántico (G-07 Sprint 1 AEO).
  * Mobile (<768px): Column Selector Tabs (D-S4-03 P-3) — BBF tab por defecto.
  * WCAG 2.1 AA: role=tablist/tab/tabpanel + ArrowLeft/Right keyboard nav.
+ * AEO: <table><thead><tbody><tr><th><td> reales para extracción fila-a-fila.
  *
  * Refs: D-S4-02 (fully dynamic), D-S4-03 (P-3 tabs), B-BBF-WEB-S4-PORQUE-FASES-2A6 §5
  */
@@ -92,58 +93,55 @@ export function Comparison({ columns, rows }: ComparisonProps) {
 
   return (
     <div className="bbf-cmp" data-component="bbf-cmp">
-      {/* ── Desktop grid — --cmp-cols inyecta column count dinámico (D-AUD-S4-01) ── */}
-      <div
+      {/* ── Desktop: <table> semántico con CSS Grid layout (G-07 AEO) ── */}
+      {/* thead/tbody tienen display:contents en CSS → cells son grid items directos */}
+      <table
         className="bbf-cmp__grid"
-        role="table"
-        aria-label="Comparación entre alternativas"
         style={{ '--cmp-cols': String(cols.length) } as CSSProperties}
       >
-        {/* Header row */}
-        <div className="bbf-cmp__row bbf-cmp__row--head" role="row">
-          <div className="bbf-cmp__rowhead bbf-cmp__cell--head" role="columnheader">
-            <span className="bbf-cmp__col-sub">Dimensión</span>
-          </div>
-          {cols.map((col, ci) => (
-            <div
-              key={col.id ?? ci}
-              className={cn('bbf-cmp__cell--head', col.isHighlighted && 'is-hl')}
-              role="columnheader"
-            >
-              {col.isHighlighted && (
-                <div className="bbf-cmp__crown" aria-hidden="true">
-                  ▼ BBF
-                </div>
-              )}
-              <div className="bbf-cmp__col-name">{col.label}</div>
-              {col.sub && <div className="bbf-cmp__col-sub">{col.sub}</div>}
-            </div>
+        <caption className="sr-only">Comparación entre alternativas</caption>
+        <thead>
+          <tr className="bbf-cmp__row bbf-cmp__row--head">
+            <th scope="col" className="bbf-cmp__rowhead bbf-cmp__cell--head">
+              <span className="bbf-cmp__col-sub">Dimensión</span>
+            </th>
+            {cols.map((col, ci) => (
+              <th
+                key={col.id ?? ci}
+                scope="col"
+                className={cn('bbf-cmp__cell--head', col.isHighlighted && 'is-hl')}
+              >
+                {col.isHighlighted && (
+                  <div className="bbf-cmp__crown" aria-hidden="true">
+                    ▼ BBF
+                  </div>
+                )}
+                <div className="bbf-cmp__col-name">{col.label}</div>
+                {col.sub && <div className="bbf-cmp__col-sub">{col.sub}</div>}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {dataRows.map((row, ri) => (
+            <tr key={row.id ?? ri} className="bbf-cmp__row">
+              <th scope="row" className="bbf-cmp__rowhead">
+                <span className="bbf-cmp__rowhead-num">{String(ri + 1).padStart(2, '0')}</span>
+                <span>{row.attribute}</span>
+              </th>
+              {(row.cells ?? []).map((cell, ci) => {
+                const isHl = cols[ci]?.isHighlighted ?? false;
+                return (
+                  <td key={cell.id ?? ci} className={cn('bbf-cmp__cell', isHl && 'is-hl')}>
+                    {cell.state !== 'text' && <CellIcon state={cell.state} />}
+                    {cell.value && <span>{cell.value}</span>}
+                  </td>
+                );
+              })}
+            </tr>
           ))}
-        </div>
-
-        {/* Data rows */}
-        {dataRows.map((row, ri) => (
-          <div key={row.id ?? ri} className="bbf-cmp__row" role="row">
-            <div className="bbf-cmp__rowhead" role="rowheader">
-              <span className="bbf-cmp__rowhead-num">{String(ri + 1).padStart(2, '0')}</span>
-              <span>{row.attribute}</span>
-            </div>
-            {(row.cells ?? []).map((cell, ci) => {
-              const isHl = cols[ci]?.isHighlighted ?? false;
-              return (
-                <div
-                  key={cell.id ?? ci}
-                  className={cn('bbf-cmp__cell', isHl && 'is-hl')}
-                  role="cell"
-                >
-                  {cell.state !== 'text' && <CellIcon state={cell.state} />}
-                  {cell.value && <span>{cell.value}</span>}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
+        </tbody>
+      </table>
 
       {/* ── Mobile: tabs + panel ── */}
       <div role="tablist" className="bbf-cmp__tabs" aria-label="Seleccionar columna de comparación">

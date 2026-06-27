@@ -156,6 +156,7 @@ async function seedEntities() {
       sameAs: [
         { url: 'https://brandbrainfoundry.com' },
         { url: 'https://github.com/brand-brain-foundry' },
+        { url: 'https://cerebrosdemarca.com' },
       ],
       organization: {
         foundingDate: '2025-10-01T00:00:00.000Z',

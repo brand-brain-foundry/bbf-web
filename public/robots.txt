@@ -43,6 +43,16 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
+# AI assistants — distribución GEO/AEO (Meta AI, Amazon, etc.)
+User-agent: Amazonbot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
 # CCBot — training crawler, bloqueado
 User-agent: CCBot
 Disallow: /

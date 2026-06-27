@@ -20,7 +20,7 @@ import { Button } from '@/components/atoms/Button';
 import { Icon, Icons } from '@/components/atoms/Icon';
 import { Reveal } from '@/components/atoms/Reveal';
 import type { Media } from '@/payload/payload-types';
-import { interpolateDeep } from '@/lib/content-interpolation';
+import { interpolateDeep, interpolate } from '@/lib/content-interpolation';
 import { buildFaqPageJsonLd } from '@/lib/seo/jsonLd/faqPage';
 import { getSiteIdentity } from '@/config/site';
 import { getCtaByKey } from '@/lib/payload/getSiteCtaLibrary';
@@ -61,10 +61,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   // §6 Cierre CTA — resolved from SiteCtaLibrary (D-S456-02: outline+secondary via ctaKey)
   const closingCta = cls?.ctaKey ? await getCtaByKey(cls.ctaKey, l) : null;
 
+  // G-02: fallback a hero-poster.png estático si admin no tiene poster subido (LCP)
   const posterUrl =
     hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
-      ? ((hero.media.videoPoster as Media).url ?? undefined)
-      : undefined;
+      ? ((hero.media.videoPoster as Media).url ?? '/hero-poster.png')
+      : '/hero-poster.png';
 
   // §3 Caso — video poster URL (si existe)
   const casePosterUrl =
@@ -104,15 +105,26 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     }));
   const faqSchema = faqItems.length > 0 ? buildFaqPageJsonLd(faqItems) : null;
 
-  // FIX-WEBPAGE-SCHEMA: WebPage JSON-LD (helper URL logic incorrecta para ES sin prefijo)
+  // Sprint 1 G-03: WebPage JSON-LD — @id correcto (#webpage-home), description, primaryImageOfPage
+  const [siteTaglineInterp, siteDescriptionInterp] = await Promise.all([
+    interpolate(siteId.siteTagline, l),
+    interpolate(siteId.siteDescription, l),
+  ]);
   const webPageSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    '@id': `${siteId.siteDomain}/#webpage`,
+    '@id': `${siteId.siteDomain}/#webpage-home`,
     url: l === 'en' ? `${siteId.siteDomain}/en` : siteId.siteDomain,
-    name: siteId.siteName,
+    name: siteTaglineInterp ? `${siteId.siteName} · ${siteTaglineInterp}` : siteId.siteName,
+    description: siteDescriptionInterp || undefined,
     inLanguage: l === 'es' ? 'es-SV' : 'en-US',
     dateModified: site.updatedAt,
+    primaryImageOfPage: {
+      '@type': 'ImageObject',
+      url: `${siteId.siteDomain}/og-image.png`,
+      width: 1200,
+      height: 630,
+    },
     isPartOf: {
       '@type': 'WebSite',
       '@id': `${siteId.siteDomain}/#website`,
@@ -246,21 +258,23 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
         <CapabilitiesSection.Grid>
           {(cap?.items ?? []).map((c, i) => (
-            <Reveal key={c.id ?? `cap-${i}`} variant="fade">
-              <CapabilityCard align={i % 2 === 0 ? 'l' : 'r'} index={i + 1}>
-                <CapabilityCard.Txt
-                  num={i + 1}
-                  title={c.title ?? ''}
-                  lede={c.lede ?? ''}
-                  body={c.body ?? ''}
-                  bullets={c.bullets}
-                  example={c.example ?? ''}
-                />
-                <CapabilityCard.Viz>
-                  <CapabilityScene scene={c.scene} />
-                </CapabilityCard.Viz>
-              </CapabilityCard>
-            </Reveal>
+            <li key={c.id ?? `cap-${i}`}>
+              <Reveal variant="fade">
+                <CapabilityCard align={i % 2 === 0 ? 'l' : 'r'} index={i + 1}>
+                  <CapabilityCard.Txt
+                    num={i + 1}
+                    title={c.title ?? ''}
+                    lede={c.lede ?? ''}
+                    body={c.body ?? ''}
+                    bullets={c.bullets}
+                    example={c.example ?? ''}
+                  />
+                  <CapabilityCard.Viz>
+                    <CapabilityScene scene={c.scene} />
+                  </CapabilityCard.Viz>
+                </CapabilityCard>
+              </Reveal>
+            </li>
           ))}
         </CapabilitiesSection.Grid>
       </CapabilitiesSection>

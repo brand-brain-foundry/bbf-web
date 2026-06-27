@@ -135,6 +135,10 @@
     4vw,
     var(--bbf-space-12)
   ); /* D-FIX-S6-03: separación hub → grid (32px→48px) */
+  /* G-06: <ol> semántico — reset browser list defaults sin alterar layout */
+  list-style: none;
+  padding-inline-start: 0;
+  margin: 0;
 }
 
 /* ============================================================

@@ -86,7 +86,7 @@ interface GridProps {
 }
 
 function Grid({ children }: GridProps) {
-  return <div className="bbf-capabilities-grid">{children}</div>;
+  return <ol className="bbf-capabilities-grid">{children}</ol>;
 }
 
 // ── Compound export ───────────────────────────────────────────
