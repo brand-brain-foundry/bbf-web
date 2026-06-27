@@ -11,13 +11,30 @@ import { Button } from '@/components/atoms/Button';
 import { Text } from '@/components/atoms/Text';
 import { FormField } from '@/components/molecules/FormField';
 import { Turnstile } from '@/components/molecules/Turnstile';
+import { ChipGroup, type ChipOption } from '@/components/atoms/ChipGroup';
 import { cn } from '@/lib/utils';
 import { contactFormVariants, contactFormFeedbackVariants } from './ContactForm.variants';
+
+type FormConfig = {
+  title?: string | null;
+  stageLabel?: string | null;
+  roleLabel?: string | null;
+  messagePlaceholder?: string | null;
+  requiredHint?: string | null;
+  submitLabel?: string | null;
+  stageOptions?: ChipOption[] | null;
+  roleOptions?: Array<{ value: string; label: string }> | null;
+};
 
 type ContactFormProps = {
   locale: 'es' | 'en';
   className?: string;
+  formConfig?: FormConfig | null;
+  successTitle?: string | null;
+  successBody?: string | null;
 };
+
+const MESSAGE_MAXLENGTH = 5000;
 
 function SubmitButton({
   submit,
@@ -48,7 +65,13 @@ function SubmitButton({
   );
 }
 
-export function ContactForm({ locale, className }: ContactFormProps) {
+export function ContactForm({
+  locale,
+  className,
+  formConfig,
+  successTitle,
+  successBody,
+}: ContactFormProps) {
   const [state, formAction] = useActionState<ContactFormState | null, FormData>(
     submitContact,
     null,
@@ -56,10 +79,13 @@ export function ContactForm({ locale, className }: ContactFormProps) {
   const [formLoadTime] = useState(() => Date.now());
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const [turnstileReady, setTurnstileReady] = useState(false);
+  const [stage, setStage] = useState('');
+  const [rol, setRol] = useState('');
   const t = useTranslations('contact');
 
   const {
     register,
+    watch,
     formState: { errors, isValid, isSubmitted },
     reset,
   } = useForm<ContactFormData>({
@@ -70,13 +96,18 @@ export function ContactForm({ locale, className }: ContactFormProps) {
       email: '',
       company: '',
       message: '',
+      rol: '',
+      stage: '',
     },
   });
 
-  // Reset form on success
+  const messageLength = watch('message')?.length ?? 0;
+
   useEffect(() => {
     if (state?.success) {
       reset();
+      setStage('');
+      setRol('');
       const form = document.getElementById('bbf-contact-form') as HTMLFormElement | null;
       form?.reset();
       startTransition(() => {
@@ -86,7 +117,6 @@ export function ContactForm({ locale, className }: ContactFormProps) {
     }
   }, [state?.success, reset]);
 
-  // Stable callback refs — evitan re-render loop Turnstile widget
   const handleTurnstileSuccess = useCallback((token: string) => {
     setTurnstileToken(token);
     setTurnstileReady(true);
@@ -106,18 +136,37 @@ export function ContactForm({ locale, className }: ContactFormProps) {
     return msg ? getContactErrorMessage(msg, locale) : undefined;
   };
 
+  const stageOptions = (formConfig?.stageOptions ?? []).filter(
+    (o): o is ChipOption => typeof o.value === 'string' && typeof o.label === 'string',
+  );
+
+  const roleOptions = (formConfig?.roleOptions ?? []).filter(
+    (o): o is { value: string; label: string } =>
+      typeof o.value === 'string' && typeof o.label === 'string',
+  );
+
+  const stageLabel = formConfig?.stageLabel ?? t('stageLabel');
+  const roleLabel = formConfig?.roleLabel ?? t('roleLabel');
+  const requiredHint = formConfig?.requiredHint ?? t('requiredHint');
+  const submitLabel = formConfig?.submitLabel ?? t('submit');
+  const messagePlaceholder = formConfig?.messagePlaceholder ?? undefined;
+
   return (
     <div data-component="bbf-contact-form" className={cn(contactFormVariants(), className)}>
       <form
         id="bbf-contact-form"
         action={formAction}
-        className="flex flex-col gap-5 lg:gap-6"
+        className="flex flex-col gap-3 lg:gap-4"
         noValidate
       >
         {/* Hidden fields security */}
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="formLoadTime" value={formLoadTime} />
         <input type="hidden" name="cf-turnstile-response" value={turnstileToken} />
+
+        {/* Enrichment fields — not security-bearing, passed as context to submission */}
+        <input type="hidden" name="stage" value={stage} />
+        <input type="hidden" name="rol" value={rol} />
 
         {/* Honeypot — hidden a humanos, bots lo llenan */}
         <div
@@ -135,74 +184,145 @@ export function ContactForm({ locale, className }: ContactFormProps) {
           <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
         </div>
 
-        <FormField
-          label={t('name')}
-          required
-          maxLength={120}
-          autoComplete="name"
-          error={errorFor('name')}
-          {...register('name')}
-        />
+        {/* Stage chips — arriba, emula referencia */}
+        {stageOptions.length > 0 && (
+          <ChipGroup
+            name="stage-display"
+            legend={stageLabel}
+            options={stageOptions}
+            value={stage}
+            onChange={setStage}
+          />
+        )}
 
-        <FormField
-          label={t('email')}
-          type="email"
-          required
-          maxLength={200}
-          autoComplete="email"
-          error={errorFor('email')}
-          {...register('email')}
-        />
+        {/* Row 1: Nombre + Empresa — inline pair */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:gap-4">
+          <FormField
+            label={t('name')}
+            required
+            maxLength={120}
+            autoComplete="name"
+            error={errorFor('name')}
+            {...register('name')}
+          />
+          <FormField
+            label={t('company')}
+            maxLength={200}
+            autoComplete="organization"
+            error={errorFor('company')}
+            {...register('company')}
+          />
+        </div>
 
-        <FormField
-          label={t('company')}
-          maxLength={200}
-          autoComplete="organization"
-          error={errorFor('company')}
-          {...register('company')}
-        />
+        {/* Row 2: Email + Rol — inline pair */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:gap-4">
+          <FormField
+            label={t('email')}
+            type="email"
+            required
+            maxLength={200}
+            autoComplete="email"
+            error={errorFor('email')}
+            className={roleOptions.length === 0 ? 'sm:col-span-2' : undefined}
+            {...register('email')}
+          />
+          {roleOptions.length > 0 && (
+            <div data-component="bbf-select-field" className="flex flex-col">
+              <label
+                htmlFor="field-rol"
+                className="mb-1.5 [font-size:var(--bbf-text-caption)] font-medium text-[var(--bbf-on-surface-body)]"
+              >
+                {roleLabel}
+              </label>
+              <select
+                id="field-rol"
+                name="rol-display"
+                value={rol}
+                onChange={(e) => setRol(e.target.value)}
+                className={cn(
+                  'w-full appearance-none border',
+                  '[font-size:var(--bbf-text-body-md)]',
+                  'bg-[var(--bbf-on-surface-input-bg)]',
+                  'text-[var(--bbf-on-surface-body)]',
+                  'border-[var(--bbf-on-surface-input-border)]',
+                  'transition-all duration-200 ease-out',
+                  'focus:ring-2 focus:ring-[var(--bbf-on-surface-focus-ring)] focus:ring-offset-2 focus:outline-none',
+                  'cursor-pointer',
+                )}
+              >
+                <option value=""></option>
+                {roleOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
 
+        {/* Mensaje */}
         <FormField
           label={t('message')}
           type="textarea"
           required
           rows={6}
-          maxLength={5000}
+          maxLength={MESSAGE_MAXLENGTH}
+          placeholder={messagePlaceholder}
           error={errorFor('message')}
           {...register('message')}
         />
 
-        <Text variant="caption" color="secondary">
-          {t('requiredHint')}
-        </Text>
-
-        {/* Cloudflare Turnstile widget — flexible mode canon 2026 */}
-        <Turnstile
-          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''}
-          size="flexible"
-          theme="auto"
-          onSuccess={handleTurnstileSuccess}
-          onError={handleTurnstileError}
-          onExpire={handleTurnstileExpire}
-        />
-
-        {state && (
-          <div
-            className={contactFormFeedbackVariants({ success: state.success })}
-            role={state.success ? 'status' : 'alert'}
-            aria-live="polite"
-          >
-            <Text variant="body-md">{state.message}</Text>
+        {/* Footer: required hint + counter + captcha + submit */}
+        <div className="mt-2 flex flex-col gap-4 border-t border-[var(--bbf-on-surface-border)] pt-5">
+          <div className="flex items-center justify-between gap-4">
+            <Text variant="caption" color="secondary">
+              {requiredHint}
+            </Text>
+            <span
+              className="shrink-0 [font-family:var(--bbf-font-mono)] [font-size:var(--bbf-text-xs)] text-[var(--bbf-on-surface-muted)] tabular-nums"
+              aria-live="polite"
+              aria-label={`${messageLength} / ${MESSAGE_MAXLENGTH}`}
+            >
+              {messageLength}/{MESSAGE_MAXLENGTH}
+            </span>
           </div>
-        )}
 
-        <SubmitButton
-          submit={t('submit')}
-          submitting={t('submitting')}
-          verifying={t('verifying')}
-          turnstileReady={turnstileReady}
-          isValid={isSubmitted ? isValid : true}
-        />
+          {/* Cloudflare Turnstile widget — flexible mode canon 2026 */}
+          <Turnstile
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''}
+            size="flexible"
+            theme="auto"
+            onSuccess={handleTurnstileSuccess}
+            onError={handleTurnstileError}
+            onExpire={handleTurnstileExpire}
+          />
+
+          {state && (
+            <div
+              className={contactFormFeedbackVariants({ success: state.success })}
+              role={state.success ? 'status' : 'alert'}
+              aria-live="polite"
+            >
+              <Text variant="body-md">
+                {state.success ? (successTitle ?? state.message) : state.message}
+              </Text>
+              {state.success && successBody && (
+                <Text variant="body-sm" color="secondary" className="mt-1">
+                  {successBody}
+                </Text>
+              )}
+            </div>
+          )}
+
+          <SubmitButton
+            submit={submitLabel}
+            submitting={t('submitting')}
+            verifying={t('verifying')}
+            turnstileReady={turnstileReady}
+            isValid={isSubmitted ? isValid : true}
+          />
+        </div>
       </form>
     </div>
   );

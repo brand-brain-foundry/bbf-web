@@ -25,21 +25,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: SitemapEntry[] = [];
 
   // 1. Páginas estáticas core
-  const staticPaths = ['/', '/contacto'];
-  for (const path of staticPaths) {
-    entries.push({
-      url: `${BASE_URL}${path}`,
-      lastModified: siteLastMod,
-      changeFrequency: 'weekly',
-      priority: path === '/' ? 1.0 : 0.8,
-      alternates: {
-        languages: {
-          es: `${BASE_URL}${path}`,
-          en: `${BASE_URL}/en${path === '/' ? '' : path}`,
-        },
+  // Homepage
+  entries.push({
+    url: `${BASE_URL}/`,
+    lastModified: siteLastMod,
+    changeFrequency: 'weekly',
+    priority: 1.0,
+    alternates: { languages: { es: `${BASE_URL}/`, en: `${BASE_URL}/en` } },
+  });
+  // Contacto — D-CT-03: slugs localizados (ES: /contacto, EN: /en/contact)
+  // Prioridad 0.4: página terminal de conversión, no pelea tráfico educativo (SEO-AEO §1)
+  entries.push({
+    url: `${BASE_URL}/contacto`,
+    lastModified: siteLastMod,
+    changeFrequency: 'monthly',
+    priority: 0.4,
+    alternates: {
+      languages: {
+        es: `${BASE_URL}/contacto`,
+        en: `${BASE_URL}/en/contact`,
       },
-    });
-  }
+    },
+  });
 
   // 2. Pages collection (Wave 12-A)
   try {

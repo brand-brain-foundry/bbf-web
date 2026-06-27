@@ -26,6 +26,7 @@ import { SiteContact } from './payload/globals/SiteContact';
 import { SiteNewsletter } from './payload/globals/SiteNewsletter';
 import { SiteHomepage } from './payload/globals/SiteHomepage';
 import { SiteCtaLibrary } from './payload/globals/SiteCtaLibrary';
+import { SiteContactPage } from './payload/globals/SiteContactPage';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -70,6 +71,7 @@ export default buildConfig({
     SiteNewsletter,
     SiteHomepage,
     SiteCtaLibrary,
+    SiteContactPage,
   ],
 
   // D-BBF-WEB-05: ES default, EN con prefijo /en

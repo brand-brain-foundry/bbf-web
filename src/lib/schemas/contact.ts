@@ -43,6 +43,10 @@ export const contactSchema = z.object({
     .min(1, { message: contactSchemaKeys.messageRequired })
     .min(10, { message: contactSchemaKeys.messageMin })
     .max(5000, { message: contactSchemaKeys.messageMax }),
+
+  rol: z.string().trim().max(50).optional().or(z.literal('')),
+
+  stage: z.string().trim().max(50).optional().or(z.literal('')),
 });
 
 export type ContactFormData = z.infer<typeof contactSchema>;

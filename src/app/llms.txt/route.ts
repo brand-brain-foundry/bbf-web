@@ -136,7 +136,7 @@ ${capabilitiesSection}${metodoSection}${casoSection}
 - [Home](${BASE_URL}/en): ${site.siteName} — brand brains for operators
 - [What is a brand brain?](${BASE_URL}/en/brand-brain)
 - [Method](${BASE_URL}/en/method)
-- [Contact](${BASE_URL}/en/contacto)
+- [Contact](${BASE_URL}/en/contact)
 
 ## Quién está detrás
 

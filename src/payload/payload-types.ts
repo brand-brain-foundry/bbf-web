@@ -115,6 +115,7 @@ export interface Config {
     'site-newsletter': SiteNewsletter;
     'site-homepage': SiteHomepage;
     'site-cta-library': SiteCtaLibrary;
+    'site-contact-page': SiteContactPage;
   };
   globalsSelect: {
     socialLinks: SocialLinksSelect<false> | SocialLinksSelect<true>;
@@ -126,6 +127,7 @@ export interface Config {
     'site-newsletter': SiteNewsletterSelect<false> | SiteNewsletterSelect<true>;
     'site-homepage': SiteHomepageSelect<false> | SiteHomepageSelect<true>;
     'site-cta-library': SiteCtaLibrarySelect<false> | SiteCtaLibrarySelect<true>;
+    'site-contact-page': SiteContactPageSelect<false> | SiteContactPageSelect<true>;
   };
   locale: 'es' | 'en';
   widgets: {
@@ -3190,6 +3192,161 @@ export interface SiteCtaLibrary {
   createdAt?: string | null;
 }
 /**
+ * Contact page content: hero, steps, form config, microcopy, FAQ, SEO. Single source of truth (W-2). Emails live in SiteContact.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-contact-page".
+ */
+export interface SiteContactPage {
+  id: number;
+  hero?: {
+    /**
+     * H1 principal. ES: "Sentémonos a pensar." / EN: "Let's think this through."
+     */
+    heading?: string | null;
+    /**
+     * Subtítulo italic. ES: "No hay urgencia. Hay método." / EN: "No rush. A method."
+     */
+    subtitle?: string | null;
+    /**
+     * Texto de apertura (1-2 frases). ES: "Contános dónde está…" / EN: "Tell us where…"
+     */
+    lede?: string | null;
+    /**
+     * Frase ancla GEO/AEO 40-80 palabras (§1.4 ContentMaster). No se renderiza en el body — se usa en llms.txt y metadatos estructurados.
+     */
+    anchorPhrase?: string | null;
+  };
+  /**
+   * Eyebrow del bloque de pasos. ES: "QUÉ PASA DESPUÉS" / EN: "WHAT HAPPENS NEXT"
+   */
+  stepsEyebrow?: string | null;
+  /**
+   * 4 pasos del proceso post-contacto. Se muestran antes del form.
+   */
+  steps?:
+    | {
+        /**
+         * Título del paso en negrita.
+         */
+        title?: string | null;
+        /**
+         * Descripción breve del paso.
+         */
+        body?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  formConfig?: {
+    /**
+     * Título del form-card. ES: "Nuevo mensaje" / EN: "New message"
+     */
+    title?: string | null;
+    /**
+     * Label del chip group "En qué estás". ES: "En qué estás (opcional)" / EN: "Where you're at (optional)"
+     */
+    stageLabel?: string | null;
+    /**
+     * 4 chips del recorrido canónico. Label localized, value slug no-localized.
+     */
+    stageOptions?:
+      | {
+          /**
+           * Texto visible del chip.
+           */
+          label?: string | null;
+          /**
+           * Valor slug (no localized). Ej: "exploring", "diagnosis", "build", "operating".
+           */
+          value?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Label del dropdown Rol. ES: "Rol (opcional)" / EN: "Role (optional)"
+     */
+    roleLabel?: string | null;
+    /**
+     * 5 opciones del dropdown de rol. Label localized, value slug no-localized.
+     */
+    roleOptions?:
+      | {
+          /**
+           * Texto visible de la opción.
+           */
+          label?: string | null;
+          /**
+           * Valor slug (no localized). Ej: "founder", "marketing", "ops", "sales", "other".
+           */
+          value?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Placeholder del campo Mensaje. ES: "Contános dónde está tu marca hoy…" / EN: "Tell us where your brand is today…"
+     */
+    messagePlaceholder?: string | null;
+    /**
+     * Texto al pie del form. ES: "Los campos marcados son obligatorios." / EN: "Required fields are marked."
+     */
+    requiredHint?: string | null;
+    /**
+     * Label del botón submit. ES: "Enviar mensaje" / EN: "Send message"
+     */
+    submitLabel?: string | null;
+  };
+  microcopy?: {
+    /**
+     * Título estado éxito. ES: "Listo. Te respondemos en 24h hábiles." / EN: "Done. We'll reply within 24 business hours."
+     */
+    successTitle?: string | null;
+    /**
+     * Cuerpo opcional del estado éxito (confirmación adicional).
+     */
+    successBody?: string | null;
+    /**
+     * Texto del bloque "Otros canales" (D-07=A). ES: "Si preferís escribir directamente:" / EN: "If you prefer to write directly:"
+     */
+    otherChannelsLabel?: string | null;
+    /**
+     * Nota al pie de canales. ES: "Misma persona, misma respuesta." / EN: "Same person, same response."
+     */
+    otherChannelsNote?: string | null;
+  };
+  /**
+   * H2 del bloque FAQ. ES: "Preguntas frecuentes" / EN: "Frequently asked questions"
+   */
+  faqHeading?: string | null;
+  /**
+   * 5 preguntas contacto-specific. NO duplicar /como-trabajamos FAQs.
+   */
+  faq?:
+    | {
+        /**
+         * Pregunta (H3 candidate).
+         */
+        question?: string | null;
+        /**
+         * Respuesta. Puede incluir {{contactEmail}} como token.
+         */
+        answer?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  seo?: {
+    /**
+     * Meta title. ES: "Sentémonos a pensar · Contacto · {{siteName}}" (target 45 chars). EN: similar.
+     */
+    metaTitle?: string | null;
+    /**
+     * Meta description (target 150-160 chars). ES: 157 chars con trust signals (ver SEO-AEO-contacto-SB §4).
+     */
+    metaDescription?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "socialLinks_select".
  */
@@ -3811,6 +3968,77 @@ export interface SiteCtaLibrarySelect<T extends boolean = true> {
         intent?: T;
         href?: T;
         id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-contact-page_select".
+ */
+export interface SiteContactPageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        heading?: T;
+        subtitle?: T;
+        lede?: T;
+        anchorPhrase?: T;
+      };
+  stepsEyebrow?: T;
+  steps?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  formConfig?:
+    | T
+    | {
+        title?: T;
+        stageLabel?: T;
+        stageOptions?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              id?: T;
+            };
+        roleLabel?: T;
+        roleOptions?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              id?: T;
+            };
+        messagePlaceholder?: T;
+        requiredHint?: T;
+        submitLabel?: T;
+      };
+  microcopy?:
+    | T
+    | {
+        successTitle?: T;
+        successBody?: T;
+        otherChannelsLabel?: T;
+        otherChannelsNote?: T;
+      };
+  faqHeading?: T;
+  faq?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
       };
   updatedAt?: T;
   createdAt?: T;

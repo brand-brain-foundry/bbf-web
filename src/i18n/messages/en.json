@@ -33,6 +33,8 @@
     "submit": "Send",
     "submitting": "Sending…",
     "verifying": "Verifying security…",
+    "stageLabel": "Where you're at (optional)",
+    "roleLabel": "Role (optional)",
     "requiredHint": "Fields marked * are required.",
     "successTitle": "Received. We will respond soon.",
     "errorGeneric": "Something failed. Try again.",
@@ -40,7 +42,9 @@
     "errorTurnstile": "Security verification failed. Reload the page.",
     "errorDisposable": "Please use a permanent email.",
     "errorValidation": "Please review the form data.",
-    "errorBot": "Could not process. Try again."
+    "errorBot": "Could not process. Try again.",
+    "breadcrumbHome": "Home",
+    "breadcrumbPage": "Contact"
   },
   "capabilities": {
     "ui": {

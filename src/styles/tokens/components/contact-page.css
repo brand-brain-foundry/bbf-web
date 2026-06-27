@@ -1,0 +1,212 @@
+/**
+ * BBF Design System — TIER 3 COMPONENT: ContactSection tokens
+ *
+ * Consumer: ContactSection (sections/ContactSection/) + ContactForm
+ * Surface context: dark section + dark elevated form card (emula referencia)
+ *
+ * Linaje de tokens clave:
+ *   --bbf-contact-form-card-bg: elevated sobre dark base
+ *     Madre:   --bbf-surface-dark-elevated (= --bbf-color-dark-bg-elevated = #1a1a1a)
+ *     Fórmula: card elevada sobre page bg (#0a0a0a) → jerarquía visual clara
+ *
+ *   --bbf-contact-input-bg: sunken bajo la card
+ *     Madre:   --bbf-surface-dark-base (= --bbf-color-dark-bg = #0a0a0a)
+ *     Fórmula: inputs = page bg → sunken vs card = mismo efecto que referencia
+ *     Value:   var(--bbf-on-surface-bg) resuelve a #0a0a0a en dark
+ *
+ *   --bbf-contact-input-focus-bg: sube al nivel del card en focus
+ *     Madre:   --bbf-surface-dark-elevated (= #1a1a1a)
+ *     Fórmula: focus eleva input al nivel del card bg
+ *     Value:   var(--bbf-on-surface-elevated-bg) resuelve a #1a1a1a en dark
+ *
+ *   --bbf-contact-input-border: borde oscuro sutil
+ *     Madre:   --bbf-color-dark-line (= #2a2a2a)
+ *     Fórmula: separador mínimo sobre dark — no distractor
+ *     Value:   var(--bbf-on-surface-border) → --bbf-border-on-dark-surface = #2a2a2a
+ *
+ *   --bbf-contact-focus-glow: halo blanco 4% en focus
+ *     Madre:   --bbf-color-white
+ *     Fórmula: 4% alpha = glow sutil premium en dark form (extremadamente necesario:
+ *              no existe token de focus-glow en el sistema; el único es --bbf-color-focus-ring
+ *              que apunta a rojo semántico, incompatible con dark surface white glow)
+ *
+ *   --bbf-contact-card-shimmer: capa shimmer superior del card
+ *     Madre:   --bbf-color-white
+ *     Fórmula: 3% alpha = profundidad sutil en dark elevated surface
+ *              (extremadamente necesario: sin token de shimmer/overlay en el sistema)
+ *
+ *   --bbf-contact-badge-pulse-duration: duración del pulse del dot "encrypted"
+ *     Madre:   --bbf-motion-slower (540ms)
+ *     Fórmula: 2000ms ≈ ciclo natural de pulso visual (heartbeat 60bpm = 1000ms × 2
+ *              para comodidad visual). Extremadamente necesario: no existe token
+ *              de 2000ms en el sistema (gradient-fast=2500ms, slow=6000ms).
+ *
+ *   --bbf-contact-chip-bg-active: chip seleccionado — invertido
+ *     Madre:   --bbf-on-surface-title (off-white sobre dark)
+ *     Fórmula: inversión chip = bg off-white + text dark → misma lógica que referencia
+ *
+ *   --bbf-contact-success-dot: badge "ENCRYPTED"
+ *     Madre:   --bbf-color-success-500 = oklch(0.62 0.16 145)
+ *     Fórmula: éxito / vivo → green dot pulsante
+ *
+ *   --bbf-contact-step-num-color: números de paso
+ *     Madre:   --bbf-on-surface-muted (gray faint)
+ *     Fórmula: numeración secundaria, no compite con título del paso
+ */
+
+[data-component='bbf-contact-section'] {
+  /* Card */
+  --bbf-contact-form-card-bg: var(--bbf-surface-dark-elevated);
+  --bbf-contact-form-card-border: var(--bbf-border-on-dark-surface);
+
+  /* Card shimmer — Madre: --bbf-color-white, Fórmula: 3% alpha overlay */
+  --bbf-contact-card-shimmer: rgba(255, 255, 255, 0.03);
+
+  /* Inputs */
+  --bbf-contact-input-bg: var(--bbf-on-surface-bg);
+  --bbf-contact-input-focus-bg: var(--bbf-on-surface-elevated-bg);
+  --bbf-contact-focus-glow: rgba(255, 255, 255, 0.04);
+  --bbf-contact-input-border: var(--bbf-on-surface-border);
+  --bbf-contact-input-hover-border: var(--bbf-accent-blue);
+  --bbf-contact-input-focus-border: var(--bbf-on-surface-title);
+
+  /* Chips */
+  --bbf-contact-chip-border: var(--bbf-on-surface-border);
+  --bbf-contact-chip-bg-active: var(--bbf-on-surface-title);
+  --bbf-contact-chip-text-active: var(--bbf-surface-dark-base);
+  --bbf-contact-chip-hover: var(--bbf-accent-blue);
+
+  /* Steps */
+  --bbf-contact-step-num-color: var(--bbf-on-surface-muted);
+
+  /* Badge */
+  --bbf-contact-success-dot: var(--bbf-color-success-500);
+
+  /* Motion — Madre: --bbf-motion-slower, Fórmula: 2s ciclo de pulso visual */
+  --bbf-contact-badge-pulse-duration: 2s;
+}
+
+/* ── Form card inner shimmer (referencia: rgba(255,255,255,0.03)) ── */
+[data-component='bbf-contact-section'] .bbf-contact-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--bbf-contact-card-shimmer) 0%, transparent 30%);
+}
+
+/* ── FormField overrides: mono labels + dark inputs ──
+   Especificidad: (0,2,1) > Tailwind (0,0,1) ✅
+   ── */
+[data-component='bbf-contact-section'] [data-component='bbf-form-field'] label {
+  color: var(--bbf-on-surface-body);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-xs);
+  letter-spacing: var(--bbf-tracking-loose);
+  text-transform: uppercase;
+  margin-bottom: var(--bbf-space-2);
+}
+
+[data-component='bbf-contact-section'] [data-component='bbf-form-field'] input,
+[data-component='bbf-contact-section'] [data-component='bbf-form-field'] textarea {
+  background: var(--bbf-contact-input-bg);
+  border-color: var(--bbf-contact-input-border);
+  border-radius: var(--bbf-radius-md);
+  color: var(--bbf-on-surface-title);
+  height: auto;
+  padding: var(--bbf-space-3\.5) var(--bbf-space-4);
+}
+
+[data-component='bbf-contact-section'] [data-component='bbf-form-field'] input::placeholder,
+[data-component='bbf-contact-section'] [data-component='bbf-form-field'] textarea::placeholder {
+  color: var(--bbf-on-surface-faint);
+}
+
+[data-component='bbf-contact-section'] [data-component='bbf-form-field'] input:hover,
+[data-component='bbf-contact-section'] [data-component='bbf-form-field'] textarea:hover {
+  border-color: var(--bbf-contact-input-hover-border);
+}
+
+[data-component='bbf-contact-section'] [data-component='bbf-form-field'] input:focus,
+[data-component='bbf-contact-section'] [data-component='bbf-form-field'] textarea:focus {
+  border-color: var(--bbf-contact-input-focus-border);
+  background: var(--bbf-contact-input-focus-bg);
+  box-shadow: 0 0 0 var(--bbf-space-1) var(--bbf-contact-focus-glow);
+  outline: none;
+}
+
+/* ── Select field overrides ── */
+[data-component='bbf-contact-section'] [data-component='bbf-select-field'] label {
+  color: var(--bbf-on-surface-body);
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-xs);
+  letter-spacing: var(--bbf-tracking-loose);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: var(--bbf-space-2);
+}
+
+[data-component='bbf-contact-section'] [data-component='bbf-select-field'] select {
+  background: var(--bbf-contact-input-bg);
+  border-color: var(--bbf-contact-input-border);
+  border-radius: var(--bbf-radius-md);
+  color: var(--bbf-on-surface-title);
+  height: auto;
+  padding: var(--bbf-space-3\.5) var(--bbf-space-4);
+  /* Custom chevron with dark-surface muted color (#a8a59f) — SVG data URI: hex in URI = unavoidable CSS limitation */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%23a8a59f' stroke-width='1.5'><path d='M1 1 L6 6 L11 1'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right var(--bbf-space-4) center;
+  background-size: var(--bbf-space-3);
+  padding-right: var(--bbf-space-10);
+}
+
+[data-component='bbf-contact-section'] [data-component='bbf-select-field'] select:hover {
+  border-color: var(--bbf-contact-input-hover-border);
+}
+
+[data-component='bbf-contact-section'] [data-component='bbf-select-field'] select:focus {
+  border-color: var(--bbf-contact-input-focus-border);
+  background-color: var(--bbf-contact-input-focus-bg);
+  box-shadow: 0 0 0 var(--bbf-space-1) var(--bbf-contact-focus-glow);
+  outline: none;
+}
+
+/* ── Badge: green pulsing dot ── */
+@keyframes bbf-contact-badge-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--bbf-contact-success-dot) 40%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 var(--bbf-space-2)
+      color-mix(in srgb, var(--bbf-contact-success-dot) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--bbf-contact-success-dot) 0%, transparent);
+  }
+}
+
+.bbf-contact-badge-dot {
+  animation: bbf-contact-badge-pulse var(--bbf-contact-badge-pulse-duration) ease-out infinite;
+}
+
+/* ── ChipGroup legend: mono override ── */
+[data-component='bbf-contact-section'] [data-component='bbf-chip-group'] legend {
+  font-family: var(--bbf-font-mono);
+  font-size: var(--bbf-text-xs);
+  letter-spacing: var(--bbf-tracking-loose);
+}
+
+/* ── Steps: border-top separator + dashed dividers ──
+   Scoped to contact section to avoid global StepsBlock impact.
+   ── */
+[data-component='bbf-contact-section'] [data-component='bbf-steps-block'] {
+  border-top: 1px solid var(--bbf-on-surface-border);
+  padding-top: var(--bbf-space-6);
+}
+
+[data-component='bbf-contact-section'] [data-component='bbf-steps-block'] li:not(:last-child) {
+  border-bottom: 1px dashed var(--bbf-on-surface-border);
+  padding-bottom: var(--bbf-space-5);
+}

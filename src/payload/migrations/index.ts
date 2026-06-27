@@ -43,6 +43,7 @@ import * as migration_20260626_101940_wa_agenda_scene from './20260626_101940_wa
 import * as migration_20260626_132654_integraciones_scene from './20260626_132654_integraciones_scene';
 import * as migration_20260626_162438_aprendizaje_scene from './20260626_162438_aprendizaje_scene';
 import * as migration_20260627_134353_seo_anchor_faq from './20260627_134353_seo_anchor_faq';
+import * as migration_20260627_170430_contacto_page from './20260627_170430_contacto_page';
 
 export const migrations = [
   {
@@ -268,6 +269,11 @@ export const migrations = [
   {
     up: migration_20260627_134353_seo_anchor_faq.up,
     down: migration_20260627_134353_seo_anchor_faq.down,
-    name: '20260627_134353_seo_anchor_faq'
+    name: '20260627_134353_seo_anchor_faq',
+  },
+  {
+    up: migration_20260627_170430_contacto_page.up,
+    down: migration_20260627_170430_contacto_page.down,
+    name: '20260627_170430_contacto_page'
   },
 ];
