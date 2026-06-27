@@ -120,7 +120,7 @@ export default async function ContactoPage({ params }: Props) {
         description: contactPage.seo?.metaDescription || undefined,
         inLanguage: l === 'es' ? 'es-SV' : 'en-US',
         isPartOf: { '@id': `${siteId.siteDomain}/#website` },
-        about: { '@id': `${siteId.siteDomain}/#organization` },
+        about: { '@id': `${siteId.siteDomain}/#org` },
         breadcrumb: { '@id': breadcrumbId },
         ...(faqItems.length > 0 ? { mainEntity: { '@id': faqPageId } } : {}),
       },
@@ -146,7 +146,7 @@ export default async function ContactoPage({ params }: Props) {
       // Organization — REFERENCIA @id del homepage (no redeclara; añade contactPoint) §9.4
       {
         '@type': 'Organization',
-        '@id': `${siteId.siteDomain}/#organization`,
+        '@id': `${siteId.siteDomain}/#org`,
         contactPoint: {
           '@type': 'ContactPoint',
           '@id': `${siteId.siteDomain}/#sivar-brains-contactpoint`,

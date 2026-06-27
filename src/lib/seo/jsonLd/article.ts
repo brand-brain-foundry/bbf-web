@@ -20,7 +20,7 @@ export function buildArticleJsonLd(
     author: author?.name ? { '@type': 'Person' as const, name: author.name } : undefined,
     publisher: {
       '@type': 'Organization' as const,
-      '@id': `${siteUrl}#organization`,
+      '@id': `${siteUrl}/#org`,
     },
   };
 }

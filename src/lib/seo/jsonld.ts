@@ -30,7 +30,7 @@ export function buildWebPageSchema(args: BuildWebPageArgs) {
       '@id': `${args.domain}/#website`,
     },
     about: {
-      '@id': `${args.domain}/#organization`,
+      '@id': `${args.domain}/#org`,
     },
     ...(args.datePublished && { datePublished: args.datePublished }),
     ...(args.dateModified && { dateModified: args.dateModified }),
