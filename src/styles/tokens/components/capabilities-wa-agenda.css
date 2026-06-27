@@ -1,0 +1,308 @@
+/* WA-Agenda skin extension — reutiliza .bbf-wa-* al 100%.
+   Solo clases NUEVAS: MeetCard + QuickReplies. D-WAG-01: altura 720px.
+   Scoped a .bbf-wa-agenda — cero :root, cero duplicación del chrome WA. */
+
+/* ── D-WAG-01: altura 720px (prototipo — MeetCard necesita el espacio) ── */
+.bbf-wa-agenda .bbf-wa-screen {
+  height: 720px;
+}
+
+@media (max-width: 420px) {
+  .bbf-wa-agenda .bbf-wa-screen {
+    height: 640px;
+  }
+}
+
+/* ── Meet Card bubble — override del padding/tail del chrome WA ── */
+.bbf-wa-agenda .bbf-wa-bubble--card {
+  max-width: 90%;
+  padding: 4px;
+}
+
+.bbf-wa-agenda .bbf-wa-bubble--card::before {
+  display: none;
+}
+
+/* ── Meet Card container ── */
+.bbf-wag-meet {
+  width: 264px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Google Sans', 'Roboto', system-ui, sans-serif;
+}
+
+.bbf-wag-meet__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 8px 12px;
+}
+
+.bbf-wag-meet-logo {
+  flex-shrink: 0;
+  border-radius: 6px;
+}
+
+.bbf-wag-meet__head-txt {
+  min-width: 0;
+}
+
+.bbf-wag-meet__app {
+  font-size: 11px;
+  color: #5f6368;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.bbf-wag-meet__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #202124;
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+/* ── When block (date/time) ── */
+.bbf-wag-meet__when {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin: 0 4px;
+  background: #f1f6fe;
+  border-radius: 10px;
+  color: #1a73e8;
+}
+
+.bbf-wag-meet__day {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #202124;
+  text-transform: capitalize;
+}
+
+.bbf-wag-meet__time-slot {
+  font-size: 12px;
+  color: #5f6368;
+  margin-top: 1px;
+}
+
+/* ── Link row ── */
+.bbf-wag-meet__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 8px 4px 0;
+  padding: 9px 10px;
+  border: 1px solid #dadce0;
+  border-radius: 10px;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  width: calc(100% - 8px);
+  color: #1a73e8;
+  transition: background 0.15s;
+}
+
+.bbf-wag-meet__link:hover {
+  background: #f8fbff;
+}
+
+.bbf-wag-meet__link-l {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.bbf-wag-meet__link-url {
+  font-size: 12.5px;
+  color: #1a73e8;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bbf-wag-meet__copy {
+  font-size: 11px;
+  font-weight: 600;
+  color: #1a73e8;
+  background: #e8f0fe;
+  padding: 4px 9px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ── Invitees ── */
+.bbf-wag-meet__invitees {
+  margin: 12px 4px 4px;
+}
+
+.bbf-wag-meet__invitees-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5f6368;
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
+
+.bbf-wag-invitee {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 0;
+}
+
+.bbf-wag-invitee__av {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bbf-wag-invitee__info {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.bbf-wag-invitee__name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #202124;
+}
+
+.bbf-wag-invitee__email {
+  display: block;
+  font-size: 11px;
+  color: #5f6368;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bbf-wag-invitee__state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.bbf-wag-invitee__state.is-sending {
+  color: #9aa0a6;
+}
+
+.bbf-wag-invitee__state.is-sent {
+  color: #1e8e3e;
+  animation: bbf-wa-pop 0.3s ease;
+}
+
+.bbf-wag-invitee__spin {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.6px solid #c8ccd1;
+  border-right-color: transparent;
+  display: inline-block;
+  animation: bbf-wag-spin 0.7s linear infinite;
+}
+
+@keyframes bbf-wag-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Join button ── */
+.bbf-wag-meet__join {
+  margin: 10px 4px 6px;
+  padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1a73e8;
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: calc(100% - 8px);
+}
+
+.bbf-wag-meet__join:hover {
+  background: #1765cc;
+}
+
+.bbf-wag-meet__time-meta {
+  text-align: right;
+  font-size: 10.5px;
+  color: #667781;
+  padding: 0 6px 2px;
+}
+
+/* ── Quick Replies ── */
+.bbf-wag-quickrow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  padding: 4px 2px 2px;
+  animation: bbf-wa-pop 0.3s ease;
+}
+
+.bbf-wag-quick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  color: #075e54;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.16);
+  transition:
+    transform 0.15s,
+    box-shadow 0.2s;
+}
+
+.bbf-wag-quick:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+.bbf-wag-quick.is-primary {
+  background: #075e54;
+  color: #fff;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .bbf-wa-agenda .bbf-wa-bubble,
+  .bbf-wa-agenda .bbf-wag-quickrow,
+  .bbf-wa-agenda .bbf-wag-invitee__state,
+  .bbf-wag-invitee__spin {
+    animation: none;
+  }
+}
