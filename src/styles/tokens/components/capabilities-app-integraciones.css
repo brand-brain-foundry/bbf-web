@@ -1,0 +1,279 @@
+/* App Integraciones skin — NOT BBF system tokens.
+   Piel de emulación app Android para CapabilityScene kind='integraciones'.
+   Reutiliza .bbf-app-* de capabilities-app-screen.css (chrome compartido).
+   Solo .bbf-app-int-* bajo scope. Cero :root. D-INT-01. */
+
+/* Override: list body scrollable bajo el scope de integraciones */
+.bbf-app-integraciones .bbf-app-screen-body {
+  padding: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.bbf-app-integraciones .bbf-app-screen-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Summary sticky ───────────────────────────────────────────── */
+.bbf-app-int-summary {
+  flex-shrink: 0;
+  background: var(--app-bg, #fff);
+  border-bottom: 1px solid var(--app-line, #e9eaec);
+  padding: 14px 16px 0;
+}
+
+.bbf-app-int-summary__head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.bbf-app-int-summary__logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--bbf-color-blue-50, #eef4ff);
+  color: var(--bbf-accent-blue, #255ff1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bbf-app-int-summary__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.bbf-app-int-summary__title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-family: var(--app-font, system-ui);
+  color: var(--app-ink, #1c1d1f);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bbf-app-int-summary__sub {
+  font-size: 12px;
+  font-family: var(--app-font, system-ui);
+  color: var(--app-ink-muted, #6c7075);
+  margin-top: 1px;
+}
+
+.bbf-app-int-summary__count {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--bbf-accent-blue, #255ff1);
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+}
+
+.bbf-app-int-summary__count span {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--app-ink-faint, #9aa0a6);
+}
+
+.bbf-app-int-summary__bar {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--app-line, #e9eaec);
+  overflow: hidden;
+  margin-top: 12px;
+  margin-bottom: 14px;
+}
+
+.bbf-app-int-summary__fill {
+  height: 100%;
+  border-radius: 999px;
+  /* G-02: gradient azul del sistema — NO hardcodeado */
+  background: var(--bbf-accent-gradient, linear-gradient(90deg, #255ff1, #93b4f8));
+  transition: width 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: width;
+}
+
+/* ── List ─────────────────────────────────────────────────────── */
+.bbf-app-int-list {
+  padding: 4px 0 8px;
+}
+
+.bbf-app-int-row {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--app-line-soft, #f1f2f4);
+  transition: background 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bbf-app-int-row--connecting {
+  background: var(--app-bg-soft, #f6f7f9);
+}
+
+.bbf-app-int-row--on {
+  background: #f5f9ff;
+}
+
+/* ── Icon ─────────────────────────────────────────────────────── */
+.bbf-app-int-icon {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #fff;
+  border: 1px solid var(--app-line, #e9eaec);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    filter 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.3s,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bbf-app-int-row--off .bbf-app-int-icon {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+
+.bbf-app-int-row--connecting .bbf-app-int-icon {
+  filter: grayscale(0.4);
+  opacity: 0.85;
+}
+
+.bbf-app-int-row--on .bbf-app-int-icon {
+  filter: none;
+  opacity: 1;
+  box-shadow: 0 3px 10px -4px rgba(0, 0, 0, 0.18);
+  transform: translateY(-0.5px);
+}
+
+.bbf-app-int-icon-placeholder {
+  font-size: 16px;
+  font-family: var(--app-font, system-ui);
+  font-weight: 600;
+  color: var(--app-ink-muted, #6c7075);
+}
+
+/* ── Meta ─────────────────────────────────────────────────────── */
+.bbf-app-int-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bbf-app-int-name {
+  font-size: 14.5px;
+  font-family: var(--app-font, system-ui);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--app-ink, #1c1d1f);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bbf-app-int-status {
+  font-size: 12px;
+  font-family: var(--app-font, system-ui);
+  color: var(--app-ink-faint, #9aa0a6);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bbf-app-int-status--on {
+  /* #1e8e3e: verde Google exacto del prototipo — decorativo, no token BBF */
+  color: #1e8e3e;
+  font-weight: 500;
+}
+
+.bbf-app-int-status--connecting {
+  color: var(--bbf-accent-blue, #255ff1);
+  font-weight: 500;
+}
+
+/* Green dot para estado "Conectado" — decorativo, no token BBF */
+.bbf-app-int-status__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1e8e3e;
+  flex-shrink: 0;
+}
+
+/* Spinner */
+.bbf-app-int-spin {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border: 1.6px solid #b9cdf5;
+  border-right-color: var(--bbf-accent-blue, #255ff1);
+  border-radius: 50%;
+  animation: bbf-int-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes bbf-int-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Switch ───────────────────────────────────────────────────── */
+.bbf-app-int-sw {
+  width: 46px;
+  height: 27px;
+  border-radius: 999px;
+  background: #cdd2d8;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bbf-app-int-sw.is-on {
+  background: var(--bbf-accent-blue, #255ff1);
+}
+
+.bbf-app-int-sw__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.38s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+.bbf-app-int-sw.is-on .bbf-app-int-sw__knob {
+  transform: translateX(19px);
+}
+
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .bbf-app-int-icon,
+  .bbf-app-int-row,
+  .bbf-app-int-sw,
+  .bbf-app-int-sw__knob,
+  .bbf-app-int-summary__fill {
+    transition: none;
+  }
+
+  .bbf-app-int-spin {
+    animation: none;
+  }
+}

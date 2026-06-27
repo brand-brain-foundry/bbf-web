@@ -1,0 +1,1 @@
+export { Integraciones } from './Integraciones';
