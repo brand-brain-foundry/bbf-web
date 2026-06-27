@@ -13,7 +13,7 @@
  * Requiere: pnpm payload migrate aplicado + pnpm payload generate:types aplicado
  * Self-contained: carga .env.local via process.loadEnvFile (Node 20.12+ built-in)
  *
- * NO sobrescribe: siteDescription (canonical Hotfix — L-BBF-253)
+ * Escribe: siteDescription ES (149c) + EN (140c) — Sprint 1 G-16/G-17 ✅
  * NO sobrescribe: organizationEntity (null TEMPORAL — conectar en 4.B.1.B)
  *
  * siteTagline: "Construimos tu cerebro de marca" / "We build your brand brain"
@@ -274,8 +274,7 @@ async function seedSiteIdentity() {
   console.log('   ✅ seo.twitterHandle: @sivarbrains (pendiente de crear cuenta)');
   console.log('   ✅ statusBanner: disabled, label null');
   console.log('');
-  console.log('🔒 NO sobrescrito:');
-  console.log('   - siteDescription ES+EN (Hotfix canonical)');
+  console.log('✅ siteDescription ES+EN: escritos (Sprint 1 G-16/G-17)');
   console.log('   - organizationEntity (null TEMPORAL — conectar en 4.B.1.B)');
   console.log('');
   console.log('⚠️  NOTA-FUTURE: PlaceholdersCanon §3.5 + OntologyPrimitives §2.5');

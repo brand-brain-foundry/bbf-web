@@ -1730,6 +1730,50 @@ export const SiteHomepage: GlobalConfig = {
             },
           },
           fields: [
+            // G-18: anchorPhrase — frase ancla visible en hero, vector principal AEO/GEO
+            {
+              name: 'anchorPhrase',
+              type: 'textarea',
+              localized: true,
+              maxLength: 280,
+              admin: {
+                description:
+                  'Frase ancla (G-18): texto visible en el homepage que ancla citación AEO/GEO. 40-120 chars recomendado. Ej: "Sivar Brains construye, opera y mantiene el cerebro de marca que activa tu empresa."',
+              },
+            },
+            // G-19: faq[] — preguntas frecuentes para FAQPage JSON-LD + render visible
+            {
+              name: 'faq',
+              type: 'array',
+              dbName: 'hp_faq', // 6 chars — tablas hp_faq/hp_faq_locales < 63 (L-MIGRATE-63)
+              maxRows: 8,
+              label: { en: 'FAQ Items', es: 'Preguntas frecuentes' },
+              admin: {
+                initCollapsed: true,
+                description:
+                  'Preguntas y respuestas (G-19): visibles en homepage + FAQPage JSON-LD. Sin required (D-WA-05). Campos localized en cada item.',
+              },
+              fields: [
+                {
+                  name: 'question',
+                  type: 'text',
+                  localized: true,
+                  maxLength: 200,
+                  admin: {
+                    description: 'Pregunta (max 200 chars). Ej: "¿Qué es un cerebro de marca?"',
+                  },
+                },
+                {
+                  name: 'answer',
+                  type: 'textarea',
+                  localized: true,
+                  maxLength: 600,
+                  admin: {
+                    description: 'Respuesta concisa (40-80 palabras para AEO, max 600 chars).',
+                  },
+                },
+              ],
+            },
             {
               name: 'answerCapsules',
               type: 'array',

@@ -3123,6 +3123,26 @@ export interface SiteHomepage {
    */
   seo?: {
     /**
+     * Frase ancla (G-18): texto visible en el homepage que ancla citación AEO/GEO. 40-120 chars recomendado. Ej: "Sivar Brains construye, opera y mantiene el cerebro de marca que activa tu empresa."
+     */
+    anchorPhrase?: string | null;
+    /**
+     * Preguntas y respuestas (G-19): visibles en homepage + FAQPage JSON-LD. Sin required (D-WA-05). Campos localized en cada item.
+     */
+    faq?:
+      | {
+          /**
+           * Pregunta (max 200 chars). Ej: "¿Qué es un cerebro de marca?"
+           */
+          question?: string | null;
+          /**
+           * Respuesta concisa (40-80 palabras para AEO, max 600 chars).
+           */
+          answer?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
      * One capsule per homepage section (§1 Hero, §2 Capabilities, §3 Case, §4 Why, §5 Method). Fill ES + EN for each. 40-60 words each.
      */
     answerCapsules?:
@@ -3757,6 +3777,14 @@ export interface SiteHomepageSelect<T extends boolean = true> {
   seo?:
     | T
     | {
+        anchorPhrase?: T;
+        faq?:
+          | T
+          | {
+              question?: T;
+              answer?: T;
+              id?: T;
+            };
         answerCapsules?:
           | T
           | {

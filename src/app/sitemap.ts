@@ -19,6 +19,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const site = await getSiteIdentity('es');
   const BASE_URL = site.siteDomain;
 
+  // G-14: use real updatedAt instead of runtime new Date()
+  const siteLastMod = site.updatedAt ? new Date(site.updatedAt) : new Date();
+
   const entries: SitemapEntry[] = [];
 
   // 1. Páginas estáticas core
@@ -26,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const path of staticPaths) {
     entries.push({
       url: `${BASE_URL}${path}`,
-      lastModified: new Date(),
+      lastModified: siteLastMod,
       changeFrequency: 'weekly',
       priority: path === '/' ? 1.0 : 0.8,
       alternates: {
@@ -41,6 +44,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 2. Pages collection (Wave 12-A)
   try {
     const payload = await getPayload({ config });
+
+    // G-14: override homepage "/" with more accurate site-homepage.updatedAt
+    try {
+      const hp = await payload.findGlobal({ slug: 'site-homepage', locale: 'es', depth: 0 });
+      if (hp.updatedAt) {
+        const homeEntry = entries.find((e) => e.url === `${BASE_URL}/`);
+        if (homeEntry) homeEntry.lastModified = new Date(hp.updatedAt);
+      }
+    } catch {
+      /* keep siteLastMod */
+    }
     // @ts-justify: pages pending payload generate:types — Wave 12-A
     const pagesResult = await (payload.find as Function)({
       collection: 'pages',

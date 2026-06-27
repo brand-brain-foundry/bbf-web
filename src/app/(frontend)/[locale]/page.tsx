@@ -74,36 +74,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       : undefined;
   const caseVideoSources = cs?.videoSources ?? [];
 
-  // FIX-CAPSULES-RENDER: FAQPage JSON-LD from answerCapsules (TP-SEO-01, FASE 3B)
-  const FAQ_QUESTIONS: Record<string, { es: string; en: string }> = {
-    hero: {
-      es: '¿Qué es el cerebro de marca de Sivar Brains?',
-      en: "What is Sivar Brains' brand brain?",
-    },
-    capabilities: {
-      es: '¿Qué servicios integra el cerebro de marca?',
-      en: 'What services does the brand brain include?',
-    },
-    caseStudy: {
-      es: '¿Cómo opera el cerebro de marca en la práctica?',
-      en: 'How does the brand brain operate in practice?',
-    },
-    comparison: {
-      es: '¿Por qué un cerebro de marca propio y no un servicio externo?',
-      en: 'Why build your own brand brain instead of renting a service?',
-    },
-    method: {
-      es: '¿Cómo funciona el proceso de implementación de Sivar Brains?',
-      en: 'What does the Sivar Brains implementation process look like?',
-    },
-  };
-  const faqItems = (site.seo?.answerCapsules ?? [])
-    .filter((c) => c.sectionId && FAQ_QUESTIONS[c.sectionId] && c.capsule)
-    .map((c) => ({
-      question: FAQ_QUESTIONS[c.sectionId as keyof typeof FAQ_QUESTIONS][l],
-      answer: c.capsule as string,
-    }));
-  const faqSchema = faqItems.length > 0 ? buildFaqPageJsonLd(faqItems) : null;
+  // G-19: FAQPage JSON-LD from admin faq[] (Sprint 2 — campo canónico, no hardcoded)
+  const faqItems = (site.seo?.faq ?? [])
+    .filter((item): item is { question: string; answer: string; id?: string | null } =>
+      Boolean(item.question && item.answer),
+    )
+    .map((item) => ({ question: item.question as string, answer: item.answer as string }));
+  const faqSchema =
+    faqItems.length > 0 ? buildFaqPageJsonLd(faqItems, `${siteId.siteDomain}/#faqpage-home`) : null;
 
   // Sprint 1 G-03: WebPage JSON-LD — @id correcto (#webpage-home), description, primaryImageOfPage
   const [siteTaglineInterp, siteDescriptionInterp] = await Promise.all([
@@ -193,6 +171,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                       </Button>
                     ))}
                   </div>
+                )}
+                {/* G-18: anchorPhrase — texto ancla visible para citación AEO/GEO (Sprint 2) */}
+                {site.seo?.anchorPhrase && (
+                  <Text variant="body-sm" color="secondary" className="max-w-[42ch]">
+                    {site.seo.anchorPhrase}
+                  </Text>
                 )}
               </div>
             </Reveal>

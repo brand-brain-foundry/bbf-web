@@ -42,6 +42,7 @@ import * as migration_20260625_235256_app_screen_scene from './20260625_235256_a
 import * as migration_20260626_101940_wa_agenda_scene from './20260626_101940_wa_agenda_scene';
 import * as migration_20260626_132654_integraciones_scene from './20260626_132654_integraciones_scene';
 import * as migration_20260626_162438_aprendizaje_scene from './20260626_162438_aprendizaje_scene';
+import * as migration_20260627_134353_seo_anchor_faq from './20260627_134353_seo_anchor_faq';
 
 export const migrations = [
   {
@@ -262,6 +263,11 @@ export const migrations = [
   {
     up: migration_20260626_162438_aprendizaje_scene.up,
     down: migration_20260626_162438_aprendizaje_scene.down,
-    name: '20260626_162438_aprendizaje_scene'
+    name: '20260626_162438_aprendizaje_scene',
+  },
+  {
+    up: migration_20260627_134353_seo_anchor_faq.up,
+    down: migration_20260627_134353_seo_anchor_faq.down,
+    name: '20260627_134353_seo_anchor_faq'
   },
 ];
