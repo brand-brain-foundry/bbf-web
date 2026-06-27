@@ -2305,7 +2305,17 @@ export interface SiteHomepage {
             /**
              * Tipo de visualización para esta capacidad.
              */
-            kind: 'chat' | 'pipeline' | 'workflow' | 'stack' | 'media';
+            kind:
+              | 'chat'
+              | 'wa-chat'
+              | 'pipeline'
+              | 'workflow'
+              | 'stack'
+              | 'media'
+              | 'app-screen'
+              | 'wa-agenda'
+              | 'integraciones'
+              | 'aprendizaje';
             /**
              * Metadato contextual del scene (ej: "WhatsApp · Web · Voz").
              */
@@ -2425,6 +2435,232 @@ export interface SiteHomepage {
                * Texto decorativo del footer del scene.
                */
               footer?: string | null;
+            };
+            /**
+             * Emulación de pantalla WhatsApp con animación secuencial.
+             */
+            waChat?: {
+              /**
+               * Nombre en el header (ej: "Brain").
+               */
+              contactName?: string | null;
+              messages?:
+                | {
+                    who: 'user' | 'brain';
+                    /**
+                     * Texto del mensaje. Máx 120 chars.
+                     */
+                    text?: string | null;
+                    /**
+                     * Timestamp decorativo (ej: "23:04").
+                     */
+                    time?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * Texto decorativo del footer del scene.
+               */
+              footer?: string | null;
+            };
+            /**
+             * Emulación de app Android: brief → generación → diseño → publicación.
+             */
+            appScreen?: {
+              /**
+               * Texto del brief que se tipea char a char.
+               */
+              briefText?: string | null;
+              /**
+               * Caption generado para la imagen.
+               */
+              caption?: string | null;
+              /**
+               * Hashtags generados (ej: "#Francia #Paris …").
+               */
+              hashtags?: string | null;
+              /**
+               * Meta de publicación (ej: "Instagram · @cuenta · Historia").
+               */
+              publishMeta?: string | null;
+              chips?:
+                | {
+                    label?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * Ej: Formato / Instagram · Historia 9:16.
+               */
+              metaRows?:
+                | {
+                    key?: string | null;
+                    value?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * Asset capturado / imagen cruda (Screen 2).
+               */
+              rawImage?: (number | null) | Media;
+              /**
+               * Diseño final renderizado (Screen 3).
+               */
+              renderImage?: (number | null) | Media;
+            };
+            /**
+             * Brain agenda una videollamada via WhatsApp. Secuencia animada: brief → confirmación → Google Meet card → invitados → quick replies.
+             */
+            waAgenda?: {
+              /**
+               * Nombre en el header WA (ej: "Brain").
+               */
+              contactName?: string | null;
+              /**
+               * Instrucción del usuario (se tipea char a char).
+               */
+              briefText?: string | null;
+              /**
+               * Primera respuesta de Brain (ej: "¡Hecho! 🗓️ Programé la videollamada…").
+               */
+              confirmText?: string | null;
+              /**
+               * Brain confirma que invitaciones salieron (ej: "Las invitaciones ya salieron a Fátima y Edgardo ✅…").
+               */
+              inviteSentText?: string | null;
+              /**
+               * Pregunta con quick replies (ej: "¿Quieres que te la calendarice la reunión?").
+               */
+              askText?: string | null;
+              /**
+               * Respuesta final de Brain tras el quick reply (ej: "Listo ✅ La agregué a tu Google Calendar…").
+               */
+              closingText?: string | null;
+              meetCard?: {
+                /**
+                 * Título de la reunión (ej: "Estrategia · Nueva campaña").
+                 */
+                title?: string | null;
+                /**
+                 * Día de la reunión (ej: "jueves 2 de julio").
+                 */
+                day?: string | null;
+                /**
+                 * Hora (ej: "10:00 – 11:00"). No localized (numérico).
+                 */
+                time?: string | null;
+                /**
+                 * Timezone decorativo (ej: "GMT-6").
+                 */
+                timezone?: string | null;
+                /**
+                 * Link Meet sin https:// (ej: "meet.google.com/qvp-rkxd-uoa").
+                 */
+                link?: string | null;
+                invitees?:
+                  | {
+                      /**
+                       * Nombre visible (ej: "Fátima").
+                       */
+                      name?: string | null;
+                      /**
+                       * Email del invitado.
+                       */
+                      email?: string | null;
+                      id?: string | null;
+                    }[]
+                  | null;
+              };
+              /**
+               * Botones de respuesta rápida. El primero = acción principal (estilo CTA).
+               */
+              quickReplies?:
+                | {
+                    /**
+                     * Texto del botón (ej: "Sí, agéndala").
+                     */
+                    label?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+            };
+            /**
+             * Análisis del post (app chrome) → Recomendación WA. Doble chrome: app-screen + WA.
+             */
+            aprendizaje?: {
+              /**
+               * Título en el AppBar de la fase Insights.
+               */
+              insightsTitle?: string | null;
+              /**
+               * Post exitoso a analizar (imagen portrait 9:16 recomendada).
+               */
+              postImage?: (number | null) | Media;
+              /**
+               * Caption del post (ej: "Tu próxima aventura comienza en Francia ✨🇫🇷").
+               */
+              postCaption?: string | null;
+              /**
+               * Plataforma + formato (ej: "Instagram · Historia").
+               */
+              platformLabel?: string | null;
+              /**
+               * Tiempo relativo de publicación (decorativo).
+               */
+              timeLabel?: string | null;
+              /**
+               * 5 puntos de recomendación del RecCard WA. key=categoría, value=recomendación, data=dato de soporte.
+               */
+              recPoints?:
+                | {
+                    /**
+                     * Categoría (ej: "Destino", "Formato", "Horario").
+                     */
+                    key?: string | null;
+                    /**
+                     * Recomendación principal (ej: "Otro ícono europeo menos saturado").
+                     */
+                    value?: string | null;
+                    /**
+                     * Dato de soporte (ej: "Europa duplicó tus guardados en Q2").
+                     */
+                    data?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * Proyección al pie del RecCard (ej: "Proyección: +35–50% de alcance").
+               */
+              projection?: string | null;
+            };
+            /**
+             * Conecta el Cerebro a todas sus fuentes. Lista animada: OFF → Conectando → Conectado.
+             */
+            integraciones?: {
+              /**
+               * Título del summary sticky (ej: "Conectando tu cerebro a todas tus fuentes").
+               */
+              summaryTitle?: string | null;
+              /**
+               * Lista de integraciones. Cada item: icono (Media) + nombre + categoría.
+               */
+              items?:
+                | {
+                    /**
+                     * Logo del conector (SVG o PNG en Media).
+                     */
+                    icon?: (number | null) | Media;
+                    /**
+                     * Nombre del conector (ej: "Instagram").
+                     */
+                    name?: string | null;
+                    /**
+                     * Tipo/categoría (ej: "Red social", "Mensajería", "IA").
+                     */
+                    category?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
             };
           };
           id?: string | null;
@@ -3291,6 +3527,106 @@ export interface SiteHomepageSelect<T extends boolean = true> {
                           caption?: T;
                           lissajousVariant?: T;
                           footer?: T;
+                        };
+                    waChat?:
+                      | T
+                      | {
+                          contactName?: T;
+                          messages?:
+                            | T
+                            | {
+                                who?: T;
+                                text?: T;
+                                time?: T;
+                                id?: T;
+                              };
+                          footer?: T;
+                        };
+                    appScreen?:
+                      | T
+                      | {
+                          briefText?: T;
+                          caption?: T;
+                          hashtags?: T;
+                          publishMeta?: T;
+                          chips?:
+                            | T
+                            | {
+                                label?: T;
+                                id?: T;
+                              };
+                          metaRows?:
+                            | T
+                            | {
+                                key?: T;
+                                value?: T;
+                                id?: T;
+                              };
+                          rawImage?: T;
+                          renderImage?: T;
+                        };
+                    waAgenda?:
+                      | T
+                      | {
+                          contactName?: T;
+                          briefText?: T;
+                          confirmText?: T;
+                          inviteSentText?: T;
+                          askText?: T;
+                          closingText?: T;
+                          meetCard?:
+                            | T
+                            | {
+                                title?: T;
+                                day?: T;
+                                time?: T;
+                                timezone?: T;
+                                link?: T;
+                                invitees?:
+                                  | T
+                                  | {
+                                      name?: T;
+                                      email?: T;
+                                      id?: T;
+                                    };
+                              };
+                          quickReplies?:
+                            | T
+                            | {
+                                label?: T;
+                                id?: T;
+                              };
+                        };
+                    aprendizaje?:
+                      | T
+                      | {
+                          insightsTitle?: T;
+                          postImage?: T;
+                          postCaption?: T;
+                          platformLabel?: T;
+                          timeLabel?: T;
+                          recPoints?:
+                            | T
+                            | {
+                                key?: T;
+                                value?: T;
+                                data?: T;
+                                id?: T;
+                              };
+                          projection?: T;
+                        };
+                    integraciones?:
+                      | T
+                      | {
+                          summaryTitle?: T;
+                          items?:
+                            | T
+                            | {
+                                icon?: T;
+                                name?: T;
+                                category?: T;
+                                id?: T;
+                              };
                         };
                   };
               id?: T;

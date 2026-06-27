@@ -22,3 +22,21 @@ export type WorkflowEdge = NonNullable<SceneWorkflowData['edges']>[number];
 export type StackGroup = NonNullable<SceneStackData['groups']>[number];
 
 export type SceneMediaData = NonNullable<SceneData['media']>;
+export type SceneWAChatData = NonNullable<SceneData['waChat']>;
+export type WAChatMessage = NonNullable<SceneWAChatData['messages']>[number];
+
+export type SceneAppScreenData = NonNullable<SceneData['appScreen']>;
+export type AppScreenChip = NonNullable<SceneAppScreenData['chips']>[number];
+export type AppScreenMetaRow = NonNullable<SceneAppScreenData['metaRows']>[number];
+
+export type SceneWAAgendaData = NonNullable<SceneData['waAgenda']>;
+export type WAAgendaInvitee = NonNullable<
+  NonNullable<SceneWAAgendaData['meetCard']>['invitees']
+>[number];
+export type WAAgendaQuickReply = NonNullable<SceneWAAgendaData['quickReplies']>[number];
+
+export type SceneIntegracionesData = NonNullable<SceneData['integraciones']>;
+export type IntegrationItem = NonNullable<SceneIntegracionesData['items']>[number];
+
+export type SceneAprendizajeData = NonNullable<SceneData['aprendizaje']>;
+export type AprRecPoint = NonNullable<SceneAprendizajeData['recPoints']>[number];

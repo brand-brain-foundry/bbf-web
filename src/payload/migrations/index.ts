@@ -37,6 +37,11 @@ import * as migration_20260621_100817_add_milestones_to_site_homepage from './20
 import * as migration_20260621_200640_remove_method_quote_fields from './20260621_200640_remove_method_quote_fields';
 import * as migration_20260623_083009_add_nav_sublink_icon from './20260623_083009_add_nav_sublink_icon';
 import * as migration_20260623_cierre_cta_to_ctakey from './20260623_cierre_cta_to_ctakey';
+import * as migration_20260625_185806_wa_chat_scene from './20260625_185806_wa_chat_scene';
+import * as migration_20260625_235256_app_screen_scene from './20260625_235256_app_screen_scene';
+import * as migration_20260626_101940_wa_agenda_scene from './20260626_101940_wa_agenda_scene';
+import * as migration_20260626_132654_integraciones_scene from './20260626_132654_integraciones_scene';
+import * as migration_20260626_162438_aprendizaje_scene from './20260626_162438_aprendizaje_scene';
 
 export const migrations = [
   {
@@ -233,5 +238,30 @@ export const migrations = [
     up: migration_20260623_cierre_cta_to_ctakey.up,
     down: migration_20260623_cierre_cta_to_ctakey.down,
     name: '20260623_cierre_cta_to_ctakey',
+  },
+  {
+    up: migration_20260625_185806_wa_chat_scene.up,
+    down: migration_20260625_185806_wa_chat_scene.down,
+    name: '20260625_185806_wa_chat_scene',
+  },
+  {
+    up: migration_20260625_235256_app_screen_scene.up,
+    down: migration_20260625_235256_app_screen_scene.down,
+    name: '20260625_235256_app_screen_scene',
+  },
+  {
+    up: migration_20260626_101940_wa_agenda_scene.up,
+    down: migration_20260626_101940_wa_agenda_scene.down,
+    name: '20260626_101940_wa_agenda_scene',
+  },
+  {
+    up: migration_20260626_132654_integraciones_scene.up,
+    down: migration_20260626_132654_integraciones_scene.down,
+    name: '20260626_132654_integraciones_scene',
+  },
+  {
+    up: migration_20260626_162438_aprendizaje_scene.up,
+    down: migration_20260626_162438_aprendizaje_scene.down,
+    name: '20260626_162438_aprendizaje_scene'
   },
 ];

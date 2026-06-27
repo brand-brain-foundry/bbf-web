@@ -66,6 +66,11 @@
 @import '../styles/tokens/components/home-hero.css'; /* Migración §1 Hero — AFTER hero-media-frame: warm override wins */
 @import '../styles/tokens/components/section-header.css';
 @import '../styles/tokens/components/capabilities.css';
+@import '../styles/tokens/components/capabilities-wa.css'; /* D-WA-04: piel WA encapsulada — NOT BBF system tokens */
+@import '../styles/tokens/components/capabilities-app-screen.css'; /* D-PANTALLA-01: piel app-screen encapsulada — NOT BBF system tokens */
+@import '../styles/tokens/components/capabilities-wa-agenda.css'; /* D-WAG-01: piel wa-agenda encapsulada — NOT BBF system tokens */
+@import '../styles/tokens/components/capabilities-app-integraciones.css'; /* D-INT-01: piel integraciones encapsulada — NOT BBF system tokens */
+@import '../styles/tokens/components/capabilities-aprendizaje.css'; /* D-APR-01: piel aprendizaje encapsulada — NOT BBF system tokens */
 @import '../styles/tokens/components/lissajous.css';
 @import '../styles/tokens/components/case-section.css';
 @import '../styles/tokens/components/timeline.css'; /* §4·B Timeline — D-TIMELINE-01 */

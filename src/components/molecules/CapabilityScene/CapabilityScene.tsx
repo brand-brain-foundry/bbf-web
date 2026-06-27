@@ -1,6 +1,6 @@
 /**
  * CapabilityScene — D-85 monolítica polymorphic, Server Component
- * Renders one of 5 scene kinds: chat | pipeline | workflow | stack | media.
+ * Renders one of 7 scene kinds: chat | wa-chat | wa-agenda | pipeline | workflow | stack | media.
  * All data via props from Payload. No 'use client'.
  */
 import type { CSSProperties } from 'react';
@@ -8,6 +8,11 @@ import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import type { SceneData } from './types';
 import { ChatSequence } from './ChatSequence';
+import { WAChat } from '../WAChat';
+import { WAAgenda } from '../WAAgenda';
+import { AppScreen } from '../AppScreen';
+import { Integraciones } from '../Integraciones';
+import { Aprendizaje } from '../Aprendizaje';
 
 interface CapabilitySceneProps {
   scene: SceneData;
@@ -35,6 +40,36 @@ export async function CapabilityScene({ scene }: CapabilitySceneProps) {
         {chat?.footer && <div className="bbf-cap-scene__footer">{chat.footer}</div>}
       </div>
     );
+  }
+
+  if (scene.kind === 'wa-chat') {
+    const waChat = scene.waChat;
+    if (!waChat) return null;
+    return <WAChat data={waChat} />;
+  }
+
+  if (scene.kind === 'app-screen') {
+    const appScreen = scene.appScreen;
+    if (!appScreen) return null;
+    return <AppScreen data={appScreen} />;
+  }
+
+  if (scene.kind === 'wa-agenda') {
+    const waAgenda = scene.waAgenda;
+    if (!waAgenda) return null;
+    return <WAAgenda data={waAgenda} />;
+  }
+
+  if (scene.kind === 'integraciones') {
+    const integraciones = scene.integraciones;
+    if (!integraciones) return null;
+    return <Integraciones data={integraciones} />;
+  }
+
+  if (scene.kind === 'aprendizaje') {
+    const aprendizaje = scene.aprendizaje;
+    if (!aprendizaje) return null;
+    return <Aprendizaje data={aprendizaje} />;
   }
 
   if (scene.kind === 'pipeline') {

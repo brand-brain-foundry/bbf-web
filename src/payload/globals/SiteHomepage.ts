@@ -336,10 +336,15 @@ export const SiteHomepage: GlobalConfig = {
                       required: true,
                       options: [
                         { label: 'Chat', value: 'chat' },
+                        { label: 'WhatsApp Chat', value: 'wa-chat' },
                         { label: 'Pipeline', value: 'pipeline' },
                         { label: 'Workflow', value: 'workflow' },
                         { label: 'Stack', value: 'stack' },
                         { label: 'Media', value: 'media' },
+                        { label: 'App Screen', value: 'app-screen' },
+                        { label: 'WA Agenda', value: 'wa-agenda' },
+                        { label: 'Integraciones', value: 'integraciones' },
+                        { label: 'Aprendizaje', value: 'aprendizaje' },
                       ],
                       admin: { description: 'Tipo de visualización para esta capacidad.' },
                     },
@@ -594,6 +599,479 @@ export const SiteHomepage: GlobalConfig = {
                           type: 'text',
                           localized: true,
                           admin: { description: 'Texto decorativo del footer del scene.' },
+                        },
+                      ],
+                    },
+                    // D-WA-01..05: wa-chat scene — piel WhatsApp encapsulada
+                    {
+                      name: 'waChat',
+                      type: 'group',
+                      label: { en: 'WhatsApp Chat Scene', es: 'Escena Chat WhatsApp' },
+                      admin: {
+                        condition: (_data, siblingData) => siblingData?.kind === 'wa-chat',
+                        description: 'Emulación de pantalla WhatsApp con animación secuencial.',
+                      },
+                      fields: [
+                        {
+                          name: 'contactName',
+                          type: 'text',
+                          localized: true,
+                          // D-WA-05: no required en campos localized (guardado parcial)
+                          defaultValue: 'Brain',
+                          admin: { description: 'Nombre en el header (ej: "Brain").' },
+                        },
+                        {
+                          name: 'messages',
+                          type: 'array',
+                          localized: true,
+                          dbName: 'cap_wa_msgs', // 11 chars — tabla+índices < 63 (sin dbName → 55+_order_idx=65 >63)
+                          label: { en: 'Messages', es: 'Mensajes' },
+                          minRows: 2,
+                          maxRows: 6, // D-WA-02: ~30-40s loop total
+                          admin: { initCollapsed: true },
+                          fields: [
+                            {
+                              name: 'who',
+                              type: 'select',
+                              required: true, // non-localized select — no bloquea guardado parcial
+                              enumName: 'cap_wa_who', // 10 chars — sin enumName → enum_...messages_who=64 >63
+                              options: [
+                                { label: 'User', value: 'user' },
+                                { label: 'Brain', value: 'brain' },
+                              ],
+                            },
+                            {
+                              name: 'text',
+                              type: 'text',
+                              // D-WA-05: no required en localized array
+                              maxLength: 120, // R-5: limita typing a duración razonable
+                              admin: { description: 'Texto del mensaje. Máx 120 chars.' },
+                            },
+                            {
+                              name: 'time',
+                              type: 'text',
+                              // D-WA-01: campo decorativo, editable por mensaje
+                              defaultValue: '23:04',
+                              admin: { description: 'Timestamp decorativo (ej: "23:04").' },
+                            },
+                          ],
+                        },
+                        {
+                          name: 'footer',
+                          type: 'text',
+                          localized: true,
+                          admin: { description: 'Texto decorativo del footer del scene.' },
+                        },
+                      ],
+                    },
+                    // D-PANTALLA-01..03: app-screen scene — emulación de app móvil Brain Content
+                    {
+                      name: 'appScreen',
+                      type: 'group',
+                      label: { en: 'App Screen Scene', es: 'Escena Pantalla App' },
+                      admin: {
+                        condition: (_data, siblingData) => siblingData?.kind === 'app-screen',
+                        description:
+                          'Emulación de app Android: brief → generación → diseño → publicación.',
+                      },
+                      fields: [
+                        // D-WA-05: campos localized sin required (guardado parcial)
+                        {
+                          name: 'briefText',
+                          type: 'text',
+                          localized: true,
+                          admin: { description: 'Texto del brief que se tipea char a char.' },
+                        },
+                        {
+                          name: 'caption',
+                          type: 'text',
+                          localized: true,
+                          admin: { description: 'Caption generado para la imagen.' },
+                        },
+                        {
+                          name: 'hashtags',
+                          type: 'text',
+                          localized: true,
+                          admin: { description: 'Hashtags generados (ej: "#Francia #Paris …").' },
+                        },
+                        {
+                          name: 'publishMeta',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description:
+                              'Meta de publicación (ej: "Instagram · @cuenta · Historia").',
+                          },
+                        },
+                        // chips: dbName corto — sin dbName tabla+_order_idx > 63 chars (L-MIGRATE-63)
+                        {
+                          name: 'chips',
+                          type: 'array',
+                          localized: true,
+                          dbName: 'cap_app_chps', // 13 chars — tabla+índices < 63
+                          label: { en: 'Keyword Chips', es: 'Chips de palabras clave' },
+                          maxRows: 6,
+                          admin: { initCollapsed: true },
+                          fields: [
+                            {
+                              name: 'label',
+                              type: 'text',
+                              // D-WA-05: sin required
+                            },
+                          ],
+                        },
+                        // metaRows: dbName corto — sin dbName tabla+_order_idx > 63 chars (L-MIGRATE-63)
+                        {
+                          name: 'metaRows',
+                          type: 'array',
+                          localized: true,
+                          dbName: 'cap_app_meta', // 12 chars — tabla+índices < 63
+                          label: { en: 'Meta Rows', es: 'Filas de metadatos' },
+                          maxRows: 4,
+                          admin: {
+                            initCollapsed: true,
+                            description: 'Ej: Formato / Instagram · Historia 9:16.',
+                          },
+                          fields: [
+                            { name: 'key', type: 'text' }, // sin required
+                            { name: 'value', type: 'text' }, // sin required
+                          ],
+                        },
+                        // D-PANTALLA-02: imágenes de Media (no localized — mismas para todos los locales)
+                        {
+                          name: 'rawImage',
+                          type: 'upload',
+                          relationTo: 'media' as const,
+                          admin: { description: 'Asset capturado / imagen cruda (Screen 2).' },
+                        },
+                        {
+                          name: 'renderImage',
+                          type: 'upload',
+                          relationTo: 'media' as const,
+                          admin: { description: 'Diseño final renderizado (Screen 3).' },
+                        },
+                      ],
+                    },
+                    // D-WAG-01: wa-agenda scene — Brain agenda videollamada via WA. 720px height.
+                    {
+                      name: 'waAgenda',
+                      type: 'group',
+                      label: { en: 'WA Agenda Scene', es: 'Escena WA Agenda' },
+                      admin: {
+                        condition: (_data, siblingData) => siblingData?.kind === 'wa-agenda',
+                        description:
+                          'Brain agenda una videollamada via WhatsApp. Secuencia animada: brief → confirmación → Google Meet card → invitados → quick replies.',
+                      },
+                      fields: [
+                        // ── Textos de secuencia (localized, sin required — D-WA-05) ──
+                        {
+                          name: 'contactName',
+                          type: 'text',
+                          localized: true,
+                          defaultValue: 'Brain',
+                          admin: { description: 'Nombre en el header WA (ej: "Brain").' },
+                        },
+                        {
+                          name: 'briefText',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Instrucción del usuario (se tipea char a char).',
+                          },
+                        },
+                        {
+                          name: 'confirmText',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description:
+                              'Primera respuesta de Brain (ej: "¡Hecho! 🗓️ Programé la videollamada…").',
+                          },
+                        },
+                        {
+                          name: 'inviteSentText',
+                          type: 'text',
+                          localized: true,
+                          maxLength: 120,
+                          admin: {
+                            description:
+                              'Brain confirma que invitaciones salieron (ej: "Las invitaciones ya salieron a Fátima y Edgardo ✅…").',
+                          },
+                        },
+                        {
+                          name: 'askText',
+                          type: 'text',
+                          localized: true,
+                          maxLength: 80,
+                          admin: {
+                            description:
+                              'Pregunta con quick replies (ej: "¿Quieres que te la calendarice la reunión?").',
+                          },
+                        },
+                        {
+                          name: 'closingText',
+                          type: 'text',
+                          localized: true,
+                          maxLength: 140,
+                          admin: {
+                            description:
+                              'Respuesta final de Brain tras el quick reply (ej: "Listo ✅ La agregué a tu Google Calendar…").',
+                          },
+                        },
+                        // ── Meet Card (grupo fijo — evita nesting profundo) ──────────
+                        {
+                          name: 'meetCard',
+                          type: 'group',
+                          label: { en: 'Google Meet Card', es: 'Tarjeta Google Meet' },
+                          fields: [
+                            {
+                              name: 'title',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description:
+                                  'Título de la reunión (ej: "Estrategia · Nueva campaña").',
+                              },
+                            },
+                            {
+                              name: 'day',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description: 'Día de la reunión (ej: "jueves 2 de julio").',
+                              },
+                            },
+                            {
+                              name: 'time',
+                              type: 'text',
+                              admin: {
+                                description: 'Hora (ej: "10:00 – 11:00"). No localized (numérico).',
+                              },
+                            },
+                            {
+                              name: 'timezone',
+                              type: 'text',
+                              defaultValue: 'GMT-6',
+                              admin: { description: 'Timezone decorativo (ej: "GMT-6").' },
+                            },
+                            {
+                              name: 'link',
+                              type: 'text',
+                              admin: {
+                                description:
+                                  'Link Meet sin https:// (ej: "meet.google.com/qvp-rkxd-uoa").',
+                              },
+                            },
+                            // L-MIGRATE-63: dbName corto — sin él tabla_order_idx > 63
+                            {
+                              name: 'invitees',
+                              type: 'array',
+                              dbName: 'cap_wag_inv',
+                              label: { en: 'Invitees', es: 'Invitados' },
+                              maxRows: 4,
+                              admin: { initCollapsed: true },
+                              fields: [
+                                {
+                                  name: 'name',
+                                  type: 'text',
+                                  admin: { description: 'Nombre visible (ej: "Fátima").' },
+                                },
+                                {
+                                  name: 'email',
+                                  type: 'text',
+                                  admin: { description: 'Email del invitado.' },
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                        // ── Quick Replies ──────────────────────────────────────────
+                        // L-MIGRATE-63: dbName corto — sin él tabla_order_idx > 63
+                        {
+                          name: 'quickReplies',
+                          type: 'array',
+                          dbName: 'cap_wag_qr',
+                          label: { en: 'Quick Reply Options', es: 'Opciones de respuesta rápida' },
+                          minRows: 1,
+                          maxRows: 3,
+                          admin: {
+                            initCollapsed: true,
+                            description:
+                              'Botones de respuesta rápida. El primero = acción principal (estilo CTA).',
+                          },
+                          fields: [
+                            {
+                              name: 'label',
+                              type: 'text',
+                              localized: true,
+                              admin: { description: 'Texto del botón (ej: "Sí, agéndala").' },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    // D-APR-01: aprendizaje — análisis de post exitoso + recomendación WA. Doble chrome.
+                    {
+                      name: 'aprendizaje',
+                      type: 'group',
+                      label: { en: 'Aprendizaje Scene', es: 'Escena Aprendizaje' },
+                      admin: {
+                        condition: (_data, siblingData) => siblingData?.kind === 'aprendizaje',
+                        description:
+                          'Análisis del post (app chrome) → Recomendación WA. Doble chrome: app-screen + WA.',
+                      },
+                      fields: [
+                        {
+                          name: 'insightsTitle',
+                          type: 'text',
+                          localized: true,
+                          defaultValue: 'Análisis del post',
+                          admin: { description: 'Título en el AppBar de la fase Insights.' },
+                        },
+                        {
+                          name: 'postImage',
+                          type: 'upload',
+                          relationTo: 'media' as const,
+                          // D-APR-01: editable de Media. Patrón rawImage (app-screen) — FK > 63 → Postgres trunca, único.
+                          admin: {
+                            description:
+                              'Post exitoso a analizar (imagen portrait 9:16 recomendada).',
+                          },
+                        },
+                        {
+                          name: 'postCaption',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description:
+                              'Caption del post (ej: "Tu próxima aventura comienza en Francia ✨🇫🇷").',
+                          },
+                        },
+                        {
+                          name: 'platformLabel',
+                          type: 'text',
+                          localized: true,
+                          defaultValue: 'Instagram · Historia',
+                          admin: {
+                            description: 'Plataforma + formato (ej: "Instagram · Historia").',
+                          },
+                        },
+                        {
+                          name: 'timeLabel',
+                          type: 'text',
+                          localized: true,
+                          defaultValue: 'Publicado hace 3 días',
+                          admin: { description: 'Tiempo relativo de publicación (decorativo).' },
+                        },
+                        // L-MIGRATE-63: dbName corto — sin él tabla+_order_idx > 63
+                        {
+                          name: 'recPoints',
+                          type: 'array',
+                          dbName: 'cap_apr_rpts', // 12 chars ✅ — FK/índices < 63
+                          label: { en: 'Rec Card Points', es: 'Puntos del RecCard' },
+                          admin: {
+                            initCollapsed: true,
+                            description:
+                              '5 puntos de recomendación del RecCard WA. key=categoría, value=recomendación, data=dato de soporte.',
+                          },
+                          fields: [
+                            {
+                              name: 'key',
+                              type: 'text',
+                              localized: true,
+                              // D-WA-05: sin required en localized
+                              admin: {
+                                description: 'Categoría (ej: "Destino", "Formato", "Horario").',
+                              },
+                            },
+                            {
+                              name: 'value',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description:
+                                  'Recomendación principal (ej: "Otro ícono europeo menos saturado").',
+                              },
+                            },
+                            {
+                              name: 'data',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description:
+                                  'Dato de soporte (ej: "Europa duplicó tus guardados en Q2").',
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          name: 'projection',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description:
+                              'Proyección al pie del RecCard (ej: "Proyección: +35–50% de alcance").',
+                          },
+                        },
+                      ],
+                    },
+                    // D-INT-01: integraciones — conectores del Cerebro a fuentes externas
+                    {
+                      name: 'integraciones',
+                      type: 'group',
+                      label: { en: 'Integrations Scene', es: 'Escena Integraciones' },
+                      admin: {
+                        condition: (_data, siblingData) => siblingData?.kind === 'integraciones',
+                        description:
+                          'Conecta el Cerebro a todas sus fuentes. Lista animada: OFF → Conectando → Conectado.',
+                      },
+                      fields: [
+                        {
+                          name: 'summaryTitle',
+                          type: 'text',
+                          localized: true,
+                          defaultValue: 'Conectando tu cerebro a todas tus fuentes',
+                          admin: {
+                            description:
+                              'Título del summary sticky (ej: "Conectando tu cerebro a todas tus fuentes").',
+                          },
+                        },
+                        // L-MIGRATE-63: dbName corto — sin él tabla+_order_idx > 63 chars
+                        {
+                          name: 'items',
+                          type: 'array',
+                          dbName: 'cap_int_items', // 13 chars — tabla+índices < 63 ✅
+                          label: { en: 'Integrations', es: 'Integraciones' },
+                          admin: {
+                            initCollapsed: true,
+                            description:
+                              'Lista de integraciones. Cada item: icono (Media) + nombre + categoría.',
+                          },
+                          fields: [
+                            {
+                              name: 'icon',
+                              type: 'upload',
+                              relationTo: 'media' as const,
+                              // no localized — íconos son language-neutral
+                              admin: { description: 'Logo del conector (SVG o PNG en Media).' },
+                            },
+                            {
+                              name: 'name',
+                              type: 'text',
+                              localized: true,
+                              // D-WA-05: sin required en campos localized
+                              admin: { description: 'Nombre del conector (ej: "Instagram").' },
+                            },
+                            {
+                              name: 'category',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description:
+                                  'Tipo/categoría (ej: "Red social", "Mensajería", "IA").',
+                              },
+                            },
+                          ],
                         },
                       ],
                     },
