@@ -146,7 +146,7 @@ export async function StructuredData({ locale }: { locale: string }) {
   // ── Service×5 nodes (@id heredable por páginas internas) ─────────────────
   const serviceNodes = capItems.map((item, i) => ({
     '@type': 'Service',
-    '@id': `${domain}/#service-${item.slug}`,
+    '@id': `${domain}/#service-${item.slug.replace(/^#+/, '').trim()}`,
     name: item.title ?? item.slug,
     ...(item.lede ? { description: item.lede } : {}),
     provider: { '@id': `${domain}/#org` },
