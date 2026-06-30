@@ -1,3 +1,89 @@
+# REPORTE — B-BBF-WEB-AUDIT-POSTHOG
+**Fecha:** 2026-06-30 · **pwd:** bbf-web
+**Despacho:** B-BBF-WEB-AUDIT-POSTHOG — Auditoría PostHog (read-only)
+**Protocolo:** P-6
+**Restricción:** PROHIBIDO modificar, push, instalar nada. Solo auditar.
+
+---
+
+## §1 — ¿PostHog está en el código?
+
+**VEREDICTO: PostHog NO está instalado ni activo.**
+
+| Check | Resultado |
+|---|---|
+| `package.json` — `posthog-js` / `posthog-node` | ❌ Ausente |
+| `src/lib/env.ts` — `NEXT_PUBLIC_POSTHOG_KEY` / `POSTHOG_HOST` | ❌ Ausente |
+| `<PostHogProvider>` o `posthog.init()` en src/ | ❌ Ausente |
+| `next.config.mjs` CSP — `us.i.posthog.com` | ❌ Ausente |
+| `middleware.ts` — PostHog | ❌ Ausente |
+
+**Únicas menciones encontradas** (no son el tracker activo):
+
+```
+src/payload/payload-types.ts:889  capturedFrom: 'ga4' | 'gsc' | 'posthog' | ...
+src/payload/collections/signals/index.ts:63  opciones del field capturedFrom
+src/payload/migrations/20260515_175435.ts:32  enum PG del schema signals
+```
+
+Estas menciones son el **enum `capturedFrom`** del schema `Signals` (colección de analítica SEO), que permite marcar el origen de un signal capturado. El valor `'posthog'` significa "este dato vino de PostHog" — no implica que el tracker esté instalado. Es preparación futura, no activación.
+
+**Analítica activa en producción HOY:**
+
+| Tool | Evidencia en CSP |
+|---|---|
+| Vercel Analytics | `va.vercel-scripts.com` en `script-src` y `connect-src` ✅ |
+| Google Tag Manager | `www.googletagmanager.com` en `script-src` ✅ |
+| GA4 (preparado) | `www.google-analytics.com` en `connect-src` ✅ |
+| PostHog | **Ausente de CSP** ✅ correcto |
+
+---
+
+## §2 — De dónde viene la mención en el canon
+
+La **regla 40-security-csp.md** (`.claude/rules/40-security-csp.md`) incluye en su ejemplo canónico:
+
+```
+script-src 'self' 'strict-dynamic' https://va.vercel-scripts.com https://us.i.posthog.com;
+...
+connect-src 'self' https://api.resend.com https://us.i.posthog.com;
+```
+
+**Contexto:** El canon fue escrito en fase de diseño anticipando que PostHog sería la herramienta de analítica. Nunca se ejecutó la instalación. El canon no documenta una decisión activa sobre PostHog — documenta una intención de diseño que no se materializó.
+
+No existe **decisión D-* firmada** sobre PostHog. No hay `BBF_Decision_PostHog.md` en bbf-docs.
+
+---
+
+## §3 — Síntesis y recomendación
+
+### ¿PostHog se usa?
+**No.** No está instalado, no tiene env vars, no tiene provider, no está en CSP.
+
+### ¿Qué hacer con la CSP y el canon?
+
+**CSP actual: CORRECTA.** El `next.config.mjs` ya no incluye PostHog — esto es consistente con la realidad. No hay nada que cambiar en la CSP.
+
+**Canon (regla 40): tiene mención stale.** La referencia a `us.i.posthog.com` en el ejemplo CSP de regla 40 es legacy de la fase de diseño. La acción es limpiarla, pero al ser el canon un archivo en `.claude/rules/`, Zavala decide cuándo actualizar.
+
+### Analítica actual vs futura
+
+| Tool | Estado | Notas |
+|---|---|---|
+| Vercel Analytics | ✅ Activo | En CSP, sin config adicional |
+| GA4 | ⬜ Preparado (CSP lista) | Necesita GTM tag + GA4 property key en Vercel env |
+| PostHog | ❌ No instalado | Si se decide usar: `pnpm add posthog-js`, env vars, provider, y añadir a CSP |
+
+**PostHog no se solapa con Vercel Analytics** — son herramientas distintas (Vercel mide performance y traffic, PostHog es event analytics con session replay). Pueden coexistir si Zavala decide instalar PostHog en el futuro. Por ahora: **no hay acción**.
+
+### Checklist resultado
+
+- [ ] ¿Instalar PostHog? → Zavala decide. Si sí: despacho aparte.
+- [x] CSP → correcta hoy, sin posthog. No tocar.
+- [ ] Limpiar mención stale en `.claude/rules/40-security-csp.md` → baja prioridad, cuando Zavala actualice el canon.
+
+---
+
 # REPORTE — B-BBF-WEB-SMOKETEST-PROD
 **Fecha:** 2026-06-30 · **pwd:** bbf-web
 **Despacho:** B-BBF-WEB-SMOKETEST-PROD — Smoke test build producción local
