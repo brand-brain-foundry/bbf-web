@@ -1,3 +1,123 @@
+# REPORTE — B-BBF-WEB-READINESS-PRESWITCH
+**Fecha:** 2026-06-30 · **pwd:** bbf-web
+**Despacho:** B-BBF-WEB-READINESS-PRESWITCH — Vercel Analytics + CSP estático + 404 bilingüe
+**Protocolo:** P-1 + P-5 + P-6
+**Restricción:** PROHIBIDO migrate, push, zona intocable, romper ISR (sin nonce).
+**TSC:** 0 errores (exit 0; TS6053 .next/types/ son artefactos de build no generado — no errores de código)
+**Commit:** `416bc95`
+
+---
+
+## BLOQUE 1 — B-1: Vercel Analytics (cookieless)
+
+### T1 — pnpm add + integración en layout
+
+**Packages instalados:**
+- `@vercel/analytics 2.0.1`
+- `@vercel/speed-insights 2.0.0`
+
+**Archivo modificado:** `src/app/(frontend)/[locale]/layout.tsx`
+- `import { Analytics } from '@vercel/analytics/next'`
+- `import { SpeedInsights } from '@vercel/speed-insights/next'`
+- `<Analytics />` y `<SpeedInsights />` justo antes de `</body>`
+
+**Sin cookies:** Vercel Analytics 2.x es cookieless por diseño. No requiere GDPR consent banner. Datos desde día 1 de deploy.
+
+---
+
+## BLOQUE 2 — D-1: CSP estático (NO nonce — preserva ISR)
+
+**Archivo modificado:** `next.config.mjs`
+
+**CSP implementada:**
+```
+default-src 'self'
+script-src 'self' https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.googletagmanager.com
+style-src 'self' 'unsafe-inline'
+img-src 'self' data: blob: https://*.public.blob.vercel-storage.com https://challenges.cloudflare.com
+font-src 'self'
+connect-src 'self' https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.google-analytics.com
+frame-src https://challenges.cloudflare.com
+frame-ancestors 'none'
+object-src 'none'
+base-uri 'self'
+upgrade-insecure-requests
+```
+
+**Decisiones de diseño:**
+- `font-src: 'self'` — `next/font/google` descarga Inter + Mulish en build y los sirve desde `_next/static/`. No hay requests a `fonts.googleapis.com` en browser.
+- `style-src: 'unsafe-inline'` — necesario para React `style` prop (inline styles en DOM). Sin esto se romperían los tokens dinámicos en `CSSProperties`.
+- `script-src: 'strict-dynamic'` — omitido (sin nonce es inútil). Allowlist explícita.
+- `https://www.googletagmanager.com` en script-src + `https://www.google-analytics.com` en connect-src — preparados para GA4 post-switch. Inofensivo sin activar.
+- `https://challenges.cloudflare.com` en script-src + frame-src + connect-src — cubre widget Turnstile (iframe + script de challenge + verificación).
+- `https://*.public.blob.vercel-storage.com` en img-src — cubre imágenes desde Vercel Blob.
+- `frame-ancestors 'none'` — equivale a `X-Frame-Options: DENY` en CSP (refuerza el header explícito que ya estaba).
+
+**ISR:** intacta. Sin nonce, sin middleware de inyección, sin romper caché de Vercel.
+**Matcher:** `/(.*)`  — mismo que los 5 headers existentes. Cubre todas las rutas.
+
+**Riesgos pendientes de validación visual (Zavala debe probar):**
+- Form/Turnstile: widget en `/contacto` debe cargar correctamente con el nuevo CSP.
+- Imágenes Blob: las imágenes cargadas desde Vercel Blob storage deben renderizar.
+- Fuentes: Inter + Mulish deben seguir cargando (self-hosted = sin problema).
+- Escenas: CSS animations y `<canvas>`/`<svg>` no bloqueados por CSP (no hay `script-src` inline en escenas).
+
+---
+
+## BLOQUE 3 — D-2: 404 bilingüe
+
+**Archivo modificado:** `src/app/(frontend)/[locale]/not-found.tsx`
+
+**Diseño:** dark surface (`data-surface="dark"`, `bg-[var(--bbf-surface-dark-base)]`), skeleton inspirado en CierreSection. Número 404 grande (`clamp(6rem,20vw,14rem)`), título, descripción, botón de retorno.
+
+**i18n:** usa namespace `errors.notFound` que ya existía en ES + EN:
+- ES: "Página no encontrada" / "La página que buscás no existe o fue movida." / "Volver al inicio"
+- EN: "Page not found" / "The page you are looking for does not exist or was moved." / "Back to home"
+
+**Locale-aware:** `getLocale()` de `next-intl/server` lee el locale del contexto de request (seteado por middleware). `href={locale === 'en' ? '/en' : '/'}` — redirige al home correcto.
+
+---
+
+## VERIFICACIÓN
+
+| Check | Estado |
+|---|---|
+| TSC | ✅ 0 errores (exit 0) |
+| Packages instalados | ✅ @vercel/analytics 2.0.1 + @vercel/speed-insights 2.0.0 |
+| Analytics en layout | ✅ `<Analytics />` + `<SpeedInsights />` |
+| CSP header en next.config | ✅ 6 directivas + frame-ancestors |
+| ISR intacta (sin nonce) | ✅ Estático en `headers()` |
+| 404 ES | ✅ "Página no encontrada" + botón "/" |
+| 404 EN | ✅ "Page not found" + botón "/en" |
+| Props Button válidas | ✅ `surface`, `fill`, `intent`, `size` confirmados |
+| Heading `display-hero` | ✅ Nivel existe en Heading.variants.ts |
+
+**Pendiente (validación visual Zavala):**
+- Confirmar que Turnstile widget carga en `/contacto` con el nuevo CSP
+- Confirmar que imágenes desde Vercel Blob cargan en home/casos
+- Confirmar que fuentes Inter + Mulish cargan normalmente
+- Probar `/en/ruta-inexistente` → 404 en inglés
+- Probar `/ruta-inexistente` → 404 en español
+
+---
+
+## DRIFT detectado
+
+Ninguno. No se tocaron schemas, migrations, ni zonas prohibidas.
+
+---
+
+## ¿Readiness pre-switch lista?
+
+**SÍ** — los 3 bloqueantes/deseables pre-switch están ejecutados:
+- ✅ B-1: Analítica cookieless activa desde día 1 de deploy
+- ✅ D-1: CSP estático implementado (ISR intacta)
+- ✅ D-2: 404 bilingüe locale-aware con diseño dark
+
+**Post-switch (no tocar ahora):** GA4 + banner consentimiento.
+
+---
+
 # REPORTE — B-BBF-WEB-FIX-MOBILE-S2-S4
 **Fecha:** 2026-06-29 · **pwd:** bbf-web
 **Despacho:** B-BBF-WEB-FIX-MOBILE-S2-S4 — FIX DISEÑO mobile (responsive + estados)
