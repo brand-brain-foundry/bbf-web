@@ -82,7 +82,7 @@ export async function Footer({ className }: FooterProps) {
       data-surface="sand"
       className={cn(
         'bbf-section-mt-default lg:bbf-section-mt-xl',
-        'bg-[var(--bbf-on-surface-bg)]',
+        'bg-[var(--bbf-surface-sand-shade)]' /* D-S4-01: misma piel que §4 PorqueSection */,
         'border-t border-[var(--bbf-on-surface-divider)]',
         className,
       )}

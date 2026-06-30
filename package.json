@@ -47,7 +47,6 @@
     "react-hook-form": "^7.76.0",
     "resend": "^6.12.3",
     "sharp": "^0.34.5",
-    "simplex-noise": "^4.0.3",
     "svix": "^1.94.0",
     "tailwind-merge": "^3.6.0",
     "three": "^0.184.0",

@@ -29,6 +29,7 @@ export default async function CasosPage({ params }: Props) {
   const item = await fetchCornerstoneBySlug(slug, locale);
 
   if (!item) notFound();
+  if (!item.blocks || item.blocks.length === 0) notFound();
 
   return <CornerstoneTemplate contentItem={item} locale={locale} />;
 }

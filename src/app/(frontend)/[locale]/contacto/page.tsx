@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       url: canonicalUrl,
       locale: l === 'es' ? 'es_SV' : 'en_US',
-      images: [{ url: `${siteId.siteDomain}/og/contacto.jpg`, width: 1200, height: 630 }],
+      // OG image auto-injected from opengraph-image.tsx (next/og — locale-aware, reproducible)
     },
     twitter: {
       card: 'summary_large_image',
@@ -152,7 +152,7 @@ export default async function ContactoPage({ params }: Props) {
           '@id': `${siteId.siteDomain}/#sivar-brains-contactpoint`,
           contactType: 'sales',
           ...(primaryEmail ? { email: primaryEmail } : {}),
-          url: `${siteId.siteDomain}/contacto`,
+          url: l === 'en' ? `${siteId.siteDomain}/en/contact` : `${siteId.siteDomain}/contacto`,
           availableLanguage: [
             { '@type': 'Language', name: 'Spanish', alternateName: 'es' },
             { '@type': 'Language', name: 'English', alternateName: 'en' },
@@ -266,7 +266,7 @@ export default async function ContactoPage({ params }: Props) {
             aria-hidden="true"
           />
           <span className="[font-family:var(--bbf-font-mono)] [font-size:var(--bbf-text-micro)] [letter-spacing:var(--bbf-tracking-loose)] text-[var(--bbf-on-surface-body)] uppercase">
-            {l === 'en' ? 'End-to-end encrypted' : 'Cifrado extremo a extremo'}
+            {t('encryptedBadge')}
           </span>
         </div>
       </div>

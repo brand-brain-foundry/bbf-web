@@ -29,6 +29,24 @@ interface QuickReply {
   label: string;
 }
 
+export interface WAAgendaUI {
+  backAriaLabel: string;
+  statusTyping: string;
+  statusOnline: string;
+  daystamp: string;
+  encrypted: string;
+  inputPlaceholder: string;
+  sendAriaLabel: string;
+  voiceAriaLabel: string;
+  inviteeSent: string;
+  inviteeSending: string;
+  copyLinkLabel: string;
+  copiedLinkLabel: string;
+  inviteesPrefix: string;
+  copyMeetAriaPrefix: string;
+  joinCallLabel: string;
+}
+
 interface WAAgendaSequenceProps {
   contactName: string;
   briefText: string;
@@ -38,6 +56,7 @@ interface WAAgendaSequenceProps {
   askText: string;
   quickReplies: QuickReply[];
   closingText: string;
+  ui: WAAgendaUI;
 }
 
 type ShownItem =
@@ -103,7 +122,9 @@ function InviteeRow({
   email,
   started,
   index,
-}: Invitee & { started: boolean; index: number }) {
+  inviteeSent,
+  inviteeSending,
+}: Invitee & { started: boolean; index: number; inviteeSent: string; inviteeSending: string }) {
   const [sent, setSent] = useState(false);
 
   useEffect(() => {
@@ -145,12 +166,12 @@ function InviteeRow({
                 strokeLinejoin="round"
               />
             </svg>
-            Enviado
+            {inviteeSent}
           </>
         ) : (
           <>
             <span className="bbf-wag-invitee__spin" aria-hidden="true" />
-            Enviando…
+            {inviteeSending}
           </>
         )}
       </span>
@@ -162,10 +183,24 @@ function MeetCard({
   meet,
   invStarted,
   time,
+  copyLinkLabel,
+  copiedLinkLabel,
+  inviteesPrefix,
+  copyMeetAriaPrefix,
+  joinCallLabel,
+  inviteeSent,
+  inviteeSending,
 }: {
   meet: MeetCardData;
   invStarted: boolean;
   time: string;
+  copyLinkLabel: string;
+  copiedLinkLabel: string;
+  inviteesPrefix: string;
+  copyMeetAriaPrefix: string;
+  joinCallLabel: string;
+  inviteeSent: string;
+  inviteeSending: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -217,7 +252,7 @@ function MeetCard({
         className="bbf-wag-meet__link"
         type="button"
         onClick={handleCopy}
-        aria-label={`Copiar enlace de Meet: ${meet.link}`}
+        aria-label={`${copyMeetAriaPrefix}${meet.link}`}
       >
         <span className="bbf-wag-meet__link-l">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -231,13 +266,16 @@ function MeetCard({
           </svg>
           <span className="bbf-wag-meet__link-url">{meet.link}</span>
         </span>
-        <span className="bbf-wag-meet__copy">{copied ? '¡Copiado!' : 'Copiar'}</span>
+        <span className="bbf-wag-meet__copy">{copied ? copiedLinkLabel : copyLinkLabel}</span>
       </button>
 
       {/* Invitees */}
       {meet.invitees.length > 0 && (
         <div className="bbf-wag-meet__invitees">
-          <div className="bbf-wag-meet__invitees-lbl">Invitados · {meet.invitees.length}</div>
+          <div className="bbf-wag-meet__invitees-lbl">
+            {inviteesPrefix}
+            {meet.invitees.length}
+          </div>
           {meet.invitees.map((inv, i) => (
             <InviteeRow
               key={inv.id ?? i}
@@ -245,6 +283,8 @@ function MeetCard({
               email={inv.email}
               started={invStarted}
               index={i}
+              inviteeSent={inviteeSent}
+              inviteeSending={inviteeSending}
             />
           ))}
         </div>
@@ -260,7 +300,7 @@ function MeetCard({
             strokeLinejoin="round"
           />
         </svg>
-        Unirse a la llamada
+        {joinCallLabel}
       </button>
 
       <div className="bbf-wag-meet__time-meta">{time}</div>
@@ -279,6 +319,7 @@ export function WAAgendaSequence({
   askText,
   quickReplies,
   closingText,
+  ui,
 }: WAAgendaSequenceProps) {
   const [shown, setShown] = useState<ShownItem[]>([]);
   const [typingInput, setTypingInput] = useState('');
@@ -540,7 +581,7 @@ export function WAAgendaSequence({
 
       {/* Header */}
       <div className="bbf-wa-header">
-        <button className="bbf-wa-back" aria-label="Atrás">
+        <button className="bbf-wa-back" aria-label={ui.backAriaLabel}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
             <path
               d="M15 5l-7 7 7 7"
@@ -563,7 +604,9 @@ export function WAAgendaSequence({
         </div>
         <div className="bbf-wa-peer">
           <div className="bbf-wa-peer-name">{contactName}</div>
-          <div className="bbf-wa-peer-status">{brainTyping ? 'escribiendo…' : 'en línea'}</div>
+          <div className="bbf-wa-peer-status">
+            {brainTyping ? ui.statusTyping : ui.statusOnline}
+          </div>
         </div>
         <div className="bbf-wa-actions" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -593,13 +636,13 @@ export function WAAgendaSequence({
       {/* Body */}
       <div className="bbf-wa-body" ref={bodyRef}>
         <div className="bbf-wa-daystamp">
-          <span>HOY</span>
+          <span>{ui.daystamp}</span>
         </div>
         <div className="bbf-wa-encrypt">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M6 10V8a6 6 0 1112 0v2h1a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1h1zm2 0h8V8a4 4 0 10-8 0v2z" />
           </svg>
-          Los mensajes están cifrados de extremo a extremo.
+          {ui.encrypted}
         </div>
 
         {shown.map((item, i) => {
@@ -607,7 +650,18 @@ export function WAAgendaSequence({
             return (
               <div key={item.id} className="bbf-wa-row bbf-wa-row--brain">
                 <div className="bbf-wa-bubble bbf-wa-bubble--brain bbf-wa-bubble--card">
-                  <MeetCard meet={meetCard} invStarted={invStarted} time="9:13" />
+                  <MeetCard
+                    meet={meetCard}
+                    invStarted={invStarted}
+                    time="9:13"
+                    copyLinkLabel={ui.copyLinkLabel}
+                    copiedLinkLabel={ui.copiedLinkLabel}
+                    inviteesPrefix={ui.inviteesPrefix}
+                    copyMeetAriaPrefix={ui.copyMeetAriaPrefix}
+                    joinCallLabel={ui.joinCallLabel}
+                    inviteeSent={ui.inviteeSent}
+                    inviteeSending={ui.inviteeSending}
+                  />
                 </div>
               </div>
             );
@@ -699,7 +753,7 @@ export function WAAgendaSequence({
             ref={inputTextRef}
             className={`bbf-wa-input-text ${hasText ? '' : 'is-placeholder'}`}
           >
-            {hasText ? typingInput : 'Mensaje'}
+            {hasText ? typingInput : ui.inputPlaceholder}
             {hasText && <span className="bbf-wa-caret" />}
           </span>
           <svg
@@ -746,7 +800,7 @@ export function WAAgendaSequence({
         </div>
         <button
           className={`bbf-wa-send ${hasText ? 'is-send' : ''}`}
-          aria-label={hasText ? 'Enviar' : 'Mensaje de voz'}
+          aria-label={hasText ? ui.sendAriaLabel : ui.voiceAriaLabel}
         >
           {hasText ? (
             <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

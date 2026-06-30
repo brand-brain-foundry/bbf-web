@@ -70,19 +70,22 @@ function Phase({ index, tag, title, body, icon }: PhaseProps) {
   return (
     <article className="bbf-case-section__phase">
       <div className="bbf-case-section__phase-head">
-        <span className="bbf-case-section__phase-num">{String(index).padStart(2, '0')}</span>
+        <span className="bbf-case-section__phase-num">
+          {icon && icon in Icons ? (
+            <Icon
+              icon={Icons[icon as IconCanon]}
+              size="sm"
+              aria-hidden
+              className="bbf-case-section__phase-icon"
+            />
+          ) : (
+            String(index).padStart(2, '0')
+          )}
+        </span>
         <span className="bbf-case-section__phase-divider" aria-hidden="true" />
         {tag && <span className="bbf-case-section__phase-tag">{tag}</span>}
       </div>
       <Heading level="display-step-title" as="h3" className="bbf-case-section__phase-title">
-        {icon && icon in Icons && (
-          <Icon
-            icon={Icons[icon as IconCanon]}
-            size="md"
-            aria-hidden
-            className="bbf-case-section__phase-icon"
-          />
-        )}
         {title}.
       </Heading>
       <p className="bbf-case-section__phase-body">{body}</p>

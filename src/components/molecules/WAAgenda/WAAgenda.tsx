@@ -3,14 +3,20 @@
  * D-WAG-01: altura 720px (capabilities-wa-agenda.css). Reutiliza .bbf-wa-* chrome.
  * Passes typed admin data to WAAgendaSequence (Client leaf). D-99 pattern.
  */
+import { getTranslations } from 'next-intl/server';
 import type { SceneWAAgendaData } from '../CapabilityScene/types';
 import { WAAgendaSequence } from './WAAgendaSequence';
+import type { WAAgendaUI } from './WAAgendaSequence';
 
 interface WAAgendaProps {
   data: SceneWAAgendaData;
 }
 
-export function WAAgenda({ data }: WAAgendaProps) {
+export async function WAAgenda({ data }: WAAgendaProps) {
+  const [tWa, tAgenda] = await Promise.all([
+    getTranslations('capabilities.scenes.wa'),
+    getTranslations('capabilities.scenes.waAgenda'),
+  ]);
   const meetRaw = data.meetCard ?? {};
   const invitees = (meetRaw.invitees ?? []).map((inv) => ({
     id: inv.id ?? undefined,
@@ -21,6 +27,24 @@ export function WAAgenda({ data }: WAAgendaProps) {
     id: qr.id ?? undefined,
     label: qr.label ?? '',
   }));
+
+  const ui: WAAgendaUI = {
+    backAriaLabel: tWa('backAriaLabel'),
+    statusTyping: tWa('statusTyping'),
+    statusOnline: tWa('statusOnline'),
+    daystamp: tWa('daystamp'),
+    encrypted: tWa('encrypted'),
+    inputPlaceholder: tWa('inputPlaceholder'),
+    sendAriaLabel: tWa('sendAriaLabel'),
+    voiceAriaLabel: tWa('voiceAriaLabel'),
+    inviteeSent: tAgenda('inviteeSent'),
+    inviteeSending: tAgenda('inviteeSending'),
+    copyLinkLabel: tAgenda('copyLinkLabel'),
+    copiedLinkLabel: tAgenda('copiedLinkLabel'),
+    inviteesPrefix: tAgenda('inviteesPrefix'),
+    copyMeetAriaPrefix: tAgenda('copyMeetAriaPrefix'),
+    joinCallLabel: tAgenda('joinCallLabel'),
+  };
 
   return (
     <div className="bbf-wa-chat bbf-wa-agenda" data-component="bbf-wa-agenda">
@@ -40,6 +64,7 @@ export function WAAgenda({ data }: WAAgendaProps) {
         askText={data.askText ?? ''}
         quickReplies={quickReplies}
         closingText={data.closingText ?? ''}
+        ui={ui}
       />
     </div>
   );

@@ -114,7 +114,7 @@ export function MetodoSection({ data }: { data: MetodoData }) {
                 tag={service.number}
                 title={service.name ?? ''}
                 body={service.body ?? ''}
-                icon={null}
+                icon={service.icon ?? null}
               />
             </Reveal>
           ))}

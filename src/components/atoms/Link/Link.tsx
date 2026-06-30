@@ -8,7 +8,7 @@
  *
  * @example Default (link interno)
  * ```tsx
- * <Link href="/metodo">Conocer el método</Link>
+ * <Link href="/como-trabajamos">Cómo trabajamos</Link>
  * ```
  *
  * @example Subtle variant

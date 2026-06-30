@@ -1,6 +1,14 @@
 {
   "Header": {
-    "logoAriaLabel": "Inicio"
+    "logoAriaLabel": "Inicio",
+    "mobileMenu": {
+      "open": "Abrir menú",
+      "close": "Cerrar menú",
+      "panelLabel": "Menú móvil",
+      "navLabel": "Navegación principal",
+      "back": "Volver al menú principal",
+      "viewAll": "↗ Ver todo"
+    }
   },
   "common": {
     "loading": "Cargando…",
@@ -44,7 +52,8 @@
     "errorValidation": "Por favor revisá los datos del formulario.",
     "errorBot": "No se pudo procesar. Probá de nuevo.",
     "breadcrumbHome": "Inicio",
-    "breadcrumbPage": "Contacto"
+    "breadcrumbPage": "Contacto",
+    "encryptedBadge": "Cifrado extremo a extremo"
   },
   "capabilities": {
     "ui": {
@@ -57,6 +66,105 @@
         "done": "✓ listo",
         "live": "● activo",
         "queue": "○ en cola"
+      },
+      "aprendizaje": {
+        "liveBadge": "En vivo",
+        "engLabel": "interacción",
+        "engDelta": "+9.3 pts vs. tu promedio",
+        "bannerStrong": "Tu publicación con mejor rendimiento del mes",
+        "bannerSub": "Superó tu promedio histórico en cada métrica.",
+        "metricsAriaLabel": "Métricas del post",
+        "metricKeyTag": "señal clave",
+        "metricDeltaSub": "vs. promedio",
+        "chartTitle": "Interacción · primeras 72 h",
+        "chartTag": "↑ Crecimiento sostenido",
+        "audienceTitle": "Audiencia alcanzada",
+        "audienceSub": "25–34 años · 61% mujeres",
+        "audienceAriaLabel": "Audiencia por ciudad",
+        "learnTitle": "El cerebro aprendió de esta campaña",
+        "learnAriaLabel": "Brain aprendió de esta campaña",
+        "signalsSuffix": "señales nuevas · listo para recomendar",
+        "tabsAriaLabel": "Secciones",
+        "tabContent": "contenido",
+        "tabAnalytics": "analytics",
+        "tabAudiencia": "audiencia",
+        "tabHerram": "herram.",
+        "metricAlcance": "Alcance",
+        "metricImpresiones": "Impresiones",
+        "metricMeGusta": "Me gusta",
+        "metricComentarios": "Comentarios",
+        "metricCompartidos": "Compartidos",
+        "metricGuardados": "Guardados",
+        "audienceCdmx": "Ciudad de México",
+        "audienceGdl": "Guadalajara",
+        "audienceMty": "Monterrey",
+        "backAriaLabel": "Volver",
+        "statusTyping": "escribiendo…",
+        "statusOnline": "en línea",
+        "daystamp": "HOY",
+        "inputPlaceholder": "Mensaje",
+        "sendAriaLabel": "Enviar",
+        "recCardTitle": "Recomendación del cerebro",
+        "recCardConf": "Confianza alta · 2,931 señales",
+        "quickYes": "Sí, genéralo",
+        "quickAdjust": "Ajustar",
+        "briefQuestion": "Brain, ¿qué recomiendas para el siguiente post?",
+        "brainAsk": "¿Quieres que genere el brief y lo deje listo para diseñar?",
+        "b1Text": "Analicé tu post de Francia 🇫🇷 — 48.2K de alcance, 2.9K guardados y 12.4% de interacción. Fue tu mejor pieza del mes 🚀",
+        "b2Text": "Con esa data, esto es lo que te recomiendo para el siguiente:",
+        "userReply": "Sí, genéralo 🙌",
+        "b3Text": "Listo ✅ Brief generado y enviado a tu tablero. Lo dejé listo para diseñar.",
+        "step1Label": "Análisis del post",
+        "step2Label": "Recomienda con la data",
+        "stepsAriaLabel": "Fases de la escena"
+      },
+      "appScreen": {
+        "backAriaLabel": "Atrás",
+        "titleBrief": "Nuevo Brief",
+        "titleDetail": "Detail Post",
+        "titleRender": "Diseño Final",
+        "briefHint": "Describe lo que necesitas. El cerebro genera el contenido con tu voz.",
+        "briefLabel": "Brief",
+        "generating": "Generando…",
+        "generateCta": "Generar contenido",
+        "assetBadge": "Asset generado",
+        "designing": "Diseñando…",
+        "designCta": "Diseñar",
+        "captionLabel": "📌 Caption",
+        "hashtagsLabel": "📌 Hashtags",
+        "renderStatus": "Diseño renderizado con tu plantilla de marca",
+        "publishing": "Publicando…",
+        "publishCta": "Publicar historia",
+        "publishedTitle": "¡Publicado!",
+        "publishedBody": "Tu historia ya está en vivo."
+      },
+      "waAgenda": {
+        "inviteeSent": "Enviado",
+        "inviteeSending": "Enviando…",
+        "copyLinkLabel": "Copiar",
+        "copiedLinkLabel": "¡Copiado!",
+        "inviteesPrefix": "Invitados · ",
+        "copyMeetAriaPrefix": "Copiar enlace de Meet: ",
+        "joinCallLabel": "Unirse a la llamada"
+      },
+      "wa": {
+        "backAriaLabel": "Atrás",
+        "statusTyping": "escribiendo…",
+        "statusOnline": "en línea",
+        "daystamp": "HOY",
+        "encrypted": "Los mensajes están cifrados de extremo a extremo.",
+        "inputPlaceholder": "Mensaje",
+        "sendAriaLabel": "Enviar",
+        "voiceAriaLabel": "Mensaje de voz"
+      },
+      "integraciones": {
+        "appTitle": "Integraciones",
+        "backAriaLabel": "Atrás",
+        "allDoneTitle": "Cerebro conectado",
+        "sourcesOf": "de",
+        "sourcesActive": "fuentes activas",
+        "statusConnectedPrefix": "Conectado · ",
+        "statusConnecting": "Conectando…"
       }
     }
   },

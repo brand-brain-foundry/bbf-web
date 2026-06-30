@@ -19,5 +19,5 @@ import { routing } from './i18n/routing';
 export default createMiddleware(routing);
 
 export const config = {
-  matcher: '/((?!api|admin|_next|_vercel|design-preview|.*\\..*).*)',
+  matcher: '/((?!api|admin|_next|_vercel|.*\\..*).*)',
 };

@@ -173,81 +173,6 @@ const AUDIENCE = [
   { label: 'Monterrey', pct: 12 },
 ] as const;
 
-const DEFAULT_REC_POINTS = [
-  {
-    key: 'Destino',
-    value: 'Otro ícono europeo — Italia o Suiza',
-    data: 'Europa duplicó tus guardados',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-          d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"
-          stroke="currentColor"
-          strokeWidth="1.7"
-        />
-        <circle cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.7" />
-      </svg>
-    ),
-  },
-  {
-    key: 'Formato',
-    value: 'Reel vertical de 7–10 s',
-    data: 'Video +180% vs. imagen estática',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="3" y="5" width="18" height="14" rx="3" stroke="currentColor" strokeWidth="1.7" />
-        <path d="M10 9l5 3-5 3V9z" fill="currentColor" />
-      </svg>
-    ),
-  },
-  {
-    key: 'Horario',
-    value: 'Jueves · 19:00',
-    data: 'Tu pico de interacción',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
-        <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    key: 'Copy + CTA',
-    value: '"Tu próxima aventura…" + "Aparta tu cupo"',
-    data: 'Fórmula con 12.4% de interacción',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-          d="M5 7h14M5 12h14M5 17h9"
-          stroke="currentColor"
-          strokeWidth="1.7"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    key: 'Hashtags',
-    value: '#ViajesVIP #ExperienciaVIP',
-    data: '64% del alcance no seguidor',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-          d="M9 4L7 20M17 4l-2 16M4 9h16M3.5 15h16"
-          stroke="currentColor"
-          strokeWidth="1.7"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-  },
-] as const;
-
-type DefaultRecPoint = (typeof DEFAULT_REC_POINTS)[number];
-
-const BRIEF_TEXT = 'Brain, ¿qué recomiendas para el siguiente post?';
-const ASK_TEXT = '¿Quieres que genere el brief y lo deje listo para diseñar?';
-
 function fmtNum(n: number): string {
   if (n >= 1000) {
     const k = n / 1000;
@@ -255,6 +180,54 @@ function fmtNum(n: number): string {
     return `${s}K`;
   }
   return n.toLocaleString('es-MX');
+}
+
+export interface AprendizajeUI {
+  // Insights pane
+  liveBadge: string;
+  engLabel: string;
+  engDelta: string;
+  bannerStrong: string;
+  bannerSub: string;
+  metricsAriaLabel: string;
+  metricKeyTag: string;
+  metricDeltaSub: string;
+  chartTitle: string;
+  chartTag: string;
+  audienceTitle: string;
+  audienceSub: string;
+  audienceAriaLabel: string;
+  learnTitle: string;
+  learnAriaLabel: string;
+  signalsSuffix: string;
+  tabsAriaLabel: string;
+  tabContent: string;
+  tabAnalytics: string;
+  tabAudiencia: string;
+  tabHerram: string;
+  metricLabels: [string, string, string, string, string, string];
+  audienceLabels: [string, string, string];
+  // RecChat pane
+  backAriaLabel: string;
+  statusTyping: string;
+  statusOnline: string;
+  daystamp: string;
+  inputPlaceholder: string;
+  sendAriaLabel: string;
+  recCardTitle: string;
+  recCardConf: string;
+  quickYes: string;
+  quickAdjust: string;
+  briefQuestion: string;
+  brainAsk: string;
+  b1Text: string;
+  b2Text: string;
+  userReply: string;
+  b3Text: string;
+  // Step indicators
+  step1Label: string;
+  step2Label: string;
+  stepsAriaLabel: string;
 }
 
 // ── InsightsPane ──────────────────────────────────────────────────────────────
@@ -266,6 +239,7 @@ interface InsightsPaneProps {
   postCaption: string;
   platformLabel: string;
   timeLabel: string;
+  ui: AprendizajeUI;
 }
 
 function InsightsPane({
@@ -276,6 +250,7 @@ function InsightsPane({
   postCaption,
   platformLabel,
   timeLabel,
+  ui,
 }: InsightsPaneProps) {
   const [counts, setCounts] = useState<number[]>(METRICS.map((m) => m.target));
   const [eng, setEng] = useState<number>(124); // 124 = 12.4% ×10
@@ -363,7 +338,7 @@ function InsightsPane({
             )}
             <span className="bbf-apr-ins-hero__live" aria-hidden="true">
               <span className="bbf-apr-ins-hero__live-dot" />
-              En vivo
+              {ui.liveBadge}
             </span>
           </div>
           <div className="bbf-apr-ins-hero__info">
@@ -379,9 +354,9 @@ function InsightsPane({
             <div className="bbf-apr-ins-eng">
               <span className="bbf-apr-ins-eng__v">{(eng / 10).toFixed(1)}%</span>
               <span className="bbf-apr-ins-eng__l">
-                interacción
+                {ui.engLabel}
                 <br />
-                <span>+9.3 pts vs. tu promedio</span>
+                <span>{ui.engDelta}</span>
               </span>
             </div>
           </div>
@@ -393,17 +368,13 @@ function InsightsPane({
             🚀
           </span>
           <div className="bbf-apr-ins-banner__txt">
-            <div className="bbf-apr-ins-banner__strong">
-              Tu publicación con mejor rendimiento del mes
-            </div>
-            <div className="bbf-apr-ins-banner__span">
-              Superó tu promedio histórico en cada métrica.
-            </div>
+            <div className="bbf-apr-ins-banner__strong">{ui.bannerStrong}</div>
+            <div className="bbf-apr-ins-banner__span">{ui.bannerSub}</div>
           </div>
         </div>
 
         {/* Metric grid */}
-        <div className="bbf-apr-ins-metrics" aria-label="Métricas del post">
+        <div className="bbf-apr-ins-metrics" aria-label={ui.metricsAriaLabel}>
           {METRICS.map((m, i) => (
             <div
               key={m.label}
@@ -417,9 +388,9 @@ function InsightsPane({
             >
               <div className="bbf-apr-ins-metric__top">
                 <span className="bbf-apr-ins-metric__icon">{m.icon}</span>
-                <span className="bbf-apr-ins-metric__l">{m.label}</span>
+                <span className="bbf-apr-ins-metric__l">{ui.metricLabels[i]}</span>
                 {'star' in m && m.star && (
-                  <span className="bbf-apr-ins-metric__tag">señal clave</span>
+                  <span className="bbf-apr-ins-metric__tag">{ui.metricKeyTag}</span>
                 )}
               </div>
               <div className="bbf-apr-ins-metric__n">{fmtNum(counts[i])}</div>
@@ -433,7 +404,7 @@ function InsightsPane({
                     strokeLinejoin="round"
                   />
                 </svg>
-                {m.delta} <span className="bbf-apr-ins-metric__d-sub">vs. promedio</span>
+                {m.delta} <span className="bbf-apr-ins-metric__d-sub">{ui.metricDeltaSub}</span>
               </div>
             </div>
           ))}
@@ -442,8 +413,8 @@ function InsightsPane({
         {/* Chart */}
         <div className="bbf-apr-ins-card" aria-hidden="true">
           <div className="bbf-apr-ins-card__head">
-            <span className="bbf-apr-ins-card__title">Interacción · primeras 72 h</span>
-            <span className="bbf-apr-ins-card__tag">↑ Crecimiento sostenido</span>
+            <span className="bbf-apr-ins-card__title">{ui.chartTitle}</span>
+            <span className="bbf-apr-ins-card__tag">{ui.chartTag}</span>
           </div>
           <div className="bbf-apr-ins-chart">
             {CHART_BARS.map((h, i) => (
@@ -466,13 +437,13 @@ function InsightsPane({
         {/* Audience */}
         <div className="bbf-apr-ins-card">
           <div className="bbf-apr-ins-card__head">
-            <span className="bbf-apr-ins-card__title">Audiencia alcanzada</span>
-            <span className="bbf-apr-ins-card__sub">25–34 años · 61% mujeres</span>
+            <span className="bbf-apr-ins-card__title">{ui.audienceTitle}</span>
+            <span className="bbf-apr-ins-card__sub">{ui.audienceSub}</span>
           </div>
-          <div className="bbf-apr-ins-audience" aria-label="Audiencia por ciudad">
+          <div className="bbf-apr-ins-audience" aria-label={ui.audienceAriaLabel}>
             {AUDIENCE.map((a, i) => (
               <div key={a.label} className="bbf-apr-ins-aud-row">
-                <span className="bbf-apr-ins-aud-label">{a.label}</span>
+                <span className="bbf-apr-ins-aud-label">{ui.audienceLabels[i]}</span>
                 <div className="bbf-apr-ins-aud-track">
                   <div
                     className="bbf-apr-ins-aud-fill"
@@ -491,24 +462,29 @@ function InsightsPane({
         </div>
 
         {/* Brain aprendió — DARK */}
-        <div className="bbf-apr-ins-learn" aria-label="Brain aprendió de esta campaña">
+        <div className="bbf-apr-ins-learn" aria-label={ui.learnAriaLabel}>
           <span className="bbf-apr-ins-learn__mark" aria-hidden="true">
             <BrainLogoSVG />
           </span>
           <div className="bbf-apr-ins-learn__body">
-            <span className="bbf-apr-ins-learn__title">El cerebro aprendió de esta campaña</span>
+            <span className="bbf-apr-ins-learn__title">{ui.learnTitle}</span>
             <span className="bbf-apr-ins-learn__sub">
-              +{signals.toLocaleString('es-MX')} señales nuevas · listo para recomendar
+              +{signals.toLocaleString('es-MX')} {ui.signalsSuffix}
             </span>
           </div>
           <span className="bbf-apr-ins-learn__dot" aria-hidden="true" />
         </div>
       </div>
 
-      <div className="bbf-app-tabs" aria-label="Secciones" aria-hidden="true">
-        {(['contenido', 'analytics', 'audiencia', 'herram.'] as const).map((tab) => (
-          <div key={tab} className={`bbf-app-tab${tab === 'analytics' ? 'is-active' : ''}`}>
-            <span className="bbf-app-tab__label">{tab}</span>
+      <div className="bbf-app-tabs" aria-label={ui.tabsAriaLabel} aria-hidden="true">
+        {[
+          { id: 'content', label: ui.tabContent },
+          { id: 'analytics', label: ui.tabAnalytics },
+          { id: 'audience', label: ui.tabAudiencia },
+          { id: 'tools', label: ui.tabHerram },
+        ].map((tab) => (
+          <div key={tab.id} className={`bbf-app-tab${tab.id === 'analytics' ? 'is-active' : ''}`}>
+            <span className="bbf-app-tab__label">{tab.label}</span>
           </div>
         ))}
       </div>
@@ -545,9 +521,10 @@ interface RecChatPaneProps {
   recPoints: RecPoint[];
   projection: string;
   runId: MutableRefObject<number>;
+  ui: AprendizajeUI;
 }
 
-function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPaneProps) {
+function RecChatPane({ active, onDone, recPoints, projection, runId, ui }: RecChatPaneProps) {
   const [msgs, setMsgs] = useState<ChatEntry[]>([]);
   const [inputText, setInputText] = useState('');
   const [brainTyping, setBrainTyping] = useState(false);
@@ -580,20 +557,19 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
       if (!alive()) return;
 
       // User types
-      for (let i = 1; i <= BRIEF_TEXT.length; i++) {
+      for (let i = 1; i <= ui.briefQuestion.length; i++) {
         if (!alive()) return;
-        setInputText(BRIEF_TEXT.slice(0, i));
+        setInputText(ui.briefQuestion.slice(0, i));
         await sleep(24);
       }
       await sleep(420);
       if (!alive()) return;
       setInputText('');
-      setMsgs([{ id: 'u1', who: 'user', text: BRIEF_TEXT, time: '9:41' }]);
+      setMsgs([{ id: 'u1', who: 'user', text: ui.briefQuestion, time: '9:41' }]);
       await sleep(650);
 
       // Brain b1 — full stats
-      const b1Text =
-        'Analicé tu post de Francia 🇫🇷 — 48.2K de alcance, 2.9K guardados y 12.4% de interacción. Fue tu mejor pieza del mes 🚀';
+      const b1Text = ui.b1Text;
       setBrainTyping(true);
       await sleep(650);
       if (!alive()) return;
@@ -604,7 +580,7 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
       await sleep(800);
 
       // Brain b2
-      const b2Text = 'Con esa data, esto es lo que te recomiendo para el siguiente:';
+      const b2Text = ui.b2Text;
       if (!alive()) return;
       setBrainTyping(true);
       await sleep(650);
@@ -631,12 +607,12 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
       setBrainTyping(true);
       await sleep(650);
       if (!alive()) return;
-      await sleep(650 + Math.min(900, ASK_TEXT.length * 12));
+      await sleep(650 + Math.min(900, ui.brainAsk.length * 12));
       if (!alive()) return;
       setBrainTyping(false);
       setMsgs((m) => [
         ...m,
-        { id: 'ask', who: 'brain', text: ASK_TEXT, isAsk: true, time: '9:42' },
+        { id: 'ask', who: 'brain', text: ui.brainAsk, isAsk: true, time: '9:42' },
       ]);
       await sleep(300);
 
@@ -647,7 +623,7 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
       setAnswered(true);
       await sleep(800);
       if (!alive()) return;
-      setMsgs((m) => [...m, { id: 'u2', who: 'user', text: 'Sí, genéralo 🙌', time: '9:43' }]);
+      setMsgs((m) => [...m, { id: 'u2', who: 'user', text: ui.userReply, time: '9:43' }]);
       await sleep(650);
 
       // Brain confirm
@@ -661,7 +637,7 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
         {
           id: 'b3',
           who: 'brain',
-          text: 'Listo ✅ Brief generado y enviado a tu tablero. Lo dejé listo para diseñar.',
+          text: ui.b3Text,
           time: '9:43',
         },
       ]);
@@ -676,8 +652,7 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
     };
   }, [active, onDone, runId]);
 
-  const points: RecPoint[] =
-    recPoints.length > 0 ? recPoints : (DEFAULT_REC_POINTS as unknown as RecPoint[]);
+  const points: RecPoint[] = recPoints;
 
   const askVisible = msgs.some((m) => m.isAsk) && !answered;
   const hasText = inputText.length > 0;
@@ -694,7 +669,7 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
       </div>
 
       <div className="bbf-wa-header">
-        <button className="bbf-wa-back" aria-label="Volver" tabIndex={-1}>
+        <button className="bbf-wa-back" aria-label={ui.backAriaLabel} tabIndex={-1}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
               d="M15 5l-7 7 7 7"
@@ -717,7 +692,9 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
         </div>
         <div className="bbf-wa-peer">
           <div className="bbf-wa-peer-name">Brain</div>
-          <div className="bbf-wa-peer-status">{brainTyping ? 'escribiendo…' : 'en línea'}</div>
+          <div className="bbf-wa-peer-status">
+            {brainTyping ? ui.statusTyping : ui.statusOnline}
+          </div>
         </div>
         <div className="bbf-wa-actions" aria-hidden="true">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -743,7 +720,7 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
 
       <div className="bbf-wa-body" ref={bodyRef}>
         <div className="bbf-wa-daystamp" aria-hidden="true">
-          <span>HOY</span>
+          <span>{ui.daystamp}</span>
         </div>
 
         {msgs.map((msg) => {
@@ -757,10 +734,10 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
                         <BrainCardSVG />
                       </span>
                       <div>
-                        <div className="bbf-apr-rec-card__title">Recomendación del cerebro</div>
+                        <div className="bbf-apr-rec-card__title">{ui.recCardTitle}</div>
                         <div className="bbf-apr-rec-card__conf">
                           <span className="bbf-apr-rec-card__conf-dot" />
-                          Confianza alta · 2,931 señales
+                          {ui.recCardConf}
                         </div>
                       </div>
                     </div>
@@ -889,10 +866,10 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
                   strokeLinejoin="round"
                 />
               </svg>
-              Sí, genéralo
+              {ui.quickYes}
             </button>
             <button className="bbf-apr-quick" tabIndex={-1}>
-              Ajustar
+              {ui.quickAdjust}
             </button>
           </div>
         )}
@@ -919,7 +896,7 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
             />
           </svg>
           <span className={hasText ? 'bbf-wa-input-text' : 'bbf-wa-input-text is-placeholder'}>
-            {hasText ? inputText : 'Mensaje'}
+            {hasText ? inputText : ui.inputPlaceholder}
             {hasText && <span className="bbf-wa-caret" />}
           </span>
           <svg
@@ -966,7 +943,7 @@ function RecChatPane({ active, onDone, recPoints, projection, runId }: RecChatPa
         </div>
         <button
           className={hasText ? 'bbf-wa-send is-send' : 'bbf-wa-send'}
-          aria-label="Enviar"
+          aria-label={ui.sendAriaLabel}
           aria-hidden={true}
           tabIndex={-1}
         >
@@ -1010,6 +987,7 @@ export interface AprendizajePlayerProps {
   timeLabel: string;
   recPoints: RecPoint[];
   projection: string;
+  ui: AprendizajeUI;
 }
 
 export function AprendizajePlayer({
@@ -1021,6 +999,7 @@ export function AprendizajePlayer({
   timeLabel,
   recPoints,
   projection,
+  ui,
 }: AprendizajePlayerProps) {
   const [phase, setPhase] = useState<'insights' | 'chat'>('insights');
   // loopIsActive as state so React re-renders when IO fires (ref alone won't trigger re-render)
@@ -1097,6 +1076,7 @@ export function AprendizajePlayer({
               postCaption={postCaption}
               platformLabel={platformLabel}
               timeLabel={timeLabel}
+              ui={ui}
             />
           </div>
 
@@ -1115,13 +1095,14 @@ export function AprendizajePlayer({
               recPoints={recPoints}
               projection={projection}
               runId={runId}
+              ui={ui}
             />
           </div>
         </div>
       </div>
 
       {/* Step indicator — pill style (prototipo) */}
-      <div className="bbf-apr-steps" role="tablist" aria-label="Fases de la escena">
+      <div className="bbf-apr-steps" role="tablist" aria-label={ui.stepsAriaLabel}>
         <div
           className={phase === 'insights' ? 'bbf-apr-step bbf-apr-step--active' : 'bbf-apr-step'}
           role="tab"
@@ -1130,7 +1111,7 @@ export function AprendizajePlayer({
           <span className="bbf-apr-step__n" aria-hidden="true">
             1
           </span>
-          <span className="bbf-apr-step__l">Análisis del post</span>
+          <span className="bbf-apr-step__l">{ui.step1Label}</span>
         </div>
         <span className="bbf-apr-step__arrow" aria-hidden="true">
           →
@@ -1143,7 +1124,7 @@ export function AprendizajePlayer({
           <span className="bbf-apr-step__n" aria-hidden="true">
             2
           </span>
-          <span className="bbf-apr-step__l">Recomienda con la data</span>
+          <span className="bbf-apr-step__l">{ui.step2Label}</span>
         </div>
       </div>
     </div>

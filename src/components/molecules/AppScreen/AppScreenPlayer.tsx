@@ -23,6 +23,27 @@ interface TapState {
   press: boolean;
 }
 
+export interface AppScreenUI {
+  backAriaLabel: string;
+  titleBrief: string;
+  titleDetail: string;
+  titleRender: string;
+  briefHint: string;
+  briefLabel: string;
+  generating: string;
+  generateCta: string;
+  assetBadge: string;
+  designing: string;
+  designCta: string;
+  captionLabel: string;
+  hashtagsLabel: string;
+  renderStatus: string;
+  publishing: string;
+  publishCta: string;
+  publishedTitle: string;
+  publishedBody: string;
+}
+
 interface AppScreenPlayerProps {
   logoNode: ReactNode;
   briefText: string;
@@ -35,6 +56,7 @@ interface AppScreenPlayerProps {
   caption: string;
   hashtags: string;
   publishMeta: string;
+  ui: AppScreenUI;
 }
 
 type Screen = 'brief' | 'detail' | 'render';
@@ -51,6 +73,7 @@ export function AppScreenPlayer({
   caption,
   hashtags,
   publishMeta,
+  ui,
 }: AppScreenPlayerProps) {
   const [screen, setScreen] = useState<Screen>('brief');
   const [typed, setTyped] = useState('');
@@ -231,7 +254,7 @@ export function AppScreenPlayer({
 
           {/* App bar — D-PANTALLA-03-REV: logo solo-icono sin siteName */}
           <div className="bbf-app-appbar">
-            <button className="bbf-app-appbar__back" aria-label="Atrás">
+            <button className="bbf-app-appbar__back" aria-label={ui.backAriaLabel}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M15 5l-7 7 7 7"
@@ -244,9 +267,9 @@ export function AppScreenPlayer({
             </button>
             <span className="bbf-app-appbar__logo">{logoNode}</span>
             <span className="bbf-app-appbar__title">
-              {screen === 'brief' && 'Nuevo Brief'}
-              {screen === 'detail' && 'Detail Post'}
-              {screen === 'render' && 'Diseño Final'}
+              {screen === 'brief' && ui.titleBrief}
+              {screen === 'detail' && ui.titleDetail}
+              {screen === 'render' && ui.titleRender}
             </span>
             <span className="bbf-app-appbar__right" aria-hidden="true">
               {screen === 'brief' && (
@@ -293,11 +316,9 @@ export function AppScreenPlayer({
                 <div className="bbf-app-brief">
                   <div className="bbf-app-brief__hint">
                     <span className="bbf-app-brief__hint-mark">📌</span>
-                    <span>
-                      Describe lo que necesitas. El cerebro genera el contenido con tu voz.
-                    </span>
+                    <span>{ui.briefHint}</span>
                   </div>
-                  <div className="bbf-app-brief__label">Brief</div>
+                  <div className="bbf-app-brief__label">{ui.briefLabel}</div>
                   <div className={`bbf-app-brief__box ${briefFull ? 'is-full' : ''}`}>
                     <span className="bbf-app-brief__text">
                       {typed}
@@ -337,7 +358,7 @@ export function AppScreenPlayer({
                   {generating ? (
                     <>
                       <span className="bbf-app-spin bbf-app-spin--white" aria-hidden="true" />{' '}
-                      Generando…
+                      {ui.generating}
                     </>
                   ) : (
                     <>
@@ -361,7 +382,7 @@ export function AppScreenPlayer({
                         })}
                         <circle cx="16" cy="16" r="4.2" />
                       </svg>
-                      Generar contenido
+                      {ui.generateCta}
                     </>
                   )}
                 </button>
@@ -385,7 +406,7 @@ export function AppScreenPlayer({
                       />
                       <span className="bbf-app-detail__badge">
                         <span className="bbf-app-detail__badge-dot" />
-                        Asset generado
+                        {ui.assetBadge}
                       </span>
                     </div>
                   )}
@@ -413,18 +434,18 @@ export function AppScreenPlayer({
                       )}
                     </span>
                     <span className="bbf-app-detail__design-label">
-                      {designing ? 'Diseñando…' : 'Diseñar'}
+                      {designing ? ui.designing : ui.designCta}
                     </span>
                   </button>
                   {caption && (
                     <div className="bbf-app-detail__section">
-                      <div className="bbf-app-detail__section-title">📌 Caption</div>
+                      <div className="bbf-app-detail__section-title">{ui.captionLabel}</div>
                       <p className="bbf-app-detail__caption">{caption}</p>
                     </div>
                   )}
                   {hashtags && (
                     <div className="bbf-app-detail__section">
-                      <div className="bbf-app-detail__section-title">📌 Hashtags</div>
+                      <div className="bbf-app-detail__section-title">{ui.hashtagsLabel}</div>
                       <p className="bbf-app-detail__hash">{hashtags}</p>
                     </div>
                   )}
@@ -440,7 +461,7 @@ export function AppScreenPlayer({
                 <div className="bbf-app-render">
                   <div className="bbf-app-render__status">
                     <span className="bbf-app-render__status-dot" />
-                    Diseño renderizado con tu plantilla de marca
+                    {ui.renderStatus}
                   </div>
                   {renderImageUrl && (
                     <div className={`bbf-app-render__media ${reveal ? 'is-revealed' : ''}`}>
@@ -463,7 +484,7 @@ export function AppScreenPlayer({
                       {publishing ? (
                         <>
                           <span className="bbf-app-spin bbf-app-spin--white" aria-hidden="true" />{' '}
-                          Publicando…
+                          {ui.publishing}
                         </>
                       ) : (
                         <>
@@ -482,7 +503,7 @@ export function AppScreenPlayer({
                               strokeLinecap="round"
                             />
                           </svg>
-                          Publicar historia
+                          {ui.publishCta}
                         </>
                       )}
                     </button>
@@ -598,8 +619,8 @@ export function AppScreenPlayer({
                   />
                 </svg>
               </div>
-              <div className="bbf-app-published__title">¡Publicado!</div>
-              <div className="bbf-app-published__body">Tu historia ya está en vivo.</div>
+              <div className="bbf-app-published__title">{ui.publishedTitle}</div>
+              <div className="bbf-app-published__body">{ui.publishedBody}</div>
               {publishMeta && (
                 <div className="bbf-app-published__tag">
                   <span className="bbf-app-published__tag-dot" />

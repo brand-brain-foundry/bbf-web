@@ -80,13 +80,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const pathEn = pathObj['en'] || pathEs;
       if (!pathEs) continue;
       entries.push({
-        url: `${BASE_URL}/es/${pathEs}`,
+        url: `${BASE_URL}/${pathEs}`,
         lastModified: typeof page.updatedAt === 'string' ? new Date(page.updatedAt) : new Date(),
         changeFrequency: 'weekly',
         priority: 0.7,
         alternates: {
           languages: {
-            es: `${BASE_URL}/es/${pathEs}`,
+            es: `${BASE_URL}/${pathEs}`,
             en: `${BASE_URL}/en/${pathEn}`,
           },
         },
@@ -100,7 +100,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const payload = await getPayload({ config });
 
-    // Fetch con locale 'all' para obtener slugs ES + EN en una sola query
+    // Fetch con locale 'all' para obtener slugs ES + EN en una sola query.
+    // NAV HONESTO: cornerstone-page excluida del sitemap hasta tener contenido completo.
+    // Las cornerstones completas se añaden manualmente a las entradas estáticas de arriba.
     const result = await payload.find({
       collection: 'contentItems',
       locale: 'all',
@@ -109,7 +111,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           { _status: { equals: 'published' } },
           {
             kind: {
-              in: ['cornerstone-page', 'pillar-page', 'page', 'post', 'case'],
+              in: ['pillar-page', 'page', 'post', 'case'],
             },
           },
         ],

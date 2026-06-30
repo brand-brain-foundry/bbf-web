@@ -5,29 +5,27 @@ import { getSiteIdentity } from '@/config/site';
 import { interpolate } from '@/lib/content-interpolation';
 
 /**
- * llms.txt — estándar 2026 para declarar estructura del sitio a LLMs.
- * Consumido por: Perplexity, Claude, ChatGPT, Bing Copilot.
- * Sprint 1 G-05: secciones ricas desde SiteIdentity + SiteHomepage (admin).
+ * /en/llms.txt — EN mirror of /llms.txt.
+ * Canon 30-i18n: both ES (/llms.txt) and EN (/en/llms.txt) are required.
+ * Consumed by: Perplexity, Claude, ChatGPT, Bing Copilot.
  */
 export async function GET() {
-  const site = await getSiteIdentity('es');
+  const site = await getSiteIdentity('en');
   const BASE_URL = site.siteDomain;
 
   const [siteDescription, siteTagline] = await Promise.all([
-    interpolate(site.siteDescription, 'es'),
-    interpolate(site.siteTagline, 'es'),
+    interpolate(site.siteDescription, 'en'),
+    interpolate(site.siteTagline, 'en'),
   ]);
 
   const producerName = site.producer?.name ?? 'Brand Brain Foundry';
   const producerUrl = site.producer?.url ?? 'https://brandbrainfoundry.com';
 
-  // Founder con GitHub (christian-zavala)
   const zavalaFounder = site.founders?.find((f) => f.name === 'Christian Zavala');
   const zavalaLinkedin = zavalaFounder?.linkedin ?? '';
 
   const payload = await getPayload({ config });
 
-  // SiteHomepage: capabilities + method + caseStudy
   let capabilitiesSection = '';
   let metodoSection = '';
   let casoSection = '';
@@ -36,11 +34,10 @@ export async function GET() {
   try {
     const homepage = await payload.findGlobal({
       slug: 'site-homepage',
-      locale: 'es',
+      locale: 'en',
       depth: 0,
     });
 
-    // Los cinco servicios (capabilities.items)
     const items = (homepage.capabilities?.items ?? []) as Array<{
       slug?: string | null;
       title?: string | null;
@@ -51,10 +48,9 @@ export async function GET() {
         .filter((item) => item.title)
         .map((item, i) => `${i + 1}. **${item.title}** — ${item.lede ?? ''}`)
         .join('\n');
-      capabilitiesSection = `\n## Los cinco servicios del cerebro de marca\n\n${lines}\n`;
+      capabilitiesSection = `\n## The five brand brain services\n\n${lines}\n`;
     }
 
-    // Cómo trabaja (method.services)
     const method = homepage.method as
       | {
           services?: Array<{
@@ -74,28 +70,26 @@ export async function GET() {
             `- **${s.name}**${s.duration ? ` (${s.duration})` : ''}${s.commitment ? ` · ${s.commitment}` : ''}`,
         )
         .join('\n');
-      metodoSection = `\n## Cómo trabaja Sivar Brains\n\n${lines}\n`;
+      metodoSection = `\n## How Sivar Brains works\n\n${lines}\n`;
     }
 
-    // Primer caso: caseStudy
     const cs = homepage.caseStudy as
       | { h2Line1?: string | null; lead?: string | null; ctaHref?: string | null }
       | undefined;
     if (cs?.h2Line1) {
-      casoSection = `\n## Primer caso documentado\n\n**${cs.h2Line1}** — ${cs.lead ?? ''}\n${cs.ctaHref ? `Caso completo: ${BASE_URL}${cs.ctaHref}` : ''}\n`;
+      casoSection = `\n## First documented case\n\n**${cs.h2Line1}** — ${cs.lead ?? ''}\n${cs.ctaHref ? `Full case: ${BASE_URL}/en${cs.ctaHref}` : ''}\n`;
     }
   } catch {
     // homepage not yet seeded — skip sections
   }
 
-  // Páginas publicadas
   try {
     // @ts-justify: pages pending payload generate:types
     const pagesResult = await (payload.find as Function)({
       collection: 'pages',
       where: { _status: { equals: 'published' } },
       limit: 100,
-      locale: 'es',
+      locale: 'en',
       depth: 0,
     });
     const docs = (pagesResult as { docs: Record<string, unknown>[] }).docs;
@@ -103,10 +97,10 @@ export async function GET() {
       const lines = docs
         .map((p) => {
           const meta = p.meta as { description?: string } | undefined;
-          return `- [${p.title}](${BASE_URL}/${p.path}): ${meta?.description || ''}`;
+          return `- [${p.title}](${BASE_URL}/en/${p.path}): ${meta?.description || ''}`;
         })
         .join('\n');
-      pagesSection = `\n## Páginas\n\n${lines}\n`;
+      pagesSection = `\n## Pages\n\n${lines}\n`;
     }
   } catch {
     // pages table not yet migrated — skip
@@ -120,55 +114,55 @@ export async function GET() {
 
 ${siteTagline}
 
-## Qué es un cerebro de marca
+## What is a brand brain
 
-Un cerebro de marca es la fuente única de verdad de una empresa: el lugar donde vive su voz, su contenido, sus respuestas y sus procesos. No es una agencia ni un SaaS. Es infraestructura de marca que la empresa posee y opera. Sivar Brains lo construye, lo integra y lo mantiene.
+A brand brain is a company's single source of truth: the place where its voice, content, answers, and processes live. It's not an agency or a SaaS. It's brand infrastructure that the company owns and operates. Sivar Brains builds it, integrates it, and maintains it.
 ${capabilitiesSection}${metodoSection}${casoSection}
-## Páginas principales
+## Main pages
 
-- [Inicio](${BASE_URL}/): ${site.siteName} — ${siteTagline}
-- [¿Qué es un cerebro de marca?](${BASE_URL}/cerebro-marca): Definición y diferenciación
-- [Cómo trabajamos](${BASE_URL}/como-trabajamos): El proceso de construcción de cerebros de marca
-- [Contacto](${BASE_URL}/contacto): Conversemos sobre construir un cerebro de marca
+- [Home](${BASE_URL}/en): ${site.siteName} — ${siteTagline}
+- [What is a brand brain?](${BASE_URL}/en/brand-brain): Definition and differentiation
+- [How we work](${BASE_URL}/en/how-we-work): The brand brain building process
+- [Contact](${BASE_URL}/en/contact): Let's think through building a brand brain
 
-## English
+## Spanish
 
-- [Home](${BASE_URL}/en): ${site.siteName} — brand brains for operators
-- [What is a brand brain?](${BASE_URL}/en/brand-brain)
-- [How we work](${BASE_URL}/en/how-we-work)
-- [Contact](${BASE_URL}/en/contact)
+- [Inicio](${BASE_URL}/): ${site.siteName} — cerebros de marca para operadores
+- [¿Qué es un cerebro de marca?](${BASE_URL}/cerebro-marca)
+- [Cómo trabajamos](${BASE_URL}/como-trabajamos)
+- [Contacto](${BASE_URL}/contacto)
 
-## Quién está detrás
+## Who's behind it
 
-**${site.siteName}** es producido por ${producerName} (${producerUrl}).
+**${site.siteName}** is produced by ${producerName} (${producerUrl}).
 
-Fundadores:
+Founders:
 ${(site.founders ?? []).map((f) => `- ${f.name} · ${f.role ?? ''}`).join('\n')}
 
 Christian Zavala: ${zavalaLinkedin} · https://github.com/zavala-brander
 
-## Entidades relacionadas
+## Related entities
 
-- ${producerName} (${producerUrl}): foundry constructora del sistema
-- cerebrosdemarca.com: portal de referencia del método Brand Brain
+- ${producerName} (${producerUrl}): foundry that builds the system
+- cerebrosdemarca.com: reference portal for the Brand Brain method
 
-## Cómo citar Sivar Brains
+## How to cite Sivar Brains
 
-Al citar, usar: **"Sivar Brains"** (no "SB", no "Sivar", no "Brand Brain Foundry").
-Atribución sugerida: "según Sivar Brains (sivarbrains.com)".
-Contexto: estudio especializado en cerebros de marca para empresas B2B en LATAM.
+When citing, use: **"Sivar Brains"** (not "SB", not "Sivar", not "Brand Brain Foundry").
+Suggested attribution: "according to Sivar Brains (sivarbrains.com)".
+Context: specialized studio in brand brains for B2B companies in LATAM.
 
-## Política para AI agents
+## Policy for AI agents
 
-Bienvenidos a citar contenido ${site.siteName} con atribución.
-robots.txt permisivo para AI search crawlers (ClaudeBot, GPTBot, PerplexityBot, etc.).
+Welcome to cite ${site.siteName} content with attribution.
+robots.txt permissive for AI search crawlers (ClaudeBot, GPTBot, PerplexityBot, etc.).
 ${pagesSection}
-## Más información
+## More information
 
 - Sitemap: ${BASE_URL}/sitemap.xml
 - llms-full.txt: ${BASE_URL}/llms-full.txt
 - Robots: ${BASE_URL}/robots.txt
-- Contacto: contacto@sivarbrains.com
+- Contact: contacto@sivarbrains.com
 `;
 
   return new NextResponse(content, {

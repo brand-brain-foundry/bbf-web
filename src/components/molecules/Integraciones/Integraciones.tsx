@@ -4,15 +4,18 @@
  * kind='integraciones' en CapabilityScene.
  */
 
+import { getTranslations } from 'next-intl/server';
 import { BrandLogo } from '@/components/atoms/BrandLogo';
 import type { SceneIntegracionesData } from '../CapabilityScene/types';
 import { IntegracionesPlayer } from './IntegracionesPlayer';
+import type { IntegracionesUI } from './IntegracionesPlayer';
 
 interface IntegracionesProps {
   data: SceneIntegracionesData;
 }
 
 export async function Integraciones({ data }: IntegracionesProps) {
+  const t = await getTranslations('capabilities.scenes.integraciones');
   const logoNode = <BrandLogo variant="icon" size={28} />;
   const summaryTitle = data.summaryTitle ?? '';
 
@@ -24,5 +27,17 @@ export async function Integraciones({ data }: IntegracionesProps) {
     category: item.category ?? '',
   }));
 
-  return <IntegracionesPlayer logoNode={logoNode} summaryTitle={summaryTitle} items={items} />;
+  const ui: IntegracionesUI = {
+    appTitle: t('appTitle'),
+    backAriaLabel: t('backAriaLabel'),
+    allDoneTitle: t('allDoneTitle'),
+    sourcesOf: t('sourcesOf'),
+    sourcesActive: t('sourcesActive'),
+    statusConnectedPrefix: t('statusConnectedPrefix'),
+    statusConnecting: t('statusConnecting'),
+  };
+
+  return (
+    <IntegracionesPlayer logoNode={logoNode} summaryTitle={summaryTitle} items={items} ui={ui} />
+  );
 }

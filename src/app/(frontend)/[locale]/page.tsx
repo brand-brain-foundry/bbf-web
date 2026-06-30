@@ -172,12 +172,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                     ))}
                   </div>
                 )}
-                {/* G-18: anchorPhrase — texto ancla visible para citación AEO/GEO (Sprint 2) */}
-                {site.seo?.anchorPhrase && (
-                  <Text variant="body-sm" color="secondary" className="max-w-[42ch]">
-                    {site.seo.anchorPhrase}
-                  </Text>
-                )}
+                {/* G-18: anchorPhrase en admin → solo a llms-full.txt (R-BBF-SEO-HIDDEN-01) */}
               </div>
             </Reveal>
           </HeroSection.Grid>
@@ -322,13 +317,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               eyebrow={cmp.eyebrow ?? '§4 · POR QUÉ'}
               h2Line1={cmp.h2Line1 ?? ''}
               h2Line2Soft={cmp.h2Line2Soft ?? undefined}
+              h2Line2SoftClassName="bbf-gradient-blue-animated"
               lead={cmp.lead ?? undefined}
               decoration={<Lissajous name="cross-2d" animation="traveling" />}
             />
           </Reveal>
 
           <Reveal variant="fade">
-            <PorqueSection.Comparison columns={cmp.columns} rows={cmp.rows} />
+            <PorqueSection.Comparison
+              columns={cmp.columns}
+              rows={cmp.rows}
+              crownText={siteId.siteShortName}
+            />
           </Reveal>
         </PorqueSection>
       )}
@@ -350,6 +350,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               duration: s.duration,
               commitment: s.commitment,
               body: s.body,
+              icon: s.icon ?? null,
               deliverables: s.deliverables,
             })),
             ctaLabel: mth.ctaLabel || undefined,

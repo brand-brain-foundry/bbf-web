@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 import { Resend } from 'resend';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
+import { getSiteIdentity } from '@/config/site';
 import { contactRateLimit, getClientIp } from '@/lib/security/rate-limit';
 import { verifyTurnstile } from '@/lib/security/turnstile';
 import { isDisposableEmail } from '@/lib/security/disposable-emails';
@@ -121,21 +122,25 @@ export async function submitContact(
     };
   }
 
-  // ===== LEER EMAILS DESDE SITECONTACT (SSOT) =====
-  // Lookup SiteContact runtime — fresh por cada submission
-  // (sin unstable_cache porque form submit es eventual, no hot path)
+  // ===== LEER EMAILS + SITENAME DESDE ADMIN (SSOT) =====
+  // SiteContact: fresh por cada submission (no hot path, sin cache)
+  // getSiteIdentity: usa unstable_cache (siteName cambia raramente)
   const payload = await getPayload({ config });
-  const siteContact = await payload.findGlobal({ slug: 'site-contact' });
+  const [siteContact, siteIdentity] = await Promise.all([
+    payload.findGlobal({ slug: 'site-contact' }),
+    getSiteIdentity(locale),
+  ]);
   const recipientEmail = siteContact.primaryEmail;
   const fromEmail = siteContact.fromEmail;
+  const siteName = siteIdentity.siteName;
 
   // ===== ENVIAR EMAIL =====
   try {
     const { error } = await resend.emails.send({
-      from: `BBF Web <${fromEmail}>`,
+      from: `${siteName} Web <${fromEmail}>`,
       to: recipientEmail,
       replyTo: email,
-      subject: `Nuevo contacto BBF — ${name}${company ? ` · ${company}` : ''}`,
+      subject: `Nuevo contacto ${siteName} — ${name}${company ? ` · ${company}` : ''}`,
       text: [
         `Nombre: ${name}`,
         `Email: ${email}`,

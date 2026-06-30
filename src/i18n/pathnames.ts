@@ -14,7 +14,7 @@
 export const PATHNAMES = {
   '/': '/',
   '/cerebro-marca': { es: '/cerebro-marca', en: '/brand-brain' },
-  '/metodo': { es: '/metodo', en: '/method' }, // ⛔ TAREA-METODO-MIGRATION → /como-trabajamos
+  '/como-trabajamos': { es: '/como-trabajamos', en: '/how-we-work' },
   '/casos': { es: '/casos', en: '/cases' },
   '/contacto': { es: '/contacto', en: '/contact' },
   '/quienes-somos': { es: '/quienes-somos', en: '/about' }, // P1 — enum migration pendiente

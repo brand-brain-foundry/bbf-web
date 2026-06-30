@@ -86,7 +86,8 @@ export async function StructuredData({ locale }: { locale: string }) {
     .map((t) => (typeof t === 'object' && t !== null ? t.name : null))
     .filter(Boolean);
   const sameAs = (orgEntity?.sameAs ?? []).map((s) => s.url).filter(Boolean);
-  const siteDescription = await interpolate(site.siteDescription, l);
+  // SiteIdentity.ts:20: longDescription → Organization.description (full); fallback a siteDescription
+  const orgDescription = await interpolate(site.longDescription || site.siteDescription, l);
 
   // zavala sameAs: linkedin + github (de Entity 'christian-zavala')
   const zavalaSameAs = (zavalaEntity?.sameAs ?? []).map((s) => s.url).filter(Boolean);
@@ -151,7 +152,6 @@ export async function StructuredData({ locale }: { locale: string }) {
     ...(item.lede ? { description: item.lede } : {}),
     provider: { '@id': `${domain}/#org` },
     serviceType: 'BrandBrainService',
-    position: i + 1,
   }));
 
   const serviceList =
@@ -186,14 +186,14 @@ export async function StructuredData({ locale }: { locale: string }) {
           width: 512,
           height: 512,
         },
-        description: siteDescription,
+        description: orgDescription,
         foundingDate: '2025-10',
         founder: founderRefs.length > 0 ? founderRefs : undefined,
         knowsAbout,
         sameAs,
         knowsLanguage: ['es', 'en'],
         areaServed: [
-          { '@type': 'Country', name: 'El Salvador' },
+          { '@type': 'Country', name: 'El Salvador', addressCountry: 'SV' },
           { '@type': 'AdministrativeArea', name: 'Latin America' },
         ],
       },

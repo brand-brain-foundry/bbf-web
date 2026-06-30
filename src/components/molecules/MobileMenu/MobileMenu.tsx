@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { MenuIcon } from '@/components/atoms/MenuIcon';
@@ -79,7 +80,8 @@ function makeSlideVariants(reduced: boolean | null) {
  * Slide x AnimatePresence, BBF motion tokens, reduced-motion fade, focus bidireccional.
  * H-2: backdrop + panel portaled a document.body — escapa backdrop-filter del Header inner card.
  */
-export function MobileMenu({ links, cta, siteName = 'BBF', logo }: MobileMenuProps) {
+export function MobileMenu({ links, cta, siteName = 'Sivar Brains', logo }: MobileMenuProps) {
+  const t = useTranslations('Header');
   const [isOpen, setIsOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -185,7 +187,7 @@ export function MobileMenu({ links, cta, siteName = 'BBF', logo }: MobileMenuPro
         onClick={() => setIsOpen((v) => !v)}
         aria-expanded={isOpen}
         aria-controls="bbf-mobile-menu-panel"
-        aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
+        aria-label={isOpen ? t('mobileMenu.close') : t('mobileMenu.open')}
         data-component="bbf-mobile-menu-trigger"
         className={mobileMenuIconButtonVariants({ size: 'trigger' })}
       >
@@ -209,7 +211,7 @@ export function MobileMenu({ links, cta, siteName = 'BBF', logo }: MobileMenuPro
               id="bbf-mobile-menu-panel"
               role="dialog"
               aria-modal="true"
-              aria-label="Menú móvil"
+              aria-label={t('mobileMenu.panelLabel')}
               aria-hidden={!isOpen}
               data-component="bbf-mobile-menu-panel"
               data-surface="sand"
@@ -225,7 +227,7 @@ export function MobileMenu({ links, cta, siteName = 'BBF', logo }: MobileMenuPro
                 <button
                   type="button"
                   onClick={close}
-                  aria-label="Cerrar menú"
+                  aria-label={t('mobileMenu.close')}
                   tabIndex={isOpen ? 0 : -1}
                   className={mobileMenuIconButtonVariants({ size: 'close' })}
                 >
@@ -248,7 +250,10 @@ export function MobileMenu({ links, cta, siteName = 'BBF', logo }: MobileMenuPro
                       transition={slideTransition}
                       className="absolute inset-0 overflow-y-auto"
                     >
-                      <nav className="flex flex-col px-6 py-6" aria-label="Mobile navigation">
+                      <nav
+                        className="flex flex-col px-6 py-6"
+                        aria-label={t('mobileMenu.navLabel')}
+                      >
                         {links.map((link, idx) => {
                           const hasSub =
                             link.hasSubMenu && link.subLinks && link.subLinks.length > 0;
@@ -317,7 +322,7 @@ export function MobileMenu({ links, cta, siteName = 'BBF', logo }: MobileMenuPro
                           type="button"
                           onClick={goBack}
                           tabIndex={isOpen ? 0 : -1}
-                          aria-label="Volver al menú principal"
+                          aria-label={t('mobileMenu.back')}
                           className="inline-flex h-11 w-11 shrink-0 items-center justify-center [border-radius:var(--bbf-radius-interactive)] text-[var(--bbf-on-surface-title)] transition-all [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)] focus-visible:ring-2 focus-visible:ring-[var(--bbf-on-surface-focus-ring)] focus-visible:outline-none [@media(hover:hover)]:hover:bg-[var(--bbf-on-surface-hover-bg)]"
                         >
                           <ChevronLeft className="h-5 w-5" aria-hidden />
@@ -334,7 +339,7 @@ export function MobileMenu({ links, cta, siteName = 'BBF', logo }: MobileMenuPro
                         tabIndex={isOpen ? 0 : -1}
                         className="flex min-h-[44px] items-center border-b border-[var(--bbf-on-surface-border)]/30 px-6 py-3 text-[length:var(--bbf-text-body-sm)] [font-weight:var(--bbf-weight-medium)] text-[var(--bbf-on-surface-body)] transition-colors [transition-duration:var(--bbf-motion-duration-fast)] [transition-timing-function:var(--bbf-motion-ease-out-quart)] focus-visible:text-[var(--bbf-on-surface-link)] focus-visible:outline-none [@media(hover:hover)]:hover:text-[var(--bbf-on-surface-link)]"
                       >
-                        ↗ Ver todo
+                        {t('mobileMenu.viewAll')}
                       </Link>
 
                       {/* SubLinks — H-1: icon siempre visible (media no se renderiza en V2) */}

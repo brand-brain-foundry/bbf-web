@@ -15,10 +15,22 @@ interface WAChatMsg {
   time: string;
 }
 
+export interface WAChatUI {
+  backAriaLabel: string;
+  statusTyping: string;
+  statusOnline: string;
+  daystamp: string;
+  encrypted: string;
+  inputPlaceholder: string;
+  sendAriaLabel: string;
+  voiceAriaLabel: string;
+}
+
 interface WASequenceProps {
   messages: WAChatMsg[];
   contactName: string;
   footer?: string;
+  ui: WAChatUI;
 }
 
 function WAChecks() {
@@ -49,7 +61,7 @@ function WAChecks() {
   );
 }
 
-export function WASequence({ messages, contactName, footer }: WASequenceProps) {
+export function WASequence({ messages, contactName, footer, ui }: WASequenceProps) {
   const [shown, setShown] = useState<WAChatMsg[]>([]);
   const [typingInput, setTypingInput] = useState('');
   const [brainTyping, setBrainTyping] = useState(false);
@@ -204,7 +216,7 @@ export function WASequence({ messages, contactName, footer }: WASequenceProps) {
 
       {/* Header */}
       <div className="bbf-wa-header">
-        <button className="bbf-wa-back" aria-label="Atrás">
+        <button className="bbf-wa-back" aria-label={ui.backAriaLabel}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
             <path
               d="M15 5l-7 7 7 7"
@@ -227,7 +239,9 @@ export function WASequence({ messages, contactName, footer }: WASequenceProps) {
         </div>
         <div className="bbf-wa-peer">
           <div className="bbf-wa-peer-name">{contactName}</div>
-          <div className="bbf-wa-peer-status">{brainTyping ? 'escribiendo…' : 'en línea'}</div>
+          <div className="bbf-wa-peer-status">
+            {brainTyping ? ui.statusTyping : ui.statusOnline}
+          </div>
         </div>
         <div className="bbf-wa-actions" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -257,13 +271,13 @@ export function WASequence({ messages, contactName, footer }: WASequenceProps) {
       {/* Body — dynamic messages */}
       <div className="bbf-wa-body" ref={bodyRef}>
         <div className="bbf-wa-daystamp">
-          <span>HOY</span>
+          <span>{ui.daystamp}</span>
         </div>
         <div className="bbf-wa-encrypt">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M6 10V8a6 6 0 1112 0v2h1a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1h1zm2 0h8V8a4 4 0 10-8 0v2z" />
           </svg>
-          Los mensajes están cifrados de extremo a extremo.
+          {ui.encrypted}
         </div>
 
         {shown.map((m, i) => (
@@ -318,7 +332,7 @@ export function WASequence({ messages, contactName, footer }: WASequenceProps) {
             ref={inputTextRef}
             className={`bbf-wa-input-text ${hasText ? '' : 'is-placeholder'}`}
           >
-            {hasText ? typingInput : 'Mensaje'}
+            {hasText ? typingInput : ui.inputPlaceholder}
             {hasText && <span className="bbf-wa-caret" />}
           </span>
           <svg
@@ -365,7 +379,7 @@ export function WASequence({ messages, contactName, footer }: WASequenceProps) {
         </div>
         <button
           className={`bbf-wa-send ${hasText ? 'is-send' : ''}`}
-          aria-label={hasText ? 'Enviar' : 'Mensaje de voz'}
+          aria-label={hasText ? ui.sendAriaLabel : ui.voiceAriaLabel}
         >
           {hasText ? (
             <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

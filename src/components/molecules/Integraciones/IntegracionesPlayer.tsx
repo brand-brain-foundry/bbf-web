@@ -20,15 +20,31 @@ interface IntItem {
   category: string;
 }
 
+export interface IntegracionesUI {
+  appTitle: string;
+  backAriaLabel: string;
+  allDoneTitle: string;
+  sourcesOf: string;
+  sourcesActive: string;
+  statusConnectedPrefix: string;
+  statusConnecting: string;
+}
+
 interface IntegracionesPlayerProps {
   logoNode: ReactNode;
   summaryTitle: string;
   items: IntItem[];
+  ui: IntegracionesUI;
 }
 
 type ItemState = 'off' | 'connecting' | 'on';
 
-export function IntegracionesPlayer({ logoNode, summaryTitle, items }: IntegracionesPlayerProps) {
+export function IntegracionesPlayer({
+  logoNode,
+  summaryTitle,
+  items,
+  ui,
+}: IntegracionesPlayerProps) {
   const [done, setDone] = useState(0);
   const [connecting, setConnecting] = useState<number | null>(null);
 
@@ -168,7 +184,7 @@ export function IntegracionesPlayer({ logoNode, summaryTitle, items }: Integraci
 
           {/* App bar */}
           <div className="bbf-app-appbar">
-            <button className="bbf-app-appbar__back" aria-label="Atrás">
+            <button className="bbf-app-appbar__back" aria-label={ui.backAriaLabel}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M15 5l-7 7 7 7"
@@ -180,7 +196,7 @@ export function IntegracionesPlayer({ logoNode, summaryTitle, items }: Integraci
               </svg>
             </button>
             <span className="bbf-app-appbar__logo">{logoNode}</span>
-            <span className="bbf-app-appbar__title">Integraciones</span>
+            <span className="bbf-app-appbar__title">{ui.appTitle}</span>
             <span className="bbf-app-appbar__right" aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                 <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="1.6" />
@@ -201,10 +217,10 @@ export function IntegracionesPlayer({ logoNode, summaryTitle, items }: Integraci
               </div>
               <div className="bbf-app-int-summary__info">
                 <div className="bbf-app-int-summary__title">
-                  {allDone ? 'Cerebro conectado' : summaryTitle}
+                  {allDone ? ui.allDoneTitle : summaryTitle}
                 </div>
                 <div className="bbf-app-int-summary__sub">
-                  {done} de {total} fuentes activas
+                  {done} {ui.sourcesOf} {total} {ui.sourcesActive}
                 </div>
               </div>
               <div className="bbf-app-int-summary__count">
@@ -257,13 +273,14 @@ export function IntegracionesPlayer({ logoNode, summaryTitle, items }: Integraci
                         {state === 'on' && (
                           <>
                             <span className="bbf-app-int-status__dot" aria-hidden="true" />
-                            {`Conectado · ${item.category}`}
+                            {ui.statusConnectedPrefix}
+                            {item.category}
                           </>
                         )}
                         {state === 'connecting' && (
                           <>
                             <span className="bbf-app-int-spin" aria-hidden="true" />
-                            Conectando…
+                            {ui.statusConnecting}
                           </>
                         )}
                         {state === 'off' && item.category}

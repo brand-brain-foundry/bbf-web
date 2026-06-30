@@ -11,7 +11,7 @@ export const revalidate = 3600;
 
 type Props = { params: Promise<{ locale: 'es' | 'en' }> };
 
-const SLUG_BY_LOCALE = { es: 'cerebro-marca', en: 'brand-brain' } as const;
+const SLUG_BY_LOCALE = { es: 'como-trabajamos', en: 'how-we-work' } as const;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function CerebroMarcaPage({ params }: Props) {
+export default async function ComoTrabajamosPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 

@@ -16,6 +16,7 @@ export interface ServiceCardProps {
   duration?: string | null;
   commitment?: string | null;
   body?: string | null;
+  icon?: string | null;
   deliverables?: { text?: string | null; id?: string | null }[] | null;
 }
 

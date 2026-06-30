@@ -40,6 +40,8 @@ interface Row {
 interface ComparisonProps {
   columns?: Column[] | null;
   rows?: Row[] | null;
+  /** Short name from SiteIdentity admin — shown in crown pill of highlighted column. */
+  crownText?: string | null;
 }
 
 /* ── Cell icons ─────────────────────────────────────────────────────────── */
@@ -61,7 +63,7 @@ function CellIcon({ state }: { state: 'yes' | 'no' | 'mid' }) {
 
 /* ── Comparison component ───────────────────────────────────────────────── */
 
-export function Comparison({ columns, rows }: ComparisonProps) {
+export function Comparison({ columns, rows, crownText }: ComparisonProps) {
   const cols = columns ?? [];
   const dataRows = rows ?? [];
 
@@ -113,7 +115,7 @@ export function Comparison({ columns, rows }: ComparisonProps) {
               >
                 {col.isHighlighted && (
                   <div className="bbf-cmp__crown" aria-hidden="true">
-                    ▼ BBF
+                    ▼ {crownText ?? 'SB'}
                   </div>
                 )}
                 <div className="bbf-cmp__col-name">{col.label}</div>
@@ -165,7 +167,10 @@ export function Comparison({ columns, rows }: ComparisonProps) {
         ))}
       </div>
 
-      <div className="bbf-cmp-mobile">
+      <div
+        className="bbf-cmp-mobile"
+        data-hl-active={String(cols[activeIdx]?.isHighlighted ?? false)}
+      >
         <div
           id={`cmp-panel-${activeColId}`}
           role="tabpanel"
