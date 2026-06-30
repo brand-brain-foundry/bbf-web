@@ -2535,3 +2535,201 @@ Sistema SB commiteado:
 ✅ Purga legacy (30 archivos eliminados — 08a1d3f)
 ✅ Reports (output.md completo)
 ```
+
+---
+
+# REPORTE — B-BBF-WEB-AUDIT-ASSETS-AEO
+**Fecha:** 2026-06-30 · **Despacho:** B-BBF-WEB-AUDIT-ASSETS-AEO
+**Modo:** AUDIT read-only · **Protocolo:** P-6
+**Repo:** bbf-web · **Referencia:** R-BBF-ASSETS-AEO-01 (7 estándares)
+
+---
+
+## §1 — ALT TEXT
+
+### Imágenes
+
+| Asset | Alt actual | ¿Propósito/contexto? | ¿De admin? | ¿ES+EN? |
+|---|---|---|---|---|
+| AppScreenPlayer (rawImage / renderImage) | `asset.alt` de Payload Media | Solo si admin lo llena | ✅ Sí | Depende de admin |
+| AprendizajePlayer (postImage) | `asset.alt` | Solo si admin lo llena | ✅ Sí | Depende de admin |
+| IntegracionesPlayer (icons) | `iconAlt \|\| item.name` (fallback) | Fallback genérico (nombre de tool) | ✅ Fallback | ❌ Solo ES |
+| CapabilityScene kind=media | **`asset.alt ?? ''` → string vacío si admin no llena** | ❌ Vacío = invisible | ✅ Sí | Sin garantía |
+| MegaMenuPanel images | `media.alt ?? sub.label` | Fallback a label localized | ✅ Bueno | ✅ Sí |
+| Hero video poster | N/A (atributo `<video poster>`) | — | Payload field | — |
+| Contacto page | Sin imágenes | — | — | — |
+
+**Gap crítico:** `CapabilityScene.tsx:199` → `const altText = asset.alt ?? ''` — sin fallback a caption ni footer. Si el admin deja el campo Media.alt vacío (probable en seeds), la imagen queda invisible para crawlers.
+
+### Escenas animadas — visibilidad para IA
+
+| Escena | `aria-label` | Texto en SSR | Riesgo AEO |
+|---|---|---|---|
+| `chat` / `pipeline` / `workflow` / `stack` | ❌ No | ✅ Sí (Server Components) | Bajo |
+| `WAChat` / `WAAgenda` | ❌ No | ❌ **No** — mensajes vienen de `useEffect`, SSR inicial = `msgs: []` | **Alto** |
+| `AppScreen` | ❌ No | Parcial (estado inicial screen=brief) | Medio |
+| `Aprendizaje` | Parcial (`metricsAriaLabel`) | Parcial (InsightsPane estática) | Medio |
+| `HubDiagram` | Wrapper `aria-hidden="true"` + spoke labels fuera del SVG | Sí | Bajo |
+| kind=media (imagen) | `aria-label={altText}` en `<video>`, no en `<Image>` | Depende de alt | Medio |
+
+**Positivo:** `CapabilityCard.Txt` (title, lede, body, bullets, blockquote) es Server Component — **SSR'd y completamente indexable**. Las escenas son decoración visual de contenido textual real.
+
+### BrandLogo stamp (hero principal)
+
+`BrandLogo.tsx:163–167` — variante `stamp`: ambos SVGs llevan `aria-hidden="true"`. El wrapper `<div>` no tiene `role="img"` ni `aria-label`. El logo BBF en el hero principal es **semánticamente invisible** para screen readers y crawlers que respetan ARIA.
+
+---
+
+## §2 — IMAGEOBJECT SCHEMA
+
+`StructuredData.tsx:183–188` — @graph global:
+
+| Campo | Estado |
+|---|---|
+| `ImageObject` presente | ✅ Solo para logo Organization (`icon-512.png`) |
+| `name` | ❌ Ausente |
+| `description` | ❌ Ausente |
+| `caption` | ❌ Ausente |
+| `license` | ❌ Ausente |
+| `primaryImageOfPage` en @graph | ❌ Ausente en layout global |
+| `primaryImageOfPage` en WebPage homepage | ✅ Presente en `page.tsx:100–105` (`og-image.png`, 1200×630) |
+
+Logo ImageObject mínimo — solo url/width/height. Sin metadata enriquecida.
+`og-image.png` y `hero-poster.png` **no aparecen en el @graph de StructuredData.tsx** — solo en el WebPage schema inline de page.tsx.
+
+---
+
+## §3 — FORMATOS + CWV
+
+| Gap | Evidencia | Severidad |
+|---|---|---|
+| **No hay `<link rel="preload">` para LCP** | `layout.tsx` — ausente | Alta |
+| **hero-poster.png servido como `<video poster="">`** raw | `HeroVideo.tsx:101`, `page.tsx:192` — sin next/image, sin fetchPriority | Alta |
+| `hero-poster.png` y `og-image.png` en PNG | `/public/hero-poster.png`, `/public/og-image.png` | Media |
+| **No hay `fetchPriority="high"` en ningún asset del LCP** | `page.tsx` — ausente | Alta |
+
+**Positivo:**
+- Cero `<img>` raw en `src/` — todo usa `<Image>` (next/image) ✅
+- `AppScreenPlayer.tsx`, `CapabilityScene.tsx` usan `<Image fill sizes="...">` correctamente ✅
+- Escenas con imágenes tienen width/height explícitos en la mayoría de casos ✅
+
+El LCP real es el video poster (`hero-poster.png`). Al ir por `<video poster>` nativo, sale del pipeline de next/image → sin optimización de formato, sin preload, sin CDN resizing.
+
+---
+
+## §4 — VIDEO Y ESCENAS PARA IA
+
+### Hero video
+
+`HeroVideo.tsx:93–108`:
+- ✅ `<video>` real con `preload="metadata"` y `poster={poster}`
+- ❌ `aria-hidden={true}` — invisible para AT y crawlers ARIA-aware
+- ❌ Sin `<track>` — sin captions, sin transcript
+- ❌ Sin `VideoObject` schema en @graph
+
+CaseSection video (`page.tsx:286`): mismo patrón, sin aria, sin transcript.
+
+### VideoObject schema
+
+**Ausente.** `StructuredData.tsx` emite Organization, Person[], WebSite, Service[], ItemList. `page.tsx` agrega WebPage y FAQPage. Ningún `VideoObject` en el codebase para el hero video ni el case study.
+
+---
+
+## §5 — OG / SOCIAL
+
+### Home (locale layout)
+
+```ts
+// layout.tsx:115
+openGraph: {
+  images: [{ url: ogImage, width: 1200, height: 630, alt: title }],  // ✅ ok
+},
+twitter: {
+  images: [ogImage],  // ❌ string solo — sin alt, sin width, sin height
+},
+```
+
+### Contacto (opengraph-image.tsx)
+
+- `export const size = { width: 1200, height: 630 }` ✅
+- `export const alt` → **AUSENTE** ❌ — Next.js lo soporta pero no está exportado
+- Twitter card: sin `images: []` explícito con alt
+
+---
+
+## §6 — SÍNTESIS Y PLAN
+
+### Estado vs los 7 estándares
+
+| Estándar | Estado | Nivel |
+|---|---|---|
+| 1. Alt text propósito/contexto | ⚠️ Parcial — de admin OK, pero CapabilityScene vacío + stamp hero invisible | Media |
+| 2. ImageObject schema (name/desc/caption/license) | ❌ Logo solo, sin metadata | Media |
+| 3. WebP/AVIF | ❌ hero-poster y og-image en PNG; next/image no aplica al poster | Media |
+| 4. width/height + preload LCP | ❌ Sin preload; poster fuera de next/image pipeline | Alta |
+| 5. Filenames + paths semánticos | ⚠️ `hero-poster.png`, `og-image.png` genéricos; seeds → descriptivos | Baja |
+| 6. VideoObject + transcript | ❌ Ausente para hero video y case video | Alta |
+| 7. og:image (1200×630 + alt) | ⚠️ OG ok en home; contacto sin export alt; Twitter sin alt | Media |
+
+**Puntuación:** 2/7 OK · 3/7 parcial · 2/7 ausente
+
+### Matiz Google vs ecosistema IA
+
+Google: indexa JavaScript, entiende el video even sin VideoObject, lee texto SSR. Impacto relativo menor para Google puro.
+
+**Perplexity / ChatGPT / Claude / Bing:** crawlean HTML estático → `aria-hidden` en video = opaco, WAChat SSR vacío = invisible, VideoObject ausente = no aparece en citas de video AI. **Aquí está el gap real de AEO/GEO.**
+
+### Plan priorizado
+
+#### GRUPO A — Pre-switch (impacto inmediato AEO/GEO, cambios < 1h)
+
+| # | Fix | Archivo | Impacto |
+|---|---|---|---|
+| A1 | Quitar `aria-hidden={true}` del hero `<video>`, agregar `aria-label` descriptivo | `HeroVideo.tsx:103` | Alto — video visible para crawlers |
+| A2 | BrandLogo stamp: wrapper `role="img"` + `aria-label="Brand Brain Foundry"` | `BrandLogo.tsx:163–167` | Medio — logo hero accesible |
+| A3 | `CapabilityScene` kind=media: fallback `asset.alt ?? asset.caption ?? asset.name ?? ''` | `CapabilityScene.tsx:199` | Alto — imágenes de escenas no vacías |
+| A4 | Twitter card global: `images: [{ url: ogImage, alt: title, width: 1200, height: 630 }]` | `layout.tsx:123` | Medio — Twitter/X preview correcto |
+| A5 | `opengraph-image.tsx` contacto: `export const alt = 'Contacto — Sivar Brains'` | `contacto/opengraph-image.tsx` | Medio — OG alt correcto |
+| A6 | VideoObject schema básico para hero video en `page.tsx` @graph | `page.tsx` | Alto — citación de video en IA |
+
+#### GRUPO B — Post-switch (deuda conocida, requiere más investigación)
+
+| # | Fix | Complejidad | Nota |
+|---|---|---|---|
+| B1 | `hero-poster.png` → preload hint en layout `<head>` | Media | `<link rel="preload" as="image" href={posterUrl} fetchPriority="high">` — requiere RSC head inject |
+| B2 | Convertir hero-poster a WebP/AVIF | Baja | Reconvertir asset + CDN |
+| B3 | WAChat/WAAgenda: aria-description estática con contenido de escena | Media | Alternativa al SSR-safe refactor |
+| B4 | ImageObject enriquecido en @graph (name/description/caption) | Baja | Contenido editorial en admin |
+| B5 | `filenames` descriptivos para og-image y poster | Baja | SEO filenames + canonical path |
+
+### Items diferidos a blog/posts (fuera de scope home/contacto)
+
+- Article ImageObject para posts con imágenes
+- Transcript para podcast episodes
+- `VideoObject` para episodes blog con video embeds
+
+---
+
+## Estado final de auditoría
+
+```
+7 estándares auditados — 0 modificaciones (audit puro)
+
+GRUPO A: 6 fixes claros, todos < 1h combinados
+  A1 HeroVideo aria-hidden → aria-label
+  A2 BrandLogo stamp → role+label
+  A3 CapabilityScene alt fallback
+  A4 Twitter card alt
+  A5 contacto opengraph-image.tsx alt export
+  A6 VideoObject schema page.tsx
+
+GRUPO B: 5 items deuda post-switch
+  B1 preload LCP poster
+  B2 WebP hero-poster
+  B3 WAChat aria-description
+  B4 ImageObject enriquecido
+  B5 filenames descriptivos
+
+CWV-02 (no preload LCP) + AI-01 (video aria-hidden) + AI-02 (VideoObject ausente)
+son los 3 más críticos para AEO/GEO pre-switch.
+```
