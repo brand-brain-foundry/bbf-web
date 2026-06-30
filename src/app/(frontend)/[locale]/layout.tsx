@@ -119,7 +119,7 @@ export async function generateMetadata({
       site: seo.twitterHandle || undefined,
       title,
       description: siteDescription,
-      images: [ogImage],
+      images: [{ url: ogImage, alt: title, width: 1200, height: 630 }],
     },
     other: {
       'apple-mobile-web-app-title': site.siteName,

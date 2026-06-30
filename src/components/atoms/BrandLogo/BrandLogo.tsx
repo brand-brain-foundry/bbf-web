@@ -173,6 +173,8 @@ export function BrandLogo({
       data-animated={animated || undefined}
       className={cn(brandLogoVariants({ variant, size: variantSize }), className)}
       style={customSizeStyle}
+      role={variant === 'stamp' ? 'img' : undefined}
+      aria-label={variant === 'stamp' ? resolvedLabel : undefined}
       // SVG injected inline: Server Component pattern preserving animation IDs
       dangerouslySetInnerHTML={{ __html: svgContent }}
     />

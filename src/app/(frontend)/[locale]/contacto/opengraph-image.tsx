@@ -3,6 +3,8 @@ import { ImageResponse } from 'next/og';
 export const runtime = 'edge';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
+// Bilingual fallback — opengraph-image.tsx static export can't resolve locale at this level
+export const alt = 'Contacto / Contact — Sivar Brains';
 
 type Props = { params: Promise<{ locale: string }> };
 

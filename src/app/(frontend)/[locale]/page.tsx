@@ -74,6 +74,29 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       : undefined;
   const caseVideoSources = cs?.videoSources ?? [];
 
+  // A6 (AEO): VideoObject básico para el hero video — citable por IA/buscadores
+  const heroVideoSrc = hero.media.videoSources?.[0]?.src ?? undefined;
+  const thumbnailUrl = posterUrl.startsWith('http')
+    ? posterUrl
+    : `${siteId.siteDomain}${posterUrl}`;
+  const videoObjectSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    '@id': `${siteId.siteDomain}/#video-hero`,
+    name: hero.media.demoLabel,
+    description: hero.media.footCaption ?? hero.media.demoLabel,
+    thumbnailUrl,
+    uploadDate: site.updatedAt,
+    inLanguage: l === 'es' ? 'es-SV' : 'en-US',
+    ...(heroVideoSrc
+      ? {
+          contentUrl: heroVideoSrc.startsWith('http')
+            ? heroVideoSrc
+            : `${siteId.siteDomain}${heroVideoSrc}`,
+        }
+      : {}),
+  };
+
   // G-19: FAQPage JSON-LD from admin faq[] (Sprint 2 — campo canónico, no hardcoded)
   const faqItems = (site.seo?.faq ?? [])
     .filter((item): item is { question: string; answer: string; id?: string | null } =>
@@ -189,7 +212,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   <HeroRecTimer />
                 </HeroMediaFrame.Chrome>
                 <HeroMediaFrame.VideoShell className="bbf-hero__video-shell">
-                  <HeroVideo controls preload="metadata" poster={posterUrl}>
+                  <HeroVideo
+                    controls
+                    preload="metadata"
+                    poster={posterUrl}
+                    ariaLabel={hero.media.demoLabel}
+                  >
                     {hero.media.videoSources?.map((s) => (
                       <HeroVideo.Source key={s.src} src={s.src} type={s.type} />
                     ))}
@@ -283,7 +311,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 />
                 <HeroMediaFrame.VideoShell>
                   {caseVideoSources.length > 0 ? (
-                    <HeroVideo controls preload="metadata" poster={casePosterUrl}>
+                    <HeroVideo
+                      controls
+                      preload="metadata"
+                      poster={casePosterUrl}
+                      ariaLabel={cs.mediaChromeLabel ?? cs.h2Line1 ?? undefined}
+                    >
                       {caseVideoSources.map((s) => (
                         <HeroVideo.Source key={s.src} src={s.src} type={s.type} />
                       ))}
@@ -384,6 +417,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(videoObjectSchema) }}
       />
     </>
   );

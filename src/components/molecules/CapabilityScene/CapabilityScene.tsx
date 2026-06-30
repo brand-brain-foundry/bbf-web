@@ -195,7 +195,7 @@ export async function CapabilityScene({ scene }: CapabilitySceneProps) {
     }
     const asset = media.asset;
     const isVideo = media.mediaType === 'video';
-    const altText = asset.alt ?? '';
+    const altText = asset.alt ?? media.caption ?? '';
     const posterUrl =
       typeof media.posterFallback === 'object' && media.posterFallback !== null
         ? (media.posterFallback.url ?? undefined)
