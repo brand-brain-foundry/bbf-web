@@ -1,3 +1,100 @@
+# REPORTE — B-BBF-WEB-SELFHOST-MATCAPS-Y-DEUDA
+**Fecha:** 2026-06-30 · **pwd:** bbf-web
+**Despacho:** B-BBF-WEB-SELFHOST-MATCAPS-Y-DEUDA — self-host matcaps + three.js deuda
+**Protocolo:** P-1 + P-5 + P-6
+**Restricción:** PROHIBIDO push, migrate, zona intocable. NO agregar dominios externos al CSP.
+**TSC:** ✓ (build) · **pnpm build:** ✓ exit 0
+**Commit:** `eb357da`
+
+---
+
+## §1 — Self-host matcaps d/e/f
+
+### Problema
+`blob-scene.js` v43 cargaba matcaps d, e, f desde CDN externo:
+```
+https://raw.githubusercontent.com/nidorx/matcaps/master/1024/2D2D2F_C6C2C5...png
+https://raw.githubusercontent.com/nidorx/matcaps/master/1024/2A2A2A_DBDBDB...png
+https://raw.githubusercontent.com/nidorx/matcaps/master/1024/2A2A2A_B3B3B3...png
+```
+→ dominio externo en CSP = superficie de ataque (R-BBF-SELFHOST-01). GitHub raw no es CDN de prod.
+
+### Solución
+1. Descargados los 3 PNGs a `/public/assets/blob/`:
+   - `matcap-d.png` (345K) — 2D2D2F_C6C2C5_727176_94949B
+   - `matcap-e.png` (170K) — 2A2A2A_DBDBDB_6A6A6A_949494
+   - `matcap-f.png` (476K) — 2A2A2A_B3B3B3_6D6D6D_848C8C
+2. `blob-scene.js` v44: URLs hardcoded reemplazadas por `cfg.assetBase + 'matcap-X.png'`
+3. `BlobBackground.tsx`: query string bumpeado a `?v=44` (cache bust)
+
+**CSP:** sin cambios — `'self'` ya cubre `/public`. CERO dominios externos nuevos.
+
+### Estado matcaps
+| Key | Archivo local | CDN externo |
+|---|---|---|
+| a | matcap-a.png ✅ | — |
+| b | matcap-b.png ✅ | — |
+| c | matcap-c.png ✅ | — (v40) |
+| d | matcap-d.png ✅ | — (v44) |
+| e | matcap-e.png ✅ | — (v44) |
+| f | matcap-f.png ✅ | — (v44) |
+
+---
+
+## §2 — Three.js dual instance
+
+### Diagnóstico
+En el home page coexistían dos instancias de Three.js:
+1. `three` r184 (ESM) — bundleado estáticamente por Next.js via `import { Lissajous3DMotor } from '@/lib/motion/lissajous'` en `Lissajous.tsx`
+2. `three.min.js` r160 (UMD, global `window.THREE`) — inyectado por `BlobBackground` via `injectScript()`
+
+El home page usa solo presets `case-2d` y `cross-2d` (SVG puro, sin Three.js) pero el static import forzaba el bundle de `three` r184.
+
+La `three.min.js` r160 UMD emite un `console.warn` propio al cargar (deprecación r150+).
+
+### Solución
+`Lissajous.tsx`: `Lissajous3DMotor` convertido de static import a dynamic import:
+- `import type { Lissajous3DMotor as Lissajous3DMotorType }` — type-only, erased at runtime
+- `import('@/lib/motion/lissajous').then(({ Lissajous3DMotor }) => ...)` — solo se carga cuando hay un preset 3D en uso
+
+**Resultado en home page:**
+- Before: `three` r184 (bundled) + `three.min.js` r160 (global) = 2 instancias, warning
+- After: NO `three` en bundle + `three.min.js` r160 (solo si BlobBackground activo) = 1 instancia
+
+### Deuda técnica documentada
+- `three.min.js` r160 UMD self-depreca en consola (warning hardcoded en el archivo). Fix real: convertir `blob-scene.js` de IIFE a ES module para usar `import * as THREE from 'three'` y eliminar `three.min.js`. Riski — requiere despacho dedicado. Etiqueta: `D-THREE-ESM-01`.
+- Si en el futuro hay presets 3D en producción, el dynamic import de Lissajous cargará `three` r184 ESM + BlobBackground inyecta `three.min.js` r160 global — volverían a ser 2 instancias. Fix: completar `D-THREE-ESM-01`.
+
+---
+
+## §3 — Verificación
+
+| Check | Estado |
+|---|---|
+| pnpm build | ✅ exit 0, 22 páginas |
+| matcaps d/e/f locales | ✅ /public/assets/blob/ |
+| CSP sin dominios externos | ✅ sin cambios en CSP |
+| three.js: 1 instancia en home | ✅ (dynamic import) |
+| blob-scene.js v44 | ✅ |
+| Efectos visuales | ⏳ Zavala valida (dev + visual) |
+
+**Pendiente Zavala (T3):**
+- `pnpm dev` → abrir `/` → BlobBackground se ve correcto (matcap-c activo, negro cromo)
+- Consola: CERO errores CSP, CERO "Multiple instances of Three.js"
+- `three.min.js` deprecation warning sigue (esperado hasta D-THREE-ESM-01)
+- Los efectos 3D (BlobBackground) se ven intactos
+
+---
+
+## §4 — Drift
+
+- `public/assets/blob/matcap-d/e/f.png` — nuevos (self-hosted)
+- `public/assets/blob/blob-scene.js` — v43 → v44 (3 líneas CDN → local)
+- `src/components/atoms/BlobBackground/BlobBackground.tsx` — `?v=43` → `?v=44`
+- `src/components/atoms/Lissajous/Lissajous.tsx` — static import Lissajous3DMotor → dynamic import
+
+---
+
 # REPORTE — B-BBF-WEB-FIX-CSP-ENVIRONMENT
 **Fecha:** 2026-06-30 · **pwd:** bbf-web
 **Despacho:** B-BBF-WEB-FIX-CSP-ENVIRONMENT — CSP environment-aware (dev vs prod) + build fix
