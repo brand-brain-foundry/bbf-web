@@ -2459,3 +2459,79 @@ Cero deuda real abierta. Todo diferido tiene disparador documentado. El sistema 
 ## Drift detectado durante DEUDA-04
 
 - `payload-types.ts` M + `SiteHomepage.ts` M + 4 migraciones `??` = schema sync commit pendiente (NO deuda, es trabajo nuevo no commiteado). Zavala decide cuándo commitear.
+
+---
+
+# REPORTE — B-BBF-WEB-COMMIT-SCHEMA-SYNC
+**Fecha:** 2026-06-30 · **pwd:** bbf-web
+**Despacho:** B-BBF-WEB-COMMIT-SCHEMA-SYNC — Schema sync + commit sistema nuevo completo
+**Protocolo:** P-1 + P-5 · **TSC:** 0 errores
+
+---
+
+## §1 — INVENTARIO CLASIFICADO
+
+| Grupo | Count | Acción |
+|---|---|---|
+| Schema (migrations ×4 + SiteHomepage + payload-types + migrations/index) | 7 | ✅ COMMIT 1 |
+| Seeds (6 nuevos + 3 M) | 9 | ✅ COMMIT 2 |
+| CSS (DEUDA-03-CSS + DRIFT-1) | 13 | ✅ COMMIT 3 |
+| Frontend (pages + components + i18n + routes + deps) | 35 | ✅ COMMIT 4 |
+| Reports (output.md) | 1 | ✅ COMMIT 5 |
+| `backups/*.dump` | 8 | ❌ `.gitignore` ya los cubre |
+| `public/assets/Pages/` | ~1 | ❌ Payload local media (cloud en prod) |
+| `public/assets/development/` | ~5 | ❌ Mockups de desarrollo |
+
+Total commiteado: **65 archivos** en 5 commits lógicos y trazables.
+
+---
+
+## §2 — COMMITS
+
+| Hash | Mensaje | Archivos |
+|---|---|---|
+| `dfe3696` | feat(schema): como-trabajamos routeKey + S5 service icons | 7 (22,227 inserciones) |
+| `c5a0931` | feat(seed): homepage+contacto ES+EN seeds | 9 (1,823 inserciones) |
+| `878df02` | fix(css): DEUDA-03-CSS + DRIFT-1 | 13 (150 inserciones) |
+| `f1bd9a6` | feat(frontend): páginas + componentes + i18n SB | 35 (1,036 inserciones) |
+| `396c626` | docs(reports): output.md barrido de deuda | 1 (2,390 inserciones) |
+
+Archivos colados (legacy/temporal): **CERO.**
+
+---
+
+## §3 — VERIFICACIÓN
+
+- **TSC:** 0 errores ✅
+- **git status:** solo 3 `??` (backups dumps + Payload media local + dev mockups) — ninguno del sistema nuevo ✅
+- **git log:** 5 commits con mensajes trazables, IDs de despacho/decisión incluidos ✅
+- **Sistema nuevo:** completamente commiteado ✅
+- **Legacy/temporal colado:** CERO ✅
+
+---
+
+## Pending — Opcional post-despacho
+
+Agregar a `.gitignore`:
+```
+public/assets/Pages/
+public/assets/development/
+```
+Para que esos `??` desaparezcan del status. No urgente.
+
+---
+
+## Estado final del repo
+
+```
+HEAD: 396c626
+main → 7 commits desde el último push a origin
+
+Sistema SB commiteado:
+✅ Schema (migrations, payload-types, globals)
+✅ Seeds (homepage + contacto ES+EN)
+✅ CSS (DEUDA-03-CSS + DRIFT-1 cerrados)
+✅ Frontend (home, contacto, cornerstones, escenas, i18n, deps)
+✅ Purga legacy (30 archivos eliminados — 08a1d3f)
+✅ Reports (output.md completo)
+```
