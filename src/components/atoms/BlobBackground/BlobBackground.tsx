@@ -20,7 +20,7 @@ declare global {
 }
 
 const THREE_SCRIPT = '/assets/blob/three.min.js';
-const BLOB_SCRIPT = '/assets/blob/blob-scene.js?v=43';
+const BLOB_SCRIPT = '/assets/blob/blob-scene.js?v=44';
 const BLOB_ASSET_BASE = '/assets/blob/';
 const MOBILE_WIDTH = 768;
 

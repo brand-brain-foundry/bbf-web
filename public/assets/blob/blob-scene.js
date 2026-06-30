@@ -10,7 +10,8 @@
    v40: matcap-c moved from CDN to local assetBase (matcap-c.png).
    v41: trackPointer(nx,ny) — exposes cursor-to-light from React (bindInput:false mode).
    v42: canvas-relative resize — renderer uses canvas.clientWidth/Height instead of window dimensions.
-   v43: fix canvas scope — canvas declared at module level so resize() can access it from event listener. */
+   v43: fix canvas scope — canvas declared at module level so resize() can access it from event listener.
+   v44: matcaps d/e/f moved from raw.githubusercontent.com CDN to local assetBase (CSP strict). */
 (function () {
   'use strict';
 
@@ -307,9 +308,9 @@
     matcaps.a = loadMatcap(cfg.assetBase + 'matcap-a.png');
     matcaps.b = loadMatcap(cfg.assetBase + 'matcap-b.png');
     matcaps.c = loadMatcap(cfg.assetBase + 'matcap-c.png');
-    matcaps.d = loadMatcap('https://raw.githubusercontent.com/nidorx/matcaps/master/1024/2D2D2F_C6C2C5_727176_94949B.png');
-    matcaps.e = loadMatcap('https://raw.githubusercontent.com/nidorx/matcaps/master/1024/2A2A2A_DBDBDB_6A6A6A_949494.png');
-    matcaps.f = loadMatcap('https://raw.githubusercontent.com/nidorx/matcaps/master/1024/2A2A2A_B3B3B3_6D6D6D_848C8C.png');
+    matcaps.d = loadMatcap(cfg.assetBase + 'matcap-d.png');
+    matcaps.e = loadMatcap(cfg.assetBase + 'matcap-e.png');
+    matcaps.f = loadMatcap(cfg.assetBase + 'matcap-f.png');
     const matcap = matcaps[cfg.matcap] || matcaps.b;
 
     mat = new THREE.ShaderMaterial({

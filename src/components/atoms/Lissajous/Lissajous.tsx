@@ -18,12 +18,13 @@
 import { useEffect, useRef } from 'react';
 import { useReducedMotion } from 'motion/react';
 
-import { getLissajousVariant, Lissajous2DMotor, Lissajous3DMotor } from '@/lib/motion/lissajous';
+import { getLissajousVariant, Lissajous2DMotor } from '@/lib/motion/lissajous';
 import type {
   LissajousName,
   LissajousRuntimeOptions,
   LissajousPreset2D,
   LissajousPreset3D,
+  Lissajous3DMotor as Lissajous3DMotorType,
 } from '@/lib/motion/lissajous';
 
 import { cn } from '@/lib/utils';
@@ -83,13 +84,21 @@ export function Lissajous({
     const preset = overrideMath ?? variant.preset;
 
     if (variant.dimension === '3d') {
-      const motor = new Lissajous3DMotor({
-        preset: preset as LissajousPreset3D,
-        container,
-        ...runtimeOptions,
+      let motor: Lissajous3DMotorType | undefined;
+      let active = true;
+      import('@/lib/motion/lissajous').then(({ Lissajous3DMotor }) => {
+        if (!active) return;
+        motor = new Lissajous3DMotor({
+          preset: preset as LissajousPreset3D,
+          container,
+          ...runtimeOptions,
+        });
+        motor.start();
       });
-      motor.start();
-      return () => motor.stop();
+      return () => {
+        active = false;
+        motor?.stop();
+      };
     } else {
       const motor = new Lissajous2DMotor({
         preset: preset as LissajousPreset2D,
