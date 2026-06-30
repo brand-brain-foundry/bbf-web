@@ -19,7 +19,6 @@ declare global {
   }
 }
 
-const THREE_SCRIPT = '/assets/blob/three.min.js';
 const BLOB_SCRIPT = '/assets/blob/blob-scene.js?v=44';
 const BLOB_ASSET_BASE = '/assets/blob/';
 const MOBILE_WIDTH = 768;
@@ -43,10 +42,12 @@ function loadEngine(): Promise<void> {
   if (window.BlobScene) return Promise.resolve();
   if (enginePromise) return enginePromise;
   // Three.js must be globally available before blob-scene.js executes (IIFE uses THREE as global).
-  // Sequential: Three onload → then motor. NOT parallel — parallel restores the ReferenceError.
+  // Sequential: THREE set → then motor. NOT parallel — parallel restores the ReferenceError.
+  // Use npm three (r184 ESM) instead of UMD three.min.js: eliminates deprecated-build warning
+  // and the multiple-instances warning. All 14 THREE.* APIs used in blob-scene.js exist in r184.
   const w = window as typeof window & { THREE?: unknown };
   enginePromise = (async () => {
-    if (!w.THREE) await injectScript(THREE_SCRIPT);
+    if (!w.THREE) w.THREE = await import('three');
     await injectScript(BLOB_SCRIPT);
   })().catch((err: unknown) => {
     enginePromise = null; // clear so the next mount retries
