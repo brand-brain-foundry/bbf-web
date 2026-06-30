@@ -1,3 +1,161 @@
+# REPORTE — B-BBF-WEB-SMOKETEST-PROD
+**Fecha:** 2026-06-30 · **pwd:** bbf-web
+**Despacho:** B-BBF-WEB-SMOKETEST-PROD — Smoke test build producción local
+**Protocolo:** P-1 + P-6
+**Restricción:** PROHIBIDO cambios de código, push, migrate. Solo verificación.
+
+---
+
+## §1 — Build de producción
+
+**`pnpm build` → exit 0** ✅
+
+```
+ ✓ Compiled successfully in 5.9min
+ ✓ Generating static pages (22/22)
+```
+
+**Tabla de rutas generadas:**
+
+| Ruta | Tipo | Revalidate |
+|---|---|---|
+| `/_not-found` | ○ SSG | — |
+| `/[locale]` (`/es`, `/en`) | ● ISR | 1h |
+| `/[locale]/[...pathSegments]` | ƒ serverless | — |
+| `/[locale]/casos` (`/es/casos`, `/en/casos`) | ● ISR | 1h |
+| `/[locale]/cerebro-marca` (×2) | ● ISR | 1h |
+| `/[locale]/como-trabajamos` (×2) | ● ISR | 1h |
+| `/[locale]/contacto` (`/es/contacto`, `/en/contacto`) | ● ISR | 1h |
+| `/[locale]/contacto/opengraph-image` | ƒ serverless | — |
+| `/[locale]/newsletter/confirmed` (×2) | ● ISR | — |
+| `/[locale]/newsletter/error` (×2) | ● ISR | — |
+| `/admin/[[...segments]]` | ƒ serverless | — |
+| `/api/[...slug]` | ƒ serverless | — |
+| `/api/newsletter/confirm` | ƒ serverless | — |
+| `/api/webhooks/resend` | ƒ serverless | — |
+| `/en/llms.txt` | ƒ serverless | — |
+| `/llms-full.txt` | ○ ISR | 1h |
+| `/llms.txt` | ƒ serverless | — |
+| `/sitemap.xml` | ○ ISR | 1h |
+| `ƒ Middleware` | — 52.9 kB | — |
+
+**22/22 páginas generadas correctamente.** Sin errores de tipo en build. Sin errores de compilación.
+
+**Warnings de build relevantes:** ninguno capturado (build limpio).
+
+---
+
+## §2 — Start en modo producción
+
+`PORT=3001 pnpm start` → **✅ Ready in 5.8s**
+
+```
+▲ Next.js 15.5.18
+- Local:    http://localhost:3001
+✓ Starting...
+✓ Ready in 5.8s
+```
+
+*(Puerto 3000 ocupado por dev server de Zavala — arranqué en 3001. Comportamiento idéntico en Vercel.)*
+
+---
+
+## §3 — Verificación funcional
+
+### HTTP status codes
+
+| Ruta | Esperado | Real | Estado |
+|---|---|---|---|
+| `/` | 200 | 200 | ✅ |
+| `/en` | 200 | 200 | ✅ |
+| `/contacto` | 200 | 200 | ✅ |
+| `/en/contacto` | — | 307 → `/en/contact` | ✅ correcto (slug EN es "contact") |
+| `/en/contact` | 200 | 200 | ✅ |
+| `/casos` | 404 (cornerstone vacío) | 404 | ✅ |
+| `/ruta-inexistente` | 404 | 404 | ✅ |
+| `/sitemap.xml` | 200 | 200 | ✅ |
+| `/robots.txt` | 200 | 200 | ✅ |
+| `/llms.txt` | 200 | 200 | ✅ |
+
+### Security headers (respuesta `/`)
+
+| Header | Valor | Estado |
+|---|---|---|
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | ✅ |
+| `X-Frame-Options` | `DENY` | ✅ |
+| `X-Content-Type-Options` | `nosniff` | ✅ |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | ✅ |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=()` | ✅ |
+| `Content-Security-Policy` | Ver desglose abajo | ✅ PROD (sin unsafe-eval) |
+
+**CSP en producción:**
+```
+default-src 'self';
+script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.googletagmanager.com;
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: blob: https://*.public.blob.vercel-storage.com https://challenges.cloudflare.com;
+font-src 'self';
+connect-src 'self' https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.google-analytics.com https://*.public.blob.vercel-storage.com;
+media-src 'self' https://*.public.blob.vercel-storage.com;
+frame-src https://challenges.cloudflare.com;
+frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';
+upgrade-insecure-requests
+```
+
+**✅ `'unsafe-eval'` AUSENTE en producción** — confirmado modo PROD correcto.
+**Observación (sin fix — solo reporte):** `'strict-dynamic'` y PostHog (`us.i.posthog.com`) que aparecen en regla 40 canónica no están en la CSP actual. Si PostHog está en uso, necesitará una sesión de actualización de CSP antes del switch real.
+
+### JSON-LD @graph (/)
+
+- 3× `"@context":"https://schema.org"` ✅ (múltiples schemas en page)
+- 1× `"@graph"` ✅ presente
+
+### Sitemap
+
+- Dominio: `https://sivarbrains.com/` ✅ (ya apunta al dominio correcto)
+- hreflang ES + EN ✅ (ej. `/contacto` → `/en/contact`)
+- `<lastmod>` con fechas reales ✅
+
+### TypeScript
+
+```
+tsc --noEmit → 0 errores
+```
+✅
+
+---
+
+## §4 — Veredicto
+
+### ¿El build de prod está listo para subir a Vercel?
+
+**SÍ con una observación menor:**
+
+| Check | Estado |
+|---|---|
+| Build compila sin errores | ✅ |
+| 22/22 páginas generadas | ✅ |
+| tsc 0 errores | ✅ |
+| pnpm start levanta | ✅ |
+| Rutas con códigos correctos | ✅ |
+| Security headers completos | ✅ |
+| CSP sin unsafe-eval en PROD | ✅ |
+| JSON-LD @graph presente en homepage | ✅ |
+| Sitemap con dominio sivarbrains.com | ✅ |
+| robots.txt sirve | ✅ |
+| llms.txt sirve | ✅ |
+
+**Observación PostHog/CSP:** Si PostHog está activo en producción (no en este build local), el `connect-src` y `script-src` necesitan incluir `https://us.i.posthog.com` antes del switch. Confirmar en sesión post-switch o pre-Vercel.
+
+### Qué Zavala debe validar visualmente (localhost:3001)
+
+1. **Homepage (/)** — efecto blob 3D funciona (roto = tres r184 no carga)
+2. **Navbar** — menú mobile funciona
+3. **Contacto (/contacto)** — form + Turnstile widget aparece
+4. **Dark mode / animaciones** — Lissajous 2D visible
+
+---
+
 # REPORTE — B-BBF-WEB-PRESWITCH-VALORES
 **Fecha:** 2026-06-30 · **pwd:** bbf-web + bbf-docs
 **Despacho:** B-BBF-WEB-PRESWITCH-VALORES — Auditoría pre-switch (read-only)
