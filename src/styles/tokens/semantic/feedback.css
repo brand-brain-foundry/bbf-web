@@ -15,6 +15,6 @@
 
   /* Error state */
   --bbf-color-error-bg: var(--bbf-color-error-100);
-  --bbf-color-error-text: var(--bbf-color-red-base);
+  --bbf-color-error-text: var(--bbf-color-red-500);
   --bbf-color-error-border: var(--bbf-color-error-500);
 }

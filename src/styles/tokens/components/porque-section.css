@@ -32,6 +32,9 @@
 
   /* Row gap — Tier-3 (10px off-grid diseño) */
   --cmp-row-gap: 0.625rem;
+  /* DEUDA-03-CSS — tokens con linaje */
+  --cmp-col-name-tracking: -0.015em; /* entre tracking-tight(-0.02em) y normal(0) — diseño */
+  --cmp-tab-dur: 150ms; /* tab hover duration — entre instant(100ms) y fast(180ms) */
 }
 
 /* ── Root ──────────────────────────────────────────────────────────────── */
@@ -102,8 +105,13 @@
   font-family: var(--bbf-font-display);
   font-weight: var(--bbf-weight-medium); /* D-DS-09 FIX-05 */
   font-size: var(--bbf-text-body-lg); /* 1.125rem — exact token match */
-  letter-spacing: -0.015em;
-  color: var(--bbf-on-surface-title);
+  letter-spacing: var(--cmp-col-name-tracking);
+  color: var(--bbf-on-surface-body); /* sistema dark surface-aware (R-BBF-DS-04) */
+}
+
+/* is-hl crea bg oscuro vía CSS (no via data-surface) — override explícito (R-BBF-DS-04) */
+.bbf-cmp__cell--head.is-hl .bbf-cmp__col-name {
+  color: var(--bbf-text-on-dark-surface-sand);
 }
 
 .bbf-cmp__col-sub {
@@ -226,19 +234,25 @@
     cursor: pointer;
     text-align: center;
     transition:
-      color 150ms ease,
-      border-color 150ms ease;
+      color var(--cmp-tab-dur) ease,
+      border-color var(--cmp-tab-dur) ease,
+      background-color var(--cmp-tab-dur) ease;
   }
 
   .bbf-cmp__tab[aria-selected='true'] {
+    background-color: var(--bbf-on-surface-bg);
     color: var(--bbf-on-surface-title);
     border-block-end-color: var(--bbf-on-surface-title);
+    border-radius: var(--bbf-radius-sm) var(--bbf-radius-sm) 0 0;
   }
 
+  /* highlighted activo — dark surface (R-BBF-DS-04) */
   .bbf-cmp__tab--highlighted[aria-selected='true'] {
-    color: var(--bbf-on-surface-title);
-    border-block-end-color: var(--bbf-on-surface-title);
+    background-color: var(--bbf-surface-dark-base);
+    color: var(--bbf-text-on-dark-surface-sand);
+    border-block-end-color: var(--bbf-accent-blue);
     font-weight: var(--bbf-weight-semibold);
+    border-radius: var(--bbf-radius-sm) var(--bbf-radius-sm) 0 0;
   }
 
   .bbf-cmp-mobile {
@@ -277,8 +291,27 @@
   }
 
   .bbf-cmp-mobile__val.is-highlighted {
-    color: var(--bbf-on-surface-title); /* énfasis — sin bg negro en mobile */
+    color: var(--bbf-text-on-dark-surface-sand); /* R-BBF-DS-04: surface dark → sand */
     font-weight: var(--bbf-weight-semibold);
+  }
+
+  /* Panel dark cuando tab highlighted activo (data-hl-active via React state) */
+  .bbf-cmp-mobile[data-hl-active='true'] {
+    background-color: var(--bbf-surface-dark-base);
+    border-radius: 0 0 var(--bbf-radius-card) var(--bbf-radius-card);
+  }
+
+  .bbf-cmp-mobile[data-hl-active='true'] .bbf-cmp-mobile__row {
+    border-block-end-color: color-mix(in srgb, var(--bbf-accent-blue) 20%, transparent);
+  }
+
+  .bbf-cmp-mobile[data-hl-active='true'] .bbf-cmp-mobile__attr {
+    color: var(--bbf-text-on-dark-surface-sand);
+    opacity: 0.6;
+  }
+
+  .bbf-cmp-mobile[data-hl-active='true'] .bbf-cmp-mobile__val {
+    color: var(--bbf-text-on-dark-surface-sand);
   }
 }
 

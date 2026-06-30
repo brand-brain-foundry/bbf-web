@@ -99,7 +99,7 @@
 .bbf-mth__cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
+  gap: var(--bbf-space-px);
   background: var(--bbf-on-surface-border);
   border: var(--bbf-line-border) solid var(--bbf-on-surface-border);
   border-radius: var(--bbf-radius-section-card);
@@ -208,5 +208,5 @@
 .bbf-mth__cta {
   display: flex;
   justify-content: flex-start;
-  margin-block-start: clamp(2rem, 4vw, 3rem);
+  margin-block-start: clamp(var(--bbf-space-8), 4vw, var(--bbf-space-12));
 }

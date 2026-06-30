@@ -48,6 +48,14 @@
 @media (max-width: 420px) {
   .bbf-app-phone {
     height: 600px;
+    /* FIX-S2-B: escala phone al ancho real del viewport
+     * 375px: (375 - 40) / 360 = 335/360 ≈ 0.93 (token override en capabilities.css :root)
+     * 320px: (320 - 40) / 360 = 280/360 ≈ 0.78 (token override en capabilities.css :root)
+     * margin-block-end compensa el espacio vacío post-scale:
+     * (scale - 1) × height = (0.93 - 1) × 600px = -42px → actualiza auto vía variable */
+    transform: scale(var(--bbf-capabilities-phone-scale, 0.93));
+    transform-origin: top center;
+    margin-block-end: calc((var(--bbf-capabilities-phone-scale, 0.93) - 1) * 600px);
   }
 }
 

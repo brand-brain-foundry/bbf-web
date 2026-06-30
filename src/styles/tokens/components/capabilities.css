@@ -30,6 +30,29 @@
   --bbf-chat-msg-stagger: 600ms; /* delay entre burbujas — motion-slow × 1.5 */
   --bbf-chat-msg-appear-duration: 400ms; /* fade-in por burbuja — motion-slow */
   --bbf-chat-msg-pause: 2400ms; /* pausa lectora post-secuencia — gradient-medium × 0.6 */
+  /* FIX-S2-B: escala phone mobile (madre: viewport − 2×container-padding-inline)
+   * 375px: (375 − 40) / 360 = 335/360 ≈ 0.93
+   * 320px: (320 − 40) / 360 = 280/360 ≈ 0.78
+   * Usado en .bbf-app-phone y .bbf-wa-screen via transform:scale() */
+  --bbf-capabilities-phone-scale: 1; /* ≥ 421px: sin escala */
+}
+
+@media (max-width: 420px) {
+  :root {
+    --bbf-capabilities-phone-scale: 0.93; /* 335 / 360 */
+  }
+}
+
+@media (max-width: 340px) {
+  :root {
+    --bbf-capabilities-phone-scale: 0.78; /* 280 / 360 */
+  }
+}
+
+/* ── Tier-3 tokens adicionales (DEUDA-03-CSS) ────────────────── */
+:root {
+  --bbf-cap-hub-label: 0.9375rem; /* 15px — hub spoke label, entre body-sm(14px) y body-md(16px) */
+  --bbf-cap-workflow-min-h: 10rem; /* 160px — workflow/pipeline scene min-height */
 }
 
 /* ============================================================
@@ -99,10 +122,10 @@
 
 .bbf-capabilities-hub__label-name {
   font-family: var(--bbf-font-display); /* Fix 2: era mono → Inter */
-  font-size: 0.9375rem; /* Fix 2: era --bbf-text-mono-xs (11px) → 15px */
+  font-size: var(--bbf-cap-hub-label); /* 15px — Fix 2: era --bbf-text-mono-xs (11px) */
   font-weight: var(--bbf-weight-medium); /* Fix 2: era 600 → 500 (alineado diseño Claude T-18) */
   color: var(--bbf-on-surface-title);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--bbf-tracking-wider);
   text-transform: uppercase;
   white-space: nowrap;
   /* text-align heredado del container [data-spoke-pos] rule */
@@ -190,7 +213,7 @@
   flex: 1;
   height: var(--bbf-line-border);
   background: var(--bbf-on-surface-border);
-  max-width: 80px; /* Tier 3 — preview */
+  max-width: var(--bbf-space-20); /* 80px — preview */
 }
 
 /* Title H3 */
@@ -223,7 +246,7 @@
 
 .bbf-capability-card__bullet {
   display: grid;
-  grid-template-columns: 20px 1fr; /* preview */
+  grid-template-columns: var(--bbf-space-5) 1fr; /* 20px — preview */
   gap: var(--bbf-space-2\.5); /* 10px — preview */
   align-items: start;
   line-height: var(--bbf-leading-snug-small); /* 1.45 — closest token (preview: 1.5, Δ0.05) */
@@ -322,7 +345,7 @@
 .bbf-cap-workflow {
   position: relative;
   flex: 1;
-  min-height: 10rem;
+  min-height: var(--bbf-cap-workflow-min-h);
 }
 
 .bbf-cap-workflow__node-wrap {
@@ -331,12 +354,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.125rem;
+  gap: var(--bbf-space-0\.5);
 }
 
 .bbf-cap-workflow__dot {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: var(--bbf-space-2);
+  height: var(--bbf-space-2);
   border-radius: 50%;
   background-color: var(--bbf-border-on-sand);
   border: var(--bbf-line-border) solid currentColor;
@@ -467,8 +490,8 @@
 }
 
 .bbf-cap-pipe__dot {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: var(--bbf-space-2);
+  height: var(--bbf-space-2);
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -515,7 +538,7 @@
 .bbf-cap-workflow__svg {
   width: 100%;
   height: 100%;
-  min-height: 10rem;
+  min-height: var(--bbf-cap-workflow-min-h);
 }
 
 .bbf-cap-workflow__node {
@@ -563,7 +586,7 @@
   font-size: var(--bbf-text-mono-xs);
   color: var(--bbf-text-on-sand-subtle);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--bbf-tracking-looser);
   margin-bottom: var(--bbf-space-content-gap-tight);
 }
 
@@ -683,7 +706,9 @@
 
   /* font-size mobile — deriva del desktop 0.9375rem × 0.8 */
   .bbf-capabilities-hub__label-name {
-    font-size: calc(0.9375rem * 0.8); /* 0.75rem = desktop × (4/5) */
+    font-size: var(--bbf-text-xs); /* 0.75rem = --bbf-cap-hub-label × 0.8 (exact match) */
+    white-space: normal; /* FIX-S2-A: era nowrap → wrap para que labels no desborden */
+    word-break: break-word;
   }
 
   /* D-S456-10: laterales en mobile → ARRIBA del nodo, centrados (mismo patrón v-sup).
@@ -706,5 +731,11 @@
    * El border-box no cambia → espaciado exterior intacto. */
   .bbf-capabilities-hub {
     padding-block: 0;
+    overflow: clip; /* FIX-S2-A: clipa labels absolutos sin BFC ni scroll context */
+  }
+
+  /* FIX-S2-C: catch-all — cualquier escena sin .bbf-cap-scene queda contenida */
+  .bbf-capability-card__viz {
+    overflow: hidden;
   }
 }

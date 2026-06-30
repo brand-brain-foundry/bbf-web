@@ -11,7 +11,7 @@
  */
 
 :root {
-  /* Empty — populated on-demand in M5-D */
+  --bbf-btn-icon-shift: 3px; /* icon translateX on hover — off-grid (3 ≠ 4pt) diseño firmado */
 }
 
 /* ============================================================
@@ -367,7 +367,7 @@
     background-size:
       auto,
       200% 100%;
-    animation: bbf-gradient-shift 6s ease-in-out infinite;
+    animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   }
 }
 
@@ -404,7 +404,7 @@
     var(--bbf-surface-sand) 100%
   );
   background-size: 200% 100%;
-  animation: bbf-gradient-shift 6s ease-in-out infinite;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   z-index: -1;
   opacity: 1;
   transition: opacity var(--bbf-motion-state-duration-cta) var(--bbf-motion-state-easing);
@@ -451,7 +451,7 @@
     var(--bbf-surface-sand) 100%
   );
   background-size: 200% 100%;
-  animation: bbf-gradient-shift 6s ease-in-out infinite;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -471,7 +471,7 @@
     var(--bbf-surface-sand) 100%
   );
   background-size: 200% 100%;
-  animation: bbf-gradient-shift 6s ease-in-out infinite;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -555,6 +555,6 @@
 
 @media (hover: hover) {
   [data-component='bbf-button']:hover [data-component='bbf-icon'] {
-    transform: translateX(3px);
+    transform: translateX(var(--bbf-btn-icon-shift));
   }
 }

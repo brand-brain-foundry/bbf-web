@@ -15,6 +15,7 @@
   --cierre-title-leading: 1.05; /* D-4: 1→1.05 (margen dentro piso 1.0–1.35 titulares; 1.0 = borde sin margen) */
   --cierre-title-measure: 16ch; /* max-width: balance para statement 2 líneas */
   --cierre-rule-width: var(--bbf-space-20); /* 80px — longitud regla decorativa meta row */
+  --cierre-sig-tracking: -0.01em; /* sig-name letter-spacing — entre tight(-0.02em) y normal(0) */
   --cierre-min-h: clamp(
     700px,
     85vh,
@@ -127,7 +128,7 @@
   color: transparent; /* oculta currentColor del SVG inline */
   background-image: var(--bbf-gradient-primary); /* SSOT → semantic/gradients.css */
   background-size: 200% 100%;
-  animation: bbf-gradient-shift 6s ease-in-out infinite;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   -webkit-mask-image: url('/assets/brand/logos/BBF-Logo-Icon.svg');
   mask-image: url('/assets/brand/logos/BBF-Logo-Icon.svg');
   -webkit-mask-size: contain;
@@ -163,7 +164,7 @@
   font-family: var(--bbf-font-display);
   font-weight: var(--bbf-weight-medium, 500);
   font-size: var(--bbf-text-body-sm, 0.875rem);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--cierre-sig-tracking);
   color: var(--bbf-on-surface-title); /* D-DS-12 */
 }
 

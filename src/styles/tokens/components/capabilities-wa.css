@@ -72,6 +72,10 @@
 @media (max-width: 420px) {
   .bbf-wa-screen {
     height: 600px;
+    /* FIX-S2-B: mismo token que .bbf-app-phone — escala uniforme para todos los phones */
+    transform: scale(var(--bbf-capabilities-phone-scale, 0.93));
+    transform-origin: top center;
+    margin-block-end: calc((var(--bbf-capabilities-phone-scale, 0.93) - 1) * 600px);
   }
 }
 

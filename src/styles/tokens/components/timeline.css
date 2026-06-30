@@ -25,6 +25,13 @@
   --bbf-timeline-connector-h: 1px; /* grosor del rail */
   --bbf-timeline-demo-pulse-dur: 2s;
   --bbf-timeline-blink-dur: 1.5s;
+  /* DEUDA-03-CSS — tokens Tier-3 con linaje */
+  --bbf-timeline-arrow-size: 36px; /* 9 × 4pt grid — nav arrow button diameter */
+  --bbf-timeline-hover-dur: 150ms; /* entre instant(100ms) y fast(180ms) — diseño */
+  --bbf-timeline-badge-dot-size: 5px; /* badge status dot diameter */
+  --bbf-timeline-stop-demo-border: var(--bbf-line-lg); /* 2px — demo stop ring */
+  --bbf-timeline-pulse-border: var(--bbf-line-md); /* 1.5px — pulse ring */
+  --bbf-timeline-pulse-inset: -4px; /* pulse ring inset offset */
 }
 
 /* ── Component root ───────────────────────────────────────────── */
@@ -55,8 +62,8 @@
 
 .bbf-timeline__live-dot {
   display: inline-block;
-  width: 6px;
-  height: 6px;
+  width: var(--bbf-space-1\.5);
+  height: var(--bbf-space-1\.5);
   border-radius: 50%;
   background-color: var(--bbf-accent-blue); /* firmado: azul = activo/live */
   flex-shrink: 0;
@@ -71,17 +78,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: var(--bbf-timeline-arrow-size);
+  height: var(--bbf-timeline-arrow-size);
   border-radius: 50%;
   border: var(--bbf-line-border) solid var(--bbf-on-surface-border);
   background: transparent;
   color: var(--bbf-on-surface-title);
   cursor: pointer;
   transition:
-    background 150ms var(--bbf-easing-hover, ease-out),
-    border-color 150ms var(--bbf-easing-hover, ease-out),
-    color 150ms var(--bbf-easing-hover, ease-out);
+    background var(--bbf-timeline-hover-dur) var(--bbf-easing-hover, ease-out),
+    border-color var(--bbf-timeline-hover-dur) var(--bbf-easing-hover, ease-out),
+    color var(--bbf-timeline-hover-dur) var(--bbf-easing-hover, ease-out);
 }
 
 /* Hover = blue sólido (AJUSTE PIEL 1 — D-TIMELINE-P3) */
@@ -142,7 +149,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--bbf-space-5);
-  transition: border-color 150ms var(--bbf-easing-hover, ease-out);
+  transition: border-color var(--bbf-timeline-hover-dur) var(--bbf-easing-hover, ease-out);
 }
 
 /* Card hover → borde azul (AJUSTE PIEL 1) */
@@ -209,8 +216,8 @@
 
 .bbf-timeline__badge-dot {
   display: inline-block;
-  width: 5px;
-  height: 5px;
+  width: var(--bbf-timeline-badge-dot-size);
+  height: var(--bbf-timeline-badge-dot-size);
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -346,7 +353,7 @@
 }
 
 .bbf-timeline__stop--demo {
-  border: 2px solid var(--bbf-on-surface-muted);
+  border: var(--bbf-timeline-stop-demo-border) solid var(--bbf-on-surface-muted);
   background: transparent;
 }
 
@@ -354,15 +361,15 @@
 .bbf-timeline__stop--demo::after {
   content: '';
   position: absolute;
-  inset: -4px;
+  inset: var(--bbf-timeline-pulse-inset);
   border-radius: 50%;
-  border: 1.5px solid var(--bbf-on-surface-muted);
+  border: var(--bbf-timeline-pulse-border) solid var(--bbf-on-surface-muted);
   opacity: 0.4;
   animation: bbf-timeline-pulse var(--bbf-timeline-demo-pulse-dur) ease-out infinite;
 }
 
 .bbf-timeline__stop--next {
-  border: 1.5px solid var(--bbf-on-surface-faint);
+  border: var(--bbf-timeline-pulse-border) solid var(--bbf-on-surface-faint);
   background: transparent;
 }
 

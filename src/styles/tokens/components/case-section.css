@@ -51,6 +51,8 @@
 .bbf-case-section__phase {
   background: var(--bbf-on-surface-bg);
   padding: var(--bbf-case-phase-pad);
+  height: 100%; /* fill Reveal motion.div grid item — equal-height T4 */
+  box-sizing: border-box;
 }
 
 .bbf-case-section__phase-head {

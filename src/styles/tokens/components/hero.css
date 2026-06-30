@@ -176,7 +176,7 @@
 
 .bbf-cta-pill .bbf-cta-arrow {
   display: inline-block;
-  margin-left: 0.5rem;
+  margin-left: var(--bbf-space-2);
   transition: transform var(--bbf-motion-cta-duration) var(--bbf-motion-cta-easing);
   will-change: transform;
 }
@@ -194,5 +194,5 @@
 
 .bbf-cta-pill:active {
   transform: scale(0.98);
-  transition-duration: 100ms;
+  transition-duration: var(--bbf-motion-duration-instant);
 }

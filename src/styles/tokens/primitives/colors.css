@@ -61,9 +61,6 @@
   --bbf-color-red-800: #962614;
   --bbf-color-red-900: #6b1a0c;
 
-  /* Legacy alias — referenciado en feedback.css y FormField */
-  --bbf-color-red-base: #ff5949; /* = red-500 canon */
-
   /* ============================================================
      BBF WHITE
      ============================================================ */
