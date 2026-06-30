@@ -1912,7 +1912,9 @@ export interface SiteNavigation {
           /**
            * Ruta canónica (SSOT routing.ts pathnames). Usar para cornerstones / rutas fijas.
            */
-          routeKey?: ('/' | '/cerebro-marca' | '/metodo' | '/casos' | '/contacto' | '/quienes-somos' | '/blog') | null;
+          routeKey?:
+            | ('/' | '/cerebro-marca' | '/como-trabajamos' | '/casos' | '/contacto' | '/quienes-somos' | '/blog')
+            | null;
           /**
            * Página dinámica (alternativa a routeKey). Dormido hasta que existan Pages.
            */
@@ -2041,7 +2043,9 @@ export interface SiteNavigation {
       /**
        * Ruta canónica (SSOT routing.ts pathnames). Usar para cornerstones / rutas fijas.
        */
-      routeKey?: ('/' | '/cerebro-marca' | '/metodo' | '/casos' | '/contacto' | '/quienes-somos' | '/blog') | null;
+      routeKey?:
+        | ('/' | '/cerebro-marca' | '/como-trabajamos' | '/casos' | '/contacto' | '/quienes-somos' | '/blog')
+        | null;
       /**
        * Página dinámica (alternativa a routeKey). Dormido hasta que existan Pages.
        */
@@ -2068,7 +2072,7 @@ export interface SiteNavigation {
                  * Ruta canónica (SSOT routing.ts pathnames). Usar para cornerstones / rutas fijas.
                  */
                 routeKey?:
-                  | ('/' | '/cerebro-marca' | '/metodo' | '/casos' | '/contacto' | '/quienes-somos' | '/blog')
+                  | ('/' | '/cerebro-marca' | '/como-trabajamos' | '/casos' | '/contacto' | '/quienes-somos' | '/blog')
                   | null;
                 /**
                  * Página dinámica (alternativa a routeKey). Dormido hasta que existan Pages.
@@ -3003,7 +3007,7 @@ export interface SiteHomepage {
     };
   };
   /**
-   * §5 three coordinated services: Diagnóstico → Build → Retainer.
+   * §5 three coordinated services: Diagnosis → Build → Ongoing.
    */
   method?: {
     /**
@@ -3035,7 +3039,7 @@ export interface SiteHomepage {
         }[]
       | null;
     /**
-     * Los 3 servicios BBF (Diagnóstico / Build / Retainer). Exactamente 3.
+     * Los 3 servicios (Diagnóstico / Build / Mantenimiento). Exactamente 3.
      */
     services?:
       | {
@@ -3059,6 +3063,76 @@ export interface SiteHomepage {
            * Descripción del servicio (2-3 líneas).
            */
           body?: string | null;
+          /**
+           * Ícono Lucide opcional. Si se elige, reemplaza el número (00/01/02) a la izquierda de la caja. Registry SSOT (D-108).
+           */
+          icon?:
+            | (
+                | 'arrowRight'
+                | 'arrowLeft'
+                | 'arrowUp'
+                | 'arrowDown'
+                | 'chevronRight'
+                | 'chevronLeft'
+                | 'chevronDown'
+                | 'chevronUp'
+                | 'menu'
+                | 'close'
+                | 'externalLink'
+                | 'home'
+                | 'search'
+                | 'plus'
+                | 'minus'
+                | 'edit'
+                | 'trash'
+                | 'download'
+                | 'upload'
+                | 'share'
+                | 'copy'
+                | 'check'
+                | 'refresh'
+                | 'filter'
+                | 'checkCircle'
+                | 'error'
+                | 'warning'
+                | 'alert'
+                | 'info'
+                | 'loading'
+                | 'eye'
+                | 'eyeOff'
+                | 'mail'
+                | 'phone'
+                | 'message'
+                | 'send'
+                | 'bell'
+                | 'file'
+                | 'image'
+                | 'video'
+                | 'play'
+                | 'pause'
+                | 'bookOpen'
+                | 'calendar'
+                | 'clock'
+                | 'star'
+                | 'bookmark'
+                | 'link'
+                | 'user'
+                | 'users'
+                | 'settings'
+                | 'logout'
+                | 'login'
+                | 'globe'
+                | 'sparkles'
+                | 'zap'
+                | 'building'
+                | 'briefcase'
+                | 'target'
+                | 'layers'
+                | 'award'
+                | 'trending'
+                | 'heart'
+              )
+            | null;
           /**
            * Lista de entregables del servicio (3-4 items).
            */
@@ -3125,7 +3199,7 @@ export interface SiteHomepage {
    */
   seo?: {
     /**
-     * Frase ancla (G-18): texto visible en el homepage que ancla citación AEO/GEO. 40-120 chars recomendado. Ej: "Sivar Brains construye, opera y mantiene el cerebro de marca que activa tu empresa."
+     * Frase ancla (G-18): alimenta llms-full.txt como blockquote de posicionamiento para IA/LLMO. NO se renderiza en el hero (R-BBF-SEO-HIDDEN-01). 40-280 chars. Ej: "Sivar Brains construye, opera y mantiene el cerebro de marca: una sola fuente para tu voz, tu contenido y tus agentes."
      */
     anchorPhrase?: string | null;
     /**
@@ -3908,6 +3982,7 @@ export interface SiteHomepageSelect<T extends boolean = true> {
               duration?: T;
               commitment?: T;
               body?: T;
+              icon?: T;
               deliverables?:
                 | T
                 | {

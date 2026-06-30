@@ -44,6 +44,9 @@ import * as migration_20260626_132654_integraciones_scene from './20260626_13265
 import * as migration_20260626_162438_aprendizaje_scene from './20260626_162438_aprendizaje_scene';
 import * as migration_20260627_134353_seo_anchor_faq from './20260627_134353_seo_anchor_faq';
 import * as migration_20260627_170430_contacto_page from './20260627_170430_contacto_page';
+import * as migration_20260628_122719_metodo_to_como_trabajamos from './20260628_122719_metodo_to_como_trabajamos';
+import * as migration_20260628_122720_metodo_update_nav_records from './20260628_122720_metodo_update_nav_records';
+import * as migration_20260629_201330_s5_service_icon from './20260629_201330_s5_service_icon';
 
 export const migrations = [
   {
@@ -274,6 +277,21 @@ export const migrations = [
   {
     up: migration_20260627_170430_contacto_page.up,
     down: migration_20260627_170430_contacto_page.down,
-    name: '20260627_170430_contacto_page'
+    name: '20260627_170430_contacto_page',
+  },
+  {
+    up: migration_20260628_122719_metodo_to_como_trabajamos.up,
+    down: migration_20260628_122719_metodo_to_como_trabajamos.down,
+    name: '20260628_122719_metodo_to_como_trabajamos',
+  },
+  {
+    up: migration_20260628_122720_metodo_update_nav_records.up,
+    down: migration_20260628_122720_metodo_update_nav_records.down,
+    name: '20260628_122720_metodo_update_nav_records',
+  },
+  {
+    up: migration_20260629_201330_s5_service_icon.up,
+    down: migration_20260629_201330_s5_service_icon.down,
+    name: '20260629_201330_s5_service_icon'
   },
 ];

@@ -1500,8 +1500,8 @@ export const SiteHomepage: GlobalConfig = {
           label: { es: 'Sección Método (§5)', en: 'Method Section (§5)' },
           admin: {
             description: {
-              es: '§5 tres servicios coordinados: Diagnóstico → Build → Retainer.',
-              en: '§5 three coordinated services: Diagnóstico → Build → Retainer.',
+              es: '§5 tres servicios coordinados: Diagnóstico → Build → Mantenimiento.',
+              en: '§5 three coordinated services: Diagnosis → Build → Ongoing.',
             },
           },
           fields: [
@@ -1556,7 +1556,8 @@ export const SiteHomepage: GlobalConfig = {
               label: { en: 'Service Cards', es: 'Tarjetas de Servicio' },
               admin: {
                 initCollapsed: true,
-                description: 'Los 3 servicios BBF (Diagnóstico / Build / Retainer). Exactamente 3.',
+                description:
+                  'Los 3 servicios (Diagnóstico / Build / Mantenimiento). Exactamente 3.',
               },
               fields: [
                 {
@@ -1590,6 +1591,17 @@ export const SiteHomepage: GlobalConfig = {
                   admin: { description: 'Descripción del servicio (2-3 líneas).' },
                 },
                 {
+                  name: 'icon',
+                  type: 'select',
+                  label: { en: 'Icon (optional)', es: 'Ícono (opcional)' },
+                  required: false,
+                  options: Object.keys(Icons).map((key) => ({ label: key, value: key })),
+                  admin: {
+                    description:
+                      'Ícono Lucide opcional. Si se elige, reemplaza el número (00/01/02) a la izquierda de la caja. Registry SSOT (D-108).',
+                  },
+                },
+                {
                   name: 'deliverables',
                   type: 'array',
                   dbName: 'mth_deliverables',
@@ -1618,7 +1630,7 @@ export const SiteHomepage: GlobalConfig = {
             {
               name: 'ctaHref',
               type: 'text',
-              defaultValue: '/metodo',
+              defaultValue: '/como-trabajamos',
               admin: { description: 'URL destino del CTA.' },
             },
           ],
@@ -1730,7 +1742,7 @@ export const SiteHomepage: GlobalConfig = {
             },
           },
           fields: [
-            // G-18: anchorPhrase — frase ancla visible en hero, vector principal AEO/GEO
+            // G-18: anchorPhrase — llms-full.txt blockquote (R-BBF-SEO-HIDDEN-01: render hero eliminado)
             {
               name: 'anchorPhrase',
               type: 'textarea',
@@ -1738,7 +1750,7 @@ export const SiteHomepage: GlobalConfig = {
               maxLength: 280,
               admin: {
                 description:
-                  'Frase ancla (G-18): texto visible en el homepage que ancla citación AEO/GEO. 40-120 chars recomendado. Ej: "Sivar Brains construye, opera y mantiene el cerebro de marca que activa tu empresa."',
+                  'Frase ancla (G-18): alimenta llms-full.txt como blockquote de posicionamiento para IA/LLMO. NO se renderiza en el hero (R-BBF-SEO-HIDDEN-01). 40-280 chars. Ej: "Sivar Brains construye, opera y mantiene el cerebro de marca: una sola fuente para tu voz, tu contenido y tus agentes."',
               },
             },
             // G-19: faq[] — preguntas frecuentes para FAQPage JSON-LD + render visible
