@@ -1,3 +1,54 @@
+# REPORTE — B-BBF-WEB-VERSIONAR-RULES
+**Fecha:** 2026-06-30 · **pwd:** bbf-web
+**Despacho:** B-BBF-WEB-VERSIONAR-RULES — Versionar .claude/rules/
+**Protocolo:** P-5
+**Restricción:** PROHIBIDO push, código, secretos.
+
+---
+
+## §1 — Cambio de gitignore + commit
+
+**Problema técnico encontrado:** git no permite negar un subdirectorio si su parent está ignorado con trailing `/`. La línea `.claude/` bloquea `!.claude/rules/`.
+
+**Solución aplicada:** reemplazar `.claude/` por `.claude/*` (ignora contenidos con wildcard, no el directorio en sí), lo que permite la negación de `rules/`:
+
+```gitignore
+.claude/*
+!.claude/rules/
+!.claude/rules/**
+```
+
+**Scan de secretos en rule files:** limpio. Los únicos hits son doctrina (ejemplos de schema Zod, nombres de env vars en código de ejemplo — sin valores reales).
+
+**Commit:** `2313fb7` — 7 archivos, 590 inserciones
+
+| Archivo versionado | Contenido |
+|---|---|
+| `.claude/rules/00-sb-law.md` | SB_Law_Construction — 7 principios |
+| `.claude/rules/10-payload-collections.md` | Payload CMS — collections, hooks, access |
+| `.claude/rules/20-next-app-router.md` | Next.js 15 App Router — RSC, ISR, metadata |
+| `.claude/rules/30-i18n-multilingual.md` | i18n ES/EN — next-intl, hreflang, slugs |
+| `.claude/rules/40-security-csp.md` | Seguridad — CSP, headers, D-ANALYTICS-01 |
+| `.claude/rules/50-seo-geo.md` | SEO + GEO — JSON-LD, llms.txt, robots.txt |
+
+---
+
+## §2 — Verificación
+
+```
+git status --short .claude/
+→ (nada fuera de rules/ — feedback.md, archive/, settings ignorados) ✅
+
+git log -1
+→ 2313fb7 chore: versionar .claude/rules/ (documentación viva del proyecto) ✅
+```
+
+**Working tree coherente:** solo `rules/` trackeada. El resto de `.claude/` (feedback.md, feedback-archive/, settings.local.json) sigue ignorado.
+
+**Sin secretos en el commit:** verificado pre-commit. ✅
+
+---
+
 # REPORTE — B-BBF-WEB-LIMPIEZA-POSTHOG-CANON
 **Fecha:** 2026-06-30 · **pwd:** bbf-web + bbf-docs
 **Despacho:** B-BBF-WEB-LIMPIEZA-POSTHOG-CANON — Limpieza stale + D-ANALYTICS-01
