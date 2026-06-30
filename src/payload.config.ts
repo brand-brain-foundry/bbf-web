@@ -84,9 +84,21 @@ export default buildConfig({
   editor: lexicalEditor({}),
 
   // D-BBF-WEB-32: @payloadcms/db-postgres con pool Neon (portable, no vercel-postgres)
+  // sslmode=verify-full explícito: pg-connection-string v3+ eliminará aliases (require→verify-full).
+  // new URL() muta solo el parámetro sslmode sin exponer credenciales en logs.
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL,
+      connectionString: (() => {
+        const raw = process.env.DATABASE_URL;
+        if (!raw) return raw;
+        try {
+          const u = new URL(raw);
+          u.searchParams.set('sslmode', 'verify-full');
+          return u.toString();
+        } catch {
+          return raw;
+        }
+      })(),
     },
     // push solo en dev — NUNCA en prod (D-BBF-WEB-16)
     push: process.env.NODE_ENV === 'development',
