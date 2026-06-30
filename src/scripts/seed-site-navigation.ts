@@ -22,6 +22,10 @@
 import { getPayload } from 'payload';
 
 import config from '../payload.config';
+import { PATHNAMES } from '../i18n/pathnames';
+
+type NavRouteKey = keyof typeof PATHNAMES;
+type NavLink = { routeKey: NavRouteKey; es: string; en: string };
 
 try {
   process.loadEnvFile('.env.local');
@@ -30,34 +34,24 @@ try {
 }
 
 // ── Valores canon (route keys reales de pathnames.ts — PROHIBIDO inventar) ──
-const HEADER = [
-  { routeKey: '/cerebro-marca', es: 'Cerebro de marca', en: 'Brand brain' },
-  { routeKey: '/metodo', es: 'Cómo trabajamos', en: 'How we work' },
-  { routeKey: '/casos', es: 'Casos', en: 'Cases' },
-] as const;
+// NAV HONESTO pre-go-live: solo páginas con contenido completo.
+// Re-agregar cuando página tenga contenido: añadir + re-run seed.
+// /cerebro-marca — oculto: thin content (sin bloques)
+// /como-trabajamos — oculto: thin content (sin bloques)
+// /casos — oculto: thin content (sin bloques)
+const HEADER: NavLink[] = [];
 
 const CTA = {
   ctaKey: 'watch-it-run', // D-NAV-11: label/intent → SiteCtaLibrary (seed-site-cta-library.ts)
   routeKey: '/contacto',
 } as const;
 
-// Footer: grupos Explora/Método (propuesta footer firmada). order = índice.
+// Footer honesto: solo /contacto hasta que páginas cornerstone tengan contenido.
 const FOOTER = [
   {
-    es: 'Explora',
-    en: 'Explore',
-    links: [
-      { routeKey: '/casos', es: 'Casos', en: 'Cases' },
-      { routeKey: '/contacto', es: 'Contacto', en: 'Contact' },
-    ],
-  },
-  {
-    es: 'Método',
-    en: 'Method',
-    links: [
-      { routeKey: '/metodo', es: 'Cómo trabajamos', en: 'How we work' },
-      { routeKey: '/cerebro-marca', es: 'Cerebro de marca', en: 'Brand brain' },
-    ],
+    es: 'Navegación',
+    en: 'Navigation',
+    links: [{ routeKey: '/contacto', es: 'Contacto', en: 'Contact' }],
   },
 ] as const;
 
@@ -151,10 +145,11 @@ async function seedSiteNavigation() {
   }
 
   console.log('[seed-site-navigation] ✅ ES locale array sub-fields fixed (L-BBF-256).');
-  console.log('[seed-site-navigation] ✅ NAV seed COMPLETADO. Junk /memory reemplazado.');
-  console.log('   Header: Cerebro de marca · Cómo trabajamos · Casos + CTA Verlo funcionar');
-  console.log('   Footer: Explora · Método');
-  console.log('   D-NAV-11 CERRADO: headerCta.ctaKey → SiteCtaLibrary (seed-site-cta-library.ts)');
+  console.log('[seed-site-navigation] ✅ NAV seed COMPLETADO. NAV HONESTO pre-go-live.');
+  console.log('   Header: (vacío — páginas cornerstone sin contenido completo aún)');
+  console.log('   CTA: Verlo funcionar → /contacto');
+  console.log('   Footer: Navegación → /contacto');
+  console.log('   Para re-mostrar página: añadir a HEADER/FOOTER + re-run este seed.');
   process.exit(0);
 }
 

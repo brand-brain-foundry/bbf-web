@@ -53,10 +53,10 @@ const CORNERSTONE_FILES = [
   {
     file: 'BBF_CS-03_MetodoBBF_DraftV3.md',
     code: 'CS-03',
-    slugEs: 'metodo',
-    slugEn: 'method',
-    titleEs: 'El método BBF',
-    titleEn: 'The BBF method',
+    slugEs: 'como-trabajamos',
+    slugEn: 'how-we-work',
+    titleEs: 'Cómo trabajamos',
+    titleEn: 'How we work',
     excerptEs:
       'El método BBF construye el cerebro de tu marca en tres fases: Mapeo, Estructura y Activación. Sin filler. Sin frameworks genéricos.',
     excerptEn:
