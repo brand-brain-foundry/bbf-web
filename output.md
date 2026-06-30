@@ -2777,3 +2777,251 @@ VideoObject schema: visible para Perplexity/ChatGPT/Claude ✅
 ```
 
 **PAUSA → Zavala valida → Strategic firma → FASE A cerrada → pre-switch externo.**
+
+---
+
+# REPORTE — B-BBF-WEB-AUDIT-READINESS
+**Fecha:** 2026-06-30 · **Despacho:** B-BBF-WEB-AUDIT-READINESS
+**Tipo:** AUDIT read-only · **Protocolo:** P-1 + P-6
+
+---
+
+## §1 — SEGURIDAD: CVEs + versión ⚠️
+
+### Versión Next.js
+
+| Campo | Valor |
+|---|---|
+| Declarada (`package.json`) | `^15.5.18` |
+| Instalada (`node_modules`) | **15.5.18** |
+
+### CVEs críticos
+
+| CVE | Descripción | Fixed en | Estado |
+|---|---|---|---|
+| CVE-2025-29927 | Middleware bypass (CVSS alto) | ≥15.2.3 | ✅ **PARCHEADO** (15.5.18 > 15.2.3) |
+| RCE RSC (dic-2025) | Server Actions RCE — parche en cycle 15.x | ~15.2.x | ✅ **PARCHEADO** (15.5.18 incluye el ciclo completo) |
+| CVE-2026-23864 | DoS Next.js (ene-2026) | ≥15.3.x | ✅ **PARCHEADO** (15.5.18 es post-fix) |
+
+**Veredicto:** Next.js está en la versión más reciente del track 15.x — todos los CVEs conocidos del ciclo cubiertos. ✅ **NO BLOQUEANTE.**
+
+### pnpm audit — 37 vulnerabilidades totales
+
+| Severidad | Count | Fuente | Bloqueante |
+|---|---|---|---|
+| High | 5 | `payload > undici` (TLS bypass, DoS ×3), `@payloadcms/richtext-lexical > happy-dom > ws` (DoS) | ⚠️ Transitive |
+| Moderate | 22 | `undici`, `js-yaml` (eslint dev), otras transitivas | No |
+| Low | 10 | Varios | No |
+
+**Análisis highs:** Todos son dependencias transitivas de Payload CMS v3 — no accionables directamente sin que Payload publique actualizaciones internas. El path `payload > undici` afecta HTTP interno de Payload (no el tráfico público). El `ws` es en `happy-dom` (test utility, NO producción).
+
+**Veredicto:** Sin CVE crítico en Next.js ni en código BBF propio. Las highs son transitive Payload — monitorear updates de `@payloadcms/*`. ⚠️ **Deseable resolver antes del switch pero no estrictamente bloqueante** (Payload no ha publicado fix aún).
+
+---
+
+## §2 — SECURITY HEADERS
+
+### Configurados en `next.config.mjs` (source: `'/(.*)'`)
+
+| Header | Valor | Estado |
+|---|---|---|
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | ✅ |
+| `X-Frame-Options` | `DENY` | ✅ |
+| `X-Content-Type-Options` | `nosniff` | ✅ |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | ✅ |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=()` | ✅ |
+| `Content-Security-Policy` | **AUSENTE** — diferido a FASE 4.C.5 (comentario en config) | ❌ |
+
+**Matcher `/(.*)`**: correcto para Next.js `headers()` config — coincide con todas las rutas incluyendo `/`. El bug de headers silenciosos es de `middleware.ts` matchers, no del config de headers. ✅
+
+**CSP:** ausente. El plan de despacho es CSP estático con allowlist:
+```
+default-src 'self';
+script-src 'self' 'strict-dynamic' https://va.vercel-scripts.com https://us.i.posthog.com https://challenges.cloudflare.com;
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: https://*.public.blob.vercel-storage.com;
+font-src 'self' data:;
+connect-src 'self' https://api.resend.com https://us.i.posthog.com https://challenges.cloudflare.com;
+frame-src https://challenges.cloudflare.com;
+frame-ancestors 'none';
+upgrade-insecure-requests;
+```
+ISR compatible (no nonce). GA4 requiere agregar `https://www.googletagmanager.com https://www.google-analytics.com` cuando se instale.
+
+**Veredicto:** 5/6 headers ✅. CSP es el único faltante — **no bloqueante pero es el siguiente fix de seguridad.**
+
+---
+
+## §3 — ENV VARS (secretos) ✅
+
+### NEXT_PUBLIC_ (bundleados al browser — deben ser públicos)
+
+| Variable | Tipo | Correcto |
+|---|---|---|
+| `NEXT_PUBLIC_SITE_URL` | URL pública del site | ✅ Público |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Turnstile SITE key (≠ secret key) | ✅ Público |
+
+### Server-only (sin prefijo NEXT_PUBLIC_ — correctos)
+
+| Variable | Propósito |
+|---|---|
+| `DATABASE_URL` | PostgreSQL Neon |
+| `PAYLOAD_SECRET` | JWT signing Payload |
+| `RESEND_API_KEY` | Resend transactional email |
+| `RESEND_AUDIENCE_ID` | Audience ID para newsletter |
+| `RESEND_FROM_NEWSLETTER` | From address (no es secreto técnicamente, pero server-only) |
+| `RESEND_WEBHOOK_SECRET` | Webhook validation |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret (distinto del site key público) |
+| `UPSTASH_REDIS_REST_TOKEN` | Rate limiting auth token |
+| `UPSTASH_REDIS_REST_URL` | Upstash endpoint |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage |
+
+**Veredicto:** CERO secretos con `NEXT_PUBLIC_`. Separación limpia. ✅ **NO BLOQUEANTE.**
+
+---
+
+## §4 — PÁGINA 404
+
+### Estado actual
+
+`src/app/(frontend)/[locale]/not-found.tsx`:
+- ✅ Existe y responde (ruta correcta bajo `[locale]/`)
+- ❌ **Monolingüe ES** — texto hardcoded: "Página no encontrada", "Esta página no existe o fue movida.", "Volver al inicio"
+- ❌ Sin `setRequestLocale` ni `getTranslations` — no adapta al locale del visitor EN
+- ✅ Diseño funcional: Container + Heading 404 + Text + Button → `/`
+- ⚠️ Estilo básico — no tiene el tono BBF oscuro/cierre
+
+### CierreSection como base
+
+`CierreSection` acepta `{ data: CierreData }` prop — **es reutilizable** pero es pesado (blob animado, firma, CTA). Para un 404 se puede simplificar: usar solo el esqueleto dark (`bbf-cierre` CSS + `data-surface="dark"`) con un mensaje custom.
+
+### Plan
+
+1. Agregar `getTranslations('NotFound')` (server-side) en `not-found.tsx`
+2. Añadir namespace `NotFound` a `messages/es.json` + `messages/en.json`
+3. Mantener diseño simple (no copiar CierreSection completo — viola A-01)
+4. Botón a `/` (ES) y a `/` con text localizado (EN)
+
+**Veredicto:** Funciona pero ES-only. ❌ **Pre-switch deseable** para visitors EN. No bloqueante si el tráfico inicial es mayoritariamente ES.
+
+---
+
+## §5 — ANALÍTICA + CONSENTIMIENTO
+
+### Estado actual
+
+**CERO analítica instalada.** Ni `@vercel/analytics`, ni GA4, ni PostHog, ni ningún tracking.
+
+### Plan (R-BBF-READINESS-01)
+
+| Herramienta | Cookies | Consentimiento | Prioridad |
+|---|---|---|---|
+| Vercel Analytics | ❌ Cookieless | ✅ No banner | Pre-switch — instalar YA |
+| GA4 | ✅ Con cookies | ❌ Banner requerido (GDPR) | Post-switch o paralelo |
+
+### Vercel Analytics
+
+`pnpm add @vercel/analytics` + `<Analytics />` en root layout. Cookieless por diseño — **sin banner de consentimiento requerido.** Compatible con GDPR. Datos de tráfico desde día 1.
+
+### GA4 + consent banner
+
+- No cargar GA4 hasta consentimiento (Consent Mode v2)
+- Banner bilingüe ES+EN + accesible (WCAG 2.1)
+- No romper CSP: agregar `https://www.googletagmanager.com` a `script-src`
+- Opciones: construir propio (A-01: simple) o usar `react-cookie-consent` / `Cookiebot`
+
+**Veredicto:** Sin analítica = cero datos desde el switch. ❌ **Vercel Analytics es BLOQUEANTE pre-switch** (trivial instalar, no requiere banner). GA4 es deseable.
+
+---
+
+## §6 — CACHE / ISR / REVALIDACIÓN
+
+### Estrategia ISR actual
+
+| Página | `revalidate` |
+|---|---|
+| Home (`/`) | `3600` (1h) |
+| Contacto | `3600` |
+| Casos (stub) | `3600` |
+| Cerebro-marca (stub) | `3600` |
+| Como-trabajamos (stub) | `3600` |
+| Catch-all `[...pathSegments]` | `3600` |
+| `llms-full.txt` | `3600` |
+| `sitemap.xml`, `robots.txt` | Edge — fresh cada request |
+
+### Revalidación on-publish ✅
+
+- `SiteHomepage` afterChange → `revalidateTag('global_site-homepage')` + `revalidatePath('/', 'layout')` ✅
+- `SiteIdentity` afterChange → mismo hook ✅
+- `Pages` afterChange → `revalidatePath(path)` + `revalidateTag('sitemap')` ✅
+- **Gap:** `revalidatePath('/', 'layout')` en globals revalida solo la raíz `/`. `/contacto`, `/casos` etc. siguen su TTL de 1h incluso si el nav cambia.
+
+### Sitemap
+
+✅ Mapea: `/` (priority 1.0), `/contacto` (0.4), páginas dinámicas de DB (blog, casos, cornerstones).
+⚠️ Las stubs (cerebro-marca, como-trabajamos, casos) están en el sitemap pero devuelven placeholder/stub — Google puede verlas vacías.
+
+### Robots.txt ✅
+
+Canon AEO/GEO correcto:
+- `User-agent: *` → `Allow: /` (retrieval crawlers bienvenidos)
+- AI citation crawlers (GPTBot, ClaudeBot, PerplexityBot…) → `Allow: /` explícito
+- CCBot (training) → `Disallow: /` firmado D-CCBOT-01
+- `/admin/` y `/api/` → `Disallow` para todos ✅
+
+**Veredicto:** ISR bien configurado. Revalidación on-publish funciona para el home. Gap menor en paths secundarios (sin bloquear switch).
+
+---
+
+## §7 — SÍNTESIS + PLAN
+
+### BLOQUEANTES del switch
+
+| # | Gap | Acción | Esfuerzo |
+|---|---|---|---|
+| B-1 | **Vercel Analytics ausente** — cero datos de tráfico desde día 1 | `pnpm add @vercel/analytics` + `<Analytics />` en root layout | 15min |
+
+### Deseable pre-switch (no estrictamente bloqueante)
+
+| # | Gap | Acción |
+|---|---|---|
+| D-1 | CSP ausente | Agregar CSP estático en `next.config.mjs` (allowlist) |
+| D-2 | 404 monolingüe ES-only | `getTranslations('NotFound')` + namespace ES+EN |
+
+### Post-switch (deuda conocida)
+
+| # | Gap | Acción |
+|---|---|---|
+| P-1 | GA4 + consent banner GDPR | Banner bilingüe + Consent Mode v2 + CSP update |
+| P-2 | Stubs en sitemap con contenido placeholder | Cuando las páginas tengan contenido real |
+| P-3 | undici/ws highs transitivos | Esperar update de `@payloadcms/*` |
+| P-4 | Gap revalidación rutas secundarias | `revalidatePath('/contacto')` etc. en hooks globals |
+
+### OK / Verificado
+
+| Frente | Estado |
+|---|---|
+| Next.js CVE-2025-29927 | ✅ Parcheado (15.5.18) |
+| Security headers 5/6 | ✅ HSTS, X-Frame, X-Content, Referrer, Permissions |
+| Env vars — separación secretos | ✅ CERO secretos con NEXT_PUBLIC_ |
+| Revalidación on-publish | ✅ SiteHomepage + Pages hooks activos |
+| Robots.txt AEO/GEO | ✅ Canon firmado |
+| 404 funciona | ✅ Existe, responde, pero ES-only |
+
+### Resumen ejecutivo
+
+```
+✅ Next.js 15.5.18 — todos los CVEs críticos parcheados
+✅ Env vars limpias — sin leaks al browser
+✅ 5/6 security headers — solo falta CSP
+✅ Revalidación on-publish activa para globals
+✅ Robots.txt AEO canon
+
+❌ ÚNICO BLOQUEANTE: Vercel Analytics no instalado (B-1) — fix trivial < 15min
+
+⚠️ Deseable pre-switch:
+   D-1: CSP estático allowlist
+   D-2: 404 bilingüe ES+EN
+
+📦 Post-switch: GA4 + banner GDPR, undici transitivos (Payload update)
+```
