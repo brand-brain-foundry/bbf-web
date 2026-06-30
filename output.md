@@ -2733,3 +2733,47 @@ GRUPO B: 5 items deuda post-switch
 CWV-02 (no preload LCP) + AI-01 (video aria-hidden) + AI-02 (VideoObject ausente)
 son los 3 más críticos para AEO/GEO pre-switch.
 ```
+
+---
+
+# REPORTE — B-BBF-WEB-ASSETS-FASE-A
+**Fecha:** 2026-06-30 · **Despacho:** B-BBF-WEB-ASSETS-FASE-A
+**Tipo:** FIX · **TSC:** 0 · **Commit:** `9c9f3ca`
+
+## Tabla de fixes ejecutados
+
+| Fix | Archivo : Línea | Texto fuente | Bilingüe | Estado |
+|---|---|---|---|---|
+| A1 Hero video | `page.tsx:219` | `hero.media.demoLabel` (Payload, `localized:true`) | ✅ admin | ✅ |
+| A1 Case video | `page.tsx:318` | `cs.mediaChromeLabel ?? cs.h2Line1` (Payload, localized) | ✅ admin | ✅ |
+| A2 BrandLogo stamp | `BrandLogo.tsx:176–177` | `ariaLabel` prop → default `'Brand Brain Foundry'` | ✅ prop override | ✅ |
+| A3 CapabilityScene alt | `CapabilityScene.tsx:198` | `asset.alt ?? media.caption ?? ''` (Payload Media) | ✅ admin | ✅ |
+| A4 Twitter card | `layout.tsx:122` | `title = siteName · siteTagline` (admin, locale-aware) | ✅ admin | ✅ |
+| A5 OG contacto alt | `opengraph-image.tsx:7` | `'Contacto / Contact — Sivar Brains'` (static bilingual) | ⚠️ static | ✅ |
+| A6 VideoObject schema | `page.tsx:82–97, 421–423` | `demoLabel` / `footCaption` (Payload, `localized:true`) | ✅ admin | ✅ |
+
+## Verificación T7
+
+- **TSC:** 0 errores ✅
+- **Cero hardcode monolingüe:** A1/A3/A6 vienen de Payload `localized:true`; A4 de `title` locale-aware; A5 limitación de `export const alt` (static por diseño Next.js) — bilingual string bilingual/ES-default; A2 override via prop ✅
+- **git status:** solo 3 `??` históricos (backups/assets) — sin archivos FASE A sin commitear ✅
+- **@graph VideoObject:** name/description/thumbnailUrl/uploadDate/inLanguage/contentUrl (condicional) ✅
+- **Visual intacto:** 0 cambios de rendering visual — solo ARIA + JSON-LD ✅
+
+## Nota A5 — limitación static export
+
+`export const alt` en `opengraph-image.tsx` no puede resolverse por locale (es una exportación estática del módulo, no una función async). La alternativa canon sería `generateImageMetadata()` pero requiere duplicar la URL dinámica del OG — scope FASE B. Bilingual string `'Contacto / Contact — Sivar Brains'` es el compromiso A-01.
+
+## Estado post-FASE A
+
+```
+Hero video: aria-hidden REMOVIDO → aria-label descriptivo (admin ES+EN) ✅
+Case video: aria-label desde admin ✅
+BrandLogo stamp: role="img" + aria-label ✅
+CapabilityScene kind=media: alt fallback chain ✅
+Twitter card global: image con alt + dimensiones ✅
+OG contacto: export const alt ✅
+VideoObject schema: visible para Perplexity/ChatGPT/Claude ✅
+```
+
+**PAUSA → Zavala valida → Strategic firma → FASE A cerrada → pre-switch externo.**
