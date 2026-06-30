@@ -72,7 +72,12 @@ backups/*.sql
 # === Claude Code (cliente local) — D-BBF-WEB-101 canon ===
 # .claude/ es directorio del cliente Claude Code, no source.
 # Contiene feedback archive con despachos Strategic internos.
-.claude/
+# NOTA: git no permite negar subdirectorios de un parent ignorado con trailing /.
+# Patrón correcto: ignorar contenidos con *, luego re-incluir rules/.
+.claude/*
+# rules/ contiene doctrina del proyecto — se versiona (D-ANALYTICS-01, D-BBF-WEB-*, etc.)
+!.claude/rules/
+!.claude/rules/**
 
 # ─────────────────────────────────────────────────────────────
 # H1-3-A additions (2026-05-15)
