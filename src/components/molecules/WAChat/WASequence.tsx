@@ -6,7 +6,18 @@
  * IntersectionObserver (threshold 0.3) starts/stops the loop.
  * prefers-reduced-motion: show all messages immediately, no loop.
  */
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useSyncExternalStore } from 'react';
+
+// useSyncExternalStore for prefers-reduced-motion — avoids setState-in-effect (react-hooks error)
+const subscribeReducedMotion = (cb: () => void) => {
+  if (typeof window === 'undefined') return () => {};
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  mq.addEventListener('change', cb);
+  return () => mq.removeEventListener('change', cb);
+};
+const getReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const getReducedMotionServer = () => false;
 
 interface WAChatMsg {
   id?: string;
@@ -65,6 +76,13 @@ export function WASequence({ messages, contactName, footer, ui }: WASequenceProp
   const [shown, setShown] = useState<WAChatMsg[]>([]);
   const [typingInput, setTypingInput] = useState('');
   const [brainTyping, setBrainTyping] = useState(false);
+  const prefersReducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotion,
+    getReducedMotionServer,
+  );
+  // For reduced-motion: show all messages statically without animation
+  const visibleMessages = prefersReducedMotion ? messages : shown;
   const bodyRef = useRef<HTMLDivElement>(null);
   const inputTextRef = useRef<HTMLSpanElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -143,11 +161,8 @@ export function WASequence({ messages, contactName, footer, ui }: WASequenceProp
   }, []);
 
   useEffect(() => {
-    // prefers-reduced-motion: static, no animation
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setShown(messages);
-      return;
-    }
+    // prefers-reduced-motion: visibleMessages derived from messages directly — no animation needed
+    if (prefersReducedMotion) return;
 
     const el = wrapRef.current;
     if (!el) return;
@@ -168,7 +183,7 @@ export function WASequence({ messages, contactName, footer, ui }: WASequenceProp
       observer.disconnect();
       runId.current++;
     };
-  }, [startLoop, stopLoop, messages]);
+  }, [prefersReducedMotion, startLoop, stopLoop, messages]);
 
   return (
     <div ref={wrapRef} className="bbf-wa-screen">
@@ -280,7 +295,7 @@ export function WASequence({ messages, contactName, footer, ui }: WASequenceProp
           {ui.encrypted}
         </div>
 
-        {shown.map((m, i) => (
+        {visibleMessages.map((m, i) => (
           <div key={m.id ?? i} className={`bbf-wa-row bbf-wa-row--${m.who}`}>
             <div className={`bbf-wa-bubble bbf-wa-bubble--${m.who}`}>
               <span className="bbf-wa-text">{m.text}</span>

@@ -5,7 +5,18 @@
  * → invitaciones enviadas → ask + quick replies → cierre. Loop con IntersectionObserver.
  * prefers-reduced-motion: muestra todo estático sin loop.
  */
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useSyncExternalStore } from 'react';
+
+// useSyncExternalStore for prefers-reduced-motion — avoids setState-in-effect (react-hooks error)
+const subscribeReducedMotion = (cb: () => void) => {
+  if (typeof window === 'undefined') return () => {};
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  mq.addEventListener('change', cb);
+  return () => mq.removeEventListener('change', cb);
+};
+const getReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const getReducedMotionServer = () => false;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -326,6 +337,31 @@ export function WAAgendaSequence({
   const [brainTyping, setBrainTyping] = useState(false);
   const [quickVisible, setQuickVisible] = useState(false);
   const [invStarted, setInvStarted] = useState(false);
+  const prefersReducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotion,
+    getReducedMotionServer,
+  );
+  // Reduced-motion: derive static view from props without setState-in-effect
+  const reducedMotionItems: ShownItem[] = prefersReducedMotion
+    ? [
+        { kind: 'text', who: 'user', text: briefText, time: '9:13', id: 'brief' },
+        { kind: 'text', who: 'brain', text: confirmText, time: '9:13', id: 'confirm' },
+        { kind: 'meet', id: 'meet' },
+        { kind: 'text', who: 'brain', text: inviteSentText, time: '9:14', id: 'invite-sent' },
+        { kind: 'text', who: 'brain', text: askText, time: '9:14', id: 'ask' },
+        {
+          kind: 'text',
+          who: 'user',
+          text: quickReplies[0]?.label ?? '',
+          time: '9:15',
+          id: 'reply',
+        },
+        { kind: 'text', who: 'brain', text: closingText, time: '9:15', id: 'closing' },
+      ]
+    : [];
+  const visibleMessages = prefersReducedMotion ? reducedMotionItems : shown;
+  const visibleInvStarted = prefersReducedMotion || invStarted;
 
   const bodyRef = useRef<HTMLDivElement>(null);
   const inputTextRef = useRef<HTMLSpanElement>(null);
@@ -485,25 +521,8 @@ export function WAAgendaSequence({
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setShown([
-        { kind: 'text', who: 'user', text: briefText, time: '9:13', id: 'brief' },
-        { kind: 'text', who: 'brain', text: confirmText, time: '9:13', id: 'confirm' },
-        { kind: 'meet', id: 'meet' },
-        { kind: 'text', who: 'brain', text: inviteSentText, time: '9:14', id: 'invite-sent' },
-        { kind: 'text', who: 'brain', text: askText, time: '9:14', id: 'ask' },
-        {
-          kind: 'text',
-          who: 'user',
-          text: quickReplies[0]?.label ?? '',
-          time: '9:15',
-          id: 'reply',
-        },
-        { kind: 'text', who: 'brain', text: closingText, time: '9:15', id: 'closing' },
-      ]);
-      setInvStarted(true);
-      return;
-    }
+    // prefersReducedMotion: visibleMessages + visibleInvStarted derived above — no setState needed
+    if (prefersReducedMotion) return;
 
     const el = wrapRef.current;
     if (!el) return;
@@ -525,6 +544,7 @@ export function WAAgendaSequence({
       runId.current++;
     };
   }, [
+    prefersReducedMotion,
     startLoop,
     stopLoop,
     briefText,
@@ -645,14 +665,14 @@ export function WAAgendaSequence({
           {ui.encrypted}
         </div>
 
-        {shown.map((item, i) => {
+        {visibleMessages.map((item, i) => {
           if (item.kind === 'meet') {
             return (
               <div key={item.id} className="bbf-wa-row bbf-wa-row--brain">
                 <div className="bbf-wa-bubble bbf-wa-bubble--brain bbf-wa-bubble--card">
                   <MeetCard
                     meet={meetCard}
-                    invStarted={invStarted}
+                    invStarted={visibleInvStarted}
                     time="9:13"
                     copyLinkLabel={ui.copyLinkLabel}
                     copiedLinkLabel={ui.copiedLinkLabel}
