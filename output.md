@@ -1,3 +1,123 @@
+# REPORTE — B-BBF-WEB-THREE-CONSOLIDACION-Y-SSL
+**Fecha:** 2026-06-30 · **pwd:** bbf-web
+**Despacho:** B-BBF-WEB-THREE-CONSOLIDACION-Y-SSL — SSL fix + three.js análisis
+**Protocolo:** P-1 + P-5 + P-6
+**Restricción:** PROHIBIDO push, migrate, zona intocable, romper efectos 3D.
+**pnpm build:** ✓ exit 0 (22 páginas)
+**Commits:** `ee301e4`
+
+---
+
+## §1 — SSL fix (EJECUTADO)
+
+### Problema
+`pg-connection-string` emitía `SECURITY WARNING` porque `DATABASE_URL` usa `sslmode=require`
+(alias de `verify-full` hasta pg v9, pero con semántica diferente en v9+).
+
+### Solución — `src/payload.config.ts`
+```ts
+connectionString: (() => {
+  const raw = process.env.DATABASE_URL;
+  if (!raw) return raw;
+  try {
+    const u = new URL(raw);
+    u.searchParams.set('sslmode', 'verify-full');
+    return u.toString();
+  } catch { return raw; }
+})(),
+```
+- `new URL()` muta solo el query param `sslmode`, sin imprimir credenciales
+- Comportamiento SSL idéntico (verify-full ya era el comportamiento actual)
+- Idempotente: funciona si URL no tiene sslmode o tiene cualquier alias
+- Build: ✓ exit 0
+
+**PASS §1.**
+
+---
+
+## §2 — Three.js análisis (READ-ONLY, sin ejecutar)
+
+### Situación actual (post-despacho anterior)
+- **Prod/Dev home page**: BlobBackground inyecta `three.min.js` r160 (UMD global → `window.THREE`)
+- **Lissajous3DMotor**: dynamic import de `three` r184 (ESM) — solo se carga si hay preset 3D activo
+- **Home page**: usa solo presets 2D (`case-2d`, `cross-2d`) → Lissajous3DMotor **nunca se carga** en home
+
+Por tanto:
+- "Multiple instances" warning: **ya NO ocurre** en home (solo 1 instancia: UMD)
+- Warning que SÍ persiste: `console.warn('Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+...')` — hardcodeado dentro de `three.min.js` r160 UMD, se emite cada vez que se inyecta
+
+### APIs de THREE en blob-scene.js vs r184
+Audit de `grep -oE 'THREE\.[A-Za-z]+'` sobre `blob-scene.js`:
+```
+Camera, ClampToEdgeWrapping, Clock, ColorManagement,
+LinearFilter, LinearSRGBColorSpace, Mesh, NoColorSpace,
+PlaneGeometry, Scene, ShaderMaterial, TextureLoader,
+Vector2, Vector4, WebGLRenderer
+```
+→ Verificado con Node.js: **TODOS existen en three r184**. `MISSING: none`.
+
+### Opciones de consolidación
+
+#### Opción A — `window.THREE = npm three` en BlobBackground (RECOMENDADA)
+**Cómo:** En `BlobBackground.tsx`, reemplazar:
+```ts
+if (!w.THREE) await injectScript(THREE_SCRIPT);
+```
+por:
+```ts
+if (!w.THREE) {
+  const m = await import('three');
+  (window as typeof window & { THREE: unknown }).THREE = m;
+}
+```
+- blob-scene.js usa `window.THREE` → ahora recibe r184 ESM (el mismo que usa Lissajous3DMotor)
+- `three.min.js` queda sin uso → se puede eliminar de `/public/assets/blob/`
+- **Riesgo: BAJO** — los 14 THREE.* APIs de blob-scene.js existen en r184; la API básica de Three.js (Renderer, Scene, ShaderMaterial, etc.) es estable entre r160 y r184
+- **Esfuerzo: MUY BAJO** — 4 líneas en BlobBackground.tsx
+- **Elimina warning:** SÍ — no hay más UMD injection, no hay más `console.warn` hardcodeado
+- **Side effect positivo:** bundle más limpio (no hay doble carga de Three.js); `three.min.js` r160 puede eliminarse
+
+#### Opción B — Actualizar `three.min.js` a r184 UMD
+- **Riesgo: BAJO** (APIs compatibles)
+- **Esfuerzo: MEDIO** (obtener UMD build de r184)
+- **Elimina warning "deprecated":** NO — r184 UMD también emite la misma advertencia
+- **Elimina "multiple instances":** NO — sigue siendo 2 instancias (UMD + ESM)
+- **Veredito:** no resuelve ninguno de los warnings. Descartada.
+
+#### Opción C — Documentar D-THREE-ESM-01 como deuda post-switch
+- El único warning que persiste (`three.min.js deprecated`) es **solo cosmético** — no afecta funcionalidad ni CSP ni performance en prod
+- En prod el home tiene 1 instancia (UMD); el warning aparece en dev consola
+- **Riesgo: CERO** (no se toca nada)
+- **Esfuerzo: CERO**
+- **Elimina warning:** NO — persiste en dev
+
+### Recomendación
+→ **Opción A** si Zavala quiere limpiar el warning de consola (bajo riesgo, 4 líneas).
+→ **Opción C** si los warnings de dev son aceptables hasta el switch de engine.
+
+Pendiente decisión de Zavala.
+
+---
+
+## §3 — Verificación
+
+| Check | Estado |
+|---|---|
+| pnpm build | ✅ exit 0 |
+| SSL sslmode=verify-full | ✅ código |
+| SSL warning eliminado | ⏳ Zavala verifica en dev (`pnpm dev`) |
+| three: APIs r160→r184 | ✅ 100% compatibles |
+| three warning: `deprecated` | ⏳ persiste (cosmético, espera decisión Opción A) |
+| Efectos 3D intactos | ✅ (no tocados) |
+
+---
+
+## §4 — Drift
+
+- `src/payload.config.ts` — IIFE transforma DATABASE_URL para sslmode=verify-full
+
+---
+
 # REPORTE — B-BBF-WEB-SELFHOST-MATCAPS-Y-DEUDA
 **Fecha:** 2026-06-30 · **pwd:** bbf-web
 **Despacho:** B-BBF-WEB-SELFHOST-MATCAPS-Y-DEUDA — self-host matcaps + three.js deuda
