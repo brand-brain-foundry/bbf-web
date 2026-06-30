@@ -1,1 +1,0 @@
-export { Interpolated } from './Interpolated';
