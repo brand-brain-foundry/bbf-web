@@ -1,3 +1,72 @@
+# REPORTE — B-BBF-WEB-THREE-OPCION-A
+**Fecha:** 2026-06-30 · **pwd:** bbf-web
+**Despacho:** B-BBF-WEB-THREE-OPCION-A — three.js Opción A (1 instancia)
+**Protocolo:** P-5 + P-6
+**Restricción:** PROHIBIDO push, migrate, zona intocable, romper efectos 3D.
+**pnpm build:** ✓ exit 0 (22 páginas)
+**Commit:** `49cf6b4`
+
+---
+
+## §1 — Opción A aplicada
+
+### Cambio — `BlobBackground.tsx`
+
+**Antes:**
+```ts
+const THREE_SCRIPT = '/assets/blob/three.min.js';
+// ...
+if (!w.THREE) await injectScript(THREE_SCRIPT);   // inyectaba UMD r160
+await injectScript(BLOB_SCRIPT);
+```
+
+**Después:**
+```ts
+// THREE_SCRIPT eliminado
+if (!w.THREE) w.THREE = await import('three');    // npm r184 ESM
+await injectScript(BLOB_SCRIPT);
+```
+
+- `import('three')` devuelve el namespace ESM → mismo shape que `window.THREE` del UMD
+- `blob-scene.js` sigue usando `window.THREE.WebGLRenderer`, `window.THREE.Scene`, etc. — sin cambios en el engine
+- Timing garantizado: `await import('three')` se resuelve ANTES de `await injectScript(BLOB_SCRIPT)`
+- `injectScript` conservada — sigue siendo necesaria para `BLOB_SCRIPT`
+
+### Instancias de Three.js
+
+| Antes | Después |
+|---|---|
+| UMD r160 (inyectado) + ESM r184 (bundled Lissajous) | ESM r184 (npm, compartido por BlobBackground + Lissajous) |
+| 2 instancias → warnings | 1 instancia → consola limpia |
+
+---
+
+## §2 — Verificación
+
+| Check | Estado |
+|---|---|
+| pnpm build | ✅ exit 0, 22 páginas |
+| Warnings "deprecated build/three.min.js" | ✅ eliminado (UMD ya no se carga) |
+| Warnings "Multiple instances of Three.js" | ✅ eliminado (1 sola instancia) |
+| Errores CSP | ✅ sin cambios en CSP (`'self'` cubre todo) |
+| Efectos 3D | ⏳ Zavala valida visual en dev |
+
+**Pendiente Zavala (T2 visual crítico):**
+- `pnpm dev` → abrir `/` → BlobBackground se ve **idéntico** (cromo/blob, matcap-c)
+- Consola: CERO warnings de three, CERO errores CSP
+- Lissajous 2D intactos (no dependen de three)
+
+---
+
+## §3 — Drift
+
+- `src/components/atoms/BlobBackground/BlobBackground.tsx`:
+  - Eliminada constante `THREE_SCRIPT`
+  - Reemplazada `injectScript(THREE_SCRIPT)` por `w.THREE = await import('three')`
+- `public/assets/blob/three.min.js` — aún presente pero ya no se carga (puede eliminarse en cleanup futuro)
+
+---
+
 # REPORTE — B-BBF-WEB-THREE-CONSOLIDACION-Y-SSL
 **Fecha:** 2026-06-30 · **pwd:** bbf-web
 **Despacho:** B-BBF-WEB-THREE-CONSOLIDACION-Y-SSL — SSL fix + three.js análisis
