@@ -18,8 +18,9 @@ const nextConfig = {
   async headers() {
     const csp = [
       "default-src 'self'",
-      // Vercel Analytics + Speed Insights + Turnstile + GA4 (preparado, no activo aún)
-      "script-src 'self' https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.googletagmanager.com",
+      // Next.js necesita 'unsafe-inline' para scripts de hidratación (sin nonce → sin ISR rota)
+      // Vercel Analytics + Turnstile + GTM preparado
+      "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.googletagmanager.com",
       // Inline styles via React style prop + Tailwind utilities
       "style-src 'self' 'unsafe-inline'",
       // Imágenes: self + data URIs + Vercel Blob + Turnstile widget
@@ -28,6 +29,8 @@ const nextConfig = {
       "font-src 'self'",
       // Fetch/XHR: Analytics beacon + Turnstile verify + GA4 (preparado)
       "connect-src 'self' https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.google-analytics.com",
+      // Video hero + Blob: media-src cubre <video> src (no cubierto por img-src)
+      "media-src 'self' https://*.public.blob.vercel-storage.com",
       // Turnstile widget iframe
       'frame-src https://challenges.cloudflare.com',
       "frame-ancestors 'none'",
