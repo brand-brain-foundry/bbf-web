@@ -1,3 +1,132 @@
+# REPORTE — B-BBF-WEB-PRESWITCH-VALORES
+**Fecha:** 2026-06-30 · **pwd:** bbf-web + bbf-docs
+**Despacho:** B-BBF-WEB-PRESWITCH-VALORES — Auditoría pre-switch (read-only)
+**Protocolo:** P-6
+**Restricción:** PROHIBIDO modificar, push, imprimir secretos.
+
+---
+
+## §1 — Dominio + URLs
+
+### NEXT_PUBLIC_SITE_URL actual
+En `.env.local`: **no auditado** (permiso denegado — correcto, tiene credenciales).
+En código: el fallback hardcodeado en `payload.config.ts:137` es `'https://sivarbrains.com'`.
+→ Si `NEXT_PUBLIC_SITE_URL` no está seteada en Vercel, el código usa `sivarbrains.com` como fallback.
+
+### Dónde se usa el dominio
+| Archivo | Fuente del dominio | Dominio hoy |
+|---|---|---|
+| `sitemap.ts` | `site.siteDomain` (Payload `SiteIdentity` global, campo `siteDomain`) | `https://sivarbrains.com` (defaultValue) |
+| `newsletter.ts` | `NEXT_PUBLIC_SITE_URL ?? 'https://sivarbrains.com'` | sivarbrains.com ✅ |
+| `payload.config.ts` (SEO plugin) | `NEXT_PUBLIC_SITE_URL \|\| 'https://sivarbrains.com'` | sivarbrains.com ✅ |
+| `opengraph-image.tsx` (contacto) | Hardcoded string literal `sivarbrains.com` | sivarbrains.com ✅ |
+| `llms.txt` / `llms-full.txt` / `en/llms.txt` | `site.producer?.url ?? 'https://brandbrainfoundry.com'` | brandbrainfoundry.com ✅ CORRECTO (es la URL del producer BBF, entidad separada) |
+
+### Referencias brandbrainfoundry.com — estado
+| Referencia | Archivo | ¿Cambiar? |
+|---|---|---|
+| `producer.url` default (`SiteIdentity.ts:239`) | Payload schema | ❌ NO — es la URL de la empresa productora (BBF ≠ sivarbrains.com) |
+| `affiliation.url` en seed-entities-canonical.ts | Seed script | ❌ NO — URL de afiliación del founder a BBF |
+| `producerUrl` en llms.txt routes | Routes | ❌ NO — apunta a BBF.com, que es quien produce el producto |
+| Migraciones antiguas (20260515, 20260520) | Migrations | ❌ NO — histórico inmutable |
+| `generate-placeholders-registry.ts:157` | Script (dev tool) | ❌ NO — ejemplo de campo |
+
+**Conclusión §1:** El código ya apunta a `sivarbrains.com` en todos los lugares que corresponden. Las referencias a `brandbrainfoundry.com` que quedan son correctas (entidad productora separada). **Cero cambios de código requeridos.**
+
+---
+
+## §2 — ENV vars para producción (Vercel)
+
+Lista extraída de `src/lib/env.ts` (schema Zod canónico):
+
+| Nombre | Tipo | Estado Vercel (a verificar) | Notas |
+|---|---|---|---|
+| `DATABASE_URL` | required | ⬜ verificar | Con `sslmode=verify-full` ya forzado en código |
+| `PAYLOAD_SECRET` | required (min 32) | ⬜ verificar | |
+| `BLOB_READ_WRITE_TOKEN` | required (prefix: vercel_blob_rw_) | ⬜ verificar | Vercel Blob media storage |
+| `RESEND_API_KEY` | required | ⬜ verificar | |
+| `RESEND_AUDIENCE_ID` | optional | ⬜ verificar | Sin esto, el newsletter guarda contacto pero no asigna audiencia |
+| `RESEND_FROM_NEWSLETTER` | optional (email) | ⬜ verificar | Default: `newsletter@sivarbrains.com` (necesita DKIM activo) |
+| `RESEND_WEBHOOK_SECRET` | optional | ⬜ verificar | Para webhooks Resend (double opt-in) |
+| `UPSTASH_REDIS_REST_URL` | required | ⬜ verificar | Rate limiting contacto + newsletter |
+| `UPSTASH_REDIS_REST_TOKEN` | required | ⬜ verificar | |
+| `TURNSTILE_SECRET_KEY` | required | ⬜ verificar | Server-side validation |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | required | ⬜ verificar | Client-side widget |
+| `NEXT_PUBLIC_SITE_URL` | required | ⬜ verificar → debe ser `https://sivarbrains.com` | ⚠️ SI cambia: **redeploy** obligatorio (build-time) |
+
+**⚠️ Si `NEXT_PUBLIC_SITE_URL` dice `brandbrainfoundry.com` en Vercel → corregir + redeploy antes del switch.**
+
+---
+
+## §3 — Config actores externos
+
+### BBF_SwitchPlan.md
+**Existe:** `/bbf-docs/04-strategic/web-public/BBF_SwitchPlan.md` — versión 1.0 (2026-06-28)
+4 bloqueadores críticos identificados:
+
+| # | Bloqueador | Estado según SwitchPlan | Dónde actuar |
+|---|---|---|---|
+| B-1 | **Cloudflare DNS** `sivarbrains.com → Vercel` | 🟡 pendiente | CF dashboard → DNS → CNAME apex → `cname.vercel-dns.com` |
+| B-2 | **Cloudflare Turnstile** — agregar `sivarbrains.com` al allowlist | 🟡 pendiente | CF → Turnstile → widget activo → Allowed Origins |
+| B-3 | **Resend DKIM/SPF** para `sivarbrains.com` | ❌ no configurado | Resend → Domains → sivarbrains.com → copiar registros DNS → CF |
+| B-4 | **Vercel custom domain** + `NEXT_PUBLIC_SITE_URL` | 🟡 pendiente | Vercel → bbf-web → Settings → Domains + Env Vars |
+
+### Cloudflare SSL crítico
+- Encryption mode **DEBE ser `Full (strict)`** (no Flexible)
+- `Flexible` → redirect loop infinito (CF→Vercel HTTP + Vercel force HTTPS)
+- SwitchPlan §1 documenta esto con comandos de verificación
+
+### Turnstile — site key en código
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` viene de env var (no hardcodeado)
+- Para saber qué dominios tiene en allowlist HOY: **Cloudflare dashboard** → Turnstile → widget activo → Settings → Allowed Origins
+- El SwitchPlan indica que puede estar configurado solo para `brandbrainfoundry.com`
+
+### Resend — estado
+- `RESEND_API_KEY` en env var ✅
+- Dominio `sivarbrains.com` NO verificado (NOTA-FUTURE-MAIL-001 ACTIVA)
+- Sin DKIM: emails `from web@sivarbrains.com` → spam o rechazo
+- SwitchPlan §3/Paso 3: registro DKIM + SPF modificado en Cloudflare DNS
+
+### Vercel
+- Custom domain `sivarbrains.com`: según SwitchPlan, **no añadido aún** (Paso 4)
+- `NEXT_PUBLIC_SITE_URL`: verificar en Settings → Environment Variables (debe ser `https://sivarbrains.com`)
+
+---
+
+## §4 — Checklist para Zavala (qué hacer en cada dashboard)
+
+### Vercel dashboard
+- [ ] Settings → Environment Variables → `NEXT_PUBLIC_SITE_URL` = `https://sivarbrains.com` (Production)
+- [ ] Settings → Environment Variables → verificar que las 12 vars de §2 están seteadas
+- [ ] Settings → Domains → `sivarbrains.com` añadido (Paso 4 del SwitchPlan)
+- [ ] Si cambió `NEXT_PUBLIC_SITE_URL`: **Deployments → Redeploy** (obligatorio)
+
+### Cloudflare dashboard
+- [ ] Zona `sivarbrains.com` → DNS → CNAME apex `@` → `cname.vercel-dns.com` (Proxied 🟠)
+- [ ] Zona `sivarbrains.com` → DNS → CNAME `www` → `cname.vercel-dns.com` (Proxied 🟠)
+- [ ] SSL/TLS → Overview → Encryption mode: **Full (strict)** ⚠️
+- [ ] Turnstile → widget activo → Allowed Origins → añadir `sivarbrains.com` + `www.sivarbrains.com`
+- [ ] DNS → TXT `resend._domainkey.sivarbrains.com` (valor de Resend)
+- [ ] DNS → TXT `@` → SPF: `v=spf1 include:_spf.mail.hostinger.com include:resend.com ~all` (EDITAR el existente)
+- [ ] DNS → TXT `_dmarc.sivarbrains.com` → `v=DMARC1; p=none; rua=mailto:dmarc@sivarbrains.com`
+
+### Resend dashboard
+- [ ] Domains → Add → `sivarbrains.com` → copiar los 3 registros DNS → aplicar en Cloudflare → Verify
+- [ ] Esperar status **Verified** (hasta 1h)
+
+---
+
+## §5 — Lo que NO requiere cambios de código
+
+Todo el código ya está preparado para sivarbrains.com. El trabajo pendiente es 100% configuración de dashboards externos. El SwitchPlan en bbf-docs tiene los pasos exactos con comandos de verificación.
+
+**Secuencia recomendada (del SwitchPlan §2):**
+1. B-1 + B-2 + B-3 en paralelo (independientes entre sí)
+2. B-4 Vercel domain: después de que B-1 DNS propague (~5-60 min)
+3. Switch real (pasos 6-7): solo cuando todo verde + **día hábil Lunes-Jueves**
+
+---
+
 # REPORTE — B-BBF-WEB-THREE-OPCION-A
 **Fecha:** 2026-06-30 · **pwd:** bbf-web
 **Despacho:** B-BBF-WEB-THREE-OPCION-A — three.js Opción A (1 instancia)
