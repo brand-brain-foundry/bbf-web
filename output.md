@@ -1,3 +1,74 @@
+# REPORTE — B-BBF-WEB-FIX-CSP-ROTO
+**Fecha:** 2026-06-30 · **pwd:** bbf-web
+**Despacho:** B-BBF-WEB-FIX-CSP-ROTO — FIX URGENTE CSP bloqueaba hidratación + video
+**Protocolo:** P-5 + P-6
+**Restricción:** PROHIBIDO migrate, push, zona intocable. NO usar nonce (rompería ISR).
+**TSC:** 0 (exit 0)
+**Commit:** `d2d698b`
+
+---
+
+## §1 — FIX CSP (next.config.mjs)
+
+### Problema diagnosticado
+
+El CSP del despacho anterior tenía dos omisiones críticas:
+
+1. **`script-src` sin `'unsafe-inline'`** — Next.js (App Router, ISR, sin nonce) inyecta ~45 scripts inline para hidratación del cliente. Sin `'unsafe-inline'`, todos bloqueados → el home no hidrataba ni renderizaba en cliente.
+2. **`media-src` ausente** — La directiva `img-src` NO cubre `<video src="...">`. El video del hero (BBF-video.webm/mp4 desde `'self'` o Vercel Blob) era bloqueado por el browser.
+
+### Fixes aplicados
+
+**A) `script-src` — añadido `'unsafe-inline'`:**
+```
+script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.googletagmanager.com
+```
+Motivo: Next.js sin nonce requiere `'unsafe-inline'` para sus scripts de bootstrap/hidratación. La alternativa (nonce) rompería ISR — prohibida por despacho.
+
+**B) `media-src` — directiva nueva:**
+```
+media-src 'self' https://*.public.blob.vercel-storage.com
+```
+Motivo: `<video>` y `<audio>` tienen su propia directiva CSP separada de `img-src`. El video del hero (self o Blob) necesita que `media-src` lo permita explícitamente.
+
+### CSP final completa
+
+```
+default-src 'self';
+script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.googletagmanager.com;
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: blob: https://*.public.blob.vercel-storage.com https://challenges.cloudflare.com;
+font-src 'self';
+connect-src 'self' https://va.vercel-scripts.com https://challenges.cloudflare.com https://www.google-analytics.com;
+media-src 'self' https://*.public.blob.vercel-storage.com;
+frame-src https://challenges.cloudflare.com;
+frame-ancestors 'none';
+object-src 'none';
+base-uri 'self';
+upgrade-insecure-requests
+```
+
+---
+
+## §2 — VERIFICACIÓN PENDIENTE (Zavala)
+
+T2 requiere validación visual. Build y navegador:
+- **Home `/` y `/en`** → deben renderizar completo (hidratación OK).
+- **Consola navegador** → CERO errores CSP (ni media, ni script, ni style, ni font).
+- **Video hero** → carga (webm/mp4).
+- **Imágenes Blob** → cargan.
+- **Fuentes** Inter + Mulish → OK.
+- **Escenas** (CapabilityScene, WAChat, etc.) → funcionan.
+- **Form / Turnstile** en `/contacto` → widget carga.
+
+---
+
+## §3 — Drift
+
+Ninguno. Solo `next.config.mjs` modificado. No se tocaron schemas, colecciones, ni zonas prohibidas.
+
+---
+
 # REPORTE — B-BBF-WEB-READINESS-PRESWITCH
 **Fecha:** 2026-06-30 · **pwd:** bbf-web
 **Despacho:** B-BBF-WEB-READINESS-PRESWITCH — Vercel Analytics + CSP estático + 404 bilingüe
