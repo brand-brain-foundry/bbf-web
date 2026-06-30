@@ -1,3 +1,51 @@
+# REPORTE — B-BBF-WEB-LIMPIEZA-POSTHOG-CANON
+**Fecha:** 2026-06-30 · **pwd:** bbf-web + bbf-docs
+**Despacho:** B-BBF-WEB-LIMPIEZA-POSTHOG-CANON — Limpieza stale + D-ANALYTICS-01
+**Protocolo:** P-5
+**Restricción:** PROHIBIDO push, código, enum capturedFrom.
+
+---
+
+## §1 — Limpieza ejecutada
+
+### `.claude/rules/40-security-csp.md` (bbf-web)
+
+**Cambio:** reemplazado el bloque CSP de ejemplo que tenía `us.i.posthog.com` con la CSP real desplegada (sin posthog). Añadida sección **Analítica (D-ANALYTICS-01)** que documenta:
+- Sitio público: Vercel Analytics + GA4
+- PostHog: NO instalado, reservado para AppWeb
+- `capturedFrom: 'posthog'`: opción de catálogo, no tracker activo — NO tocar
+
+**Nota:** `.claude/` está en `.gitignore` de bbf-web — el archivo se guarda en disco pero no se versiona en git. Zavala puede decidir excluir `.claude/rules/` del ignore si quiere versionarlo.
+
+### `BBF_WebPublicaTopologiaCanon_v0_3.md` (bbf-docs) — commit `bd9bb0b`
+
+| Cambio | Línea original | Línea nueva |
+|---|---|---|
+| §0.3 — tabla decisiones | última fila D-BBF-WEB-18 | + fila D-ANALYTICS-01 |
+| §2 — topología 8 capas | `Analytics (PostHog)` | `Analytics (Vercel Analytics + GA4)` + nota PostHog→AppWeb |
+| §3 — stack técnico | `PostHog analytics` | `Vercel Analytics + GA4` + nota PostHog→AppWeb |
+
+**D-ANALYTICS-01 registrada:**
+> Analítica sitio público: Vercel Analytics + GA4. PostHog reservado para AppWeb.
+> Supersede D-BBF-WEB-13 solo en stack de tracking (el cookie consent de D-BBF-WEB-13 sigue vigente).
+
+---
+
+## §2 — ¿Canon coherente con el código?
+
+**SÍ.** Tras la limpieza:
+
+| Capa | Canon v0_3 | Código (next.config.mjs CSP) | Estado |
+|---|---|---|---|
+| Vercel Analytics | `va.vercel-scripts.com` | `va.vercel-scripts.com` en script-src + connect-src | ✅ |
+| GA4 | `google-analytics.com` + GTM | `www.google-analytics.com` en connect-src, `www.googletagmanager.com` en script-src | ✅ |
+| PostHog | "reservado AppWeb" | Ausente de CSP | ✅ |
+| Turnstile | `challenges.cloudflare.com` | `challenges.cloudflare.com` en script-src, img-src, connect-src, frame-src | ✅ |
+
+**CSP del código: no tocar** — ya refleja D-ANALYTICS-01 sin necesidad de cambios.
+
+---
+
 # REPORTE — B-BBF-WEB-AUDIT-POSTHOG
 **Fecha:** 2026-06-30 · **pwd:** bbf-web
 **Despacho:** B-BBF-WEB-AUDIT-POSTHOG — Auditoría PostHog (read-only)
