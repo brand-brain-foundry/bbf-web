@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.env
+.env.*
+npm-debug.log*
+pnpm-debug.log*
+backups
+.vscode
+.idea
+.DS_Store
+coverage
+.claude
