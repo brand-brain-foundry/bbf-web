@@ -5458,3 +5458,20 @@ Per instrucción explícita del despacho, no los toco acá — son Media docs qu
 ## Veredicto
 
 **Video:** dato ya correcto en Neon (confirmado, no tocado de nuevo) — lo que se ve en DO es staleness de ISR/build, se resuelve solo o con un redeploy, cero acción de código/datos necesaria de mi parte. **Poster:** sigue roto, mismo diagnóstico de siempre, fix propuesto (Opción A) esperando tu confirmación antes de tocar Neon.
+
+---
+
+## Addendum — poster fix EJECUTADO (confirmación recibida)
+
+Zavala confirmó explícitamente: "Sí, confirmado, vaciá videoPoster en SiteHomepage."
+
+Corrí el script acotado (mismo patrón read-modify-write, borrado inmediatamente después, nunca commiteado):
+
+```
+ANTES  — videoPoster: 22
+DESPUÉS — videoPoster: null
+```
+
+Verificado: `videoSources`, `demoLabel`, `footCaption`, `chromeLabel` quedaron intactos — el write solo tocó `videoPoster`. Con esto, `posterUrl` en `page.tsx` cae a la rama `else` (`hero.media.videoPoster` ya no es truthy) y sirve `/hero-poster.png` (self-hosted, existe en `/public`) — el 404 del poster queda resuelto en el próximo build/revalidación, mismo mecanismo de ISR explicado arriba para el video.
+
+**No se creó ningún archivo/commit de código** — este fix fue 100% contenido en Neon, documentado aquí para trazabilidad (E-01).
