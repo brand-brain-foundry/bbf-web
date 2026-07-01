@@ -6036,3 +6036,66 @@ Archivos: `Dockerfile`, `.dockerignore`, `src/app/(payload)/admin/importMap.js`.
 ## Escalar si...
 
 Si tras setear la key correctamente el problema persiste, la sospecha que señalaste (Cloudflare cacheando el bundle JS con hash viejo) pasa a ser la hipótesis principal — sería un despacho de diagnóstico distinto (headers de cache del CDN sobre `_next/static/`), no una repetición de este fix.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-CACHE-CDN-01
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-FIX-CACHE-CDN-01
+**Tipo:** VERIFICAR → DECIDIR (Zavala) → FIX · **Protocolo:** P-5
+**Rama:** `migracion-railway` · **Workspace:** bbf-web
+
+---
+
+## VERIFICAR
+
+### 1. Origen exacto de `s-maxage=3600`
+
+**`src/app/(frontend)/[locale]/page.tsx:29`** — `export const revalidate = 3600;`
+
+No es un header custom nuestro. Confirmado por grep exhaustivo (`s-maxage|stale-while-revalidate` sobre `src/` + `next.config.mjs`) → cero resultados de código que emita ese header manualmente. Next.js genera el `Cache-Control: s-maxage=<revalidate>, stale-while-revalidate=<...>` automáticamente para cualquier página con `export const revalidate` (comportamiento estándar de ISR) — el `3600` que ves en el header ES literalmente ese export.
+
+### 2. Qué hacía el hook `afterChange` (literal, antes del fix)
+
+```typescript
+// revalidateGlobal.ts (7 globals la usan) + Pages/hooks/revalidate.ts (Pages collection)
+revalidateTag(`global_${global.slug}`);
+revalidatePath('/', 'layout');
+// (Pages: revalidatePath por locale + revalidateTag('sitemap'/'llms-txt'))
+```
+
+**Cero llamada a Cloudflare** — confirmado, ambos hooks solo invocan primitivas internas de `next/cache`. `revalidatePath`/`revalidateTag` invalidan el cache del PROCESO Next.js corriendo, no tienen ningún efecto sobre el edge cache de Cloudflare (que vive en la red de Cloudflare, completamente fuera del proceso Next).
+
+### 3. Token/binding de Cloudflare existente
+
+Ninguno — grep en `env.ts`/`Dockerfile` y check de presencia en `.env.local` → `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ZONE_ID` no existían en ningún lado antes de este despacho.
+
+---
+
+## DECIDIR
+
+Presenté ambas opciones con sus tradeoffs. **Zavala confirmó Opción A** (purge Cloudflare on-publish, mantener el cache de edge intacto).
+
+---
+
+## FIX aplicado
+
+- **`src/lib/cloudflare/purge-cache.ts`** (nuevo) — `purgeCloudflareCache()`: `POST` a `https://api.cloudflare.com/client/v4/zones/{zone_id}/purge_cache` con `{ purge_everything: true }`. Decisión de diseño: purge completo del zone, no selectivo por URL/tag — header/footer/nav afectan TODAS las páginas, así que un mapeo "qué global afecta qué rutas" sería frágil y quedaría desactualizado con el tiempo. Para el volumen de publish de este sitio (marketing, no e-commerce de alto tráfico de writes), el costo de purgar todo en cada save es aceptable.
+- Guard defensivo: si `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ZONE_ID` faltan → solo loguea (`[cloudflare] Purge SKIPPED — faltan ...`) y continúa — el save de Payload nunca se bloquea ni falla por esto. Mismo patrón que el guard de R2. Errores de red también se loguean sin propagar (el contenido ya está en Neon; solo el purge del edge falló).
+- **`revalidateGlobal.ts`** + **`Pages/hooks/revalidate.ts`**: ahora `async`, llaman `await purgeCloudflareCache()` después de la revalidación interna de Next.
+- **`env.ts`**: documentadas las 2 vars nuevas como opcionales (mismo patrón que R2 — el guard interno maneja la ausencia con gracia).
+
+**Verificación local:** `pnpm typecheck` → exit 0. Corrí `purgeCloudflareCache()` aislado sin las env vars seteadas → confirmó el skip esperado sin excepción: `"[cloudflare] Purge SKIPPED — faltan CLOUDFLARE_API_TOKEN / CLOUDFLARE_ZONE_ID en runtime."`. No pude probar el purge real (necesita un token de Cloudflare real, que no existe todavía).
+
+**Commit:** `928c023` — `feat(cache): purge Cloudflare edge on publish (Opción A, firmada por Zavala)`. Cero secretos en el diff (ningún token real existe todavía para poder imprimirse).
+
+---
+
+## Qué debe hacer Zavala
+
+1. Generar un API token de Cloudflare con scope **Zone → Cache Purge → Purge** (mínimo necesario, no uses un token Global). Conseguir el **Zone ID** (dashboard de Cloudflare, overview del dominio).
+2. Setear ambos como env vars en DO — **solo runtime**, no hace falta build-time (esto nunca corre durante `next build`, solo se invoca desde los hooks `afterChange` en operaciones reales del admin).
+3. Validación exacta pedida: editar un texto en el admin → publicar → `curl -sI` de la home debe mostrar el cambio sin redeploy, y `cf-cache-status` debe reflejar el purge (`MISS` en el siguiente request, o el dato nuevo servido de inmediato). Ese es el PASS.
+
+## Nota — no confirmable desde código
+
+No tengo forma de correr la validación real end-to-end desde esta sesión (necesito un token de Cloudflare real + acceso al sitio deployado en DO). El código está listo y verificado localmente en la medida de lo posible (typecheck + prueba aislada del guard) — la confirmación final del purge real queda en manos de Zavala tras configurar las env vars.
