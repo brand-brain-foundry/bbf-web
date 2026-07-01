@@ -18,7 +18,7 @@ interface BrandLogoProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'hero' | number | string;
   animated?: boolean; // solo relevante con variant="stamp"
   className?: string;
-  ariaLabel?: string; // default: "Brand Brain Foundry"
+  ariaLabel?: string; // default: "Sivar Brains" — pasar siteName real desde el call site cuando sea posible
 }
 ```
 
@@ -35,7 +35,7 @@ interface BrandLogoAnimatorProps {
 - variant: `icon`
 - size: `md`
 - animated: `false`
-- ariaLabel: `"Brand Brain Foundry"`
+- ariaLabel: `"Sivar Brains"` (fallback agnóstico; call sites deberían pasar siteName real vía `getSiteIdentity()`)
 
 ---
 

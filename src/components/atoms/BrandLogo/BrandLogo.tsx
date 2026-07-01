@@ -149,7 +149,8 @@ export function BrandLogo({
   }
 
   // SVG-only render (default: wordmark vectorial o stamp animado)
-  const resolvedLabel = ariaLabel ?? 'Brand Brain Foundry';
+  // Fallback agnóstico (D-DS-08): mismo default que usa Header vía getSiteIdentity().
+  const resolvedLabel = ariaLabel ?? 'Sivar Brains';
   let svgContent = '';
 
   if (variant === 'icon') {

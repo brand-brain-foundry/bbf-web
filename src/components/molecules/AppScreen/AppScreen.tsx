@@ -3,8 +3,9 @@
  * Logo solo-icono del SSOT (D-PANTALLA-03-REV). D-99 pattern.
  */
 
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { BrandLogo } from '@/components/atoms/BrandLogo';
+import { getSiteIdentity } from '@/config/site';
 import type { SceneAppScreenData } from '../CapabilityScene/types';
 import { AppScreenPlayer } from './AppScreenPlayer';
 import type { AppScreenUI } from './AppScreenPlayer';
@@ -33,8 +34,13 @@ export async function AppScreen({ data }: AppScreenProps) {
       ? (data.renderImage.alt ?? '')
       : '';
 
+  const locale = (await getLocale()) === 'en' ? 'en' : 'es';
+  const identity = await getSiteIdentity(locale);
+
   // D-PANTALLA-03: logo solo-icono del SSOT — pasado como ReactNode al Client leaf
-  const logoNode = <BrandLogo variant="icon" size={28} />;
+  const logoNode = (
+    <BrandLogo variant="icon" size={28} ariaLabel={identity.siteName ?? 'Sivar Brains'} />
+  );
 
   const t = await getTranslations('capabilities.scenes.appScreen');
   const ui: AppScreenUI = {

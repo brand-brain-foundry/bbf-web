@@ -4320,3 +4320,87 @@ NODE_ENV                        = production (Vercel lo setea solo)
 ## Veredicto
 
 **¿Repo 100% SB sin trampas dormidas?** Sí, respecto del scope de este despacho: la trampa del OG (aunque el riesgo real era menor de lo reportado inicialmente — archivo huérfano, no colisión activa) está cerrada, y el description cosmético también. Queda 1 hallazgo nuevo (BrandLogo aria-label fallback, 4 call sites) que **no es intencional** y sí es residuo de marca-sitio — recomendado para un despacho de seguimiento, no bloqueante para el switch de dominio.
+
+---
+
+# REPORTE — B-BBF-WEB-CIERRE-ARIA-Y-SCRIPT
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-CIERRE-ARIA-Y-SCRIPT
+**Tipo:** FIX (aria-label BBF + script roto) + COMMIT · **Protocolo:** P-5 + P-6
+**Workspace confirmado:** bbf-web (`/Volumes/PK/BBF/Repos/bbf-web`)
+
+---
+
+## §1 — aria-label BBF: cerrado
+
+**Fix en el atom (`src/components/atoms/BrandLogo/BrandLogo.tsx:153`):**
+```diff
+- const resolvedLabel = ariaLabel ?? 'Brand Brain Foundry';
++ const resolvedLabel = ariaLabel ?? 'Sivar Brains';
+```
+No convertí el atom a async ni le di acceso a `getSiteIdentity()` — sigue siendo el Server Component presentacional puro que su propio docstring describe ("agnóstico, sin acoplamiento a nombre de marca"). El fallback ahora usa el mismo string literal `'Sivar Brains'` que ya usa `Header.tsx` como último recurso (`identity.siteName ?? 'Sivar Brains'`) — mismo patrón, no uno nuevo.
+
+**Los 4 call sites — ariaLabel explícito agregado:**
+
+| Call site | Antes | Después |
+|---|---|---|
+| `AppScreen.tsx:42` (público) | sin ariaLabel | `ariaLabel={identity.siteName ?? 'Sivar Brains'}` — fetch real vía `getSiteIdentity(locale)`, mismo patrón que `Header.tsx` |
+| `Integraciones.tsx:23` (público) | sin ariaLabel | ídem — `getSiteIdentity(locale)` |
+| `AdminLogo.tsx:27` (admin, login page) | sin ariaLabel | `ariaLabel="Sivar Brains"` — string literal, NO fetch |
+| `AdminIcon.tsx:26` (admin, nav icon) | sin ariaLabel | `ariaLabel="Sivar Brains"` — string literal, NO fetch |
+
+**Decisión sobre admin (nota de criterio):** el despacho pedía "mismo criterio" para los 2 call sites admin. Elegí string literal en vez de `getSiteIdentity()` porque `AdminLogo`/`AdminIcon` están registrados como `admin.components.graphics.Logo/Icon` de Payload — se renderizan en la página de **login**, el camino más crítico del panel admin. Acoplar esa ruta a una llamada a Payload Local API (aunque cacheada 1h) agrega una dependencia y un punto de fallo a algo que hoy es puramente estático. El despacho mismo ofrecía esta alternativa ("o un fallback genérico agnóstico") — la tomé para los 2 admin, y usé el fetch real para los 2 públicos (que ya eran Server Components async con acceso natural a locale/Payload).
+
+También actualicé `src/components/atoms/BrandLogo/CLAUDE.md` (2 menciones a "Brand Brain Foundry" como default documentado) para que la doc no quede stale respecto al código.
+
+**PASS §1:** ✅ cero "Brand Brain Foundry" como aria-label del logo del sitio. Los 4 call sites pasan un ariaLabel correcto (SB).
+
+---
+
+## §2 — generate-favicons.mjs: resuelto (hallazgo importante)
+
+Investigando "¿se usa este script?" encontré que **el script que yo había arreglado en el despacho anterior (`scripts/assets/generate-favicons.mjs`) ya estaba completamente superado por otro script, más nuevo y funcional, que vive en una ruta distinta: `scripts/generate-favicons.mjs`** (raíz de `scripts/`, sin subcarpeta `assets/`).
+
+Evidencia (commit `47457bc`, 2026-06-25, "feat(pwa): favicon set refresh + generateViewport sync"):
+- Ese commit **agregó** `scripts/generate-favicons.mjs` como "dev utility (requires @resvg/resvg-js)" y con él regeneró el favicon set completo que está en `/public` hoy (ico/16×16/32×32/apple-touch/192/512/maskable).
+- Ese script lee correctamente de `public/assets/brand/logos/BBF-Logo-Icon.svg` (la ruta actual, correcta) — nunca tuvo la ruta rota.
+- No hornea ningún texto — solo rasteriza el path SVG del ícono con `@resvg/resvg-js` y le inyecta el color `#255ff1` (azul brand). Cero "Brand Brain Foundry", cero texto en absoluto.
+- **No estaba wireado en `package.json`** — se corre manualmente (`node scripts/generate-favicons.mjs`), a diferencia del script viejo que sí tenía `assets:favicons` apuntando a la ruta rota.
+
+Conclusión: `scripts/assets/generate-favicons.mjs` (el que yo edité en el despacho anterior para quitarle el OG hardcode) era ya, independientemente de eso, **código muerto y duplicado** — nadie lo corría, apuntaba a un source SVG que ya no existe en ningún lado (`public/logos/BBF-Logo-Icon-Favicon.svg`), y estaba superado por el script real.
+
+**Acción aplicada (siguiendo la rama "evaluar quitarlo" del despacho, con una mejora):**
+1. **Eliminado** `scripts/assets/generate-favicons.mjs` y la carpeta `scripts/assets/` (quedó vacía).
+2. **Reescrito** el script npm en `package.json`:
+   ```diff
+   - "assets:favicons": "node scripts/assets/generate-favicons.mjs",
+   - "assets:favicons:dry": "node scripts/assets/generate-favicons.mjs --dry-run",
+   + "assets:favicons": "node scripts/generate-favicons.mjs",
+   ```
+   Ahora `pnpm assets:favicons` apunta al script real y funcional (C-02 — una sola fuente de verdad, sin duplicación). No agregué `--dry-run` de vuelta porque el script nuevo no soporta esa flag — agregarla sería tocar el script funcional más allá del scope de este despacho.
+
+**No ejecuté el script** (`node scripts/generate-favicons.mjs`) — habría sobreescrito los favicons ya estables en `/public` sin que el despacho pidiera regenerarlos. Verifiqué "cero BBF en lo que genere" por lectura estática del código (confirmado arriba), no por ejecución.
+
+**PASS §2:** ✅ script roto/duplicado eliminado; `pnpm assets:favicons` ahora apunta al script real, correcto, sin BBF.
+
+---
+
+## §3 — Commit + verificación
+
+| Check | Resultado |
+|---|---|
+| `pnpm typecheck` | ✅ exit 0, cero errores (verificado 2 veces: tras el fix de aria-label y tras el fix del script) |
+| grep "Brand Brain Foundry" en todo el código (excluyendo migraciones = snapshots históricos DB) | Todos los resultados restantes son producer/entidad intencional (`llms.txt`, `SiteIdentity.ts` producer field, seeds) — **cero en identidad/aria/marca del sitio** |
+| `BrandLogo.tsx` | ✅ ya no contiene ningún string "Brand Brain Foundry" |
+| 4 call sites | ✅ los 4 pasan `ariaLabel` con "Sivar Brains" (2 dinámico vía `getSiteIdentity`, 2 literal en admin) |
+| Script de favicons | ✅ apunta al script real, sin duplicación, sin BBF |
+
+### Archivos en el commit
+`package.json`, `scripts/assets/generate-favicons.mjs` (eliminado), `scripts/generate-favicons.mjs` (sin cambios de contenido, solo queda referenciado), `src/components/atoms/BrandLogo/BrandLogo.tsx`, `src/components/atoms/BrandLogo/CLAUDE.md`, `src/components/molecules/AppScreen/AppScreen.tsx`, `src/components/molecules/Integraciones/Integraciones.tsx`, `src/app/(payload)/components/AdminLogo/AdminLogo.tsx`, `src/app/(payload)/components/AdminIcon/AdminIcon.tsx`.
+
+`feedback.md` archivado a `.claude/feedback-archive/feedback_2026-07-01_cierre-aria-y-script.md`.
+
+---
+
+## Veredicto final
+
+**¿Repo 100% SB, cero BBF audible/visible/config?** Sí, en el scope cubierto por esta serie de 3 despachos (audit → OG/description → aria-label/script). Cero residuo de marca-sitio (visual, audible, config) fuera de las referencias intencionales a BBF como producer/entidad (documentadas y con comentarios explícitos de "preserved intentionally"). `tsc` limpio en las 3 rondas de fixes. Listo para que Zavala valide y Strategic firme antes de B-4.

@@ -23,7 +23,7 @@ export default function AdminIcon() {
         justifyContent: 'center',
       }}
     >
-      <BrandLogo variant="stamp" size="sm" />
+      <BrandLogo variant="stamp" size="sm" ariaLabel="Sivar Brains" />
     </div>
   );
 }

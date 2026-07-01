@@ -24,7 +24,7 @@ export default function AdminLogo() {
         padding: 'var(--bbf-space-4) 0',
       }}
     >
-      <BrandLogo variant="horizontal" size="md" />
+      <BrandLogo variant="horizontal" size="md" ariaLabel="Sivar Brains" />
     </div>
   );
 }

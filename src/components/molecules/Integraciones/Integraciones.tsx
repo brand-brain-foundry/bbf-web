@@ -4,8 +4,9 @@
  * kind='integraciones' en CapabilityScene.
  */
 
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { BrandLogo } from '@/components/atoms/BrandLogo';
+import { getSiteIdentity } from '@/config/site';
 import type { SceneIntegracionesData } from '../CapabilityScene/types';
 import { IntegracionesPlayer } from './IntegracionesPlayer';
 import type { IntegracionesUI } from './IntegracionesPlayer';
@@ -16,7 +17,11 @@ interface IntegracionesProps {
 
 export async function Integraciones({ data }: IntegracionesProps) {
   const t = await getTranslations('capabilities.scenes.integraciones');
-  const logoNode = <BrandLogo variant="icon" size={28} />;
+  const locale = (await getLocale()) === 'en' ? 'en' : 'es';
+  const identity = await getSiteIdentity(locale);
+  const logoNode = (
+    <BrandLogo variant="icon" size={28} ariaLabel={identity.siteName ?? 'Sivar Brains'} />
+  );
   const summaryTitle = data.summaryTitle ?? '';
 
   const items = (data.items ?? []).map((item) => ({
