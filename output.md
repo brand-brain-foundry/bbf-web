@@ -5664,3 +5664,106 @@ git push origin migracion-railway
 ## Veredicto
 
 Los 3 fixes de código están en `origin/migracion-railway`, listos para que DO los tome en el próximo build. **Recomendación operativa (no ejecutable desde acá):** forzar un rebuild completo en DO (no solo restart) para que tome estos cambios — y de paso, si algo de env vars sigue mal configurado en DO, ahora el boot va a fallar ruidosamente en los logs en vez de degradarse en silencio, lo cual es información valiosa por sí sola si el próximo deploy no levanta.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-DEFINITIVO-ASSETS
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-DIAG-DEFINITIVO-ASSETS
+**Tipo:** DIAGNÓSTICO read-only · **Protocolo:** P-6
+**Workspace confirmado:** bbf-web (rama `migracion-railway`)
+
+**NO ejecuté ningún fix. NO toqué Neon. NO toqué env vars.** Todo lo de abajo son dumps literales de Neon (raspy-hat), no teoría.
+
+**LA RESPUESTA DEFINITIVA: el video que ves en el browser no es el hero — es el video del §3 · CASO (case study section), un campo completamente distinto que nunca toqué. `hero.media.videoSources` SÍ está corregido (lo verifiqué 7 veces con distintas combinaciones de locale/depth, siempre consistente). `caseStudy.videoSources` — un array separado, mismo shape, distinta sección de la homepage — TODAVÍA tiene la URL de Blob, literal, en Neon, hoy.**
+
+---
+
+## §1 — Dump literal de Neon: video y poster
+
+### `hero.media.*` — CORRECTO (verificado 7 veces, cero variación)
+
+```json
+{
+  "chromeLabel": "|  sivar-brains · live feed",
+  "videoPoster": null,
+  "videoSources": [
+    { "id": "6a4515e56b9c255c2cc80143", "src": "/assets/media/hero/hero.av1.webm", "type": "webm-av1" },
+    { "id": "6a4515e56b9c255c2cc80144", "src": "/assets/media/hero/hero.h264.mp4", "type": "mp4-h264" }
+  ],
+  "demoLabel": { "es": "{{siteName}} ", "en": "{{siteName}}" },
+  "footCaption": { "es": "construye cerebros de marca...", "en": " build brand brains..." }
+}
+```
+
+Corrí esta query 7 veces con combinaciones distintas de `locale` (`all`/`es`/`en`/sin param) y `depth` (`0`/`1`) — **resultado idéntico en las 7**, sin variación. El fix de `B-BBF-WEB-RAILWAY-EJECUCION-01` + el `videoPoster: null` de `B-BBF-WEB-FIX-ASSETS-DEPLOY` están intactos y son consistentes.
+
+### `caseStudy.*` — **ROTO, con la URL de Blob literal, HOY**
+
+**Este campo NUNCA fue tocado en ningún despacho anterior — no es un revert, es un campo que siempre estuvo así.**
+
+```json
+// caseStudy.videoPoster
+22
+
+// caseStudy.videoSources
+[
+  { "id": "6a1eecb8ba6535df357cf5eb", "src": "https://9kspickx8emgt2i9.public.blob.vercel-storage.com/BBF-video.webm", "type": "webm-av1" },
+  { "id": "6a1eececba6535df357cf5ed", "src": "https://9kspickx8emgt2i9.public.blob.vercel-storage.com/BBF-video.mp4", "type": "mp4-h264" }
+]
+```
+
+`grep 'videoSources'` en `src/payload/globals/SiteHomepage.ts` confirma **2 definiciones separadas**: una en `hero.media` (línea 123), otra en `caseStudy` (línea 1158, campo raíz `caseStudy` en línea 1093 — NO anidado en un grupo `media`, es `caseStudy.videoSources` directo). Mismo shape de campo (`src`+`type`), dos ubicaciones completamente distintas en el schema.
+
+**`caseStudy.videoSources` SE RENDERIZA de verdad en la homepage** — confirmado en `page.tsx`:
+```typescript
+const caseVideoSources = cs?.videoSources ?? [];  // línea 75
+// ... usado en la sección §3 · CASO, líneas ~314-323, mismo componente <HeroVideo>
+```
+
+**Esto es la respuesta a la pregunta del despacho.** No hace falta ninguna teoría de Vercel-compitiendo-por-Neon, ISR-staleness, ni build-time-vs-runtime — el dato en Neon literalmente todavía dice Blob, en un campo que nadie había mirado hasta ahora.
+
+**PASS §1:** ✅ dump literal completo — hero correcto, caseStudy roto con evidencia directa.
+
+---
+
+## §2 — Media collection: ¿hardcodeado o generado por el adapter?
+
+**Confirmado: las URLs se escriben a la DB al momento del upload, NO se regeneran dinámicamente por el adapter en cada lectura.** Los 17 docs de Media (dump completo abajo) tienen su `url` como valor literal guardado en Postgres — cambiar el storage adapter en código NO reescribe URLs ya persistidas. Esto ya lo sabíamos de `B-BBF-WEB-DIAG-ASSETS-ROTOS`, pero ahora hay evidencia **nueva y fresca**:
+
+```
+id=22  filename=SB-video.webp             url=/api/media/file/SB-video.webp             updatedAt=2026-07-01T19:00:25Z
+id=21  filename=SB-Demo-video-1.webm      url=/api/media/file/SB-Demo-video-1.webm      updatedAt=2026-07-01T18:52:56Z
+id=20  filename=SB-Demo-video-1.mp4       url=/api/media/file/SB-Demo-video-1.mp4       updatedAt=2026-07-01T18:57:59Z
+```
+
+**Estos 3 docs se re-subieron HOY** (timestamps de hace pocas horas, después del fix de R2 + redeploy) — y **siguen** con el patrón `/api/media/file/` en vez de una URL de R2 (`*.r2.dev` o el dominio del bucket). Esto es evidencia directa y reciente de que **el adapter R2 sigue sin interceptar uploads nuevos**, incluso después del fix de código + redeploy con clear cache.
+
+**Dato colateral (no es el bug principal, pero llamó la atención):** `caseStudy.mediaAsset` (campo "imagen estática 16:9 del caso") apunta al id `20`, que es un archivo `.mp4` — un video asignado a un campo pensado para imagen. Posible error de contenido, no de código; lo señalo por si es relevante para Zavala, no lo toqué.
+
+Resto de los 17 docs — mismo patrón `/api/media/file/{filename}`, sin ninguna URL de R2 en ningún doc, confirmado por búsqueda de substring sobre toda la colección (`r2.dev` no aparece en ningún lado tampoco, ni Blob).
+
+**PASS §2:** ✅ las URLs son literales guardadas en DB, no regeneradas — y hay evidencia fresca (subidas de hoy) de que R2 sigue inactivo en runtime pese al fix de código.
+
+---
+
+## §3 — ¿Vercel sigue compitiendo por el mismo Neon?
+
+**No puedo confirmarlo desde el dashboard de Vercel** (sin acceso desde esta sesión) — esto lo tiene que verificar Zavala directamente. Lo que SÍ puedo aportar, razonamiento basado en evidencia de código:
+
+- No hay `vercel.json` ni `vercel.ts` en el repo (ya confirmado en despachos anteriores) — pero eso no prueba nada sobre si el PROYECTO Vercel sigue activo en su dashboard; Vercel no requiere ese archivo para deployar desde Git.
+- **Evidencia indirecta contra "las subidas de hoy vinieron del deploy viejo de Vercel":** si esos 3 uploads frescos (`SB-video.webp`, etc.) hubieran pasado por el deploy de Vercel — que en su código viejo (antes de este branch) usa `vercelBlobStorage` activo — las URLs resultantes serían del dominio `*.public.blob.vercel-storage.com`, no `/api/media/file/`. Como muestran el patrón local-disk, es más consistente con que vinieron de DO (con R2 roto) que de un Vercel viejo (con Blob funcionando). No es concluyente, pero es la lectura más simple de la evidencia disponible.
+- El dato de Zavala ("Neon está conectado a Vercel") probablemente se refiere a la integración Vercel↔Neon del marketplace (auto-inyecta `DATABASE_URL` en proyectos Vercel) — si el proyecto Vercel viejo sigue existiendo y activo, comparte la MISMA base `raspy-hat` que usa DO ahora. Esto en sí mismo no causa el bug del video (que ya identificamos en §1, un campo nunca corregido), pero SÍ es relevante para el plan de cierre: si ambos deploys siguen escribiendo a la misma DB, hay que decidir cuál es la fuente de verdad antes de dar por cerrada la migración.
+
+**PASS §3:** sin evidencia concluyente desde el código — requiere que Zavala confirme en el dashboard de Vercel si el proyecto sigue activo/deployando.
+
+---
+
+## Veredicto — la pregunta del despacho, respondida
+
+**¿Por qué el browser ve la URL de Blob si supuestamente Neon está corregido?**
+
+**Porque Neon NO estaba completamente corregido — solo corregí `hero.media.videoSources`, pero la homepage tiene una SEGUNDA sección de video (§3 · CASO) con su propio campo `caseStudy.videoSources`, que nunca toqué y que todavía tiene la URL de Blob literal en la base de datos, verificado ahora mismo.** No es un problema de R2, de caché, de build-time-vs-runtime, ni de un deploy viejo de Vercel compitiendo — es, en su núcleo, el mismo tipo de gap que el poster: un campo que existía y que nadie identificó hasta hacer el dump completo y sin asumir cuál campo revisar.
+
+Separadamente, confirmado con evidencia fresca (subidas de hoy): **R2 sigue sin interceptar uploads nuevos en runtime**, pese al fix de `forcePathStyle`+guard+`env.ts` del despacho anterior — esto sigue siendo un problema real y distinto, no resuelto por este diagnóstico (que era solo sobre el video/poster/Neon).
+
+No ejecuté nada — el fix de `caseStudy.videoSources` (mismo patrón que ya usé para `hero.media.videoSources`) queda propuesto, esperando confirmación explícita antes de tocar Neon de nuevo.
