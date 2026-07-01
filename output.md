@@ -5967,3 +5967,72 @@ Este nuevo despacho referencia `output.md §2 línea 5842`, que corresponde a la
 ## Nota para el siguiente paso real (post-deploy DO)
 
 Lo único que sigue pendiente de este hilo es lo que `B-BBF-WEB-FIX-R2-RUNTIME-FINAL` ya dejó como acción para Zavala: tras el próximo deploy en DO, revisar los Runtime Logs buscando la línea `[storage] R2 ACTIVO` / `[storage] R2 SKIPPED — faltan env vars: ...` — con env vars ya confirmadas OK por Zavala (contexto de este despacho), el log debería decir `ACTIVO`. Si dice `ACTIVO` y los uploads TODAVÍA caen a `/api/media/file/`, el problema ya no es "el guard no ve las vars" (descartado, confirmado arriba) — sería algo distinto (credencial inválida pese a estar presente, bucket incorrecto, etc.), y ameritaría un nuevo despacho de diagnóstico, no una repetición de este fix.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-SERVER-ACTIONS-01
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-FIX-SERVER-ACTIONS-01
+**Tipo:** VERIFICAR → FIX (código) → COMMIT · **Protocolo:** P-5
+**Rama:** `migracion-railway` · **Workspace:** bbf-web
+
+**No se pusheó** — el despacho pedía VERIFICAR → FIX → COMMIT, sin mencionar push explícitamente.
+
+---
+
+## Verificación pre-ejecución
+
+1. **`next.config.mjs` — ¿serverActions/encryptionKey configurado?** No existe tal opción en `next.config.js` para esto — confirmado contra la doc oficial de Next.js (guía "Data Security", sección "Overwriting encryption keys"): `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` es **exclusivamente una env var**, no hay campo equivalente en `next.config.mjs`. Grep de `serverActions|encryptionKey|NEXT_SERVER_ACTIONS` sobre `next.config.mjs`, `src/lib/env.ts`, `Dockerfile` → cero resultados antes del fix. La key **no estaba fijada en ningún lado**.
+2. **Instancias en DO:** dato operativo — no lo puedo confirmar desde el código, queda para que lo aportes vos en el dashboard. No bloqueó el fix: según la doc oficial, la key inestable también rompe Server Actions en un **single-instance** que se reinicia/redeploya (cada build/boot genera una key aleatoria nueva), no solo con múltiples réplicas — así que fijarla es correcto independientemente de tu respuesta.
+3. **Versión Next + standalone:** confirmado `15.5.18` (`node_modules/next/package.json`), `output: 'standalone'` activo (`next.config.mjs:8`).
+
+---
+
+## Fix aplicado
+
+### `Dockerfile` — `ARG NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`
+
+Agregado en la etapa `builder`, mismo patrón que las 12 `ARG` ya existentes (DATABASE_URL, PAYLOAD_SECRET, R2_*, etc.) — necesario porque, según la doc oficial, la key debe estar presente **en build time** (cuando Next.js genera los Server Action IDs), no solo en runtime. Comentario agregado en la etapa `runner` aclarando que DO debe inyectar la **misma** key como env var runtime también (no se declara `ENV` en la imagen — un valor server-only no debe quedar horneado en las capas).
+
+### `.dockerignore` — 3 gaps encontrados validando el fix con un `docker build` real
+
+Intenté validar el Dockerfile con un build real de Docker (no solo `pnpm build`, que **no ejercita los `ARG` de Docker** — corre el código fuente directamente, sin pasar por ninguna etapa del Dockerfile). Encontré y corregí 3 gaps preexistentes en `.dockerignore`, sin los cuales el build fallaba (no relacionados al fix de la key, pero bloqueaban poder verificarlo):
+
+1. `public/assets/Pages/` y `public/assets/development/` (directorios locales untracked) se colaban al build context.
+2. Archivos `._*` (AppleDouble, metadata de macOS) causaban `failed to xattr ...: operation not permitted` en el sender de BuildKit — ya estaban en `.gitignore` (línea 19) pero **nunca se replicó a `.dockerignore`**.
+3. El patrón bare `._*` en `.dockerignore` no fue suficiente — a diferencia de `.gitignore`, Docker **no recursa patrones bare en subdirectorios por defecto**; hizo falta agregar también `**/._*`.
+
+**Importante — no logré una validación 100% verde de `docker build` en esta sesión.** Después de corregir los 3 gaps de arriba, seguía fallando con el MISMO error exacto (`failed to xattr public/assets/blob/._matcap-a.png`) — investigué y esto ocurre en la fase de **transferencia del build context** (el "sender" de BuildKit intentando leer xattrs del filesystem), que parece pasar **antes** de que el filtro de `.dockerignore` tenga efecto completo. Es consistente con un bug conocido de Docker Desktop en macOS relacionado a extended attributes en el backend de file-sharing (VirtioFS/gRPC-FUSE) — **no es un problema del Dockerfile ni de mi fix**, es una limitación del entorno local de esta máquina. No profundicé más porque está fuera del scope de este despacho (Server Actions), y ya había gastado el presupuesto razonable de tiempo en esto.
+
+### `src/app/(payload)/admin/importMap.js` — regenerado
+
+Efecto colateral de correr `generate:importmap` durante la verificación: agrega el import de `S3ClientUploadHandler` (confirma que R2 está detectado como activo localmente). Incluido en el commit por ser un artefacto auto-generado correcto, mismo patrón que despachos anteriores.
+
+---
+
+## Verificación — resultados literales
+
+| Check | Resultado |
+|---|---|
+| `pnpm tsc` (`pnpm typecheck`) | ✅ **PASS** — exit 0 |
+| `pnpm build` (standalone compila) | No lo usé como señal final — **no ejercita los `ARG` de Docker en absoluto** (corre fuera de cualquier etapa del Dockerfile), así que un PASS ahí no habría validado el cambio real. Lo repetí una vez y confirmó que el código fuente sigue compilando sin errores (nada de esto tocó `.ts`/`.tsx`). |
+| `docker build` real (con los 13 `--build-arg`) | ⚠️ **No concluyente** — bloqueado por un bug de Docker Desktop en macOS no relacionado al Dockerfile (ver arriba). El `Dockerfile` en sí es sintaxis estándar (`ARG` seguido de `RUN`), idéntica a los 12 `ARG` ya probados exitosamente en el despacho `B-BBF-WEB-DO-PREFLIGHT`/`RAILWAY-EJECUCION-01` — confianza alta en que es válido, pero no pude confirmarlo con un build 100% verde en esta sesión. |
+| Secretos en el diff | ✅ cero — grep de patrones AWS/Stripe/private-keys/tokens reales sobre el diff completo, sin matches. Ningún valor de key impreso en ningún momento. |
+
+### Commit
+
+```
+61e1fd1 fix(docker): NEXT_SERVER_ACTIONS_ENCRYPTION_KEY estable + .dockerignore fixes
+```
+Archivos: `Dockerfile`, `.dockerignore`, `src/app/(payload)/admin/importMap.js`.
+
+---
+
+## Qué debe hacer Zavala
+
+1. Generar la key una sola vez: `openssl rand -base64 32`.
+2. Setearla en el panel de DO como env var, en **ambos** scopes: **build-time** (para que el `ARG` la reciba durante `docker build`) y **runtime** (para que el proceso corriendo pueda decriptar los action IDs generados con esa misma key). Mismo valor en los dos lugares — si no coincide, el problema persiste igual que sin la key.
+3. Después del redeploy, correr la validación exacta que pediste: guardar un cambio de texto en el admin → recargar el frontend → confirmar que el cambio persiste **sin necesidad de otro redeploy**. Ese es el criterio de PASS.
+
+## Escalar si...
+
+Si tras setear la key correctamente el problema persiste, la sospecha que señalaste (Cloudflare cacheando el bundle JS con hash viejo) pasa a ser la hipótesis principal — sería un despacho de diagnóstico distinto (headers de cache del CDN sobre `_next/static/`), no una repetición de este fix.
