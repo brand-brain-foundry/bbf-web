@@ -5575,3 +5575,92 @@ Cuando el guard de R2 no pasa (por cualquiera de las razones de §1), Payload us
 ## Veredicto
 
 **R2 no está activo en runtime** (confirma la hipótesis de Zavala) — por al menos 2 gaps de código reales (`forcePathStyle` faltante, guard incompleto) que existen independientemente de cómo estén configuradas las env vars en DO. El `env.ts` que debería haber avisado de esto está desconectado desde su creación. El video del hero es un problema aparte (dato ya correcto en Neon, pero el HTML servido no lo refleja pese a redeploy — necesita confirmación de DO sobre build-time DB/rebuild real). Nada de esto se tocó — 3 hallazgos + 6 acciones propuestas, esperando confirmación para el despacho de ejecución.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-R2-STORAGE
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-FIX-R2-STORAGE
+**Tipo:** FIX (código) + COMMIT + PUSH · **Protocolo:** P-5
+**Workspace confirmado:** bbf-web (rama `migracion-railway`)
+
+---
+
+## §1 — `forcePathStyle` agregado
+
+`payload.config.ts` — `s3Storage()` config ahora incluye `forcePathStyle: true`, junto a `region: 'auto'` (requisitos documentados de Cloudflare R2 sobre el adapter S3 genérico — confirmado con la guía oficial). Resto del config (endpoint, credentials) ya estaba completo.
+
+**PASS §1:** ✅
+
+---
+
+## §2 — Guard completo (4 vars)
+
+```diff
+- ...(process.env.R2_BUCKET && process.env.R2_ENDPOINT && process.env.R2_ACCESS_KEY_ID
++ ...(process.env.R2_BUCKET && process.env.R2_ENDPOINT &&
++     process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY
+```
+
+Ya no se puede activar el plugin con `secretAccessKey` vacío. Además quité el `|| ''` del campo `secretAccessKey` en el config (ya no hace falta — el guard garantiza que está presente).
+
+**PASS §2:** ✅
+
+---
+
+## §3 — `env.ts` conectado al boot
+
+Creé `src/instrumentation.ts` (nuevo — Next.js instrumentation hook, corre una vez al iniciar el servidor, antes de cualquier request):
+
+```typescript
+export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    await import('./lib/env');
+  }
+}
+```
+
+**⚠️ Esto rompió el build local al primer intento — 2 hallazgos nuevos que tuve que resolver, ambos en scope de "verificar que esto NO rompa el build":**
+
+1. **`R2_BUCKET` falta en `.env.local` de esta máquina** (confirmado, sin imprimir valores) — esperado, matchea el comentario "local dev sin provisionar" que ya existía en `payload.config.ts`. Si hubiera dejado los 4 `R2_*` como estrictamente requeridos (como quedaron en el despacho `B-BBF-WEB-DO-PREFLIGHT`), conectar `env.ts` habría roto `pnpm dev`/`pnpm build` local de inmediato. Fix: los 4 `R2_*` pasan a **opcionales en el schema base**, y **requeridos solo si `NODE_ENV=production`** (vía `.superRefine()`) — mismo patrón `NODE_ENV`-aware que ya usa `payload.config.ts` para el push de Drizzle. Resultado: local sigue funcionando sin R2 provisionado, y production (DO) SÍ falla ruidosamente si falta cualquiera de las 4 — que es exactamente el fail-fast que buscábamos, aplicado donde importa.
+
+2. **`RESEND_FROM_NEWSLETTER` con `.email()` — bug pre-existente, no relacionado a R2.** Al conectar `env.ts` por primera vez, crasheó local inmediatamente: el valor real en `.env.local` es un From-header RFC 5322 (`"Nombre <email>"`, exactamente el formato que `newsletter.ts` construye como fallback: `` `${SITE_NAME_FALLBACK} Newsletter <newsletter@sivarbrains.com>` ``) — no una dirección bare. `.email()` lo rechaza correctamente porque, literalmente, no es un email válido standalone. Fix: cambiado a `z.string().min(1).optional()` — ya no valida formato de email, solo que no esté vacío si está presente. **Este bug llevaba ahí desde que `env.ts` se creó, invisible porque nunca corría — es exactamente el tipo de problema que conectar el fail-fast está pensado para atrapar.**
+
+**Verificación del fix:** corrí `env.ts` de forma aislada contra `.env.local` real (sin imprimir valores) — antes del fix 2, crasheaba con el error de `.email()`; después de ambos fixes, carga limpio.
+
+**PASS §3:** ✅ `env.ts` conectado, corre al boot, no rompe local, sí fail-fast en production.
+
+---
+
+## §4 — Commits + verificación + push
+
+| Check | Resultado |
+|---|---|
+| `pnpm typecheck` | ✅ exit 0 (verificado 2 veces) |
+| `pnpm generate:types` | ✅ exit 0, `payload-types.ts` sin diff |
+| `env.ts` carga sin crash contra `.env.local` real | ✅ verificado directamente (import aislado) |
+
+### Commits (2, lógicos)
+
+```
+3505c05 fix(r2): forcePathStyle + guard completo (4 vars) para storage R2
+3fa9df8 fix(env): conectar env.ts al boot (instrumentation.ts) + fail-fast real
+```
+
+### Push
+
+```
+git push origin migracion-railway
+   c70b0c9..3fa9df8  migracion-railway -> migracion-railway
+```
+
+**Verificado post-push:** `git ls-remote --heads origin migracion-railway` → `3fa9df875e27fe8247fcd3289952d5263c70f663` ✅.
+
+**Secretos:** grep del diff completo (`origin/migracion-railway..migracion-railway` antes del push) por patrones AWS/Stripe/private-keys/tokens reales + archivos `.env*` trackeados → cero (el único "match" fue una línea de mi propio reporte anterior describiendo el check, no un secreto real).
+
+**PASS §4:** ✅ commiteado, verificado, pusheado.
+
+---
+
+## Veredicto
+
+Los 3 fixes de código están en `origin/migracion-railway`, listos para que DO los tome en el próximo build. **Recomendación operativa (no ejecutable desde acá):** forzar un rebuild completo en DO (no solo restart) para que tome estos cambios — y de paso, si algo de env vars sigue mal configurado en DO, ahora el boot va a fallar ruidosamente en los logs en vez de degradarse en silencio, lo cual es información valiosa por sí sola si el próximo deploy no levanta.
