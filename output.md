@@ -5098,3 +5098,120 @@ BLOB_READ_WRITE_TOKEN           (Vercel Blob — removido del código)
 **¿Código listo para deploy de prueba?** Sí, con una salvedad honesta: `tsc` y `generate:types` confirman que el código es correcto, pero no pude confirmar un `pnpm build` completo end-to-end en esta sesión por contención de recursos de esta máquina (no relacionado a mis cambios — confirmado vía 2 builds previos que sí completaron el pipeline entero antes de fallar en el bug pre-existente que ya arreglé). El primer build real en Railway (ambiente limpio) será la confirmación definitiva, o puedes correr `pnpm build` localmente cuando quieras verificarlo tú antes.
 
 PAUSA — Zavala crea Team Railway + bucket R2 → deploy de prueba `.railway.app` → validar → switch DNS.
+
+---
+
+# REPORTE — B-BBF-WEB-DO-PREFLIGHT
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-DO-PREFLIGHT
+**Tipo:** VERIFICACIÓN pre-deploy DigitalOcean read-only · **Protocolo:** P-6
+**Workspace confirmado:** bbf-web (`/Volumes/PK/BBF/Repos/bbf-web`, rama `migracion-railway`)
+
+**Nota:** el despacho autorizaba modificar solo ante "bloqueante trivial de compatibilidad DO". Encontré uno que en realidad no es específico de DO — es un gap real del despacho anterior que rompería CUALQUIER deploy fresco (DO, Railway, o incluso Vercel si se revirtiera ahí) — lo arreglé y lo marco claramente abajo en vez de solo reportarlo.
+
+---
+
+## §1 — Compatibilidad del Dockerfile con DO
+
+| Punto | Estado |
+|---|---|
+| Imagen Linux AMD64 | ✅ `node:22-slim` es multi-arch oficial de Docker Hub. Si DO **construye la imagen él mismo** desde el Dockerfile del repo (el flujo estándar de App Platform), no hace falta nada — su infra de build determina la arquitectura. Riesgo solo si Zavala construye localmente en su Mac ARM y hace `docker push` directo a un registry para el método "Deploy from Container Images" — en ese caso necesitaría `docker build --platform linux/amd64`. |
+| Paso Vercel/Railway-específico | Ninguno real. El comentario del Dockerfile decía "Railway" pero no hay nada en el Dockerfile que dependa de esa plataforma — es un Dockerfile estándar Next.js standalone. |
+| Puerto configurable vía `process.env.PORT` | ✅ **Confirmado en el código fuente de Next.js** (`node_modules/next/dist/build/utils.js:1315`): el `server.js` generado por `output:'standalone'` lee `parseInt(process.env.PORT, 10) \|\| 3000`. DO inyecta `PORT` en runtime vía `docker run -e PORT=...` (default interno 8080 si no se especifica `http_port`), lo cual **sobreescribe** el `ENV PORT=3000` que el Dockerfile define como default — comportamiento estándar de Docker, no un conflicto real. |
+| Bind en `0.0.0.0` (no localhost) | ✅ Confirmado en el mismo archivo: `hostname = process.env.HOSTNAME \|\| '0.0.0.0'` — cumple el requisito de DO de no bindear a loopback. |
+| `sharp` en runner stage | ✅ Ya estaba (`RUN npm rebuild sharp` en la etapa `runner`, del despacho anterior). |
+
+### ⚠️ Ajuste aplicado (no opcional — bloqueante real de build)
+
+El Dockerfile **no tenía ningún `ARG`** para pasar env vars al build. Esto es crítico porque `next build` importa `src/lib/env.ts`, que hace `envSchema.parse(process.env)` **al cargar el módulo** (no en runtime) — si las 12 env vars requeridas no están presentes durante `RUN pnpm build`, el build crashea con un error de Zod. DO App Platform, para deploys basados en Dockerfile, pasa env vars al build **solo** si están declaradas como `ARG` y se le indica al build que las use (`docker build --build-arg`) — confirmado en la doc oficial de DO ("define them as build-time or run-time environment variables in App Platform, which passes variables down to the docker build process with a `--build-arg` parameter").
+
+**Agregué 12 `ARG` en la etapa `builder`** (antes de `RUN pnpm build`), uno por cada env var requerida. No se propagan a la etapa `runner` (no hace falta, y evita que secrets como `PAYLOAD_SECRET`/`DATABASE_URL` queden en el historial de capas de la imagen final).
+
+**PASS §1:** Dockerfile compatible con DO tras el ajuste de `ARG`. Sin cambios de plataforma/base image necesarios.
+
+---
+
+## §2 — Env vars exactas para DO, clasificadas build-time / runtime
+
+### Build-time (deben pasarse como Build Args en DO — sin esto, el build falla)
+
+Estas 12 son las que ahora tienen `ARG` en el Dockerfile, y son exactamente las que `src/lib/env.ts` valida (Zod, al import):
+
+```
+DATABASE_URL
+PAYLOAD_SECRET
+R2_BUCKET
+R2_ENDPOINT
+R2_ACCESS_KEY_ID
+R2_SECRET_ACCESS_KEY
+RESEND_API_KEY
+UPSTASH_REDIS_REST_URL
+UPSTASH_REDIS_REST_TOKEN
+TURNSTILE_SECRET_KEY
+NEXT_PUBLIC_TURNSTILE_SITE_KEY
+NEXT_PUBLIC_SITE_URL
+```
+
+### ⚠️ Hallazgo — `BLOB_READ_WRITE_TOKEN` ya NO debe estar en esta lista, y antes de este despacho el código exigía que SÍ estuviera
+
+`src/lib/env.ts` seguía teniendo `BLOB_READ_WRITE_TOKEN` como campo Zod **requerido** (con `.startsWith('vercel_blob_rw_')`), aunque `payload.config.ts` ya había sido migrado a `s3Storage`/R2 en el despacho `B-BBF-WEB-RAILWAY-EJECUCION-01`. Esto significa: **hasta este preflight, cualquier deploy fresco a Railway o DO habría crasheado al boot** apenas alguien siguiera el checklist correcto de env vars (que ya no incluía `BLOB_READ_WRITE_TOKEN`), porque el código todavía lo exigía. Lo corregí: reemplazado por los 4 `R2_*` como requeridos. Esto no es específico de DO — es una corrección real que faltaba desde el despacho anterior, la encontré haciendo esta verificación.
+
+### Runtime-only (no build-time, solo en `docker run` / la app corriendo)
+
+```
+NODE_ENV                        = production (DO lo maneja, no hace falta setearlo manual normalmente)
+PORT                             (DO lo inyecta automático — NO lo definas manual en el panel)
+```
+
+Opcionales (no requeridas por Zod, pero funcionales si se usan):
+```
+RESEND_AUDIENCE_ID
+RESEND_FROM_NEWSLETTER
+RESEND_WEBHOOK_SECRET
+```
+
+**Nota de naming:** DO/Railway en su documentación genérica usan `NEXT_PUBLIC_SERVER_URL` como nombre de ejemplo — nuestro código usa `NEXT_PUBLIC_SITE_URL` (ya validado así en Zod desde antes). No renombrar nada en código, solo usar el nombre real al configurar env vars en el panel de DO (mismo matiz que ya se documentó en el despacho de Railway).
+
+**PASS §2:** checklist exacto arriba, clasificado. 12 build-time (deben ir como Build Args en DO, no solo runtime env vars), resto runtime-only.
+
+---
+
+## §3 — Migraciones + healthcheck
+
+### Migraciones
+
+No existe un script `migrate` en `package.json` (solo `migrate:create` y `migrate:status`) — pero **no hace falta uno** para DO: los "Jobs" de DO App Platform aceptan cualquier comando de shell directo, no requieren un alias de npm script. Configuración recomendada en DO:
+- Crear un componente **Job**, trigger **"Before every deploy"** (pre-deploy).
+- Run command: `pnpm payload migrate` (o `node_modules/.bin/payload migrate` si el Job no tiene el `PATH` de pnpm resuelto — usar el primero salvo que falle).
+- Mismas env vars runtime que el servicio principal (necesita `DATABASE_URL` como mínimo).
+- Si el Job falla, DO cancela el deploy — comportamiento correcto y seguro (no dejar la app corriendo con schema desincronizado).
+
+### Healthcheck
+
+**No existe ningún endpoint de health hoy** (`src/app/api/health` o similar — verificado, no existe). DO App Platform SÍ soporta healthcheck HTTP configurable (ping a una ruta, código 200 esperado) — sin uno, DO usa un healthcheck genérico (probablemente solo verifica que el puerto responda, menos preciso).
+
+**No lo creé** — crear un nuevo endpoint es una feature nueva, no un "ajuste trivial de compatibilidad", y este despacho es explícitamente read-only salvo bloqueantes. Si Zavala quiere uno, es un despacho de ejecución de una línea (`src/app/api/health/route.ts` → `return Response.json({ ok: true })`, sin tocar DB para que sea rápido y no genere falsos negativos).
+
+**PASS §3:** migraciones se configuran como Job pre-deploy con comando directo (sin cambio de código necesario). Healthcheck: gap real, no bloqueante, decisión pendiente de Zavala.
+
+---
+
+## Verificación de los cambios aplicados
+
+| Check | Resultado |
+|---|---|
+| `pnpm typecheck` | ✅ exit 0 (tras el fix de `env.ts`) |
+| grep `BLOB_READ_WRITE_TOKEN` en `src/` | ✅ cero referencias restantes |
+| Commit | `eff5ead` — `fix(railway): env.ts requería BLOB_READ_WRITE_TOKEN tras swap a R2 + Dockerfile ARGs` |
+
+No corrí `pnpm build` completo en esta sesión — dado el problema de contención de recursos ya documentado en el despacho anterior (`B-BBF-WEB-RAILWAY-EJECUCION-01`), y que este fix es acotado (12 líneas Zod + 12 `ARG`), me apoyé en `tsc` limpio + lectura directa del código fuente de Next.js para confirmar el comportamiento de `PORT`/`hostname`, en vez de repetir el intento de build.
+
+---
+
+## Veredicto
+
+**¿Listo para crear la app en DO?** Sí, con el ajuste ya aplicado (`ARG`s + fix de `env.ts`). Ningún cambio de plataforma/imagen base necesario. Los únicos pasos que faltan son de configuración en el panel de DO (no de código):
+1. Las 12 env vars como **Build Args** (no solo runtime) — sin esto el build falla igual que sin ellas en Railway.
+2. Un Job pre-deploy con `pnpm payload migrate`.
+3. Opcional: healthcheck endpoint (gap conocido, decisión tuya si lo quieres antes o después del primer deploy).
+
+Sin PAUSA explícita en el despacho — quedo esperando tu confirmación de si procedes a crear la app en DO o si quieres el healthcheck endpoint antes.
