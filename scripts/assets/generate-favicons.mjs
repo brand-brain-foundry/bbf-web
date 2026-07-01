@@ -7,14 +7,15 @@
  * Fuente única de verdad: scripts/assets/generate-favicons.mjs
  *
  * Lee:    public/logos/BBF-Logo-Icon-Favicon.png  (master único)
- * Lee:    public/logos/BBF-Logo-Stamp.svg          (para OG image)
  *
  * Genera:
  *   public/favicon.ico             — Legacy 32×32 multi-resolution
  *   public/apple-touch-icon.png    — iOS 180×180
  *   public/icon-192.png            — PWA 192×192
  *   public/icon-512.png            — PWA 512×512
- *   public/opengraph-image.png     — Social share 1200×630
+ *
+ * El OG image (public/og-image.png) NO lo genera este script —
+ * ver src/scripts/generate-og-image.ts (fuente única, evita duplicación C-02).
  *
  * Para regenerar TODO cuando cambie el PNG master:
  *   pnpm assets:favicons
@@ -24,7 +25,6 @@
  *   node scripts/assets/generate-favicons.mjs --only=apple-touch-icon
  *   node scripts/assets/generate-favicons.mjs --only=icon-192
  *   node scripts/assets/generate-favicons.mjs --only=icon-512
- *   node scripts/assets/generate-favicons.mjs --only=opengraph-image
  *
  * Para preview sin escribir archivos:
  *   node scripts/assets/generate-favicons.mjs --dry-run
@@ -61,7 +61,6 @@ const LOGOS_DIR = path.join(PUBLIC_DIR, 'logos');
 
 // ── Sources ──
 const SOURCE_FAVICON = path.join(LOGOS_DIR, 'BBF-Logo-Icon-Favicon.svg');
-const SOURCE_STAMP = path.join(LOGOS_DIR, 'BBF-Logo-Stamp.svg');
 
 // ── Tokens BBF (sincronizar con globals.css Capa 1) ──
 const TOKENS = {
@@ -114,15 +113,6 @@ const TARGETS = [
     source: SOURCE_FAVICON,
     bg: TOKENS.cream,
     padding: 0.175,
-  },
-  {
-    name: 'opengraph-image',
-    file: 'opengraph-image.png',
-    type: 'og-composite',
-    width: 1200,
-    height: 630,
-    source: SOURCE_STAMP,
-    bg: TOKENS.cream,
   },
 ];
 
@@ -187,58 +177,6 @@ async function generateIco(svgBuf, { sizes, bg }) {
   return buf;
 }
 
-async function generateOgImage(stampSvgBuf, { width, height, bg }) {
-  const LOGO_SIZE = 280;
-  const logoBuf = await sharp(stampSvgBuf, { density: 600 })
-    .resize(LOGO_SIZE, LOGO_SIZE, {
-      fit: 'contain',
-      background: { r: 0, g: 0, b: 0, alpha: 0 },
-    })
-    .png()
-    .toBuffer();
-
-  const textSvg = Buffer.from(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
-      <style>
-        .title {
-          font-family: -apple-system, system-ui, "Helvetica Neue", Arial, sans-serif;
-          font-size: 56px;
-          font-weight: 900;
-          fill: ${TOKENS.black};
-          letter-spacing: -0.02em;
-        }
-        .tagline {
-          font-family: -apple-system, system-ui, "Helvetica Neue", Arial, sans-serif;
-          font-size: 24px;
-          font-weight: 400;
-          fill: ${TOKENS.black};
-          opacity: 0.7;
-        }
-      </style>
-      <text x="50%" y="475" text-anchor="middle" class="title">Brand Brain Foundry</text>
-      <text x="50%" y="520" text-anchor="middle" class="tagline">Construimos cerebros de marca.</text>
-    </svg>
-  `);
-
-  const logoTop = 110;
-  const logoLeft = Math.round((width - LOGO_SIZE) / 2);
-
-  return await sharp({
-    create: {
-      width,
-      height,
-      channels: 4,
-      background: bg,
-    },
-  })
-    .composite([
-      { input: logoBuf, top: logoTop, left: logoLeft },
-      { input: textSvg, top: 0, left: 0 },
-    ])
-    .png({ compressionLevel: 9 })
-    .toBuffer();
-}
-
 function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -270,7 +208,6 @@ async function main() {
   console.log('► Verificando sources...');
   const sourceChecks = await Promise.all([
     verifySource(SOURCE_FAVICON, 'BBF-Logo-Icon-Favicon.svg'),
-    verifySource(SOURCE_STAMP, 'BBF-Logo-Stamp.svg'),
   ]);
   const missing = sourceChecks.filter((c) => !c.ok);
   if (missing.length > 0) {
@@ -286,13 +223,10 @@ async function main() {
   }
 
   const faviconHash = await fileHash(SOURCE_FAVICON);
-  const stampHash = await fileHash(SOURCE_STAMP);
   console.log(`  ✓ favicon hash: ${faviconHash}`);
-  console.log(`  ✓ stamp hash:   ${stampHash}`);
 
   console.log('\n► Cargando SVGs...');
   const faviconSvg = await loadSvg(SOURCE_FAVICON);
-  const stampSvg = await loadSvg(SOURCE_STAMP);
 
   console.log('\n► Generando targets...');
   const results = [];
@@ -322,13 +256,6 @@ async function main() {
             size: target.size,
             bg: target.bg,
             padding: target.padding,
-          });
-          break;
-        case 'og-composite':
-          buf = await generateOgImage(stampSvg, {
-            width: target.width,
-            height: target.height,
-            bg: target.bg,
           });
           break;
         default:

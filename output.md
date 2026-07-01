@@ -4067,3 +4067,256 @@ Canon AEO/GEO correcto:
 
 📦 Post-switch: GA4 + banner GDPR, undici transitivos (Payload update)
 ```
+
+---
+
+# REPORTE — B-BBF-WEB-AUDIT-VERCEL-CONFIG
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-AUDIT-VERCEL-CONFIG
+**Tipo:** AUDIT read-only · **Protocolo:** P-1 + P-6
+**Workspace confirmado:** bbf-web (`/Volumes/PK/BBF/Repos/bbf-web`)
+
+---
+
+## §1 — CONFIG DE BUILD
+
+### vercel.json / vercel.ts
+No existe ninguno de los dos en la raíz. El proyecto depende 100% de auto-detección de Vercel (framework: Next.js) + `next.config.mjs`. Nada que limpiar aquí porque no hay nada escrito.
+
+### next.config.mjs
+| Campo | Valor |
+|---|---|
+| Plugins | `withPayload` + `withNextIntl('./src/i18n/request.ts')` |
+| `images.remotePatterns` | `https://*.public.blob.vercel-storage.com` — wildcard genérico, NO amarrado a un bucket/proyecto BBF específico ✅ |
+| `headers()` | CSP + 5 security headers, environment-aware (`unsafe-eval` solo dev) — sin hardcodes de dominio |
+| i18n | delegado al plugin next-intl, no hay locale-domain mapping en este archivo |
+
+**Sin hardcodes BBF en next.config.mjs.** ✅
+
+### package.json
+| Campo | Valor | Nota |
+|---|---|---|
+| `name` | `bbf-web` | Nombre del repo/paquete, no visible al usuario final — no requiere cambio |
+| `description` | `"Brand Brain Foundry — web pública. Next.js 15 + Payload 3."` | ⚠️ Cosmético, no afecta build ni runtime, pero es el único lugar de `package.json` con la marca vieja |
+| `engines.node` | `>=20.0.0` | OK, Vercel usa Node 24 LTS por default — compatible |
+| `build` | `payload generate:importmap && payload generate:types && next build` | Sin hardcodes |
+
+### Script de assets — hallazgo real ⚠️
+`scripts/assets/generate-favicons.mjs` (wired a `pnpm assets:favicons` / `assets:favicons:dry`) contiene una función `generateOgImage()` con el texto **"Brand Brain Foundry"** + tagline vieja hardcodeados directo en el SVG que compone la imagen OG estática (`public/og-image.png`).
+
+El `public/og-image.png` **actual** fue regenerado correctamente por un script distinto y más nuevo, `src/scripts/generate-og-image.ts` (commit `e1abcd0`), que sí usa el wordmark "SIVAR BRAINS". Ambos scripts escriben al mismo `outPath` (`public/og-image.png`).
+
+**Riesgo:** si alguien corre `pnpm assets:favicons` de nuevo (p.ej. al regenerar favicons tras un cambio de ícono), sobreescribe silenciosamente el OG image correcto con uno que dice "Brand Brain Foundry" — una regresión de marca invisible hasta que alguien comparta el link y vea el preview viejo.
+
+**No es bloqueante para el switch de dominio** (el asset actual en disco está bien), pero es una trampa dormida. Recomendación: eliminar `generateOgImage()` de `generate-favicons.mjs` (dejar que ese script solo genere favicons/icons, no OG image) — Zavala firma si aplica.
+
+---
+
+## §2 — ENV VARS
+
+### Las que el código lee (grep `process.env`, exhaustivo)
+
+**Requeridas (validadas por Zod en `src/lib/env.ts`, sin `.optional()`) — 9, no 8:**
+
+| Var | Validación |
+|---|---|
+| `DATABASE_URL` | `.url()` |
+| `PAYLOAD_SECRET` | `.min(32)` |
+| `BLOB_READ_WRITE_TOKEN` | prefix `vercel_blob_rw_` |
+| `RESEND_API_KEY` | `.min(1)` |
+| `UPSTASH_REDIS_REST_URL` | `.url()` |
+| `UPSTASH_REDIS_REST_TOKEN` | `.min(1)` |
+| `TURNSTILE_SECRET_KEY` | `.min(1)` |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | `.min(1)` |
+| `NEXT_PUBLIC_SITE_URL` | `.url()` |
+
+Nota: el despacho asume "las 8 críticas" — el schema real valida **9** (todas fail-fast: `env.ts` hace `envSchema.parse(process.env)` sin catch — si falta una, el server no arranca, correcto per regla 40).
+
+**Opcionales (`.optional()` en schema):**
+
+| Var | Uso |
+|---|---|
+| `RESEND_AUDIENCE_ID` | newsletter double opt-in |
+| `RESEND_FROM_NEWSLETTER` | from address newsletter |
+| `RESEND_WEBHOOK_SECRET` | validar webhooks Resend |
+
+**Con default (no requiere set explícito):**
+
+| Var | Default |
+|---|---|
+| `NODE_ENV` | `'development'` |
+
+### NEXT_PUBLIC_SITE_URL — ¿asume BBF?
+**No.** Los dos únicos usos directos del env var en código de aplicación ya tienen fallback a `https://sivarbrains.com`, NO a BBF:
+- `src/payload.config.ts:137` → `process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com'`
+- `src/lib/actions/newsletter.ts:14` → `process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sivarbrains.com'`
+
+El resto de la identidad del sitio (canonical, sitemap, metadata, OG, JSON-LD) NO depende de este env var — viene del global `SiteIdentity` en Payload (`siteDomain`, DB-driven, ya seedeado como `https://sivarbrains.com`). Esto es correcto per C-01 (una sola fuente de verdad): el env var es solo un fallback de arranque para Payload preview URLs, no la fuente real de identidad.
+
+### Env vars viejas de BBF a limpiar
+**Ninguna encontrada en código.** No hay ninguna env var con nombre `BBF_*` o similar que el código lea y ya no aplique. El schema (`src/lib/env.ts`) es limpio — todas las vars son genéricas de infraestructura (DB, email, storage, rate-limit, bot-protection); ninguna lleva el nombre de marca en el key.
+
+### Checklist final — Vercel Production (SB)
+```
+DATABASE_URL                    (Neon Postgres — url)
+PAYLOAD_SECRET                  (≥32 chars)
+BLOB_READ_WRITE_TOKEN           (prefix vercel_blob_rw_)
+RESEND_API_KEY
+RESEND_AUDIENCE_ID              (opcional)
+RESEND_FROM_NEWSLETTER          (opcional)
+RESEND_WEBHOOK_SECRET           (opcional)
+UPSTASH_REDIS_REST_URL
+UPSTASH_REDIS_REST_TOKEN
+TURNSTILE_SECRET_KEY
+NEXT_PUBLIC_TURNSTILE_SITE_KEY
+NEXT_PUBLIC_SITE_URL            = https://sivarbrains.com
+NODE_ENV                        = production (Vercel lo setea solo)
+```
+No se leyeron `.env*` locales (deny de seguridad activo en la sesión, correcto) — este checklist sale 100% de lo que el código exige, no de valores reales.
+
+---
+
+## §3 — DOMINIO / URLs / IDENTIDAD
+
+### ¿El build produce SB con NEXT_PUBLIC_SITE_URL=sivarbrains.com?
+**Sí**, confirmado en cascada:
+
+| Fuente | Valor actual | Origen |
+|---|---|---|
+| `public/site.webmanifest` | `name`/`short_name`: "Sivar Brains" | archivo estático, ya correcto |
+| `SiteIdentity` global — seed | `siteName: 'Sivar Brains'`, `siteDomain: 'https://sivarbrains.com'` | `src/scripts/seed-site-identity.ts` |
+| `SiteIdentity` global — schema `defaultValue` | `siteShortName: 'Sivar Brains'`, `siteDomain: 'https://sivarbrains.com'` | `src/payload/globals/SiteIdentity.ts` — el default también es SB, no solo el seed |
+| `layout.tsx` `<title>`, OG, Twitter, `apple-mobile-web-app-title` | derivado de `site.siteName` (runtime, DB) | ✅ ningún string hardcodeado BBF |
+| `sitemap.ts` `BASE_URL` | `getSiteIdentity('es').siteDomain` (DB) | ✅ no lee `NEXT_PUBLIC_SITE_URL` directamente |
+| `public/robots.txt` | `Sitemap: https://sivarbrains.com/sitemap.xml` + comentario "sivarbrains.com" | ✅ estático, ya correcto, allowlist AI crawlers per regla 50 |
+| `public/og-image.png` | wordmark "SIVAR BRAINS" (regenerado en `e1abcd0`) | ✅ correcto en disco hoy |
+
+### Referencias a "Brand Brain Foundry" que SÍ deben quedarse (intencionales)
+Confirmado: todas las apariciones restantes de `brandbrainfoundry.com` / "Brand Brain Foundry" en código son el **producer/methodology entity** (Schema.org `Person.affiliation`, `producer.name`, `producer.url` dentro de `SiteIdentity`), separado deliberadamente de la identidad del sitio (`siteName`/`siteDomain` = Sivar Brains). Está incluso documentado en `llms.txt`:
+
+> "Al citar, usar: **Sivar Brains** (no ... Brand Brain Foundry)."
+
+y en `seed-site-identity.ts:87`:
+> `// url vacío per L-BBF-240 (brandbrainfoundry.com pertenece a BBF Org, no a la Person)`
+
+**No tocar estas** — es la separación correcta producto (SB) vs metodología/fundador (BBF).
+
+### Favicon / manifest — hallazgos menores
+- `public/favicon.svg` tiene `id="BBF-Imagotipo"` — solo un atributo `id` interno del SVG, no se renderiza como texto visible. Cosmético, cero impacto funcional.
+- El hallazgo real de marca vieja está en el generador de assets (§1), no en los assets actuales en disco.
+
+---
+
+## §4 — SÍNTESIS
+
+### Checklist Vercel Production
+Ver §2 — 12 vars totales (9 requeridas + 3 opcionales), `NEXT_PUBLIC_SITE_URL=https://sivarbrains.com`.
+
+### Config vieja de BBF a limpiar
+
+| # | Item | Severidad | Acción sugerida |
+|---|---|---|---|
+| 1 | `scripts/assets/generate-favicons.mjs` → `generateOgImage()` hardcodea "Brand Brain Foundry" y puede sobreescribir `public/og-image.png` correcto si se re-corre | ⚠️ Medio (trampa dormida, no activa hoy) | Eliminar `generateOgImage()` de ese script — dejar que `src/scripts/generate-og-image.ts` sea la única fuente del OG image (evita C-02 duplicación) |
+| 2 | `package.json.description` = "Brand Brain Foundry — web pública..." | Bajo (cosmético) | Actualizar a "Sivar Brains — web pública..." si se quiere prolijidad; no bloqueante |
+| 3 | `favicon.svg` `id="BBF-Imagotipo"` | Trivial | No requiere acción |
+
+### Lo que ya está bien (no tocar)
+- `next.config.mjs`, `payload.config.ts`, `sitemap.ts`, `newsletter.ts`, `SiteIdentity` schema+seed, `site.webmanifest`, `robots.txt`, `og-image.png` actual — todos ya en SB, sin fallback residual a BBF.
+- Separación producer (BBF, entidad) vs siteName (SB, producto) — correcta e intencional, documentada en `llms.txt`.
+- Schema de env vars (`src/lib/env.ts`) — limpio, sin vars con nombre de marca, fail-fast correcto.
+
+### Veredicto
+Ningún hallazgo de este audit bloquea el cambio de dominio en el dashboard de Vercel. El único punto que amerita una decisión de Zavala es el hallazgo #1 (script de assets duplicado/stale); el resto es cosmético o ya correcto.
+
+---
+
+# REPORTE — B-BBF-WEB-CIERRE-RESIDUOS-BBF
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-CIERRE-RESIDUOS-BBF
+**Tipo:** FIX (residuos BBF) + COMMIT · **Protocolo:** P-5 + P-6
+**Workspace confirmado:** bbf-web (`/Volumes/PK/BBF/Repos/bbf-web`)
+
+---
+
+## §1 — OG image trap: cerrada (opción A aplicada)
+
+**Corrección sobre el audit previo:** el audit `B-BBF-WEB-AUDIT-VERCEL-CONFIG` había reportado que ambos scripts escribían al mismo `public/og-image.png`. Verificando de nuevo al ejecutar el fix: **eso era impreciso.** `generate-favicons.mjs` escribía a `public/opengraph-image.png` (nombre distinto, con "e"), no a `public/og-image.png`. `opengraph-image.png` no existe hoy en el repo (no está trackeado en git, no lo lee ningún componente) — era un archivo huérfano que solo se materializaría si alguien corría `pnpm assets:favicons`. No había colisión activa, pero sí código muerto con la marca vieja horneada, exactamente el tipo de trampa dormida que el despacho pidió cerrar.
+
+**Acción aplicada (opción A — eliminar, no renombrar):**
+- Eliminada la función `generateOgImage()` completa de `scripts/assets/generate-favicons.mjs`.
+- Eliminado el target `opengraph-image` de `TARGETS[]`.
+- Eliminado el `case 'og-composite':` del switch en `main()`.
+- Eliminada la fuente `SOURCE_STAMP` (`BBF-Logo-Stamp.svg`) y sus usos (`verifySource`, `fileHash`, `loadSvg`) — ya no la necesita nada en el script.
+- Actualizado el docstring del header: quitada la mención a `opengraph-image.png` y a `--only=opengraph-image`; agregada nota explícita de que el OG image vive únicamente en `src/scripts/generate-og-image.ts`.
+
+**Verificación:**
+- `git diff public/og-image.png` → vacío. El archivo activo (wordmark "SIVAR BRAINS", generado en `e1abcd0`) no se tocó.
+- `pnpm assets:favicons:dry` → el script ya no menciona `og-image` ni `opengraph-image` en ningún target; ahora solo genera favicon.svg/ico + apple-touch-icon + icon-192/512.
+- **Hallazgo colateral (pre-existente, fuera de este scope):** el dry-run falla porque `public/logos/BBF-Logo-Icon-Favicon.svg` no existe — el repo migró los logos a `public/assets/brand/logos/` (usado por `BrandLogo.tsx`) pero este script nunca se actualizó a la nueva ruta. El script ya estaba roto antes de este fix, independientemente del OG image. No lo arreglé (fuera del scope T1/T2 de este despacho) — queda como deuda a reportar aparte si Zavala quiere que `pnpm assets:favicons` vuelva a ser funcional.
+
+**PASS §1:** ✅ un solo script genera el OG (`generate-og-image.ts`), `generate-favicons.mjs` ya no lo toca ni lo puede sobreescribir.
+
+---
+
+## §2 — package.json description: cerrado
+
+`"description": "Brand Brain Foundry — web pública..."` → `"description": "Sivar Brains — web pública..."`.
+
+No se tocó `"name": "bbf-web"` (nombre de paquete/repo interno, no es identidad pública del sitio, no estaba en el scope T2).
+
+**PASS §2:** ✅
+
+---
+
+## §3 — Commit + archivar
+
+Ver detalle de commit abajo (hash real en el mensaje final de esta sesión). Archivos incluidos: `scripts/assets/generate-favicons.mjs`, `package.json`, `output.md`. `feedback.md` archivado a `.claude/feedback-archive/feedback_2026-07-01_cierre-residuos-bbf.md`.
+
+---
+
+## §4 — Verificación
+
+| Check | Resultado |
+|---|---|
+| `pnpm typecheck` | ✅ exit 0, cero errores |
+| `public/og-image.png` sigue con "SIVAR BRAINS" | ✅ `git diff` vacío — no se tocó |
+| grep "Brand Brain Foundry" en config build/deploy | ✅ cero resultados en `next.config.mjs`, `payload.config.ts`, `vercel.json` (no existe) |
+| grep "Brand Brain Foundry" en todo el código (excluyendo migraciones = snapshots históricos de DB) | Todos los resultados restantes son **producer/entidad intencional** (Schema.org `Person.affiliation`, `producer.name/url` en `SiteIdentity`, seeds, `llms.txt` explicando la distinción) — cero en identidad del sitio (`siteName`, `siteDomain`, metadata, manifest, robots, sitemap, OG) |
+
+### ⚠️ Hallazgo nuevo durante T4 (no estaba en el scope original — reportado, NO arreglado)
+
+Al re-grepear encontré que `src/components/atoms/BrandLogo/BrandLogo.tsx:152` tiene:
+```ts
+const resolvedLabel = ariaLabel ?? 'Brand Brain Foundry';
+```
+Este es el fallback de `aria-label` del atom `BrandLogo` (el logo visual del sitio, NO una referencia a producer/entidad). Los call sites en Header/Footer ya pasan `ariaLabel` explícito, así que ese fallback está muerto ahí — pero **4 call sites en el sitio público y en el admin NO pasan `ariaLabel` ni `aria-hidden`:**
+- `src/components/molecules/AppScreen/AppScreen.tsx:37` — `<BrandLogo variant="icon" size={28} />` (público)
+- `src/components/molecules/Integraciones/Integraciones.tsx:19` — mismo patrón (público)
+- `src/app/(payload)/components/AdminLogo/AdminLogo.tsx:27` — panel admin
+- `src/app/(payload)/components/AdminIcon/AdminIcon.tsx:26` — panel admin
+
+En esos 4 sitios, un screen reader anunciaría "Brand Brain Foundry" en vez de "Sivar Brains" para el logo del sitio. Es un residuo real de marca-sitio (no producer), pero **no estaba en el scope T1/T2 de este despacho** (que era específicamente OG image + description). Lo dejo señalado para que Zavala decida: opción simple sería cambiar el default de `BrandLogo.tsx:152` a `'Sivar Brains'` (o mejor, eliminar el hardcode y requerir `ariaLabel` explícito por prop — más alineado a que el atom es "genérico, sin acoplamiento a nombre de marca" per su propio docstring D-DS-08). **PROHIBIDO tocar en este turno** — fuera del scope autorizado por el despacho actual.
+
+**PASS §4:** ✅ tsc 0, og-image intacto, cero residuo BBF en identidad-de-sitio dentro del scope pedido. ⚠️ 1 hallazgo nuevo fuera de scope, reportado arriba.
+
+---
+
+## §5 — Checklist env vars Vercel Production (recordatorio, sin cambios desde el audit anterior)
+
+```
+DATABASE_URL                    (Neon Postgres — url)
+PAYLOAD_SECRET                  (≥32 chars)
+BLOB_READ_WRITE_TOKEN           (prefix vercel_blob_rw_)
+RESEND_API_KEY
+RESEND_AUDIENCE_ID              (opcional)
+RESEND_FROM_NEWSLETTER          (opcional)
+RESEND_WEBHOOK_SECRET           (opcional)
+UPSTASH_REDIS_REST_URL
+UPSTASH_REDIS_REST_TOKEN
+TURNSTILE_SECRET_KEY
+NEXT_PUBLIC_TURNSTILE_SITE_KEY
+NEXT_PUBLIC_SITE_URL            = https://sivarbrains.com
+NODE_ENV                        = production (Vercel lo setea solo)
+```
+
+## Veredicto
+
+**¿Repo 100% SB sin trampas dormidas?** Sí, respecto del scope de este despacho: la trampa del OG (aunque el riesgo real era menor de lo reportado inicialmente — archivo huérfano, no colisión activa) está cerrada, y el description cosmético también. Queda 1 hallazgo nuevo (BrandLogo aria-label fallback, 4 call sites) que **no es intencional** y sí es residuo de marca-sitio — recomendado para un despacho de seguimiento, no bloqueante para el switch de dominio.
