@@ -5475,3 +5475,103 @@ DESPUÉS — videoPoster: null
 Verificado: `videoSources`, `demoLabel`, `footCaption`, `chromeLabel` quedaron intactos — el write solo tocó `videoPoster`. Con esto, `posterUrl` en `page.tsx` cae a la rama `else` (`hero.media.videoPoster` ya no es truthy) y sirve `/hero-poster.png` (self-hosted, existe en `/public`) — el 404 del poster queda resuelto en el próximo build/revalidación, mismo mecanismo de ISR explicado arriba para el video.
 
 **No se creó ningún archivo/commit de código** — este fix fue 100% contenido en Neon, documentado aquí para trazabilidad (E-01).
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-STORAGE-R2
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-DIAG-STORAGE-R2
+**Tipo:** DIAGNÓSTICO read-only · **Protocolo:** P-6
+**Workspace confirmado:** bbf-web (rama `migracion-railway`)
+
+**NO ejecuté ningún fix** — solo diagnóstico + propuesta al final, per instrucción explícita. Encontré 3 causas concretas, no una sola.
+
+---
+
+## §1 — ¿El adapter R2 está REALMENTE activo?
+
+### El guard y sus gaps
+
+```typescript
+...(process.env.R2_BUCKET && process.env.R2_ENDPOINT && process.env.R2_ACCESS_KEY_ID
+  ? [s3Storage({ ... })]
+  : []),
+```
+
+**Confirmado: NO hay ningún condicional tipo `NODE_ENV` que desactive R2** — grepeé todo `payload.config.ts` por `process.env.` — el único gate es este guard. Pero el guard tiene **2 gaps reales**:
+
+1. **Solo chequea 3 de las 4 vars.** `R2_SECRET_ACCESS_KEY` NO está en la condición del guard — solo se usa con `|| ''` dentro del config. Si `R2_BUCKET`/`R2_ENDPOINT`/`R2_ACCESS_KEY_ID` están seteadas pero `R2_SECRET_ACCESS_KEY` falta, el guard **pasa** (activa el plugin) pero con un secret vacío — R2 rechazaría cada request de auth, probablemente generando justo el síntoma "internal image response is empty" (el SDK intenta la llamada, R2 la rechaza, la respuesta no es una imagen válida).
+
+2. **Falta `forcePathStyle: true`** — confirmado con la documentación oficial de Payload/comunidad: **Cloudflare R2 requiere `forcePathStyle: true` explícito** en el config del adapter S3 (`region: 'auto'` + `forcePathStyle: true` son los 2 ajustes no-estándar que R2 necesita sobre el adapter S3 genérico). Sin este flag, el SDK puede intentar direccionamiento virtual-hosted-style (`bucket.endpoint.com/key`) en vez de path-style (`endpoint.com/bucket/key`) — R2 no siempre lo tolera, resultando en respuestas vacías/inválidas exactamente como el síntoma reportado. **Esto está ausente en el código actual, independientemente de si las env vars están bien seteadas en DO o no.**
+
+### El "fail-fast" de env.ts nunca corre — hallazgo separado, importante
+
+`src/lib/env.ts` (el archivo que valida env vars con Zod "al importar el módulo", según su propio JSDoc: *"Fail-fast al startup si alguna variable requerida está ausente o inválida"*) **nunca se importa desde ningún otro archivo del proyecto** (`grep -rl "from '@/lib/env'"` → cero resultados fuera de sí mismo). Confirmé en `git log` que esto es así desde que el archivo se creó (`d6e74d2`) — nunca estuvo conectado.
+
+**Consecuencia:** la validación Zod que "debería" crashear el boot si faltan `R2_BUCKET`/`R2_ENDPOINT`/etc. **nunca corre**. La app arranca sin ningún error ni warning aunque las env vars de R2 falten completamente o estén mal — el guard de `payload.config.ts` simplemente cae al `else` (`[]`, sin plugin de storage) en silencio total, sin ningún log que lo señale.
+
+**PASS §1:** el adapter R2 SÍ está bien diseñado en su lógica condicional (sin `NODE_ENV` ni nada raro), pero tiene 2 gaps de código reales (`forcePathStyle` faltante, guard incompleto) + cero visibilidad si algo falla (env.ts inerte) — cualquiera de los 3 puede ser, individualmente o combinados, la causa de que R2 no esté funcionando en DO.
+
+---
+
+## §2 — ¿A dónde van los uploads del admin?
+
+Cuando el guard de R2 no pasa (por cualquiera de las razones de §1), Payload usa su **handler de storage local por defecto** para la Media collection (`src/payload/collections/media/index.ts` no tiene ningún adapter de storage explícito fuera del plugin condicional) — genera URLs con el patrón `/api/media/file/{filename}`, sirviendo el archivo desde disco local dentro del contenedor.
+
+**Esto es exactamente el mismo patrón que diagnosticamos en `B-BBF-WEB-DIAG-ASSETS-ROTOS`** (los 17 Media docs viejos con `url: /api/media/file/...`) — pero ahora aplicando también a uploads **NUEVOS** hechos post-deploy en DO. El contenedor de DO (como cualquier contenedor Docker estándar) tiene un filesystem escribible DURANTE su vida, así que el upload probablemente SÍ se escribe a disco en ese momento — pero:
+- Se pierde en el próximo redeploy/restart (filesystem efímero entre despliegues).
+- Si DO llega a correr más de una instancia/réplica, cada una tiene su propio disco — un archivo subido en una instancia no existe en las demás.
+- El síntoma "internal image response is empty" en vez de un 404 directo sugiere que ni siquiera está sirviendo bien el archivo recién escrito — consistente con algún problema adicional en la ruta de lectura (`/api/media/file/`), no solo con la persistencia.
+
+**Confirmación de la hipótesis de Zavala:** ✅ correcta — el patrón sigue siendo Blob/local porque el guard de R2 no está pasando (o pasa pero con auth rota por el gap #2 de arriba), no porque el código "no sepa" de R2.
+
+**PASS §2:** los uploads van a storage local efímero porque el plugin R2 no se activa (o se activa mal) — mismo root cause que el diagnóstico de assets rotos anterior, ahora confirmado que aplica a runtime también, no solo a los docs viejos.
+
+---
+
+## §3 — Origen de la URL del Blob (video del hero)
+
+**Reconfirmado, sin hardcode:** grep exhaustivo de `9kspickx8`, `vercel-storage`, `BBF-video` sobre todo `src/` → cero resultados. `HeroVideo.tsx` (el componente) es 100% agnóstico — solo renderiza lo que `hero.media.videoSources` le pasa desde Payload, sin ningún default/fallback hardcodeado a una URL.
+
+**Neon ya tiene el dato correcto** (verificado otra vez en el despacho anterior — `videoSources` apunta a `/assets/media/hero/hero.av1.webm`/`.mp4`, no a Blob).
+
+**⚠️ Dato nuevo que cambia mi diagnóstico anterior:** dijiste que esto persiste **a pesar de un redeploy**. En el despacho anterior (`B-BBF-WEB-FIX-ASSETS-DEPLOY`) yo había asumido que un redeploy simple resolvería la staleness de ISR (build-time SSG). Si eso ya se intentó y el problema persiste, **la teoría de "solo hace falta esperar/redeployar" queda debilitada** — apunta a algo más estructural:
+- **Posibilidad A:** el redeploy en DO no hizo un `docker build` nuevo (algunos hosts distinguen "restart"/"redeploy" de "rebuild" — si DO solo reinició el contenedor existente sin reconstruir la imagen, el HTML estático generado en el build viejo sigue siendo el mismo).
+- **Posibilidad B:** el `DATABASE_URL` que usa el **build** en DO (pasado como Build Arg) apunta a un Neon distinto (branch o proyecto) del que usa mi `.env.local` — en cuyo caso el fix que apliqué nunca llegó a la base que DO realmente lee en build time.
+- **Posibilidad C:** el mismo problema de R2/storage roto (§1-§2) está interfiriendo indirectamente — poco probable para el `video`, ya que ese campo es texto plano, no pasa por storage — pero vale mencionarlo por completitud.
+
+**No puedo confirmar cuál de las 3 es, sin acceso al dashboard de DO** (no tengo credenciales/acceso a esta sesión). Requiere que Zavala confirme: ¿el redeploy fue un rebuild completo? ¿el `DATABASE_URL` configurado en DO (build-time Y runtime) es el mismo host que usa `.env.local` (`ep-raspy-hat-alhr143k-pooler...`)?
+
+**PASS §3:** origen confirmado (no es hardcode, es Neon+build), pero el "por qué persiste tras redeploy" requiere info de DO que no tengo desde acá.
+
+---
+
+## Fix propuesto (NO ejecutado — per instrucción del despacho)
+
+### Código (2 cambios pequeños, sin tocar Neon/env vars)
+
+1. **Agregar `forcePathStyle: true`** al config de `s3Storage()` en `payload.config.ts` — requisito documentado de R2, actualmente ausente.
+2. **Completar el guard** para incluir `R2_SECRET_ACCESS_KEY`, evitando activar el plugin con secret vacío:
+   ```typescript
+   ...(process.env.R2_BUCKET && process.env.R2_ENDPOINT &&
+       process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY
+     ? [...]
+     : []),
+   ```
+
+### Verificación operativa (no código, para que Zavala confirme en DO)
+
+3. Confirmar en el panel de DO que las 4 vars `R2_*` están seteadas **tanto en Build-time como en Runtime** (la distinción que ya documentamos en `B-BBF-WEB-DO-PREFLIGHT`) — si solo están en una categoría, falla la otra mitad del ciclo (build vs. request).
+4. Confirmar si el "redeploy" que se hizo fue un rebuild real de la imagen o solo un restart — si fue restart, forzar un rebuild completo.
+5. Confirmar que el `DATABASE_URL` en DO (build-time Y runtime) apunta al mismo host Neon que corregí (`ep-raspy-hat-alhr143k-pooler.c-3.eu-central-1.aws.neon.tech`).
+
+### Opcional (mejora de robustez, no bloqueante)
+
+6. Conectar `src/lib/env.ts` — importarlo desde algún punto de entrada temprano (ej. `instrumentation.ts` de Next.js, o el propio `payload.config.ts`) para que el fail-fast que ya está escrito **realmente corra**. Esto habría hecho que el problema de R2 fallara ruidosamente en vez de degradarse en silencio — el tipo de gap que vale la pena cerrar antes del siguiente deploy, aunque no es la causa raíz de HOY.
+
+**No apliqué ninguno de estos cambios** — quedan propuestos para un despacho de ejecución si confirmás.
+
+---
+
+## Veredicto
+
+**R2 no está activo en runtime** (confirma la hipótesis de Zavala) — por al menos 2 gaps de código reales (`forcePathStyle` faltante, guard incompleto) que existen independientemente de cómo estén configuradas las env vars en DO. El `env.ts` que debería haber avisado de esto está desconectado desde su creación. El video del hero es un problema aparte (dato ya correcto en Neon, pero el HTML servido no lo refleja pese a redeploy — necesita confirmación de DO sobre build-time DB/rebuild real). Nada de esto se tocó — 3 hallazgos + 6 acciones propuestas, esperando confirmación para el despacho de ejecución.
