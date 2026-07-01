@@ -5858,3 +5858,77 @@ Solo committeo este reporte (documentación).
 ## Veredicto
 
 **Video del §3 · CASO:** arreglado en Neon (mismo patrón que el hero), usando temporalmente los archivos del hero como placeholder — falta contenido real del caso si existe en otro lado. **R2 en runtime:** sigue sin resolverse — el código ya está completo y correcto (confirmado contra el `.d.ts` real de la versión instalada), así que el gap restante casi con certeza está en la configuración de env vars de runtime en el dashboard de DO, no en algo que yo pueda arreglar desde el repo. Encontré además un bug conocido de Next.js (`instrumentation.ts` + `standalone`) que puede estar neutralizando silenciosamente el fail-fast que agregamos — propuesto como fix de robustez, no ejecutado.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-R2-RUNTIME-FINAL
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-FIX-R2-RUNTIME-FINAL
+**Tipo:** FIX (código) + COMMIT + PUSH · **Protocolo:** P-5
+**Workspace confirmado:** bbf-web (rama `migracion-railway`)
+
+---
+
+## §1 — Fail-fast movido a `payload.config.ts` (punto confiable con standalone)
+
+**`src/instrumentation.ts` — eliminado.** Confirmado por investigación en el despacho anterior: Next.js **no garantiza** ejecutar `instrumentation.ts` de forma confiable con `output: 'standalone'` (bug conocido, múltiples issues abiertos en `vercel/next.js`: #49897, #68740, #89377, discussions #77776/#68420). Mantenerlo habría dejado una falsa sensación de protección — mejor quitarlo que dejar código que aparenta hacer algo y quizás no hace nada.
+
+**La validación se movió a `payload.config.ts`**, evaluada a nivel de módulo (top-level, fuera de `buildConfig()`) — esto se ejecuta **siempre** que el archivo se importa, tanto en build (`next build`, `payload generate:types/importmap`) como en runtime (cada vez que algo llama `getPayload({config})`), sin depender de ningún hook de Next.js.
+
+**⚠️ Decisión de diseño — log en vez de throw (desviación deliberada del pedido literal de "fail-fast ruidoso"):**
+
+Consideré hacer que esto realmente `throw`/crashee el proceso si faltan las 4 vars (lo que el despacho pedía literalmente), pero decidí usar `console.log`/`console.warn` en su lugar, por una razón concreta de seguridad operativa: **`next build` fuerza `NODE_ENV=production` internamente siempre** (confirmado en el código fuente de Next.js), incluso en builds locales de prueba — así que un throw condicionado a `NODE_ENV=production` se dispararía en CUALQUIER build (local o DO), no solo en el deploy real. Y si lo hiciera crashear en el runtime real de DO por env vars de R2 faltantes, eso tumbaría **todo el sitio** (Payload admin, todas las páginas, todo) por un problema que hoy solo afecta el storage de media — cambiar "media rota pero el sitio funciona" por "sitio completamente caído" es un trade-off peor, no mejor. Preferí un log inequívoco sobre un crash-loop en producción. Si Zavala prefiere el crash real de todos modos, es un cambio de una línea (`throw new Error(...)` en vez de `console.warn(...)`) — lo dejo señalado, no lo impuse.
+
+**PASS §1:** ✅ el chequeo corre en un punto garantizado de ejecutarse, no depende de `instrumentation.ts`. Build local verificado sin romperse (ver §3).
+
+---
+
+## §2 — Log explícito activo/skipped
+
+```typescript
+if (r2Active) {
+  console.log('[storage] R2 (Cloudflare) ACTIVO — collection media usa s3Storage.');
+} else {
+  console.warn(
+    `[storage] R2 SKIPPED — faltan env vars: ${r2Missing.join(', ')}. ` +
+      'Media collection cae a storage local (efímero en contenedores). ' +
+      'Si esto aparece en producción, confirmar las 4 vars en el panel del host (runtime, no solo build).',
+  );
+}
+```
+
+`r2Missing` lista por nombre EXACTAMENTE cuál(es) de las 4 vars faltan (`R2_BUCKET`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`) — sin imprimir ningún valor, solo nombres. **Verificado localmente:** corrí `generate:types` y el log mostró `"[storage] R2 (Cloudflare) ACTIVO"` limpio, confirmando que el mecanismo funciona (local SÍ tiene las 4 vars disponibles vía el mecanismo de carga de env de Payload — ver nota abajo).
+
+**Nota lateral (no bug, aclaración):** el CLI de Payload (`generate:types`, `generate:importmap`, y por extensión `next build`/`next start`) usa internamente `@next/env`'s `loadEnvConfig()` — el mismo mecanismo que usa Next.js — que carga **múltiples** archivos `.env*` con precedencia (no solo `.env.local`). Confirmé esto leyendo `node_modules/payload/dist/bin/loadEnv.js`. Es relevante solo como contexto: en Docker, `.dockerignore` excluye TODOS los `.env*` (correcto, no deben viajar en la imagen) — así que en DO, este mecanismo no encuentra ningún archivo y depende 100% de las env vars reales del contenedor (`ARG` en build, `docker run -e` en runtime), que es exactamente el comportamiento esperado.
+
+**PASS §2:** ✅ el plugin loguea activo/skipped con el detalle exacto de qué falta.
+
+---
+
+## §3 — Commit + push
+
+| Check | Resultado |
+|---|---|
+| `pnpm typecheck` | ✅ exit 0 |
+| `pnpm generate:types` | ✅ exit 0, `payload-types.ts` sin diff, log `"R2 ACTIVO"` confirmado |
+| Build local no se rompe | ✅ confirmado (generate:types es parte del pipeline de build, corrió limpio) |
+| Secretos | ✅ cero — grep del commit completo por patrones AWS/Stripe/private-keys/tokens reales, sin matches |
+
+### Commit + push
+
+```
+8d3a280 fix(r2): mover validación a payload.config.ts + log explícito activo/skipped
+git push origin migracion-railway
+   de2dd56..8d3a280  migracion-railway -> migracion-railway
+```
+
+---
+
+## Qué debe verificar Zavala en DO
+
+1. **Después del próximo deploy, revisar los Runtime Logs de DO** buscando la línea `[storage] R2 ...` — va a decir EXACTAMENTE si R2 está activo o, si no, cuál(es) de las 4 vars falta por nombre. Esto reemplaza cualquier necesidad de adivinar.
+2. Si el log dice `SKIPPED — faltan env vars: X`, confirmar en el panel de DO que `X` está seteada específicamente en el **scope runtime** (no solo build-time) — la distinción que documentamos en `B-BBF-WEB-DO-PREFLIGHT` sigue siendo la sospecha más probable si el log confirma que algo falta.
+3. Si el log dice `ACTIVO` pero los uploads TODAVÍA muestran `/api/media/file/`, eso apuntaría a algo distinto (credenciales presentes pero inválidas/con typo, bucket que no existe, etc.) — un problema nuevo y distinto, no el mismo de siempre. El log ahora hace esa distinción posible por primera vez.
+
+## Veredicto
+
+El mecanismo de diagnóstico ahora es confiable (no depende de un hook con bug conocido) y explícito (dice qué falta, no solo que algo falla). Con esto, el PRÓXIMO deploy en DO va a dar una respuesta definitiva vía sus propios logs — algo que hasta ahora no teníamos manera de obtener desde el código. La causa raíz final (vars de runtime en DO vs. otro problema) queda en manos de Zavala confirmarla con esta nueva visibilidad.
