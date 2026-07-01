@@ -5300,3 +5300,76 @@ Todas **build-time** (deben pasarse como Build Args en DO, no solo runtime env v
 ## Veredicto
 
 Healthcheck listo en `/api/health`. Con esto se completan los 3 despachos de la serie de prep Railway/DO (ejecución → preflight → healthcheck) — el código en `migracion-railway` está listo para el deploy de prueba en DO o Railway, con los 12 env vars como Build Args + el Job de migración pre-deploy + este healthcheck configurados en el panel del host elegido.
+
+---
+
+# REPORTE — B-BBF-WEB-PUSH-MIGRACION
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-PUSH-MIGRACION
+**Tipo:** GIT (push a remoto) · **Protocolo:** P-5 + P-6
+**Workspace confirmado:** bbf-web (`/Volumes/PK/BBF/Repos/bbf-web`)
+
+---
+
+## §1 — Diagnóstico del estado git
+
+| Métrica | Valor |
+|---|---|
+| `migracion-railway` sobre `main` local | 8 commits |
+| `main` local sobre `origin/main` | **144 commits** ⚠️ |
+| `origin/main` sobre `main` local | 0 (origin no tiene nada que local no tenga) |
+| Total a subir con `migracion-railway` | **152 commits** (144 preexistentes + 8 nuevos) |
+| `migracion-railway` existía en origin antes | No |
+| Ramas remotas existentes | `main`, `feat/m4-i18n-routing`, `feat/m5-design-system`, `f-3/bootstrap-nextjs-payload` |
+
+**Confirmado: `main` local está muy adelante de `origin/main`** — 144 commits de trabajo (todo el sistema SB: rebrand, design system, capabilities, i18n, SEO/AEO, la serie completa de despachos de este día) nunca se habían pusheado. `migracion-railway` sale de ese `main` local actualizado (no de un main viejo) + los 8 commits de la serie Railway/DO/healthcheck.
+
+**Qué se sube exactamente:** los 152 commits completos como historia de la rama `migracion-railway` en origin. Git no puede subir solo "los 8 nuevos" sin sus ancestros — la rama completa viaja junto.
+
+**PASS §1:** ✅ mapa claro — 144 commits de deuda de push preexistente + 8 nuevos, ninguno de los cuales estaba en origin.
+
+---
+
+## §2 — Plan de push
+
+**Opción A (recomendada y ejecutada):** pushear `migracion-railway` como rama nueva a origin, sin tocar `main`. DO deploya desde esa rama; `main` remoto queda exactamente igual que antes (144 commits detrás, sin cambios). Reversible — se puede borrar la rama remota sin ningún impacto en `main`.
+
+**Opción B (mergear a main):** descartada para este despacho — mayor compromiso, requiere confirmación explícita aparte, y el propio despacho la difiere a "después de validar el deploy".
+
+### Verificación de secretos (antes de pushear)
+
+| Check | Resultado |
+|---|---|
+| Archivos `.env*` trackeados en el rango completo (`origin/main..migracion-railway`) | ✅ Cero — ningún `.env`/`.env.local`/etc. aparece en los 152 commits |
+| Archivos `.env*` trackeados hoy en el working tree | ✅ Cero |
+| `.gitignore` excluye `.env*` | ✅ Sí, múltiples patrones (`​.env`, `.env*.local`, `.env*`) |
+| Patrones de secretos reales (AWS `AKIA...`, Stripe `sk_live_`/`sk_test_`, private keys, tokens Vercel Blob/Resend con formato real) en el diff completo | ✅ Cero matches (grep sobre el diff completo de los 152 commits) |
+| `backups/` (contiene dumps potenciales) trackeado | ✅ No — directorio completamente untracked |
+| `public/assets/Pages`, `public/assets/development` (untracked local) | ✅ No trackeados, no se suben |
+
+**PASS §2:** plan Opción A confirmado + cero secretos verificados en todo el rango a pushear.
+
+---
+
+## §3 — Ejecución del push
+
+Confirmaste explícitamente la Opción A antes de ejecutar (pregunta directa, dado el volumen de 152 commits).
+
+```
+git push origin migracion-railway
+ * [new branch]      migracion-railway -> migracion-railway
+```
+
+**Verificado post-push:**
+- `git ls-remote --heads origin migracion-railway` → `c70b0c9ade452f65bdd6074ffd4c4bb074c33b79` ✅ visible en origin.
+- `origin/main` sigue exactamente igual (144 commits detrás de `main` local, sin cambios) ✅ **`main` remoto intacto, cero merge.**
+- GitHub sugiere automáticamente un PR (`https://github.com/brand-brain-foundry/bbf-web/pull/new/migracion-railway`) — **no lo creé**, no estaba pedido, y crear un PR no es lo mismo que mergear, pero lo dejo mencionado por si Zavala lo quiere para revisión visual antes del merge eventual.
+
+**PASS §3:** ✅ `migracion-railway` en origin, visible para DO, `main` intacto.
+
+---
+
+## Veredicto
+
+**¿`migracion-railway` visible en GitHub para DO?** Sí, confirmado en origin. **¿Cero secretos subidos?** Confirmado — verificación exhaustiva sobre los 152 commits completos, sin matches de patrones de secretos ni archivos `.env*` trackeados. `main` remoto no se tocó — sigue 144 commits detrás de local, decisión de cuándo pushear/mergear eso queda pendiente y separada de este despacho (per la nota ya registrada: "push consciente cuando Zavala decida").
+
+DO ya puede apuntar su deploy de prueba a `origin/migracion-railway`.
