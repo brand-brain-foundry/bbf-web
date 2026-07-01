@@ -5373,3 +5373,88 @@ git push origin migracion-railway
 **¿`migracion-railway` visible en GitHub para DO?** Sí, confirmado en origin. **¿Cero secretos subidos?** Confirmado — verificación exhaustiva sobre los 152 commits completos, sin matches de patrones de secretos ni archivos `.env*` trackeados. `main` remoto no se tocó — sigue 144 commits detrás de local, decisión de cuándo pushear/mergear eso queda pendiente y separada de este despacho (per la nota ya registrada: "push consciente cuando Zavala decida").
 
 DO ya puede apuntar su deploy de prueba a `origin/migracion-railway`.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-ASSETS-DEPLOY
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-FIX-ASSETS-DEPLOY
+**Tipo:** DIAGNÓSTICO (read-only) + propuesta · **Protocolo:** P-6
+**Workspace confirmado:** bbf-web (rama `migracion-railway`)
+
+**NO toqué Neon en este despacho** — el DB fix del video ya estaba aplicado desde `B-BBF-WEB-RAILWAY-EJECUCION-01` (verificado abajo, no reescrito). El poster requiere un nuevo write a Neon — lo dejo propuesto, esperando tu confirmación, per la prohibición explícita del despacho.
+
+---
+
+## §1 — Causa raíz
+
+### Video del hero — NO es un problema de datos ni de código, es de caché/build
+
+**Verifiqué de nuevo el estado actual de Neon** (mismo host que usa `.env.local`: `ep-raspy-hat-alhr143k-pooler...neon.tech`, presumiblemente "main" — no está vacío, tiene 17 docs de Media y contenido real, consistente con lo que DO está sirviendo):
+
+```
+videoSources: [
+  { src: "/assets/media/hero/hero.av1.webm", type: "webm-av1" },
+  { src: "/assets/media/hero/hero.h264.mp4", type: "mp4-h264" }
+]
+```
+
+**Esto YA es correcto** — es exactamente el fix que apliqué en `B-BBF-WEB-RAILWAY-EJECUCION-01`, y sigue intacto en Neon. **No hay ninguna URL de Blob en la base de datos hoy.** Tampoco hay ningún hardcode en código (`grep '9kspickx8'` y `grep 'vercel-storage'` sobre todo `src/` → cero resultados).
+
+**Entonces por qué el browser en DO todavía carga la URL vieja — causa raíz real:**
+
+1. `[locale]/layout.tsx:38` tiene `generateStaticParams()` — Next.js **pre-renderiza `/` y `/en` en BUILD TIME** (SSG), no en cada request.
+2. La homepage tiene `revalidate = 3600` (ISR) — la versión pre-renderizada se sirve tal cual hasta que expira el cache (1h) y llega un nuevo request que dispare regeneración.
+3. **Mi fix a Neon lo apliqué corriendo un script standalone (`tsx`) contra Payload Local API** — eso es una escritura DIRECTA a Postgres, sin pasar por ningún servidor Next.js corriendo. El hook `revalidateGlobal` sí se disparó (vi el log `[revalidate] Global site-homepage updated`), pero `revalidateTag()`/`revalidatePath()` solo tienen efecto sobre el cache de un proceso Next.js **vivo** — un script standalone no tiene ese proceso, así que esa invalidación no llegó a ningún servidor real (ni mi dev local, ni mucho menos el contenedor de DO).
+4. **Conclusión:** el HTML estático que corrió DO en su `docker build` se generó consultando Neon en ESE momento del build — si el build de DO ocurrió, o si el cache ISR de esa página todavía no expiró desde entonces, el contenedor sigue sirviendo el snapshot que tenía en ese momento (que podría ya incluir el fix, o no, dependiendo de cuándo exactamente se corrió el build de DO respecto a mi fix — no tengo forma de saber la hora exacta del build de DO desde acá).
+
+**No es un bug de código ni de datos — es una consecuencia esperada de ISR + build-time SSG: la data en Neon está bien, pero el HTML servido puede estar "congelado" desde el build hasta que expire el cache o se redeploye.**
+
+### Poster (`BBF-video.jpg`, 404) — sigue siendo la misma referencia vieja, sin cambios desde el diagnóstico anterior
+
+`hero.media.videoPoster` sigue apuntando al Media doc id 22 (`BBF-video.jpg`), cuyo `url` es `/api/media/file/BBF-video.jpg` — storage local roto, ya diagnosticado en `B-BBF-WEB-DIAG-ASSETS-ROTOS` y nunca corregido (quedó pendiente explícitamente como "fuera de scope: NO subir assets aún"). El código ya tiene el fallback correcto:
+
+```typescript
+// page.tsx — G-02
+const posterUrl =
+  hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
+    ? ((hero.media.videoPoster as Media).url ?? '/hero-poster.png')
+    : '/hero-poster.png';
+```
+
+El fallback `'/hero-poster.png'` (que SÍ existe, self-hosted en `/public`, confirmado en despachos previos) **nunca se activa** porque `videoPoster` no está vacío — apunta a un doc roto, no a `null`. El `?? '/hero-poster.png'` solo cubre el caso "el doc existe pero su `.url` viene vacío", no "el doc apunta a un archivo que no existe".
+
+**PASS §1:** causa raíz del video: staleness de ISR/build (Neon ya correcto, no hace falta tocarlo de nuevo). Causa raíz del poster: relación a un Media doc roto, sin cambios desde el diagnóstico anterior — necesita un write a Neon.
+
+---
+
+## §2 — Fix propuesto
+
+### Video del hero — NO requiere tocar Neon (ya está bien) — acción operativa, no de código/datos
+
+Dos caminos, ninguno es un script mío:
+1. **Esperar** — el cache ISR de 1h expira solo; el siguiente request después de esa ventana regenera con datos frescos de Neon (ya correctos).
+2. **Forzar un redeploy en DO** — un build nuevo vuelve a consultar Neon en ese momento (ya correcto), produciendo HTML fresco de inmediato sin esperar la ventana de 1h. Esto además re-valida que el fix de `B-BBF-WEB-RAILWAY-EJECUCION-01` sí llegó a la imagen — recomendado como confirmación positiva.
+
+**No propongo ningún script/write nuevo a Neon para el video** — ya está correcto ahí, confirmado.
+
+### Poster — SÍ requiere un write a Neon (necesita tu confirmación antes de ejecutar)
+
+Opción A (recomendada, más simple — A-01): vaciar `hero.media.videoPoster` (poner `null`) en `SiteHomepage`. El fallback `?? '/hero-poster.png'` — que hoy no se activa por el `typeof === 'object'` check — sí se activaría porque `videoPoster` dejaría de ser un objeto truthy, cayendo a la rama `else` (`'/hero-poster.png'` directo).
+
+Opción B: subir `hero-poster.png` (ya existe en `/public`, o cualquier imagen real) como nuevo Media doc vía admin y reasignarlo — más trabajo, mismo resultado visual, pero mantiene la relación admin-editable en vez de depender del fallback hardcoded.
+
+**No ejecuté ninguna de las dos** — ambas tocan Neon, y el despacho lo prohíbe explícitamente sin confirmación. Si confirmás la Opción A, es un script de 5 líneas del mismo patrón que ya usé (read-modify-write sobre `hero.media`, solo tocando `videoPoster`).
+
+**PASS §2:** video → sin write, acción operativa (esperar o redeploy). Poster → write propuesto (Opción A), esperando confirmación.
+
+---
+
+## Nota — íconos de Integraciones
+
+Per instrucción explícita del despacho, no los toco acá — son Media docs que se suben vía admin (ya diagnosticados en `B-BBF-WEB-DIAG-ASSETS-ROTOS`, mismo root cause de storage roto que el poster, pero six archivos distintos con su propio flujo de re-subida).
+
+---
+
+## Veredicto
+
+**Video:** dato ya correcto en Neon (confirmado, no tocado de nuevo) — lo que se ve en DO es staleness de ISR/build, se resuelve solo o con un redeploy, cero acción de código/datos necesaria de mi parte. **Poster:** sigue roto, mismo diagnóstico de siempre, fix propuesto (Opción A) esperando tu confirmación antes de tocar Neon.
