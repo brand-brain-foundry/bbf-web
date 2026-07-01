@@ -16,13 +16,11 @@ const envSchema = z.object({
   // === Payload CMS ===
   PAYLOAD_SECRET: z.string().min(32),
 
-  // === Vercel Blob (media storage) ===
-  BLOB_READ_WRITE_TOKEN: z
-    .string()
-    .startsWith(
-      'vercel_blob_rw_',
-      'BLOB_READ_WRITE_TOKEN must be a Vercel Blob token (prefix: vercel_blob_rw_)',
-    ),
+  // === Cloudflare R2 (media storage) — B-BBF-WEB-RAILWAY-EJECUCION-01, reemplaza Vercel Blob ===
+  R2_BUCKET: z.string().min(1),
+  R2_ENDPOINT: z.string().url(),
+  R2_ACCESS_KEY_ID: z.string().min(1),
+  R2_SECRET_ACCESS_KEY: z.string().min(1),
 
   // === Resend (email + newsletter) ===
   RESEND_API_KEY: z.string().min(1),

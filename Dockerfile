@@ -15,8 +15,21 @@ WORKDIR /app
 RUN corepack enable
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Build-time env vars requeridas por src/lib/env.ts (Zod parse al import) —
-# Railway debe proveerlas como build args o build-time env vars.
+# Build-time env vars requeridas por src/lib/env.ts (Zod parse al import de next build).
+# DO App Platform pasa build args via `docker build --build-arg` — declarar ARG aquí
+# los expone como env vars al proceso `RUN` de esta etapa (no persisten a runner).
+ARG DATABASE_URL
+ARG PAYLOAD_SECRET
+ARG R2_BUCKET
+ARG R2_ENDPOINT
+ARG R2_ACCESS_KEY_ID
+ARG R2_SECRET_ACCESS_KEY
+ARG RESEND_API_KEY
+ARG UPSTASH_REDIS_REST_URL
+ARG UPSTASH_REDIS_REST_TOKEN
+ARG TURNSTILE_SECRET_KEY
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ARG NEXT_PUBLIC_SITE_URL
 RUN pnpm build
 
 # ---- runner ----
