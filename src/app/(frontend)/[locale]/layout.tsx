@@ -2,8 +2,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale, getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Inter, Mulish } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { routing } from '@/i18n/routing';
 import { Header } from '@/components/organisms/Header';
 import { Footer } from '@/components/organisms/Footer';
@@ -155,8 +153,6 @@ export default async function LocaleLayout({
           <Footer />
         </NextIntlClientProvider>
         <StructuredData locale={locale} />
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

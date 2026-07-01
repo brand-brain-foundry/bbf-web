@@ -1,6 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
-import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';
+import { s3Storage } from '@payloadcms/storage-s3';
 import { seoPlugin } from '@payloadcms/plugin-seo';
 import path from 'path';
 import { buildConfig } from 'payload';
@@ -139,13 +139,21 @@ export default buildConfig({
         return `${siteUrl}/${locale}/${typeof path === 'string' ? path : ''}`;
       },
     }),
-    // D-BBF-WEB-33: Vercel Blob via plugin oficial, solo collection media
-    // Guard: skip when token ausente o inválido (local dev sin provisionar)
-    ...(process.env.BLOB_READ_WRITE_TOKEN?.startsWith('vercel_blob_rw_')
+    // B-BBF-WEB-RAILWAY-EJECUCION-01: Cloudflare R2 (S3-compatible) via adapter oficial @payloadcms/storage-s3.
+    // R2 usa region 'auto' — no es una región AWS real. Guard: skip si faltan credenciales (local dev sin provisionar).
+    ...(process.env.R2_BUCKET && process.env.R2_ENDPOINT && process.env.R2_ACCESS_KEY_ID
       ? [
-          vercelBlobStorage({
+          s3Storage({
             collections: { media: true },
-            token: process.env.BLOB_READ_WRITE_TOKEN,
+            bucket: process.env.R2_BUCKET,
+            config: {
+              credentials: {
+                accessKeyId: process.env.R2_ACCESS_KEY_ID,
+                secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+              },
+              region: 'auto',
+              endpoint: process.env.R2_ENDPOINT,
+            },
           }),
         ]
       : []),
