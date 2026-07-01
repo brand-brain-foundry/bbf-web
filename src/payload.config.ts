@@ -140,8 +140,14 @@ export default buildConfig({
       },
     }),
     // B-BBF-WEB-RAILWAY-EJECUCION-01: Cloudflare R2 (S3-compatible) via adapter oficial @payloadcms/storage-s3.
-    // R2 usa region 'auto' — no es una región AWS real. Guard: skip si faltan credenciales (local dev sin provisionar).
-    ...(process.env.R2_BUCKET && process.env.R2_ENDPOINT && process.env.R2_ACCESS_KEY_ID
+    // R2 usa region 'auto' (no es región AWS real) + forcePathStyle:true (requisito R2 — sin esto
+    // el SDK intenta virtual-hosted-style addressing, que R2 no siempre tolera). B-BBF-WEB-FIX-R2-STORAGE.
+    // Guard: skip si falta CUALQUIERA de las 4 credenciales (local dev sin provisionar) — antes solo
+    // chequeaba 3, dejando activar el plugin con secretAccessKey vacío (auth rota en runtime).
+    ...(process.env.R2_BUCKET &&
+    process.env.R2_ENDPOINT &&
+    process.env.R2_ACCESS_KEY_ID &&
+    process.env.R2_SECRET_ACCESS_KEY
       ? [
           s3Storage({
             collections: { media: true },
@@ -149,10 +155,11 @@ export default buildConfig({
             config: {
               credentials: {
                 accessKeyId: process.env.R2_ACCESS_KEY_ID,
-                secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+                secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
               },
               region: 'auto',
               endpoint: process.env.R2_ENDPOINT,
+              forcePathStyle: true,
             },
           }),
         ]
