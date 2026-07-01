@@ -5767,3 +5767,94 @@ Resto de los 17 docs — mismo patrón `/api/media/file/{filename}`, sin ninguna
 Separadamente, confirmado con evidencia fresca (subidas de hoy): **R2 sigue sin interceptar uploads nuevos en runtime**, pese al fix de `forcePathStyle`+guard+`env.ts` del despacho anterior — esto sigue siendo un problema real y distinto, no resuelto por este diagnóstico (que era solo sobre el video/poster/Neon).
 
 No ejecuté nada — el fix de `caseStudy.videoSources` (mismo patrón que ya usé para `hero.media.videoSources`) queda propuesto, esperando confirmación explícita antes de tocar Neon de nuevo.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-CASO-VIDEO-Y-R2-RUNTIME
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-FIX-CASO-VIDEO-Y-R2-RUNTIME
+**Tipo:** FIX (Neon, confirmado) + investigación · **Protocolo:** P-5
+**Workspace confirmado:** bbf-web (rama `migracion-railway`)
+
+---
+
+## §1 — Fix `caseStudy.videoSources` (ejecutado, confirmado por Zavala)
+
+**Dump completo de `caseStudy.*` (campos media) antes de tocar nada:**
+```json
+{
+  "mediaChromeLabel": { "es": "HACIENDA-REAL · WhatsApp Business · live", "en": "..." },
+  "mediaTimestamp": "captura · 23:04 viernes",
+  "mediaAsset": 20,
+  "videoPoster": 22,
+  "videoSources": [
+    { "id": "6a1eecb8...", "src": "https://9kspickx8emgt2i9.public.blob.vercel-storage.com/BBF-video.webm", "type": "webm-av1" },
+    { "id": "6a1eecec...", "src": "https://9kspickx8emgt2i9.public.blob.vercel-storage.com/BBF-video.mp4", "type": "mp4-h264" }
+  ]
+}
+```
+
+**Solo `videoSources` tenía URL de Blob.** Revisé los otros dos campos relacionados a media antes de tocar nada:
+
+- **`videoPoster: 22`** — apunta a `SB-video.webp` (el doc que Zavala re-subió hoy). Su URL sigue rota (`/api/media/file/...`, mismo problema de §2), **pero no lo toqué** — a diferencia del hero, `casePosterUrl` en `page.tsx` **no tiene fallback estático** (`?? undefined`, no `?? '/algo.png'`), así que si el poster está roto, el componente simplemente omite el atributo `poster` en vez de generar un 404 visible — no había urgencia de "limpiar" este campo como sí la había con el hero. Cuando §2 se resuelva y R2 funcione de verdad, re-subir el mismo archivo lo arregla solo.
+- **`mediaAsset: 20`** — apunta a `SB-Demo-video-1.mp4`, un archivo de VIDEO asignado a un campo pensado para "imagen estática 16:9". Es un mismatch de contenido (alguien subió el archivo equivocado a ese campo), no un bug de código ni una URL vieja — **no lo toqué**, lo señalo para que Zavala lo revise si quiere.
+
+**Fix aplicado (mismo patrón que el hero — script acotado, read-modify-write, borrado después):**
+```
+ANTES:  videoSources → 2x URL de Blob (9kspickx8.../BBF-video.webm|.mp4)
+DESPUÉS: videoSources → /assets/media/hero/hero.av1.webm + hero.h264.mp4
+```
+
+**⚠️ Nota importante:** no existe ningún archivo de video específico del caso "Hacienda Real" en `/public` — busqué en `public/assets/media/videos/` y `public/assets/media/images/cases/`, ambas carpetas están vacías (solo `.gitkeep`). Reutilicé los **mismos** archivos del hero (los únicos videos reales committeados al repo), siguiendo la instrucción de "mismo patrón que el hero". **Esto es un placeholder funcional, no el contenido final** — si existe footage real del caso Hacienda Real en algún otro lado, hay que subirlo y actualizar este campo de nuevo cuando esté disponible.
+
+Verificado: campos hermanos preservados (`videoPoster: 22` intacto, `mediaAsset: 20` intacto, `eyebrow`/`h2Line1`/milestones/etc. sin tocar).
+
+**PASS §1:** ✅ `caseStudy.videoSources` sin URL de Blob. `videoPoster` y `mediaAsset` dejados intencionalmente sin tocar (razones documentadas arriba).
+
+---
+
+## §2 — Por qué R2 no intercepta en runtime (investigación, NO ejecutado)
+
+Inspeccioné el `.d.ts` real de la versión instalada (`@payloadcms/storage-s3@3.84.1`, `node_modules/.pnpm/.../dist/index.d.ts`) en vez de confiar en docs genéricas de internet — esto es lo que la versión EXACTA que tenemos realmente expone:
+
+### El config actual está completo — no falta ninguna opción del plugin
+
+`S3StorageOptions` (interfaz real de esta versión) tiene: `bucket` ✅, `config` (AWS S3ClientConfig — incluye `credentials`, `region`, `endpoint`, `forcePathStyle`) ✅, `collections` ✅. **No hay ningún `generateFileURL` ni opción de "public URL" separada que falte** — el plugin genera la URL internamente via su propia función `generateURL({ bucket, endpoint, filename, prefix, ... })`, sin necesitar configuración adicional de nuestra parte. `collections: { media: true }` (shorthand booleano) es sintaxis válida según el tipo (`Partial<Record<UploadCollectionSlug, (...) | true>>`).
+
+### `disableLocalStorage` — default `true`, confirma que el problema es "el plugin no carga", no "el plugin está mal configurado"
+
+La opción `disableLocalStorage` tiene **`@default true`** — cuando el plugin SÍ se registra, automáticamente desactiva el fallback a disco local. Esto es una pista fuerte: **si los uploads de hoy siguen generando `/api/media/file/{filename}` (patrón local), el plugin literalmente NO se está registrando en ese proceso** — no es que esté registrado pero mal configurado y cayendo a un fallback; si estuviera registrado, no debería haber fallback local disponible en absoluto.
+
+### Hallazgo nuevo, importante: `instrumentation.ts` puede no estar corriendo en el output `standalone`
+
+Investigué si mi fix del despacho anterior (conectar `env.ts` via `src/instrumentation.ts`) realmente se ejecuta en el build de Docker/DO. Encontré que **esto es un bug conocido y documentado de Next.js**: múltiples issues abiertos en el repo de Vercel/Next.js (#49897, #68740, #89377, discussion #77776/#68420) confirman que **`instrumentation.ts` no siempre se ejecuta de forma confiable con `output: 'standalone'`** al correr `node .next/standalone/server.js` — el archivo puede no incluirse correctamente en el bundle standalone, o el hook simplemente no se dispara.
+
+**Consecuencia práctica:** si esto nos afecta, mi fix de `env.ts` (fail-fast) del despacho anterior **nunca corrió en DO** — lo cual explica por qué no hay ningún crash/error visible en los logs de DO pese a que (posiblemente) las env vars de R2 sigan faltando o mal configuradas ahí. Es decir: la ausencia de un crash **no prueba que las env vars estén bien** — puede simplemente significar que la validación nunca se ejecutó.
+
+**Confirmé por separado que esto NO es la causa del problema de R2 en sí** — el guard de `s3Storage` en `payload.config.ts` es código de módulo normal, se evalúa cada vez que algo importa `payload.config.ts` (vía `getPayload({config})`, disparado en cada request que toca Payload) — **no depende de `instrumentation.ts` para nada**. El bug de instrumentation solo afecta la validación fail-fast extra que agregamos, no el guard del plugin R2 mismo.
+
+### Conclusión de causa raíz — sin humo de código adicional, apunta a configuración de DO
+
+Con `forcePathStyle` + guard completo + config sin gaps (confirmado contra el `.d.ts` real), **no encontré ningún otro problema de código**. La explicación más consistente con toda la evidencia (uploads frescos de hoy, después del fix + redeploy, siguen en `/api/media/file/`) es: **una o más de las 4 env vars `R2_*` siguen ausentes o vacías en el proceso runtime real de DO** — el mismo tipo de gap que ya identificamos, simplemente no resuelto todavía en el lado de configuración de DO (no de código).
+
+### Fix propuesto (NO ejecutado — dos partes)
+
+1. **Operativo (Zavala, en DO):** confirmar EXACTAMENTE en el dashboard de DO que las 4 `R2_*` están seteadas como env vars de **runtime** (no solo build-time — recordar la distinción que documentamos en `B-BBF-WEB-DO-PREFLIGHT`). Un typo en el nombre de cualquiera de las 4 (ej. `R2_ACCESSKEYID` sin guion bajo) haría que el guard falle exactamente así, en silencio.
+2. **Código (robustez, no bloqueante):** dado el bug conocido de `instrumentation.ts` + standalone, mover la validación fail-fast de `env.ts` a un lugar que SÍ se garantice ejecutar — por ejemplo, importar `env.ts` directamente desde `payload.config.ts` (que sabemos se evalúa siempre, sin depender de instrumentation) en vez de (o además de) `instrumentation.ts`. Esto haría el fail-fast confiable independientemente de si el bug de Next.js nos afecta o no.
+
+**PASS §2:** causa raíz más probable identificada (env vars de runtime en DO, no código) + 1 hallazgo nuevo de robustez (bug de instrumentation.ts+standalone) + 2 fixes propuestos, ninguno ejecutado.
+
+---
+
+## §3 — Commit + verificación + push
+
+**No hubo cambios de código en este despacho** — §1 fue un write a Neon (dato, no código, ya ejecutado con confirmación previa) y §2 fue investigación pura (propuesta, no ejecución, per instrucción explícita). No hay nada nuevo que commitear ni pushear a `origin/migracion-railway` — el código ya estaba al día desde `B-BBF-WEB-FIX-R2-STORAGE`.
+
+Solo committeo este reporte (documentación).
+
+**Secretos:** no aplica — ningún archivo de código tocado, ningún valor de env var impreso en este reporte.
+
+---
+
+## Veredicto
+
+**Video del §3 · CASO:** arreglado en Neon (mismo patrón que el hero), usando temporalmente los archivos del hero como placeholder — falta contenido real del caso si existe en otro lado. **R2 en runtime:** sigue sin resolverse — el código ya está completo y correcto (confirmado contra el `.d.ts` real de la versión instalada), así que el gap restante casi con certeza está en la configuración de env vars de runtime en el dashboard de DO, no en algo que yo pueda arreglar desde el repo. Encontré además un bug conocido de Next.js (`instrumentation.ts` + `standalone`) que puede estar neutralizando silenciosamente el fail-fast que agregamos — propuesto como fix de robustez, no ejecutado.
