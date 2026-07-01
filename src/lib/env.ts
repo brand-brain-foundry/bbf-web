@@ -40,6 +40,11 @@ const envSchema = z.object({
   TURNSTILE_SECRET_KEY: z.string().min(1),
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().min(1),
 
+  // === Cloudflare Cache Purge (edge CDN) — B-BBF-WEB-FIX-CACHE-CDN-01 ===
+  // Opcionales — si faltan, purgeCloudflareCache() solo loguea y sigue (no rompe el save).
+  CLOUDFLARE_API_TOKEN: z.string().min(1).optional(),
+  CLOUDFLARE_ZONE_ID: z.string().min(1).optional(),
+
   // === Site config ===
   NEXT_PUBLIC_SITE_URL: z.string().url(),
 

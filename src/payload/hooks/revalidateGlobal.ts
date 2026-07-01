@@ -1,5 +1,6 @@
 import type { GlobalAfterChangeHook } from 'payload';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { purgeCloudflareCache } from '@/lib/cloudflare/purge-cache';
 
 /**
  * Hook canon BBF para revalidación de Payload Globals.
@@ -15,7 +16,12 @@ import { revalidatePath, revalidateTag } from 'next/cache';
  * hooks: { afterChange: [revalidateGlobal] }
  * ```
  */
-export const revalidateGlobal: GlobalAfterChangeHook = ({ doc, previousDoc, global, req }) => {
+export const revalidateGlobal: GlobalAfterChangeHook = async ({
+  doc,
+  previousDoc,
+  global,
+  req,
+}) => {
   if (doc?.updatedAt === previousDoc?.updatedAt) {
     return doc;
   }
@@ -29,6 +35,10 @@ export const revalidateGlobal: GlobalAfterChangeHook = ({ doc, previousDoc, glob
     // No-op fuera de Next.js request context (seed scripts, CLI).
     // El cambio se commitió en DB — solo omitimos la invalidación de cache ISR.
   }
+
+  // B-BBF-WEB-FIX-CACHE-CDN-01: revalidatePath/Tag solo invalidan el cache
+  // interno de Next — el edge de Cloudflare (s-maxage) necesita su propio purge.
+  await purgeCloudflareCache();
 
   return doc;
 };
