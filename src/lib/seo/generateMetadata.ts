@@ -3,6 +3,7 @@
 import type { Metadata } from 'next';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
+import { SITE_NAME_FALLBACK } from '@/lib/brand';
 
 interface GenerateMetadataOptions {
   locale: 'es' | 'en';
@@ -46,7 +47,7 @@ export async function generatePageMetadata({
     const title =
       (meta?.title as string | undefined) ||
       (defaults?.defaultTitle as string | undefined) ||
-      'Sivar Brains';
+      SITE_NAME_FALLBACK;
     const description =
       (meta?.description as string | undefined) ||
       (defaults?.defaultDescription as string | undefined);
@@ -67,7 +68,7 @@ export async function generatePageMetadata({
         title,
         description,
         url: pageUrl,
-        siteName: 'Sivar Brains',
+        siteName: SITE_NAME_FALLBACK,
         locale: locale === 'es' ? 'es_MX' : 'en_US',
         type: 'website',
         images: ogImageRaw?.url ? [{ url: `${siteUrl}${ogImageRaw.url}` }] : undefined,
@@ -89,6 +90,6 @@ export async function generatePageMetadata({
       },
     };
   } catch {
-    return { title: 'Sivar Brains' };
+    return { title: SITE_NAME_FALLBACK };
   }
 }

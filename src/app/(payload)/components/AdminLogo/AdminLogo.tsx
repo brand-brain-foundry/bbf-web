@@ -12,6 +12,7 @@
  */
 
 import { BrandLogo } from '@/components/atoms/BrandLogo';
+import { SITE_NAME_FALLBACK } from '@/lib/brand';
 
 export default function AdminLogo() {
   return (
@@ -24,7 +25,7 @@ export default function AdminLogo() {
         padding: 'var(--bbf-space-4) 0',
       }}
     >
-      <BrandLogo variant="horizontal" size="md" ariaLabel="Sivar Brains" />
+      <BrandLogo variant="horizontal" size="md" ariaLabel={SITE_NAME_FALLBACK} />
     </div>
   );
 }

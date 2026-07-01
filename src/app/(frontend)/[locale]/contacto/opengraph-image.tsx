@@ -1,10 +1,11 @@
 import { ImageResponse } from 'next/og';
+import { SITE_NAME_FALLBACK, SITE_NAME_UPPER } from '@/lib/brand';
 
 export const runtime = 'edge';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 // Bilingual fallback — opengraph-image.tsx static export can't resolve locale at this level
-export const alt = 'Contacto / Contact — Sivar Brains';
+export const alt = `Contacto / Contact — ${SITE_NAME_FALLBACK}`;
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -42,7 +43,7 @@ export default async function OGImage({ params }: Props) {
             letterSpacing: 3,
           }}
         >
-          SIVAR BRAINS
+          {SITE_NAME_UPPER}
         </span>
         <span
           style={{

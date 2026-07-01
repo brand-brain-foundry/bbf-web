@@ -7,13 +7,15 @@ import { getPayload } from 'payload';
 import config from '@/payload-config';
 import { newsletterRateLimit, getClientIp } from '@/lib/security/rate-limit';
 import { isDisposableEmail } from '@/lib/security/disposable-emails';
+import { SITE_NAME_FALLBACK } from '@/lib/brand';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const AUDIENCE_ID = process.env.RESEND_AUDIENCE_ID;
 // TODO FASE 6: migrar a getSiteIdentity() — módulo-level init impide llamada async por ahora
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sivarbrains.com';
 const FROM_NEWSLETTER =
-  process.env.RESEND_FROM_NEWSLETTER ?? 'Sivar Brains Newsletter <newsletter@sivarbrains.com>';
+  process.env.RESEND_FROM_NEWSLETTER ??
+  `${SITE_NAME_FALLBACK} Newsletter <newsletter@sivarbrains.com>`;
 
 const NewsletterSchema = z.object({
   email: z.string().email(),

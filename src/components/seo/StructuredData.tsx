@@ -1,6 +1,7 @@
 import { getSiteIdentity, getSiteHomepageCapabilities } from '@/config/site';
 import { getEntityBySlug } from '@/lib/data/entities';
 import { interpolate } from '@/lib/content-interpolation';
+import { SITE_NAME_FALLBACK } from '@/lib/brand';
 
 /**
  * StructuredData — Schema.org JSON-LD @graph para entity disambiguation.
@@ -160,7 +161,10 @@ export async function StructuredData({ locale }: { locale: string }) {
           {
             '@type': 'ItemList',
             '@id': `${domain}/#service-list`,
-            name: l === 'en' ? 'Sivar Brains Services' : 'Servicios de Sivar Brains',
+            name:
+              l === 'en'
+                ? `${site.siteName ?? SITE_NAME_FALLBACK} Services`
+                : `Servicios de ${site.siteName ?? SITE_NAME_FALLBACK}`,
             numberOfItems: serviceNodes.length,
             itemListElement: serviceNodes.map((svc, i) => ({
               '@type': 'ListItem',

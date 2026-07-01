@@ -12,6 +12,7 @@
  */
 
 import { BrandLogo } from '@/components/atoms/BrandLogo';
+import { SITE_NAME_FALLBACK } from '@/lib/brand';
 
 export default function AdminIcon() {
   return (
@@ -23,7 +24,7 @@ export default function AdminIcon() {
         justifyContent: 'center',
       }}
     >
-      <BrandLogo variant="stamp" size="sm" ariaLabel="Sivar Brains" />
+      <BrandLogo variant="stamp" size="sm" ariaLabel={SITE_NAME_FALLBACK} />
     </div>
   );
 }

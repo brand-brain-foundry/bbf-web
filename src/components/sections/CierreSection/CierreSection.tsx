@@ -20,6 +20,7 @@ import { Button } from '@/components/atoms/Button';
 import { Icon, Icons } from '@/components/atoms/Icon';
 import { BrandLogo } from '@/components/atoms/BrandLogo';
 import { Reveal } from '@/components/atoms/Reveal';
+import { SITE_NAME_FALLBACK } from '@/lib/brand';
 
 export interface CierreData {
   eyebrow?: string | null;
@@ -40,7 +41,7 @@ export interface CierreData {
 export function CierreSection({ data }: { data: CierreData }) {
   const year = data.brandYear || new Date().getFullYear().toString();
   const eyebrow = data.eyebrow ?? '§6 · CIERRE';
-  const brandLine = data.brandLine ?? 'Sivar Brains';
+  const brandLine = data.brandLine ?? SITE_NAME_FALLBACK;
 
   return (
     <section

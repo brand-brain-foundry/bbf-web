@@ -27,6 +27,7 @@ import { SiteNewsletter } from './payload/globals/SiteNewsletter';
 import { SiteHomepage } from './payload/globals/SiteHomepage';
 import { SiteCtaLibrary } from './payload/globals/SiteCtaLibrary';
 import { SiteContactPage } from './payload/globals/SiteContactPage';
+import { SITE_NAME_FALLBACK } from './lib/brand';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -125,7 +126,7 @@ export default buildConfig({
         ),
       generateTitle: ({ doc }) => {
         const title = (doc as Record<string, unknown>).title;
-        return `${typeof title === 'string' ? title : 'Untitled'} — Sivar Brains`;
+        return `${typeof title === 'string' ? title : 'Untitled'} — ${SITE_NAME_FALLBACK}`;
       },
       generateDescription: ({ doc }) => {
         const title = (doc as Record<string, unknown>).title;

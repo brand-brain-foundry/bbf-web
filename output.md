@@ -4404,3 +4404,246 @@ Conclusión: `scripts/assets/generate-favicons.mjs` (el que yo edité en el desp
 ## Veredicto final
 
 **¿Repo 100% SB, cero BBF audible/visible/config?** Sí, en el scope cubierto por esta serie de 3 despachos (audit → OG/description → aria-label/script). Cero residuo de marca-sitio (visual, audible, config) fuera de las referencias intencionales a BBF como producer/entidad (documentadas y con comentarios explícitos de "preserved intentionally"). `tsc` limpio en las 3 rondas de fixes. Listo para que Zavala valide y Strategic firme antes de B-4.
+
+---
+
+# REPORTE — B-BBF-WEB-AUDIT-SITENAME-SSOT
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-AUDIT-SITENAME-SSOT
+**Tipo:** AUDIT read-only · **Protocolo:** P-1 + P-6
+**Workspace confirmado:** bbf-web (`/Volumes/PK/BBF/Repos/bbf-web`)
+
+**NO se ejecutó ningún cambio.** Solo inventario + propuesta, per instrucción explícita del despacho.
+
+---
+
+## Contexto encontrado: el SSOT de contenido YA EXISTE
+
+Antes del inventario, leí `bbf-docs/.../SB_PlaceholdersCanon.md` (v1.1, FIRMADO). Ya existe un sistema Content Interpolation completo y firmado: `{{siteName}}` se resuelve server-side vía `interpolate(text, locale)` → `getSiteIdentity(locale)` → `SiteIdentity.siteName` (Payload). Editorial content (copy en admin) usa `{{siteName}}` — cambiar el nombre = editar 1 campo, se propaga a todo el contenido en el próximo ISR cycle. **Esto ya es C-01 aplicado al contenido.**
+
+Lo que este audit mapea es distinto: **hardcodes en CÓDIGO** (no en contenido editorial) — literales `'Sivar Brains'` escritos directamente en `.tsx`/`.ts` como fallback o default, fuera del sistema de placeholders (que solo aplica a campos de texto editorial, no a código).
+
+---
+
+## §1 — Inventario clasificado
+
+Grep exhaustivo (`Sivar Brains`, `SIVAR BRAINS`, `sivarbrains`, `SivarBrains`) en `.ts/.tsx/.mjs/.json`, excluyendo `migrations/` (snapshots históricos de DB), `src/scripts/seed-*.ts` y `src/payload/seed/` (son dato editorial, no hardcode de código — igual que clasifica el propio despacho), y `payload-types.ts` (auto-generado).
+
+**Total: 30 archivos, 63 ocurrencias.** Clasificadas:
+
+### A. AGNÓSTICO — ya lee de admin (fallback solo defensivo, admin siempre presente en la práctica)
+
+| Archivo:línea | Forma | Nota |
+|---|---|---|
+| `Header.tsx:39` | `identity.siteName ?? 'Sivar Brains'` | Header YA fetchea `getSiteIdentity()`. Fallback solo si el global está vacío en DB (no pasa en producción real) |
+| `Footer.tsx:53` | `identity.siteName ?? 'Sivar Brains'` | Mismo patrón que Header |
+| `AppScreen.tsx:42` | `identity.siteName ?? 'Sivar Brains'` | Fix del despacho anterior — ya sigue el patrón Header |
+| `Integraciones.tsx:23` | `identity.siteName ?? 'Sivar Brains'` | Ídem |
+| `MobileMenu.tsx:83` | `siteName = 'Sivar Brains'` (default param) | **Muerto en la práctica**: `Header.tsx:168` SIEMPRE pasa `siteName={siteName}` explícito. El default nunca se alcanza hoy. |
+| `SiteIdentity.ts:55,66,77,98,139-140` | `defaultValue: 'Sivar Brains'` / `'https://sivarbrains.com'` / ... | Esto ES la fuente (Payload field default), no un hardcode de código — es el dato inicial del campo admin |
+| `SiteContact.ts:28,36,45` | `defaultValue: 'contacto@sivarbrains.com'` etc. | Ídem — dato de campo admin |
+| `SEO.ts:10` | `defaultValue: '%s · Sivar Brains'` | Ídem — dato de campo admin (titleTemplate editable) |
+| `SiteHomepage.ts:1667` | `defaultValue: 'Sivar Brains'` | Ídem |
+| `BrandSystem.ts:28` | `label: 'Blue (Sivar Brains)'` | Label de opción admin (dropdown), cosmético, no user-facing en el sitio público |
+
+**Subtotal: 15 ocurrencias — cero acción necesaria.** Son o bien datos de campo Payload (la fuente misma) o fallbacks que ya siguen el patrón "admin primero" y nunca se alcanzan en producción.
+
+### B. HARDCODE fallback (`?? 'Sivar Brains'`) — candidato a SSOT de código
+
+| Archivo:línea | Forma | ¿Cuándo se activa? |
+|---|---|---|
+| `BrandLogo.tsx:153` | `ariaLabel ?? 'Sivar Brains'` | Solo si el call site no pasa `ariaLabel` explícito (hoy: nunca, los 4 call sites ya lo pasan tras el despacho anterior) |
+| `CierreSection.tsx:43` | `data.brandLine ?? 'Sivar Brains'` | Si el campo CMS `SiteHomepage.closing.brandLine` está vacío |
+| `newsletter.ts:16` | `process.env.RESEND_FROM_NEWSLETTER ?? 'Sivar Brains Newsletter <newsletter@sivarbrains.com>'` | Si la env var no está seteada en Vercel |
+| `generateMetadata.ts:49` | `... \|\| 'Sivar Brains'` (title) | Si `page.meta.title` Y `seoDefaults.defaultTitle` están vacíos |
+| `generateMetadata.ts:70` | `siteName: 'Sivar Brains'` (OG, literal, sin `??`) | **Siempre** — no hay fallback, es un literal fijo en el objeto `openGraph` |
+| `generateMetadata.ts:92` | `return { title: 'Sivar Brains' }` (catch block) | Si `getPayload()` o las queries fallan (error de red/DB) |
+| `contacto/page.tsx` (indirecto vía `t('metaTitle')`) | i18n string `"Contacto — Sivar Brains"` | Si `contactPage.seo?.metaTitle` (CMS) está vacío |
+
+**Subtotal: 7 ocurrencias — candidatos reales a unificar bajo una constante.** Ninguno se activa hoy en producción normal (todos son "admin/CMS vacío" o "error"), pero están escritos 6 veces distintas en 6 archivos distintos — es la duplicación que el despacho quiere resolver.
+
+### C. HARDCODE literal — no puede/no debe llamar a Payload
+
+| Archivo:línea | Forma | Razón (ver §2) |
+|---|---|---|
+| `AdminLogo.tsx:27` | `ariaLabel="Sivar Brains"` | Decisión del despacho anterior: evitar acoplar la página de login del admin a Payload Local API |
+| `AdminIcon.tsx:26` | `ariaLabel="Sivar Brains"` | Ídem |
+| `payload.config.ts:128` | `` `${title} — Sivar Brains` `` (SEO plugin `generateTitle`) | **Circular dependency real**: este callback corre durante la construcción del propio `payload.config.ts` — llamar `getSiteIdentity()` (que depende de `getPayload({config})`) crearía un ciclo. Comentario ya existente en el archivo (línea 136) confirma esto para `generateURL` |
+| `contacto/opengraph-image.tsx:7` | `export const alt = '... — Sivar Brains'` | **Constraint de Next.js**: `alt` es un `export const` estático de la convención `opengraph-image.tsx` — no puede ser el resultado de un `await` |
+| `contacto/opengraph-image.tsx:45` | `SIVAR BRAINS` (texto dibujado en el PNG) | El componente SÍ es async y SÍ podría fetchear `getSiteIdentity()` — este no tiene la misma excusa que `alt`. Candidato real a dinamizar |
+| `StructuredData.tsx:163` | `'Sivar Brains Services' : 'Servicios de Sivar Brains'` | El componente ya tiene `site` en scope (se ve en otras partes del archivo) — no hay razón técnica, es simplemente no haberlo usado ahí |
+| `package.json:6` | `"description": "Sivar Brains — web pública..."` | Metadata de npm package, nunca leído por la app en runtime |
+
+**Subtotal: 7 ocurrencias.** 3 tienen justificación arquitectónica real (AdminLogo/AdminIcon por diseño, payload.config.ts por circular dep, opengraph-image `alt` por constraint de Next.js). 3 son simplemente hardcodes sin razón técnica (opengraph-image body text, StructuredData.tsx, package.json).
+
+### D. METADATA build-time — assets estáticos generados por scripts dev, brand-name horneado en el archivo resultante
+
+| Archivo | Qué genera | ¿Se puede dinamizar? |
+|---|---|---|
+| `scripts/generate-og-image.ts` | `public/og-image.png` — PNG estático con wordmark "SIVAR BRAINS" | No — es un script Node ejecutado manualmente (`pnpm tsx ...`), el output es un PNG committeado a git. Por diseño, no hay "runtime" aquí |
+| `scripts/generate-hero-poster.ts` | Poster estático con "SIVAR BRAINS" | Mismo caso |
+
+**Subtotal: 2 archivos.** No son hardcodes-a-unificar en el sentido de código de aplicación — son generadores de assets estáticos, análogos a los favicons. Si el nombre cambia, se re-corre el script manualmente (ya documentado como flujo aceptado en despachos previos).
+
+### E. CONTENIDO (dato, no hardcode de código) — excluido del conteo, confirmando la propia clasificación del despacho
+
+| Categoría | Archivos | Por qué es dato, no código |
+|---|---|---|
+| Seeds | `src/scripts/seed-*.ts` (9 archivos), `src/payload/seed/index.ts` | Escriben valores iniciales A LA DB — son el contenido, no el código que lo consume |
+| Migraciones | `src/payload/migrations/*.json`, `*.ts` (~40 archivos) | Snapshots históricos de schema+data — inmutables, no se re-ejecutan con el código actual |
+| i18n messages | `src/i18n/messages/es.json:35`, `en.json:35` (`metaTitle`) | Traducción de UI (patrón next-intl estándar) — técnicamente hardcode pero es contenido traducible por diseño, no lógica |
+| Dev-tool docs | `src/scripts/generate-placeholders-registry.ts` | Genera un documento de referencia (ejemplos), no afecta runtime de la app |
+| Comentarios | `Timeline.tsx:11`, `BrandLogoLink.tsx:24`, `content-interpolation.ts:46` | JSDoc/comentarios, cero impacto en código ejecutado |
+
+---
+
+## §2 — Por qué cada hardcode NO lee de admin
+
+### Admin/login (AdminLogo, AdminIcon)
+
+**Razón real: boundary de riesgo, no imposibilidad técnica.** Payload v3 admin components SÍ pueden ser Server Components async en algunos slots, y `getSiteIdentity()` es solo Local API (no HTTP) — técnicamente podría funcionar. La razón de fondo (documentada en el despacho anterior) es que `AdminLogo`/`AdminIcon` se renderizan en la página de **login**, el camino más crítico del panel: si `getSiteIdentity()` fallara (DB caída, timing de arranque, cache miss + latencia), el login se rompería por un elemento puramente decorativo. Es una decisión de **resiliencia**, no una limitación técnica dura.
+
+### payload.config.ts (`generateTitle`, `generateURL`)
+
+**Razón real: circular dependency, confirmada en comentario existente del propio archivo (línea 136).** `getSiteIdentity()` llama `getPayload({ config })` — pero `config` (el objeto `payload.config.ts`) está siendo CONSTRUIDO en el momento en que estos callbacks se definen. Llamar `getSiteIdentity()` desde dentro de `payload.config.ts` intentaría inicializar Payload usando una config que aún no terminó de construirse. Esto es una limitación arquitectónica dura, no evitable sin restructurar cómo el SEO plugin obtiene sus defaults.
+
+### Fallbacks (`?? 'Sivar Brains'`) en Server Components con Payload access
+
+**Razón real: nunca se activan en la práctica, existen por seguridad defensiva.** Header, Footer, BrandLogo call sites, CierreSection — todos YA leen de `getSiteIdentity()` o de un campo CMS primero. El `?? 'Sivar Brains'` solo se alcanza si: (a) el campo en Payload está genuinamente vacío (no debería pasar — son campos `required: true` con `defaultValue`), o (b) la query a Payload falla (error de red/DB). Es un fallback de "última línea de defensa", correcto tenerlo, pero está escrito 6 veces con el mismo string literal en vez de una vez.
+
+### `generateMetadata.ts` (3 ocurrencias)
+
+**Razón real: mixta.** Las líneas 49 y 92 SÍ tienen la misma razón que el punto anterior (defensive fallback / catch de error). La línea 70 (`siteName: 'Sivar Brains'` en el objeto `openGraph`) **no tiene excusa** — la función ya hizo `getPayload({config})` exitosamente en ese punto del código y podría leer `SiteIdentity.siteName` con una query adicional (o mejor: recibir `siteName` como parámetro desde el caller, que ya lo tiene vía `getSiteIdentity()` en el page.tsx padre).
+
+### `contacto/opengraph-image.tsx`
+
+**Mixta:** `export const alt` es un constraint real de la convención Next.js (debe ser estático, evaluado antes de que el componente async corra). El texto `SIVAR BRAINS` dibujado dentro del `<ImageResponse>` **no tiene esa excusa** — el componente default export SÍ es `async function` con `params`, podría hacer `await getSiteIdentity(locale)` igual que cualquier page.tsx.
+
+### `StructuredData.tsx`
+
+**Sin razón técnica.** El componente ya tiene el objeto `site` (de `getSiteIdentity`) en scope para otros campos del mismo archivo — este string específico simplemente no lo usa. Es un descuido, no una limitación.
+
+---
+
+## §3 — Propuesta de SSOT (sin ejecutar)
+
+### Opción A — Constante compartida `lib/brand.ts` (recomendada)
+
+```typescript
+// src/lib/brand.ts
+/** Fallback de ÚLTIMA instancia cuando SiteIdentity.siteName no está disponible.
+ *  La fuente real y editable es Payload SiteIdentity — este valor solo cubre
+ *  los casos donde no se puede o no conviene consultarla (ver SSOT audit
+ *  B-BBF-WEB-AUDIT-SITENAME-SSOT §2). */
+export const SITE_NAME_FALLBACK = 'Sivar Brains';
+```
+
+**Qué migra:** los 7 hardcodes de categoría B + los 3 de categoría C sin justificación técnica (opengraph-image body text, StructuredData.tsx, generateMetadata.ts:70) — 10 sitios, un import cada uno.
+
+**Qué NO migra:** `AdminLogo`/`AdminIcon` (podrían migrar al import también — es solo un string, cero riesgo de acoplar a Payload; a diferencia de fetchear DB, importar una constante TS no agrega ningún I/O) — de hecho, **recomiendo que estos SÍ migren**, ya que sería la misma constante sin ningún costo de performance/resiliencia. `payload.config.ts` NO migra (circular dep real, tiene que quedar con su propio literal o usar una constante desde un archivo que payload.config.ts SÍ pueda importar sin crear el ciclo — verificar si `lib/brand.ts` es importable ahí sin tocar Payload; probablemente sí, ya que no depende de `getPayload`).
+
+**Tradeoffs:**
+- ✅ A-01 Simplicidad: un archivo, un export, cero configuración adicional (no toca Vercel, no toca Zod env schema).
+- ✅ Type-safe, autocompletable, cero riesgo de typo entre archivos.
+- ✅ No implica ningún cambio de infraestructura — funciona igual en local/preview/prod.
+- ⚠️ Sigue siendo un valor "congelado at build time" — si Zavala quiere cambiar el fallback sin re-deploy, esta opción no lo permite (pero tampoco lo permite ninguna de las 3 opciones sin tocar la DB, que ya es la fuente real y SÍ es editable sin deploy).
+
+### Opción B — Env var `NEXT_PUBLIC_SITE_NAME`
+
+**Tradeoffs:**
+- ✅ Editable sin re-deploy de código (solo redeploy tras cambiar env var en Vercel — igual redeploy que la opción A en la práctica, Next.js no soporta env vars runtime sin rebuild para `NEXT_PUBLIC_*`).
+- ❌ Viola A-01: agrega una env var a `src/lib/env.ts` (Zod schema) + Vercel dashboard + `.env.local` de cada developer, para un valor que NO varía por ambiente (a diferencia de `DATABASE_URL` o `NEXT_PUBLIC_SITE_URL`, que sí varían prod/preview). "Sivar Brains" es el mismo string en local, preview y producción — no es config de ambiente, es contenido.
+- ❌ `payload.config.ts` YA usa `process.env.NEXT_PUBLIC_SITE_URL` para el dominio (constraint real: circular dep) — pero el nombre de marca no tiene esa misma urgencia de ser env var, porque a diferencia del dominio (que sí podría diferir en preview vs prod), el nombre no difiere nunca entre ambientes.
+
+### Opción C — Híbrida (admin runtime + constante para fallbacks/build-time)
+
+Esto es, en la práctica, **exactamente lo que ya existe hoy** (Header/Footer/etc. ya leen de admin primero) — la única pieza que falta es unificar el STRING del fallback bajo una constante compartida. Es decir: **Opción C = Opción A**, aplicada correctamente. No son alternativas distintas, la "híbrida" es la descripción correcta del estado actual + la mejora de A-01.
+
+### Recomendación
+
+**Opción A / C (son la misma cosa):** crear `src/lib/brand.ts` con `SITE_NAME_FALLBACK`, migrar los ~11 sitios candidatos (7 de categoría B + AdminLogo + AdminIcon + StructuredData.tsx + generateMetadata.ts:70 + opengraph-image body text). Dejar intactos: `payload.config.ts` (evaluar si puede importar la constante sin crear el ciclo — probable que sí, ya que `lib/brand.ts` no tocaría `getPayload`), los defaultValue de campos Payload (son la fuente, no hardcode), las migraciones/seeds (dato histórico/inicial), i18n messages (contenido traducible), y los scripts generate-*.ts de assets estáticos (flujo ya aceptado).
+
+**No recomiendo la env var** — no hay necesidad real de que "Sivar Brains" varíe por ambiente Vercel, y agregarla violaría A-01 sin beneficio real sobre la constante TS.
+
+### Magnitud real
+
+De 63 ocurrencias totales de "Sivar Brains" en código (excluyendo migraciones/seeds), **solo ~10-11 son hardcodes candidatos a unificar**. El resto (52-53) ya son: la fuente misma (Payload defaultValue), fallbacks agnósticos que ya nunca se alcanzan, contenido traducible, o generadores de assets estáticos con flujo ya aceptado. **La duplicación real es pequeña** — un despacho de ejecución sería de bajo riesgo y alcance acotado (~10 archivos, 1 línea cada uno + 1 archivo nuevo).
+
+---
+
+## Veredicto
+
+¿Cuántos hardcodes reales hay? **~10-11**, no 63. ¿Cuál es la fuente única óptima? **Constante TS compartida (`src/lib/brand.ts`)**, no env var — más simple (A-01), sin overhead de infraestructura, y el "runtime real" ya está resuelto por `SiteIdentity.siteName` vía `getSiteIdentity()`, que sigue siendo la fuente autoritativa editable sin tocar código.
+
+PAUSA — esperando que Zavala revise la magnitud y elija la SSOT antes de despachar la ejecución.
+
+---
+
+# REPORTE — B-BBF-WEB-SITENAME-SSOT-EJECUCION
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-SITENAME-SSOT-EJECUCION
+**Tipo:** FIX (SSOT nombre de marca) + COMMIT · **Protocolo:** P-5 + P-6
+**Workspace confirmado:** bbf-web (`/Volumes/PK/BBF/Repos/bbf-web`)
+
+---
+
+## §1 — Constante SSOT creada
+
+`src/lib/brand.ts` (nuevo):
+```typescript
+export const SITE_NAME_FALLBACK = 'Sivar Brains';
+export const SITE_NAME_UPPER = 'SIVAR BRAINS';
+```
+Agregué `SITE_NAME_UPPER` (sugerido por el despacho) porque encontré un uso real de la forma uppercase fuera de los scripts aceptados: el wordmark dibujado en `contacto/opengraph-image.tsx`.
+
+**PASS §1:** ✅
+
+---
+
+## §2 — Migración (9 archivos, exactamente los ~10-11 candidatos)
+
+| Archivo | Antes | Después |
+|---|---|---|
+| `generateMetadata.ts:50` | `\|\| 'Sivar Brains'` | `\|\| SITE_NAME_FALLBACK` |
+| `generateMetadata.ts:71` | `siteName: 'Sivar Brains'` | `siteName: SITE_NAME_FALLBACK` |
+| `generateMetadata.ts:93` | `return { title: 'Sivar Brains' }` (catch) | `return { title: SITE_NAME_FALLBACK }` |
+| `CierreSection.tsx:44` | `data.brandLine ?? 'Sivar Brains'` | `data.brandLine ?? SITE_NAME_FALLBACK` |
+| `newsletter.ts:18` | `'Sivar Brains Newsletter <...>'` | `` `${SITE_NAME_FALLBACK} Newsletter <...>` `` |
+| `AdminLogo.tsx:28` | `ariaLabel="Sivar Brains"` | `ariaLabel={SITE_NAME_FALLBACK}` |
+| `AdminIcon.tsx:27` | `ariaLabel="Sivar Brains"` | `ariaLabel={SITE_NAME_FALLBACK}` |
+| `StructuredData.tsx:166-167` | `'Sivar Brains Services' : 'Servicios de Sivar Brains'` (literal fijo) | `` `${site.siteName ?? SITE_NAME_FALLBACK} Services` : `Servicios de ${site.siteName ?? SITE_NAME_FALLBACK}` `` — mejora adicional: ahora usa el dato real de `site` (ya estaba en scope) con la constante solo como fallback, en vez de un literal fijo sin conexión a admin |
+| `contacto/opengraph-image.tsx:8` | `export const alt = 'Contacto / Contact — Sivar Brains'` | `` export const alt = `Contacto / Contact — ${SITE_NAME_FALLBACK}` `` |
+| `contacto/opengraph-image.tsx:46` | `SIVAR BRAINS` (texto JSX) | `{SITE_NAME_UPPER}` |
+| `payload.config.ts:129` (`generateTitle`) | `` `${title} — Sivar Brains` `` | `` `${title} — ${SITE_NAME_FALLBACK}` `` — resuelve la circular dependency: la constante NO llama `getPayload`/`getSiteIdentity`, así que no hay ciclo |
+
+**No toqué `generateURL` en `payload.config.ts`** — su hardcode (`process.env.NEXT_PUBLIC_SITE_URL || 'https://sivarbrains.com'`) es un fallback de **dominio**, no de **nombre de marca**. No estaba en mi inventario original de los ~10-11 candidatos de `{{siteName}}` — es una SSOT distinta (dominio) fuera del scope de este despacho.
+
+**No toqué** (per instrucción explícita — "ya leen de admin", fallbacks-inalcanzables): `Header.tsx:39`, `Footer.tsx:53`, `BrandLogo.tsx:153`, `AppScreen.tsx:42`, `Integraciones.tsx:23`, `MobileMenu.tsx:83` (default param). Tampoco toqué los `defaultValue` de campos Payload, migraciones, seeds, i18n messages, ni los scripts `generate-og-image.ts`/`generate-hero-poster.ts`/`generate-placeholders-registry.ts` (aceptados).
+
+**PASS §2:** ✅ los 9 archivos importan `SITE_NAME_FALLBACK` (o `SITE_NAME_UPPER`), cero literal `'Sivar Brains'` suelto en ninguno de los lugares migrados.
+
+---
+
+## §3 — Verificación
+
+| Check | Resultado |
+|---|---|
+| `pnpm typecheck` | ✅ exit 0, cero errores |
+| `pnpm payload generate:types` | ✅ exit 0 — **confirma que `payload.config.ts` carga sin error de circular dependency** tras importar `SITE_NAME_FALLBACK` en `generateTitle`. `payload-types.ts` sin diff (el cambio no afecta schema) |
+| grep "Sivar Brains" / "SIVAR BRAINS" (excluyendo migrations/seeds/payload-types) | Todos los resultados restantes son: `defaultValue` de campos Payload (fuente), comentarios/JSDoc, `i18n/messages/*.json` (dato traducible), `llms.txt` routes (copy editorial, no fallback de código), scripts aceptados (`generate-og-image.ts`, `generate-hero-poster.ts`, `generate-placeholders-registry.ts`), y los 6 fallbacks-inalcanzables explícitamente excluidos del scope. **Cero hardcode de código sin la constante** en los lugares que sí estaban en scope. |
+| Smoke test HTTP (home/contacto 200) | ⚠️ No pude correr `curl` en esta sesión (permiso denegado por configuración del entorno) — verificación sustituida por `tsc` limpio + `payload generate:types` exitoso, que son las señales más fuertes disponibles de que nada se rompió. Si Zavala quiere el smoke test HTTP explícito, sugiero correrlo manualmente o pedírmelo con `/verify`. |
+
+### Archivos en el commit
+`src/lib/brand.ts` (nuevo), `src/lib/seo/generateMetadata.ts`, `src/components/sections/CierreSection/CierreSection.tsx`, `src/lib/actions/newsletter.ts`, `src/app/(payload)/components/AdminLogo/AdminLogo.tsx`, `src/app/(payload)/components/AdminIcon/AdminIcon.tsx`, `src/components/seo/StructuredData.tsx`, `src/app/(frontend)/[locale]/contacto/opengraph-image.tsx`, `src/payload.config.ts`, `output.md`.
+
+`feedback.md` archivado a `.claude/feedback-archive/feedback_2026-07-01_sitename-ssot-ejecucion.md`.
+
+---
+
+## Drift detectado durante la ejecución
+
+Ninguno nuevo. Un matiz sobre `StructuredData.tsx`: en vez de solo importar la constante como reemplazo 1:1 del literal, usé `site.siteName ?? SITE_NAME_FALLBACK` — el componente ya tenía `site` en scope (línea 70) y no había razón para no usarlo (así lo anotó el audit anterior, §2). Es una mejora menor sobre lo pedido literalmente, no un cambio de scope: sigue siendo "importar y usar la constante", solo que como fallback de un valor real en vez de como literal fijo.
+
+---
+
+## Veredicto
+
+**¿Nombre de marca en fuente única?** Sí — para el código, `SITE_NAME_FALLBACK`/`SITE_NAME_UPPER` en `src/lib/brand.ts` es ahora la única fuente de los literales de "última instancia"; para runtime dinámico, `SiteIdentity.siteName` vía `getSiteIdentity()` sigue siendo la fuente editable (sin cambios, ya funcionaba). **¿Circular dependency resuelta?** Sí, confirmado por `payload generate:types` exit 0. `tsc` limpio. Listo para que Zavala valide y Strategic firme — repo con nombre SSOT, listo para B-4.
