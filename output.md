@@ -5932,3 +5932,38 @@ git push origin migracion-railway
 ## Veredicto
 
 El mecanismo de diagnóstico ahora es confiable (no depende de un hook con bug conocido) y explícito (dice qué falta, no solo que algo falla). Con esto, el PRÓXIMO deploy en DO va a dar una respuesta definitiva vía sus propios logs — algo que hasta ahora no teníamos manera de obtener desde el código. La causa raíz final (vars de runtime en DO vs. otro problema) queda en manos de Zavala confirmarla con esta nueva visibilidad.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-R2-RUNTIME-01
+**Fecha:** 2026-07-01 · **Despacho:** B-BBF-WEB-FIX-R2-RUNTIME-01
+**Tipo:** VERIFICAR → FIX (código) → COMMIT — **DETENIDO en verificación pre-ejecución**
+**Protocolo:** P-5 · **Rama:** `migracion-railway`
+
+**No se tocó código, Neon, ni env vars.** Este despacho tenía una condición de parada explícita que se cumplió.
+
+## Verificación pre-ejecución (los 3 pasos pedidos)
+
+1. `git branch --show-current` → `migracion-railway` ✅
+2. Bloque del guard en `src/payload.config.ts` (líneas 41-55, 177) — lee `process.env.R2_BUCKET`/`R2_ENDPOINT`/`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY` **directo**, capturados en consts a nivel de módulo. **NO** vía el objeto `env` de Zod de `env.ts`.
+3. `src/instrumentation.ts` **no existe** — `payload.config.ts` no lo importa ni depende de él en ninguna forma.
+
+## Condición de parada cumplida
+
+El despacho especificaba: *"Si la verificación (paso 2) muestra que el guard YA lee `process.env.R2_*` directo (no depende de instrumentation) → PARAR, el fix propuesto no aplica, reportar hallazgo antes de tocar nada."*
+
+**Esto es exactamente el estado actual del código.**
+
+## Por qué — ya se ejecutó en el despacho anterior
+
+El fix pedido en `B-BBF-WEB-FIX-R2-RUNTIME-01` (mover el guard a `payload.config.ts`, leer `process.env.R2_*` directo, quitar la dependencia de `instrumentation.ts` por el bug de Next.js #49897/#68740/#89377) **ya se ejecutó** en `B-BBF-WEB-FIX-R2-RUNTIME-FINAL`:
+
+- Commit `8d3a280` — `fix(r2): mover validación a payload.config.ts + log explícito activo/skipped`
+- Pusheado como `948a3ed` en `origin/migracion-railway` (confirmado sincronizado)
+- Reporte completo ya en esta misma bitácora, sección `REPORTE — B-BBF-WEB-FIX-R2-RUNTIME-FINAL`
+
+Este nuevo despacho referencia `output.md §2 línea 5842`, que corresponde a la **propuesta** original (sección `B-BBF-WEB-FIX-CASO-VIDEO-Y-R2-RUNTIME`, marcada explícitamente "NO ejecutar" en su momento) — no al reporte de ejecución posterior que ya la aplicó. Probablemente se escribió desde una referencia desactualizada.
+
+## Nota para el siguiente paso real (post-deploy DO)
+
+Lo único que sigue pendiente de este hilo es lo que `B-BBF-WEB-FIX-R2-RUNTIME-FINAL` ya dejó como acción para Zavala: tras el próximo deploy en DO, revisar los Runtime Logs buscando la línea `[storage] R2 ACTIVO` / `[storage] R2 SKIPPED — faltan env vars: ...` — con env vars ya confirmadas OK por Zavala (contexto de este despacho), el log debería decir `ACTIVO`. Si dice `ACTIVO` y los uploads TODAVÍA caen a `/api/media/file/`, el problema ya no es "el guard no ve las vars" (descartado, confirmado arriba) — sería algo distinto (credencial inválida pese a estar presente, bucket incorrecto, etc.), y ameritaría un nuevo despacho de diagnóstico, no una repetición de este fix.
