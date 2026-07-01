@@ -9,5 +9,12 @@ backups
 .vscode
 .idea
 .DS_Store
+._*
+**/._*
 coverage
 .claude
+# Untracked local-only dirs (nunca deberían llegar al build context; DO
+# construye desde git, no desde el working tree local, así que esto solo
+# importa para builds locales de prueba — pero es correcto excluirlos igual).
+public/assets/Pages
+public/assets/development

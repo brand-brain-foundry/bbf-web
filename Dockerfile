@@ -30,12 +30,23 @@ ARG UPSTASH_REDIS_REST_TOKEN
 ARG TURNSTILE_SECRET_KEY
 ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ARG NEXT_PUBLIC_SITE_URL
+# B-BBF-WEB-FIX-SERVER-ACTIONS-01: sin esta key, Next.js genera una aleatoria en cada
+# build/boot — self-hosted en output:'standalone' esto rompe Server Actions entre
+# builds (y potencialmente entre restarts de un mismo build, o entre réplicas si hay
+# más de una instancia). MISMA key requerida en runtime (ver comentario en runner stage).
+# Generar una vez con: openssl rand -base64 32 — setear en DO como build-time Y runtime.
+ARG NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
 RUN pnpm build
 
 # ---- runner ----
 FROM node:22-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+# NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: NO se declara ENV aquí (sería fijarla en la imagen,
+# server-only value no debe viajar en capas). DO debe inyectarla como env var runtime
+# (docker run -e) con el MISMO valor pasado como build-arg arriba — si no coincide,
+# el problema persiste igual. Server (proceso corriendo) la necesita para decriptar los
+# action IDs que el cliente pide, generados en build con esta misma key.
 RUN corepack enable
 # sharp requiere su binario nativo compilado para ESTA imagen — copiar
 # node_modules de otra etapa/arch puede romperlo silenciosamente en runtime.
