@@ -7087,3 +7087,66 @@ curl -X POST https://sivarbrains-web-odjwt.ondigitalocean.app/api/revalidate
 ## Veredicto: H-BBF-524 en producción
 
 El fix de revalidación inline + locale está mergeado, pusheado, y confirmado corriendo en DO (404 en la ruta borrada). Pendiente, no bloqueante: que Zavala confirme (a) Runtime Logs limpios de DO, y (b) si `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ZONE_ID` están configurados en el runtime de DO — ese sigue siendo el candidato principal para el síntoma original de "guardo y no se refleja", independiente del mecanismo de revalidación (que ya está confirmado funcionando correctamente, tanto localmente como ahora en producción).
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-VIDEO-REFERENCIA
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-FIX-VIDEO-REFERENCIA
+**Tipo:** FIX (Modo Strategic: 1) · **Protocolo:** P-5
+**Rama:** `migracion-railway` (fix de datos en Neon, no de código)
+
+---
+
+## Verificación pre-ejecución
+- Rama `migracion-railway`, boot log `[storage] R2 (Cloudflare) ACTIVO` confirmado.
+- Dump de Neon confirmó:
+  - `hero.media.videoSources`: `SB-Demo-video-1.webm` (inexistente) + `SB-Demo-video.mp4` (inexistente como estático).
+  - `caseStudy.videoSources`: `hero.av1.webm` + `hero.h264.mp4` — **estos SÍ existen** (son el video genérico del hero de home, reusado — contenido incorrecto pero NO roto/404, fuera de alcance de este despacho).
+  - `media/20`: `filename: "SB-Demo-video.mp4"`, `mime_type: "video/mp4"`, `17.9MB` — real.
+- Ningún `.webm` real en ningún lado (ni `/public`, ni Media collection) — confirmado exhaustivamente en despachos previos y re-confirmado aquí.
+
+## Resolución de la ambigüedad (sección + opción)
+
+El despacho traía `[OPCIÓN A o B]` y "a qué sección" sin rellenar. Procedí con evidencia directa en vez de bloquear en otra pregunta: **el filename de `media/20` (`SB-Demo-video.mp4`) coincide exactamente con la fuente `mp4-h264` que ya esperaba `hero.media.videoSources`** — señal inequívoca de que va al **hero de home**, no al caso Hacienda Real. Opción **A** (servir vía R2), como recomendaba el propio despacho, dado que R2 ya está activo y es el único sistema de storage coherente (invariante del despacho).
+
+## Fix aplicado
+
+- **`hero.media.videoSources`**: `[{webm-av1: ruta estática inexistente}, {mp4-h264: ruta estática inexistente}]` → **`[{mp4-h264: "/api/media/file/SB-Demo-video.mp4"}]`**. Se quitó la entrada `webm-av1` en vez de dejarla apuntando a un archivo que nunca existirá — invariante A-02 explícita: "el campo debe apuntar a un archivo que EXISTE". `<video>` con solo `.mp4` es válido (H.264 universal, explícitamente aprobado por el despacho).
+- **Componente verificado, sin cambios necesarios**: `HeroVideo.Source` (`src/components/molecules/HeroVideo/HeroVideo.tsx`) recibe `src: string` y lo pasa directo a `<source src={src}>` — sin ninguna asunción sobre el prefijo de ruta. No hubo que tocar código.
+- **Campos hermanos verificados intactos** post-fix: `h1Line1`, `h1Line2Soft`, `ledeBody`, `ctas`, `ticker`, `videoPoster` (22), `chromeLabel`, `demoLabel`, `footCaption` — todos sin cambios.
+
+## Verificación post
+
+```
+curl -I https://sivarbrains-web-odjwt.ondigitalocean.app/api/media/file/SB-Demo-video.mp4
+→ HTTP/2 200, content-type: video/mp4, content-length: 17895696 (coincide con filesize en Neon)
+```
+
+**200, no 404 — confirmado.**
+
+HTML de producción SIN cache-buster (Cloudflare edge, copia vieja): todavía muestra la ruta rota — esperado, Cloudflare cachea hasta `s-maxage=3600` y `CLOUDFLARE_API_TOKEN`/`ZONE_ID` siguen ausentes (mismo issue ya documentado, no nuevo).
+
+HTML de producción CON cache-buster (bypass Cloudflare, origen real):
+```html
+<source data-source-type="mp4-h264" src="/api/media/file/SB-Demo-video.mp4" .../>   ← FIX confirmado en el origen
+```
+
+**El origen (DO/Next.js) ya sirve el fix correctamente** — el dato en Neon se actualizó y el render en vivo ya lo refleja. Lo único pendiente de propagar es el edge de Cloudflare, que se resolverá solo cuando expire el TTL (hasta 1h) o cuando Zavala confirme las credenciales de purge — no bloquea que el fix esté funcionalmente completo.
+
+## Estado del `.webm`
+
+**Deuda de optimización, documentada, no bloqueante** — per el despacho: "`<video>` con solo `.mp4` es válido; `.webm` es optimización." Si se quiere agregar después, se genera con FFmpeg desde el `.mp4` existente (`media/20`) y se agrega como segunda entrada en `videoSources`.
+
+## Nota — caso Hacienda Real (fuera de alcance, sin tocar)
+
+`caseStudy.videoSources` sigue apuntando al video genérico del hero (`hero.av1.webm`/`hero.h264.mp4`) — **NO roto, resuelve 200**, pero no es contenido real de Hacienda Real. Esto es el gap de contenido ya documentado en el despacho de diagnóstico de video anterior — sin asset real subido para el caso, no hay nada que apuntar. Sin cambios.
+
+---
+
+## Resumen para Zavala
+- ✅ `hero.media.videoSources` corregido, apunta a `media/20` real vía R2.
+- ✅ URL verificada 200.
+- ✅ Confirmado en el origen real (bypass Cloudflare) que el fix ya se sirve.
+- ⏳ Edge de Cloudflare con copia vieja hasta que expire TTL o se configuren las credenciales de purge.
+- ⏳ `.webm` — deuda de optimización, no bloqueante.
+- ⏳ Caso Hacienda Real — sigue sin video real propio, fuera de alcance de este despacho.
