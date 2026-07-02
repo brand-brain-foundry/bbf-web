@@ -7300,3 +7300,63 @@ Confirmado con doc oficial de DigitalOcean (citas exactas):
 - El riesgo de Vercel/Neon es independiente del switch DNS — existe HOY, con o sin decisión de dominio, y vale la pena que Zavala decida si apagar Vercel (o al menos deshabilitar su admin) antes de avanzar con cualquier opción.
 
 **No ejecuté ningún cambio de DNS, env, ni código — puro mapeo de evidencia para la decisión de Zavala.**
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-DISABLE-EDGE-CACHE
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-DIAG-DISABLE-EDGE-CACHE
+**Tipo:** INVESTIGACIÓN READ-ONLY (Modo Strategic: 3+2) · **Protocolo:** P-6
+**Alimenta:** D-BBF-04-REV
+
+---
+
+## §1 — `disable_edge_cache` con dominio custom: ¿deja solo el origen?
+
+Confirmado con doc oficial (`docs.digitalocean.com/products/app-platform/how-to/configure-edge-settings/`):
+
+> "You can disable an app service's CDN cache... **ensures every request is served fresh from the origin**."
+
+**Sí, en términos de comportamiento de caché** — con `disable_edge_cache` activo, cero caché de DO en el camino, cada request llega fresco al origen (que es exactamente el ISR de Next.js que ya tenemos funcionando, con on-demand revalidation confirmada en H-524). Aplica a componentes tipo **service** (nuestro caso — Docker/Node), NO a static sites.
+
+**Requisito confirmado (cita textual):** *"each edge setting requires at least one custom domain and does not work with the starter domain"* — necesita dominio custom configurado y deploy exitoso. Hoy no lo tenemos (`sivarbrains.com` sigue en Hostinger, no apunta a DO — confirmado en despacho anterior).
+
+**Matiz no documentado explícitamente pero razonable:** la doc no aclara si el layer de red de Cloudflare (TLS, DDoS, routing) desaparece por completo o solo deja de cachear. Lo más probable, por cómo describen el toggle, es que el tráfico sigue transitando la red de DO/Cloudflare (mismo hop de red), pero sin ninguna copia cacheada — que es lo único que nos importa para el síntoma de staleness.
+
+## §2 — Patrón mínimo sin migrar de plataforma
+
+**Hallazgo con cita directa de un empleado de DO (Kamal Nasser), en un thread de soporte:**
+
+> "you can make use of `Cache-Control` headers **per Cloudflare's guidelines**"
+
+Esto confirma: **el CDN de DO (para componentes service, no static site) respeta el header `Cache-Control`/`s-maxage` que la propia app emite** — no impone un TTL independiente. Nuestro `s-maxage=3600` (generado por `export const revalidate = 3600` en cada `page.tsx`) es **exactamente** lo que está dictando cuánto cachea DO hoy — coincide con los valores de `age` observados toda la sesión (hasta ~3600s antes de expirar naturalmente).
+
+**Patrón mínimo confirmado, sin necesidad de meter el Cloudflare de Zavala:**
+1. Dominio custom (`sivarbrains.com`) apuntando a DO **DNS-only** (nube gris, sin proxy de la zona de Zavala) — evita el riesgo de Error 1014 investigado en el despacho anterior por completo, porque Cloudflare de Zavala nunca entra en el camino.
+2. `disable_edge_cache: true` en el app spec — elimina la capa de caché de DO.
+3. Resultado: origen puro (Next ISR + on-demand revalidation, ya confirmado funcionando) sirviendo directo, sin ninguna capa de CDN externa cacheando nada.
+
+**Esto NO le da a Zavala el WAF/analytics/purge-propio de SU zona Cloudflare** — eso solo llega si además se proxea por su cuenta, lo cual reintroduce el riesgo de 1014 (sin resolver por este cambio, son problemas independientes). Pero **si el objetivo es solo resolver el síntoma de cache stale**, el patrón de arriba lo resuelve sin tocar Cloudflare de Zavala en absoluto.
+
+## §3 — Bajar `revalidate` a 60s SIN dominio custom: ¿mitigación inmediata válida?
+
+**Sí — deployable hoy mismo, cambio de código puro, cero dependencia de DNS/dominio.**
+
+Dado que DO respeta el `Cache-Control`/`s-maxage` que la app emite (§2), bajar `export const revalidate = 60` en los `page.tsx` bajaría **también** el `s-maxage` a 60 — y por extensión, el TTL que DO's CDN honra para esa ruta, de ~3600s a ~60s. El síntoma "guardo y tarda ≤1h" pasaría a "≤60s" — sin necesidad de dominio custom ni de `disable_edge_cache`.
+
+**Trade-off a considerar (no bloqueante, solo informativo):** con `revalidate=60`, cada ruta se regenera (o intenta regenerarse) cada 60s en el peor caso incluso sin cambios reales — más carga de cómputo en el origen que con 3600s, aunque para el volumen de tráfico de este sitio (marketing, no alto tráfico) es probablemente insignificante. Es un fix de transición razonable mientras se configura el dominio custom, no un reemplazo permanente del patrón de §2.
+
+---
+
+## VEREDICTO: **SÍ** — DO App Platform, con dominio custom + `disable_edge_cache`, resuelve el cache SIN migrar de plataforma
+
+Con evidencia directa de doc oficial + confirmación textual de un empleado de DO:
+
+- El origen (Next ISR + on-demand revalidation) ya funciona correctamente — confirmado en H-524, con test de cierre real en producción.
+- DO respeta `Cache-Control`/`s-maxage` de la app — confirmado, no impone TTL propio para componentes service.
+- `disable_edge_cache` + dominio custom elimina la capa de caché de DO por completo, dejando solo el origen que ya controlamos.
+- El patrón evita el Error 1014 **por diseño**, porque no requiere que Zavala proxee su propio Cloudflare — DNS-only alcanza.
+- Mitigación inmediata disponible hoy (bajar `revalidate` a 60s) mientras se configura el dominio, sin esperar a nada de DNS.
+
+**Lo que este veredicto NO cubre** (fuera del alcance de este despacho, ya documentado en despachos anteriores): H-BBF-501 (Vercel activo sobre el mismo Neon) sigue siendo un riesgo independiente, sin relación con esta decisión de cache/CDN.
+
+**No ejecuté ningún cambio** — dominio, env, ni código. Esto decide si DO se queda (con este patrón) o no, con evidencia verificada, no reacción.
