@@ -4,7 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { fetchCornerstoneBySlug } from '@/lib/payload/fetchContent';
 import { CornerstoneTemplate } from '@/components/templates/CornerstoneTemplate';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 type Props = { params: Promise<{ locale: 'es' | 'en' }> };
 
