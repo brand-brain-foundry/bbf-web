@@ -36,6 +36,13 @@ ARG NEXT_PUBLIC_SITE_URL
 # más de una instancia). MISMA key requerida en runtime (ver comentario en runner stage).
 # Generar una vez con: openssl rand -base64 32 — setear en DO como build-time Y runtime.
 ARG NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+# B-BBF-WEB-FIX-BUILDID-01: buildId estable por commit — sin esto, cada build genera
+# un ID aleatorio y los Server Actions del bundle viejo mueren al redeploy
+# ("Failed to find Server Action"). DO inyecta el valor via App Spec (${_self.COMMIT_HASH}
+# con scope BUILD_TIME); .git no está disponible en este build context (ver .dockerignore),
+# así que no se puede leer el commit con git rev-parse.
+ARG GIT_COMMIT_HASH
+ENV GIT_COMMIT_HASH=$GIT_COMMIT_HASH
 RUN pnpm build
 
 # ---- runner ----
