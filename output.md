@@ -7150,3 +7150,90 @@ HTML de producción CON cache-buster (bypass Cloudflare, origen real):
 - ⏳ Edge de Cloudflare con copia vieja hasta que expire TTL o se configuren las credenciales de purge.
 - ⏳ `.webm` — deuda de optimización, no bloqueante.
 - ⏳ Caso Hacienda Real — sigue sin video real propio, fuera de alcance de este despacho.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-PRE-SWITCH
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-DIAG-PRE-SWITCH
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2+3) · **Protocolo:** P-6
+**Workspace:** bbf-web + bbf-docs
+
+---
+
+## ⚠️ Hallazgo principal — el purge nunca pudo funcionar, arquitectónicamente
+
+Antes de los 4 puntos del despacho: encontré la explicación estructural completa de por qué el purge de Cloudflare nunca resolvió el síntoma de caché, independiente de si las credenciales están bien configuradas.
+
+```
+dig A sivarbrains-web-odjwt.ondigitalocean.app
+→ 172.66.0.96, 162.159.140.98   ← rangos IP de Cloudflare (anycast)
+```
+
+**El propio dominio `.ondigitalocean.app` de DO YA está detrás de Cloudflare** — confirmado durante toda la sesión por los headers `cf-ray`/`server: cloudflare`/`cf-cache-status` en cada request que hice contra ese origen. Pero es un **Cloudflare completamente distinto**: la cuenta/zona de Cloudflare de DigitalOcean (infraestructura interna de DO para sus propios dominios `.ondigitalocean.app`), no la cuenta de Zavala.
+
+`purgeCloudflareCache()` usa `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ZONE_ID` — **credenciales de la zona de Zavala** (`sivarbrains.com` o `brandbrainfoundry.com`, ver §3). Esa zona **no tiene ninguna relación con el Cloudflare que efectivamente cachea las respuestas del origen DO** que he estado probando toda la sesión. Es decir: **aunque las credenciales estuvieran perfectamente configuradas en el runtime de DO, el purge nunca podría limpiar la caché real** — está purgando una zona que no es la que sirve el tráfico. Esto reencuadra todo lo diagnosticado en despachos anteriores sobre "credenciales de Cloudflare ausentes": el problema no es solo que falten, es que **incluso presentes, purgarían la zona equivocada**.
+
+---
+
+## §1 — `purge-cache.ts`: qué zona purga
+
+```ts
+fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`, {
+  method: 'POST',
+  headers: { Authorization: `Bearer ${token}`, ... },
+  body: JSON.stringify({ purge_everything: true }),
+});
+```
+
+Usa `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ZONE_ID` (ambos env, sin hardcode — no puedo leer el valor real del Zone ID, está en `.env`/DO dashboard). **No puede corresponder a la URL `.ondigitalocean.app` actual** — esa URL vive en la zona de Cloudflare de DigitalOcean, no en ninguna zona que Zavala controle. Solo podría corresponder a `sivarbrains.com` o `brandbrainfoundry.com` (los únicos dominios de Zavala en Cloudflare, confirmado por `dig NS` — ver §3), y **ninguno de los dos apunta a DO todavía**.
+
+## §2 — Purge por URL/tag vs `purge_everything`
+
+Confirmado: **`purge_everything: true`**, sin purge selectivo por URL/tag. Documentado en el propio código como decisión deliberada (header/footer/nav afectan todas las páginas, mapear "qué afecta qué ruta" sería frágil). Esto es razonable para el volumen de este sitio — la industria sí prefiere purge selectivo por archivo cuando el CDN sirve muchísimo tráfico/assets, pero para "purge on publish" de un sitio de marketing, `purge_everything` es una decisión simple defendible (A-01). El problema de §1 (zona equivocada) es independiente de esta decisión y la vuelve irrelevante hasta que se resuelva.
+
+## §3 — Estado DNS real
+
+```
+sivarbrains.com          A     → 147.79.120.151, 148.135.128.46   (IPs de Hostinger)
+www.sivarbrains.com      CNAME → www.sivarbrains.com.cdn.hstgr.net.  (CDN de Hostinger)
+sivarbrains.com          NS    → dalary.ns.cloudflare.com, max.ns.cloudflare.com
+sivarbrains.com          CAA   → (vacío, sin registro)
+sivarbrains.com          DS    → (vacío, DNSSEC no publicado)
+
+brandbrainfoundry.com    A     → 216.198.79.65, 64.29.17.65        (IPs de Vercel)
+brandbrainfoundry.com    CNAME → cname.vercel-dns.com.
+brandbrainfoundry.com    NS    → mismos NS de Cloudflare
+```
+
+**`sivarbrains.com` sigue sirviendo desde Hostinger/WordPress — NO proxea DO, ni siquiera está proxeado por Cloudflare todavía** (las IPs son de hosting directo, no anycast de Cloudflare). Cloudflare es el NS (dueño de la zona DNS) pero los registros A/CNAME actuales apuntan fuera de Cloudflare por completo.
+
+**Verificaciones V-1/V-2/V-3 (DNSSEC/CAA/"1014") — no existen en ningún documento de `bbf-docs`.** Búsqueda exhaustiva (agente dedicado, todo el repo, todas las extensiones): cero resultados para "DNSSEC" relacionado a este switch, cero para "CAA", cero para "1014", cero checklist "V-1/V-2/V-3" de ningún tipo relacionado a DNS. El único `SwitchPlan` que existe (`BBF_SwitchPlan.md`, v1.0, 2026-06-28) es para un switch **Vercel→Vercel** (`brandbrainfoundry.com` → `sivarbrains.com`, ambos en Vercel) — **no menciona DigitalOcean en ningún punto**. No existe ningún archivo `cloudflare.md`.
+
+**Lo que sí verifiqué directamente por DNS (no documentado en ningún lado, hallazgo nuevo de este despacho):**
+- **CAA:** sin registro — no bloquea ningún CA, no es un obstáculo para el switch.
+- **DNSSEC:** sin DS en el padre — no está activo. No bloquea el switch, pero tampoco hay protección extra activa.
+- **⚠️ Riesgo real no documentado — Cloudflare Error 1014 (CNAME Cross-User Banned):** si el plan es apuntar `sivarbrains.com` (proxeado, nube naranja, zona de Zavala) directo al hostname `.ondigitalocean.app` de DO **manteniendo el proxy de Cloudflare activo en la zona de Zavala**, Cloudflare bloquea ese CNAME con error 1014 — porque el destino (`.ondigitalocean.app`) ya está proxeado por OTRA cuenta de Cloudflare (la de DO). Confirmado por investigación externa (docs oficiales + comunidad de Cloudflare) y por el propio `dig` que muestra IPs de Cloudflare en el destino. **Esto es probablemente lo que el despacho refería como "1014" — no lo encontré documentado, pero el riesgo es real y verificable.**
+
+## §4 — Cache Rule para HTML
+
+**No documentado en `bbf-docs`** — solo un ítem de checklist genérico sin elaborar (`☐ Cloudflare cache rules verificadas`, sin detalle) en `BBF_WebPublica_Bible_v0_1_CAP6-7-8.md`. **No puedo verificar la configuración real de Cache Rules de Cloudflare desde aquí** — eso vive en el dashboard de Cloudflare, sin acceso desde este entorno. Lo que sí es cierto (comportamiento estándar documentado de Cloudflare, no específico de este proyecto): Cloudflare **no cachea HTML por defecto** — solo extensiones de archivo estático, salvo que exista una Cache Rule/Page Rule explícita que lo fuerce. El hecho de que YA observé `cf-cache-status: HIT` en respuestas HTML del origen DO durante toda la sesión implica que **alguna Cache Rule ya está activa — pero en la zona de Cloudflare de DO, no en la de Zavala** (consistente con el hallazgo principal). Si el switch mueve el tráfico a la zona de Zavala, **esa Cache Rule para HTML tendría que crearse ahí explícitamente** — de lo contrario Cloudflare no cachearía el HTML en absoluto en la nueva zona (lo cual, para el propósito de "cache CDN + purge on-publish", sería necesario).
+
+---
+
+## VEREDICTO — readiness del switch
+
+| Verificación | Estado |
+|---|---|
+| `sivarbrains.com` proxea DO | **NO** — sigue en Hostinger/WordPress |
+| CAA bloquea el switch | No — sin registro, sin obstáculo |
+| DNSSEC bloquea el switch | No — no está activo |
+| Riesgo Error 1014 (CNAME cross-user) | **SÍ, real** — si se proxea (nube naranja) directo al hostname de DO |
+| Zona que purga `purgeCloudflareCache()` corresponde a lo que sirve el origen DO | **NO** — son cuentas de Cloudflare distintas |
+| Cache Rule HTML en la zona de Zavala | **Sin verificar** (dashboard, fuera de mi alcance) — casi seguro no existe, porque nunca ha habido tráfico ahí |
+| Documentación formal del switch DO (SwitchPlan) | **No existe** — el único SwitchPlan es Vercel→Vercel, sin relación |
+
+**Esto decide Opción A vs B con evidencia, tal como pedía el despacho:**
+- **Si Opción A = proxy completo (nube naranja) directo al hostname DO:** riesgo real de Error 1014, necesita resolverse antes (probablemente no apuntando directo al hostname `.ondigitalocean.app` sino a un dominio custom que DO permita, o usando DNS-only).
+- **Si Opción B = DNS-only (nube gris) hacia DO, sin proxy de la zona de Zavala:** evita el 1014, pero entonces el Cloudflare de Zavala nunca ve el tráfico — `purgeCloudflareCache()` sería completamente inútil en ese escenario (purgaría una zona que nunca sirvió nada), y el WAF/cache/analytics de Cloudflare de Zavala tampoco aplicarían — sería el Cloudflare de DO el único en el camino, igual que ahora.
+
+**No ejecuté ningún cambio — DNS, env, ni switch.** Esto es un mapa de estado real para que decidas con evidencia verificada, no supuestos.
