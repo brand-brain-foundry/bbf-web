@@ -6,12 +6,6 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone', // requerido por Railway/Docker — Vercel lo ignora, aditivo y seguro (B-BBF-WEB-RAILWAY-PREP-01)
-  // B-BBF-WEB-FIX-BUILDID-01 + HOTFIX-01: buildId estable por commit — sin esto, Next
-  // genera un ID aleatorio en cada build y los Server Actions del bundle viejo mueren al
-  // redeploy. GIT_COMMIT_HASH lo inyecta DO App Spec en build-time (scope BUILD_TIME).
-  // Next exige un string no-vacío (null rompe con "Invariant: buildID is required"), así
-  // que si el env no existe (ej. pnpm dev/build local) cae a un constante estable.
-  generateBuildId: async () => process.env.GIT_COMMIT_HASH || 'bbf-web-fallback',
   reactStrictMode: true,
   experimental: {
     reactCompiler: false,
