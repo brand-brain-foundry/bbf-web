@@ -6678,3 +6678,136 @@ Es decir: `revalidatePath` llamado desde un Route Handler no actualiza nada de i
 4. Verificar que `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ZONE_ID` estén seteados en runtime de DO (Zavala, dashboard) — capa (b), complementaria.
 
 **Escalo:** no ejecuté nada — el fix de (1)+(2) toca múltiples archivos (nuevo route handler + 2 hooks existentes) y requiere que Zavala confirme el approach antes de tocar el mecanismo de revalidación de todo el sitio.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-REVALIDACION-HTTP
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-FIX-REVALIDACION-HTTP
+**Tipo:** FIX (Modo Strategic: 1 — Arquitecto) · **Protocolo:** P-5
+**Rama dedicada:** `fix/revalidacion-http` (creada desde `migracion-railway` @ `1f79239`)
+
+---
+
+## Verificación pre-ejecución
+
+- Rama `fix/revalidacion-http` creada desde `migracion-railway` limpio (los reportes pendientes de `output.md` se commitearon primero a `migracion-railway` en `1f79239`, para que la rama de fix partiera sin ruido).
+- `revalidateGlobal.ts` confirmado con `revalidatePath`/`revalidateTag` inline antes de tocar nada.
+- Boot log standalone → `[storage] R2 (Cloudflare) ACTIVO` confirmado.
+
+## Los 4 archivos (exactamente el alcance acordado)
+
+### §1 — NUEVO `src/app/api/revalidate/route.ts`
+Route Handler dedicado. `POST`, valida `x-revalidate-secret` contra `env.PAYLOAD_SECRET` (reusado, no se agregó env var nueva), acepta `{ paths?, type?, tags? }` (arrays, para cubrir el caso de Pages que revalida 2 locales + 2 tags en una sola llamada), 401 si falta/no matchea el secret, 400 si no hay paths ni tags.
+
+### §2 — `revalidateGlobal.ts`
+`revalidatePath`/`revalidateTag` inline → `fetch()` HTTP a `http://127.0.0.1:${PORT}/api/revalidate`. `purgeCloudflareCache()` se mantiene en cadena, sin tocar.
+
+### §3 — `Pages/hooks/revalidate.ts`
+Mismo cambio de patrón — junta los 2 paths (es/en) + 2 tags (sitemap/llms-txt) en una sola llamada `fetch()`.
+
+### §4 — `media/index.ts`
+Hook `afterChange` nuevo (`revalidateMedia`, inline en el mismo archivo — no se creó un 5to archivo para mantenerse en el alcance de 4). Revalida `/` (layout) + tag `media` en cualquier cambio de Media — no se intenta mapear qué página consume qué media doc (A-01, sería una feature mucho más grande que el fix).
+
+**Diffs completos:** ver el diff del commit en la rama — resumen arriba, sin pegar el diff completo aquí por espacio.
+
+## Verificación post-cambio
+
+- `pnpm tsc --noEmit` → **CLEAN**
+- `pnpm build` → **PASS**, `/api/revalidate` aparece en el manifest de rutas (`ƒ /api/revalidate`)
+
+### Test de cierre real (el que importa)
+
+Boot standalone producción local (puerto 3001) + actualización real vía Payload Local API (`payload.updateGlobal`, dispara el hook real `afterChange` tal como lo haría un save desde el admin):
+
+```
+[17:52:32] INFO: [revalidate] Global site-homepage updated — invalidating cache
+UPDATED_TO: CLOSURE-TEST-1783007546863
+```
+
+```
+GET / (antes del save): x-nextjs-cache: HIT — "MIGRACION-TEST-9931" (valor viejo)
+GET / (DESPUÉS del save, MISMO proceso, SIN redeploy):
+  x-nextjs-cache: MISS
+  contenido: "CLOSURE-TEST-1783007546863"   ← el valor nuevo, sin redeploy
+```
+
+**Esto es la prueba directa de que el mecanismo funciona**: guardar en el admin (simulado vía Local API, mismo hook) invalida la caché ISR real del proceso Next.js corriendo — algo que el `revalidatePath` inline NUNCA lograba (confirmado en el despacho de diagnóstico anterior, donde el mismo test mostraba `HIT` persistente incluso baipaseando Cloudflare).
+
+### Auth del endpoint
+
+```
+POST /api/revalidate sin header           → 401
+POST /api/revalidate con secret incorrecto → 401
+```
+
+### Limpieza
+
+Restauré `capabilities.eyebrow` (es) a `"Servicios"` (match con EN) — quedaba con el valor de prueba de este test y con `MIGRACION-TEST-9931` (residuo del primer despacho de la sesión). Nota incidental: al restaurar corrí el script sin el standalone levantado — el `fetch()` a `/api/revalidate` falló con `ECONNREFUSED` (esperado, no había server escuchando), y **el guardado en Neon se completó igual** (el `catch` no bloquea el save) — confirma que el diseño de fallback es correcto: si el fetch interno falla, el dato se guarda de todos modos, solo se pierde la invalidación de caché de esa vez.
+
+## Commit + push
+
+
+---
+
+# REPORTE — B-BBF-WEB-VERIFY-MERGE-523
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-VERIFY-MERGE-523
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2 — Auditor) · **Protocolo:** P-6
+**Workspace:** bbf-web · Solo git, sin tocar código
+
+---
+
+## §1 — Estado git real
+
+```
+migracion-railway (local, 10 últimos):
+1f79239 docs(output): reporte B-BBF-WEB-DIAG-VIDEO-CASO + B-BBF-WEB-DIAG-REVALIDACION-FONDO
+1afda05 fix(H-BBF-521): images.contentDispositionType inline
+ae75af0 revert(build): quitar generateBuildId
+945bf83 fix(build): buildId fallback string no-vacío (hotfix)
+e1115bf fix(build): buildId estable por commit
+...
+
+fix/revalidacion-http (local + origin, 5 últimos):
+9824ac2 fix(H-BBF-523): on-demand revalidation via HTTP route handler   ← el fix
+1f79239 docs(output): reporte ...VIDEO-CASO + ...REVALIDACION-FONDO
+1afda05 fix(H-BBF-521): images.contentDispositionType inline
+...
+
+origin/migracion-railway (10 últimos):
+1afda05 fix(H-BBF-521): images.contentDispositionType inline           ← HEAD real de origin
+ae75af0 revert(build): quitar generateBuildId
+...
+```
+
+### ¿`9824ac2` (fix revalidación) está mergeado a `migracion-railway`?
+
+**NO.** Existe únicamente en `fix/revalidacion-http` (local y origin, sincronizados). `migracion-railway` — tanto local como `origin/migracion-railway` — no lo tiene, ni mergeado ni cherry-pickeado.
+
+### Discrepancia adicional encontrada: `migracion-railway` local vs `origin/migracion-railway`
+
+`1f79239` (el commit de docs con los reportes de VIDEO-CASO + REVALIDACION-FONDO) existe en el `migracion-railway` **local**, pero **nunca se pusheó a origin** — quedó pendiente cuando creé la rama `fix/revalidacion-http` desde ahí. `origin/migracion-railway` sigue con HEAD en `1afda05`. No es código, solo el archivo `output.md`, pero es una discrepancia real entre local y remoto que vale la pena cerrar en algún momento (push simple, sin riesgo).
+
+### ¿Qué es `1afda05` (pusheado hoy ~4:26pm)?
+
+Es el fix de `contentDispositionType: 'inline'` en `next.config.mjs` (H-BBF-521, "imágenes se descargan en vez de mostrarse"). **NO contiene** el route handler `/api/revalidate` ni los hooks modificados — ese trabajo (H-BBF-523) se hizo 2 despachos después, en la rama separada `fix/revalidacion-http`, y nunca se mergeó ni pusheó a `migracion-railway`.
+
+### ¿Qué commit está desplegado en DO ahora (redeploy de 6:01pm)?
+
+**`1afda05`** — es el único commit pusheado a `origin/migracion-railway` en esa ventana de tiempo (el redeploy de DO se dispara por push a esa rama; no hubo ningún push posterior a `migracion-railway`, solo a la rama dedicada).
+
+**Confirmación empírica directa** (no solo inferencia de git log):
+```
+curl -X POST https://sivarbrains-web-odjwt.ondigitalocean.app/api/revalidate
+→ 404
+```
+Si `9824ac2` estuviera desplegado, este endpoint existiría (devolvería 401 sin secret, no 404). **404 confirma que la ruta ni siquiera existe en el build actualmente corriendo en DO.**
+
+---
+
+## §2 — VEREDICTO: el fix H-BBF-523 NO está en producción
+
+- El fix de revalidación (route handler + 3 hooks modificados) **solo vive en la rama `fix/revalidacion-http`**, local y en origin — nunca se mergeó a `migracion-railway`, y por lo tanto nunca se desplegó a DO.
+- Lo que SÍ está en producción ahora mismo (`1afda05`) es el fix anterior de `contentDispositionType` (H-BBF-521) — no relacionado con el problema de revalidación.
+- **El síntoma original (H-BBF-523, "guardar en admin no se refleja en el front sin redeploy") sigue sin resolverse en producción**, aunque el fix ya está escrito, probado localmente (test de cierre exitoso documentado en el despacho anterior), y pusheado a su rama.
+
+**No ejecuté merge ni push a `migracion-railway`** — queda a tu decisión. Cuando confirmes, el paso sería: merge (o fast-forward) de `fix/revalidacion-http` → `migracion-railway`, push, y esperar el redeploy de DO para validar en producción real (no solo en el standalone local).
