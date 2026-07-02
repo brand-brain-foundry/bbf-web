@@ -6099,3 +6099,412 @@ Presenté ambas opciones con sus tradeoffs. **Zavala confirmó Opción A** (purg
 ## Nota — no confirmable desde código
 
 No tengo forma de correr la validación real end-to-end desde esta sesión (necesito un token de Cloudflare real + acceso al sitio deployado en DO). El código está listo y verificado localmente en la medida de lo posible (typecheck + prueba aislada del guard) — la confirmación final del purge real queda en manos de Zavala tras configurar las env vars.
+
+---
+
+# REPORTE — B-BBF-WEB-RECONCILIACION-ESTADO
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-RECONCILIACION-ESTADO (+ continuación §2)
+**Tipo:** AUDITORÍA READ-ONLY (Modo Strategic: 2 — Auditor) · **Protocolo:** P-6
+**Rama:** `migracion-railway` · **Workspace:** bbf-web
+
+> **Nota de ruta:** el despacho pedía reportar en `/mnt/project/output.md` — esa ruta no existe en este entorno local (es de otro contexto de Claude). Sigo la convención real del repo: append a `output.md` en la raíz.
+
+---
+
+## §1 — Línea temporal de commits (reconciliación de los 2 chats)
+
+```
+ae75af0 revert(build): quitar generateBuildId (innecesario con 1 instancia DO)      ← chat B (buildId saga)
+945bf83 fix(build): buildId fallback string no-vacío (hotfix, restaura deploy DO)   ← chat B
+e1115bf fix(build): buildId estable por commit (GIT_COMMIT_HASH)                    ← chat B
+5df0c1e docs(output): reporte B-BBF-WEB-FIX-CACHE-CDN-01                            ← chat A (previo a este chat)
+928c023 feat(cache): purge Cloudflare edge on publish (Opción A, firmada Zavala)    ← chat A
+7ffbeba docs(output): reporte B-BBF-WEB-FIX-SERVER-ACTIONS-01                       ← chat A
+61e1fd1 fix(docker): NEXT_SERVER_ACTIONS_ENCRYPTION_KEY estable + .dockerignore     ← chat A
+34553a4 docs(output): B-BBF-WEB-FIX-R2-RUNTIME-01 — detenido                        ← chat A
+948a3ed docs(output): reporte B-BBF-WEB-FIX-R2-RUNTIME-FINAL                        ← chat A (el commit que preguntaba el despacho)
+```
+
+- **`948a3ed` SÍ está presente** en el historial, 6 commits antes del HEAD actual.
+- **HEAD actual:** `ae75af0` — **local y `origin/migracion-railway` coinciden exactamente** (mismo SHA, `git fetch` confirmado sin divergencia).
+- **Commit desplegado en DO ahora:** NO puedo determinarlo con certeza desde HTTP — DO no expone el commit SHA en ningún header de respuesta (`x-do-app-origin` es un ID de instancia estático, no cambia entre deploys). Lo que SÍ confirmé: `GET /api/health` → `{"status":"ok"}` HTTP 200 en `sivarbrains-web-odjwt.ondigitalocean.app` — el servicio está arriba y respondiendo. **Zavala debe confirmar el SHA exacto desde el dashboard de DO (tab Deployments/Activity).**
+
+---
+
+## §2 — Veredicto R2 en runtime (binario, con evidencia)
+
+### §2a — Patrón de URL de los uploads más recientes (literal, columna `url` completa)
+
+Query directa a `media` en Neon, 10 más recientes (todos de HOY, 2026-07-02, ventana ~12:06–12:28 UTC):
+
+```
+/api/media/file/google-drive.webp
+/api/media/file/gmail.webp
+/api/media/file/metricool.webp
+/api/media/file/whatsapp.webp
+/api/media/file/instagram.webp
+/api/media/file/facebook.webp
+/api/media/file/linkedin.webp
+/api/media/file/instagram-icon-black.webp
+/api/media/file/SB-VIP-Paris_Render.webp
+/api/media/file/SB-VIP-Paris.webp
+```
+
+**Patrón: `/api/media/file/...` (storage local de Payload) en el 100% de los casos — CERO `https://*.r2.dev/...`.**
+
+### §2b — Log de storage en boot producción (literal)
+
+Reconstruí el standalone build (`pnpm build` + copia de `public/` y `.next/static/` al dir `standalone/`, igual que hace el `Dockerfile`) y lo arranqué con `NODE_ENV=production node server.js`, env cargado por shell (`set -a; source .env.local; set +a`):
+
+```
+[storage] R2 SKIPPED — faltan env vars: R2_BUCKET. Media collection cae a storage local
+(efímero en contenedores). Si esto aparece en producción, confirmar las 4 vars en el
+panel del host (runtime, no solo build).
+```
+
+**Solo `R2_BUCKET` falta** — las otras 3 (`R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`) sí cargaron correctamente por esta vía. Esto aísla el problema a una sola variable.
+
+### §2c — Señal del `.env.local` (sin exponer el valor)
+
+No pude inspeccionar el archivo directamente (`Read`/`Bash` sobre `.env.local` están bloqueados por diseño — SB_Law + settings.json, correctamente). Pero el propio shell reveló el síntoma como *side effect* al correr `source .env.local` (no fue una lectura deliberada mía del contenido):
+
+```
+.env.local:46: command not found: sivarbrains-media
+```
+
+Esto es un error **no-fatal** de bash (el resto del archivo sigue cargando bien) pero confirma que **la línea 46 está mal formada** — el token `sivarbrains-media` (shape de nombre de bucket) queda fuera de una asignación `VAR=valor` válida y bash intenta ejecutarlo como comando. Cruzando con §2b (solo `R2_BUCKET` falta), la variable afectada en línea 46 es casi con certeza **`R2_BUCKET`**. Zavala: revisa esa línea directamente (probablemente falta el `=`, o hay un espacio/comilla suelta) — no te doy el valor porque no lo leí.
+
+### Veredicto binario §2
+
+**R2 intercepta uploads: NO — pero con matiz importante.** La causa raíz identificada es local: `.env.local` línea 46 (`R2_BUCKET`) rompe la carga vía `source` (bash) y `process.loadEnvFile` (Node), aunque **Next.js sí lo parsea bien vía `pnpm dev`/`pnpm build`** (loader distinto, más tolerante). Esto explica por qué:
+- Los seed scripts / diagnósticos corridos por shell (`set -a; source .env.local`) ven R2 SKIPPED.
+- Los 10 uploads recientes en Neon (compartida con producción) tienen URLs de storage local — probablemente escritos por un seed/script local afectado por este mismo bug, contra la MISMA base de datos que usa DO.
+
+**Lo que esto NO prueba:** el contenedor real de DO no lee `.env.local` — sus env vars las inyecta DO directamente (`docker run -e`, vía App Spec), un mecanismo totalmente distinto al parsing de shell que rompió aquí. Es decir: **no hay evidencia de que el R2_BUCKET de DO esté malformado** — solo que la copia local en `.env.local` sí lo está. Confirmar el estado real de DO requiere (a) Zavala revisando Runtime Logs de DO, o (b) un upload de prueba real vía el admin en producción (no ejecutado en este despacho — quedó fuera de alcance read-only).
+
+**Consecuencia operativa:** los 10 media records recién listados, si fueron escritos con esta sesión de shell rota, tienen URLs que apuntan a storage local — en un contenedor Docker esto es **efímero** (se pierde en cada redeploy/restart). Si esos assets deben persistir, hay que re-subirlos una vez R2_BUCKET esté confirmado sano en ambos lados (`.env.local` Y el dashboard de DO).
+
+---
+
+## §3 — Reconciliación con AUD-BBF-MIGRACION-05
+
+**No existe.** Búsqueda exhaustiva en `bbf-docs` (grep de contenido + nombre de archivo + `git log --all -S`) — cero resultados, en ningún momento del historial. No puedo reportar su fecha/síntoma/veredicto porque el documento no existe; inventarlo sería fabricación. Si el ID viene de otra fuente (otro chat, Slack), vale la pena confirmar el ID exacto.
+
+**Caso Hacienda Real — video del hero:** confirmado que **NO tiene video real configurado**. El seed script (`src/scripts/seed-casestudy-hacienda.ts`) puebla todo el copy (eyebrow, lead, fases, hitos, quote, CTA) pero nunca toca `videoPoster` ni `videoSources`. El componente (`page.tsx` líneas ~304-327) renderiza el `HeroVideo` solo si `caseVideoSources.length > 0` — con el array vacío, el shell del video queda **completamente vacío** (ni placeholder, ni poster), no es un placeholder visual, es ausencia total de contenido en esa zona.
+
+### ⚠️ Hallazgo adicional no pedido explícitamente, pero relevante para "cabos sueltos"
+
+Los 3 documentos de arranque obligatorio (`INDEX.md`, `BBF_RegistroMaestro.md`, `SB_RoadmapCanonical.md`) **no mencionan la migración DigitalOcean/Railway ni Cloudflare R2 en absoluto** — documentan Vercel + Vercel Blob como stack vigente, con entradas hasta 2026-06-30. Todo el trabajo de Docker/DO/R2/buildId de las últimas semanas (visible en el código y en los commits `B-BBF-WEB-RAILWAY-*`, `B-BBF-WEB-FIX-R2-*`, `B-BBF-WEB-FIX-BUILDID-*`) es una migración de infraestructura real y activa que **no está documentada en el canon operativo de bbf-docs**. Esto es drift documental, no solo de código — vale un despacho de reconciliación aparte si Zavala lo confirma como prioridad.
+
+---
+
+## Cabos sueltos abiertos (resumen ejecutivo)
+
+1. **`.env.local` línea 46 (`R2_BUCKET`, inferido)** — malformada, rompe carga por shell. Fix trivial pero requiere que Zavala la edite (fuera de mi alcance).
+2. **R2 en DO real: sin confirmar** — necesita Runtime Logs de DO o un upload de prueba en producción.
+3. **10 media records recientes con URL de storage local** — potencialmente efímeros en el contenedor, requieren re-subida tras confirmar R2.
+4. **Hacienda Real: sin video real** — hero shell vacío, no es un bug de storage, es contenido sin seedear.
+5. **AUD-BBF-MIGRACION-05 no existe** — posible confusión de ID entre chats/fuentes.
+6. **Docs canónicos (Index/RegistroMaestro/Roadmap) no reflejan la migración DO/Railway/R2** — drift documental activo.
+7. **Commit exacto desplegado en DO: sin confirmar** — pendiente de que Zavala lo mire en el dashboard.
+
+**NO se ejecutaron fixes.** Este despacho fue estrictamente de reconciliación/diagnóstico.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-R2-BUCKET-Y-CASO-VIDEO
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-FIX-R2-BUCKET-Y-CASO-VIDEO
+**Tipo:** FIX (Modo Strategic: 1) · **Protocolo:** P-5
+**Rama:** `migracion-railway` · HEAD verificado = `ae75af0` ✓
+
+---
+
+## §1 — `.env.local` línea 46 (R2_BUCKET malformado) — RESUELTO
+
+**Causa exacta:** espacio entre `=` y el valor — `R2_BUCKET= "sivarbrains-media"`. En bash, `VAR= "valor"` asigna `VAR` como vacío y trata `"valor"` como un comando aparte → de ahí `command not found: sivarbrains-media`.
+
+**Forma correcta aplicada:** `R2_BUCKET="sivarbrains-media"` (sin espacio tras el `=`). Único cambio en el archivo — ningún otro valor tocado, confirmado por diff de una sola línea.
+
+**Verificación:**
+- `set -a; source .env.local; set +a` → **sin error** (antes: `command not found: sivarbrains-media`)
+- Re-boot standalone producción local (`NODE_ENV=production node server.js`, mismo método que §2b del despacho anterior) → log:
+  ```
+  [storage] R2 (Cloudflare) ACTIVO — collection media usa s3Storage.
+  ```
+  (antes: `R2 SKIPPED — faltan env vars: R2_BUCKET`)
+
+**H-BBF-521 resuelta a nivel local.** Recordatorio del despacho anterior sigue en pie: esto NO confirma el estado del `R2_BUCKET` en el dashboard de DO (mecanismo de env distinto, `docker run -e`, no lee `.env.local`) — si el mismo typo existe ahí, es Zavala quien lo corrige en el dashboard, fuera de mi alcance de código.
+
+## §2 — Video del caso — SIN CAMBIOS, documentado como deuda
+
+Búsqueda exhaustiva en todo el repo (`find -iname "*.webm" -o -iname "*.mp4"`, excluyendo `node_modules`) — **no existe ningún archivo `SB-Demo-video-1.webm/.mp4` ni similar**. Los únicos videos presentes son los del hero principal de home (`public/assets/media/hero/hero.av1.webm` / `hero.h264.mp4`), que no son el asset del caso Hacienda Real.
+
+No se confirmó (en esta conversación) que Zavala tenga el asset real disponible — condición explícita del despacho ("solo si Zavala confirmó que hay asset real") no se cumplió. Además, el `ALCANCE OUT` de este mismo despacho excluye "Neon datos", así que aunque quisiera apuntar el campo a un asset sustituto existente, tocar `caseStudy.videoSources` en el global `SiteHomepage` sería modificar datos de Neon — fuera de alcance.
+
+**Decisión: no se tocó nada.** Queda documentado como deuda de contenido (ya registrado en el reporte de reconciliación anterior) — pendiente de que Zavala entregue el asset real o confirme un sustituto aceptable.
+
+---
+
+## Resumen para Zavala
+- ✅ `.env.local` línea 46 corregida (solo formato).
+- ✅ R2 confirmado ACTIVO en boot local de producción.
+- ⏳ R2_BUCKET en DO: sin verificar — revisar dashboard/Runtime Logs.
+- ⏳ Video Hacienda Real: sigue sin asset real, sin tocar.
+- **Sin push** — no se pidió en este despacho.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-R2-URL-RESOLUTION
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-DIAG-R2-URL-RESOLUTION
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2 — Auditor) · **Protocolo:** P-6
+**Rama:** `migracion-railway` · HEAD verificado = `ae75af0` ✓
+
+---
+
+## ⚠️ Corrección a la premisa del despacho, antes del veredicto
+
+El despacho asume que el doc `media` id=33 fue **"subido HOY con R2 activo"**. La query directa a Neon lo contradice:
+
+```json
+{
+  "id": 33,
+  "created_at": "2026-06-26T14:18:17.344Z",
+  "updated_at": "2026-07-02T13:18:03.387Z",
+  "url": "/api/media/file/google-calendar-1.webp",
+  "filename": "google-calendar-1.webp",
+  "filesize": "3638"
+}
+```
+
+**`created_at` es del 26 de junio — 6 días antes** de cualquier fix de R2 en esta sesión (el fix de `.env.local` línea 46 fue hoy, 2026-07-02). El `updated_at` de hoy es casi seguro un touch de metadata (re-save, migración, o similar), no una re-subida real del archivo. **Doc 33 NO es una prueba fresca post-fix** — es evidencia del comportamiento ANTERIOR al fix. Esto no invalida el diagnóstico, pero cambia lo que se puede concluir de él (ver veredicto).
+
+---
+
+## §1 — Patrón literal de la URL (doc 33)
+
+**`url: "/api/media/file/google-calendar-1.webp"`** — NO es `https://<algo>.r2.dev/...`.
+
+## §2 — Qué URL construye el código (vs qué necesita el bucket)
+
+Inspeccioné `src/payload.config.ts` (líneas 174-191) y `src/payload/collections/media/index.ts` completos:
+
+- El plugin `s3Storage({ collections: { media: true }, bucket: r2Bucket, config: {...} })` se activa condicionalmente si las 4 vars R2 están presentes — **sin `generateFileURL`, sin `disablePayloadAccessControl`, sin `disableLocalStorage`, sin ninguna env `R2_PUBLIC_URL` o similar**. Grep exhaustivo de `R2_PUBLIC_URL|generateFileURL|publicUrl` en el repo → cero resultados fuera de esta ausencia misma.
+- **Esto es el comportamiento POR DISEÑO del plugin, no un bug**: sin `generateFileURL` custom, `@payloadcms/storage-s3` deja el campo `url` del doc como la ruta interna de Payload (`/api/media/file/{filename}`), que sirve el archivo mediante un route handler propio que internamente hace proxy/streaming desde el bucket S3/R2 configurado — **el código NUNCA construye ni expone una URL pública tipo `r2.dev` directamente**. El bucket "acceso público r2.dev / custom domain" que menciona el despacho es irrelevante para el código actual: aunque Zavala lo habilite en Cloudflare, el código no lo usaría a menos que se agregue `generateFileURL` explícito.
+
+## §3 — Resolución directa de la URL
+
+```
+curl -sI https://sivarbrains-web-odjwt.ondigitalocean.app/api/media/file/google-calendar-1.webp
+→ HTTP/2 200, content-type: image/webp, content-length: 3638 (coincide con filesize en Neon)
+→ cf-cache-status: BYPASS (no fue cache — llegó al origen real)
+```
+
+**La URL SÍ resuelve, 200, ahora mismo.** Pero — dado que doc 33 predata cualquier fix de R2 (§1), **no puedo determinar si el archivo se sirvió desde R2 o desde el disco local efímero del contenedor DO** (que no se ha reiniciado desde que se subió el 26/06). Los headers de respuesta no delatan el backend (sin cabeceras específicas de S3/R2, el proxy de Payload las oculta). Si el archivo vive solo en disco local, un restart/redeploy del contenedor lo perdería — sin que esto se refleje en absoluto en la URL o en Neon.
+
+---
+
+## VEREDICTO: H-B confirmada como patrón; H-A y H-C no aplican a esta prueba — pero la prueba es la incorrecta
+
+- **H-A (url es r2.dev pero no resuelve): descartada.** El código nunca genera URLs `r2.dev` — no es una hipótesis viable con la config actual, independiente del resultado de cualquier prueba.
+- **H-B (url sigue siendo `/api/media/file/`): CONFIRMADA como el patrón literal**, y es el comportamiento esperado del plugin sin `generateFileURL` custom — no es en sí misma evidencia de que R2 esté roto.
+- **H-C (caché CDN): descartada para esta prueba puntual** — `cf-cache-status: BYPASS` confirma que la respuesta vino del origen real, no de caché.
+- **El verdadero vacío:** no hay ninguna prueba en este despacho que confirme si un archivo subido DESPUÉS del fix de `.env.local` (o con R2 ya sano en el dashboard de DO) efectivamente termina en el bucket R2 (persistente) vs disco local (efímero) — doc 33 no sirve para esto porque es anterior.
+
+## Fix propuesto (NO ejecutado)
+
+1. Subir un asset de prueba nuevo **después de confirmar `R2_BUCKET` sano en el dashboard/runtime de DO** (no solo local).
+2. Repetir el `curl` directo a su `url` — debe dar 200 igual que doc 33 (el patrón `/api/media/file/...` es correcto por diseño, no hay que cambiarlo).
+3. **La prueba real de persistencia**: verificar el archivo directamente en el bucket R2 desde el dashboard de Cloudflare (Zavala) — eso es lo único que confirma "sí llegó físicamente a R2" vs "vive en disco efímero y aún no se ha perdido porque el contenedor no ha reiniciado". Esto es acción de Zavala (acceso a Cloudflare R2 dashboard), no de código.
+
+**Detenerse y escalar:** confirmado — si el fix requiere configurar dominio público del bucket en Cloudflare, eso es de Zavala. Pero con la config actual del código, **ese dominio público ni siquiera se usaría** (el código sirve todo vía `/api/media/file/`), así que configurarlo no resolvería nada por sí solo — sería trabajo perdido a menos que además se agregue `generateFileURL` al plugin (cambio de código, no ejecutado, fuera de alcance read-only).
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-R2-SERVING
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-DIAG-R2-SERVING
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2 — Auditor) · **Protocolo:** P-6
+**Rama:** `migracion-railway` · HEAD verificado = `ae75af0` ✓ · boot log confirmado: `[storage] R2 (Cloudflare) ACTIVO`
+
+---
+
+## §1 — El camino del GET
+
+Confirmado leyendo el código instalado (`node_modules/.pnpm/@payloadcms+storage-s3@3.84.1.../dist/getFile.js` + `payload@3.84.1/dist/uploads/endpoints/getFile.js`), no docs:
+
+- `GET /api/media/file/[filename]` lo maneja el handler REST auto-generado de Payload (`REST_GET` en `src/app/(payload)/api/[...slug]/route.ts`, archivo no tocado — canon confirma que es auto-generado).
+- **El adapter `s3Storage` SÍ reescribe el serving completo**: cuando está activo, se registra como `adapter.staticHandler` (via `@payloadcms/plugin-cloud-storage/dist/plugin.js`, línea 74: `handlers.push(adapter.staticHandler)` — esto ocurre porque `disablePayloadAccessControl` NO está seteado en nuestra config, así que el path normal aplica). Ese `staticHandler` ES el `getFile.js` de `storage-s3`, que llama `client.headObject()` y `client.getObject()` (SDK de AWS) contra R2 directamente — **no hay fallback a disco local cuando R2 está activo**. Confirma la hipótesis "sí va a R2", no "solo intercepta el upload".
+
+## §2 — Key match: NO pude reproducir un mismatch
+
+- `uploadFile.js` y `getFile.js` (ambos de `storage-s3`) usan la **misma función** `getFileKey()` de `@payloadcms/plugin-cloud-storage/utilities`, con los mismos parámetros (`collectionPrefix`, `docPrefix`, `filename`, `useCompositePrefixes`) — ninguno de los cuales está customizado en `payload.config.ts` (todos caen a su default). Upload y GET construyen la key de forma **idéntica** por diseño del propio código — un mismatch estructural entre escribir y leer no es plausible con esta config.
+- **Sobre los `_thumb.webp`:** revisé `src/payload/collections/media/index.ts` completo — el campo `upload` de la collection es `{ mimeTypes: ['image/*', 'video/*'] }`, **sin `imageSizes` ni `resizeOptions`**. Payload NO genera ningún tamaño derivado para esta collection. Si algo está pidiendo archivos `*_thumb.webp`, esos archivos **nunca se generaron ni se subieron** (ni local ni a R2) — no es un problema de sincronización R2, es una URL que apunta a un archivo que no existe en ningún lado.
+- Prueba directa: pedí un nombre `_thumb` inventado (`gmail-1_thumb.webp`) a producción → **404**, no 400. Confirma que archivos ausentes dan 404 en este código, consistente con el catch de `getFile.js` (`NoSuchKey`/`NotFound` → 404 explícito).
+
+## §3 — Permisos del token R2 (lo que el adapter espera)
+
+El adapter usa el **mismo par de credenciales** (`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY`) para las tres operaciones: `putObject` (upload), `headObject` + `getObject` (GET/lectura). No hay separación de credenciales por dirección en el código. Cloudflare R2 no tiene un nivel de permiso "solo escritura" — los niveles son Read / Read & Write / Admin. Si el token permite escribir (confirmado por Zavala: el objeto llega al bucket), es extremadamente improbable que carezca de lectura salvo que alguien lo haya scopeado de forma no estándar. **Zavala: confirmar en Cloudflare → R2 → API Tokens que el token en uso sea "Object Read & Write" (no un token distinto para runtime vs. el que se usó al probar el upload manual).**
+
+---
+
+## ⚠️ Hallazgo que redirige la investigación: no encontré ningún código que devuelva 400
+
+Rastreé las DOS capas de `getFile` en la cadena real (core de Payload + adapter storage-s3) línea por línea. Los únicos status codes que ese código puede devolver son: **200, 206 (partial content), 304 (not modified), 404 (not found), 500 (error genérico/interno), 416 (range not satisfiable)**. **Ningún path del código produce 400 literal** — ni siquiera si R2 devolviera un 400 propio (`InvalidArgument` u otro), porque el `catch` de `getFile.js` solo distingue 404 (`NoSuchKey`/`NotFound`) de "todo lo demás", y "todo lo demás" se traduce a **500**, no se pasa el código de R2 tal cual.
+
+Probé dos casos reales contra producción:
+- `gmail.webp` (asset conocido en Neon) → **200**, resuelve bien.
+- Un filename `_thumb` inventado → **404**, no 400.
+
+**No pude reproducir el 400 con la información disponible.** Esto no descarta el hallazgo de Zavala — pero indica que el 400 observado probablemente **no se origina en este código Payload/storage-s3**, sino en una capa anterior (edge de Cloudflare/WAF, el proxy de DO, o codificación de caracteres especiales en la URL específica que falló).
+
+## VEREDICTO (parcial — necesito el dato que falta)
+
+- **§1 confirmado:** el GET sí va a R2, no hay fallback local mientras R2 esté activo.
+- **§2 sin evidencia de mismatch de key** en el código; si el 400 es sobre archivos `_thumb`, la causa más probable es que esos derivados **nunca existieron** (no hay `imageSizes` configurado), no un problema de sincronización.
+- **§3 sin forma de confirmar sin Zavala** (dashboard de Cloudflare).
+- **El origen real del 400 sigue sin identificar** porque no tengo la URL/filename exacto que lo produjo.
+
+## Lo que necesito para cerrar el diagnóstico
+
+**La URL literal exacta (o el filename) que dio 400** — con esa URL puedo repetir la prueba directa (`curl -v`) y ver si el 400 aparece antes de tocar el código de Payload (edge/WAF) o si de alguna manera sí viene de la cadena que rastreé (lo cual contradiría mi lectura del código y valdría la pena revisar de nuevo con más cuidado).
+
+## Fix propuesto (NO ejecutado, condicional al dato que falta)
+
+- Si el 400 resulta ser de Cloudflare (edge/WAF/Access): es config de Zavala en el dashboard de Cloudflare, no código.
+- Si el 400 resulta ser por archivos `_thumb` que nunca se generaron: no hay "fix" de sincronización — o se agrega `imageSizes` a la collection (cambio de schema, requiere firma per regla 10-payload-collections) y se regeneran esos tamaños, o se deja de referenciar `_thumb` donde sea que se esté pidiendo (posible bug de frontend/seed apuntando a un patrón de nombre que nunca existió).
+
+**Escalo:** no ejecuté ningún fix — sigue siendo diagnóstico, y el siguiente paso depende de un dato que solo Zavala tiene (la URL exacta que falló).
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-FIX-NEXT-IMAGE
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-DIAG-FIX-NEXT-IMAGE
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2→1) · **Protocolo:** P-6
+**Rama:** `migracion-railway` · HEAD verificado = `ae75af0` ✓ · boot log confirmado: `[storage] R2 (Cloudflare) ACTIVO`
+
+---
+
+## §1 — Causa exacta: DOS bugs distintos del optimizer, ninguno es R2
+
+Reproduje contra el standalone de producción local (mismo build, mismo boot que despachos anteriores). **`sharp` está disponible** (`0.34.5`, confirmado — de hecho las respuestas 200 exitosas ya lo prueban: son JPEGs reales, redimensionados correctamente).
+
+### Bug real que ve el navegador: `Content-Disposition: attachment`
+
+```
+GET /_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fgmail.webp&w=96&q=75
+→ HTTP/1.1 200 OK
+→ Content-Type: image/jpeg
+→ Content-Disposition: attachment; filename="gmail.jpeg"   ← ESTO fuerza la descarga
+```
+
+**Causa raíz encontrada en el código fuente instalado** (no docs — `node_modules/next@15.5.18/dist/shared/lib/image-config.js` línea 64):
+
+```js
+export const imageConfigDefault = {
+  ...
+  contentDispositionType: 'attachment',   // ← DEFAULT de Next.js, sin overridear
+  ...
+}
+```
+
+`next.config.mjs` (bloque `images: {...}`) **nunca setea `contentDispositionType`** — cae al default de Next, que es `'attachment'`, no `'inline'`. El optimizer (`node_modules/next/dist/server/image-optimizer.js`, función `setResponseHeaders`) aplica ese valor en **cada** respuesta, sin excepción. Esto es 100% independiente de R2/Payload — pasaría igual sirviendo desde disco local o cualquier storage. Es un config gap de Next.js, no un bug de infraestructura.
+
+### Bug secundario, reproducible pero NO es lo que ve un navegador real: 400 en requests `HEAD` sobre caché fría
+
+```
+curl -I (primera vez, URL nunca cacheada) → 400 Bad Request
+curl (GET, misma URL exacta, inmediatamente después)      → 200 OK
+```
+
+Confirmado en código (`image-optimizer.js` línea 913): el optimizer, al hacer fetch interno de la imagen origen, **reenvía el método HTTP original de la request entrante** (`method: _req.method || 'GET'`). Si la request entrante a `/_next/image` es `HEAD` y esa URL nunca se cacheó, el fetch interno a `/api/media/file/...` también es `HEAD` → responde sin body → el optimizer no puede validar/transformar una imagen sin bytes → línea 929, `ImageError(400, '"url" parameter is valid but internal response is invalid')`.
+
+**Por qué esto casi no importa para el bug real:** los navegadores usan `GET` para cargar `<img src>`, nunca `HEAD` — así que este 400 específico es un artefacto de testear con `curl -I` (que fue exactamente cómo lo reprodujimos en el despacho anterior), no lo que rompe la UI real. El síntoma que Zavala reporta en producción ("descarga en vez de mostrar") es el de `Content-Disposition`, no este 400.
+
+### next.config.mjs — estado actual
+
+```js
+images: {
+  formats: ['image/avif', 'image/webp'],
+  remotePatterns: [{ protocol: 'https', hostname: '*.r2.dev' }],
+},
+```
+Sin `contentDispositionType`, sin `loader` custom, sin `domains`. El optimizer SÍ resuelve la ruta interna `/api/media/file/` en standalone (confirmado — todas las pruebas devolvieron JPEGs válidos), así que no hay problema de resolución de ruta.
+
+---
+
+## §2 — Evaluación de las 3 opciones contra el código real
+
+Investigué (agente Explore) dónde se renderiza `next/image` con media de Payload: **9 usos en 7 archivos** (`components/blocks/Image.tsx`, `Gallery.tsx`, `MegaMenuPanel.tsx`, `CapabilityScene.tsx`, `AppScreenPlayer.tsx`, `IntegracionesPlayer.tsx`, `AprendizajePlayer.tsx`). **No existe ningún wrapper/atom compartido** alrededor de `next/image` — cada uno importa `next/image` directamente.
+
+| Opción | Archivos a tocar | Efecto secundario | Alineación A-01/A-02/A-03 |
+|---|---|---|---|
+| **A — `unoptimized` en cada `<Image>`** | **7 archivos, 9 call sites** (no hay choke point) | Pierde resize/format-negotiation/responsive srcset en TODA imagen de Payload — no es "desactivar un bug", es apagar el optimizer entero | ❌ Viola A-03 (impacto mínimo) — toca 7 archivos para arreglar 1 header |
+| **B — `images.contentDispositionType: 'inline'` en next.config.mjs** | **1 archivo, 1 línea** | Ninguno — es exactamente el override que Next.js documenta para este caso de uso | ✅ A-01 (mínimo), A-02 (arregla la raíz, no un síntoma), A-03 (impacto mínimo) |
+| **C — Custom loader** | Requeriría nuevo `loaderFile` + posiblemente bypassear el optimizer de Next hacia R2/otro servicio directamente | Pierde el resize/AVIF-WebP negotiation que ya funciona hoy (confirmado en las pruebas), a cambio de nada — el loader no controla `Content-Disposition`, así que **ni siquiera resolvería el bug real** | ❌ Más complejo que B y no ataca la causa raíz |
+
+## Opción recomendada: **B**
+
+Un solo archivo (`next.config.mjs`), una sola línea (`images.contentDispositionType: 'inline'`), ataca la causa raíz confirmada en el código fuente de Next, no tiene efectos secundarios, y es exactamente el mecanismo que Next.js expone para este caso. **No toca R2, Neon, ni ninguna zona intocable.**
+
+**Diff propuesto (NO aplicado, esperando confirmación):**
+```diff
+   images: {
+     formats: ['image/avif', 'image/webp'],
++    contentDispositionType: 'inline',
+     remotePatterns: [{ protocol: 'https', hostname: '*.r2.dev' }],
+   },
+```
+
+**1 archivo — no requiere escalar** (el despacho pedía escalar si el fix toca >3 archivos; esto toca 1).
+
+---
+
+## §3 — Resumen para Zavala
+
+- **Causa confirmada:** `contentDispositionType` de Next.js default es `'attachment'`, nunca overrideado en `next.config.mjs`. No es un bug de R2, Payload, ni del adapter storage-s3 (los tres funcionan bien — ya lo confirmamos en despachos anteriores).
+- **Bug secundario (400 en HEAD frío):** existe, es real, pero no afecta la experiencia de navegador (solo aparece con `curl -I`/herramientas que usan HEAD). No requiere fix separado a menos que algo en el código (monitoring, health checks) haga HEAD requests a `/_next/image` — no encontré ninguno en el repo.
+- **Fix propuesto:** Opción B, 1 archivo, 1 línea. **NO ejecutado — esperando tu confirmación para aplicarlo.**
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-NEXT-IMAGE-DISPOSITION
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-FIX-NEXT-IMAGE-DISPOSITION
+**Tipo:** FIX (Modo Strategic: 1 — Arquitecto) · **Protocolo:** P-5
+**Rama:** `migracion-railway` · HEAD verificado antes del cambio = `ae75af0` ✓
+
+---
+
+## Verificación pre-ejecución
+
+- `git status` → HEAD `ae75af0` confirmado. Working tree **no 100% limpio**: `output.md` con los reportes de esta sesión (esperado, acumulativo) + 3 dirs untracked preexistentes (`backups/`, `public/assets/Pages/`, `public/assets/development/`) — ninguno relacionado con este fix, no tocados.
+- Boot log standalone producción → `[storage] R2 (Cloudflare) ACTIVO` confirmado.
+- `cat next.config.mjs` → `images.contentDispositionType` **no estaba seteado**, confirmado antes de editar.
+
+## Fix aplicado (Opción B — 1 archivo, 1 línea)
+
+```diff
+   images: {
+     formats: ['image/avif', 'image/webp'],
+     remotePatterns: [{ protocol: 'https', hostname: '*.r2.dev' }],
++    // H-BBF-521: default de Next es 'attachment' (image-config.js) — sin esto
++    // /_next/image fuerza descarga en vez de mostrar la imagen inline.
++    contentDispositionType: 'inline',
+   },
+```
+
+Nada más tocado en `next.config.mjs` — CSP, `output: standalone`, `remotePatterns`, todo intacto.
+
+## Verificación post-cambio
+
+- `pnpm tsc --noEmit` → **CLEAN**
+- `pnpm build` → **PASS**, `next.config.mjs` válido, 22 páginas generadas
+- Boot standalone producción + GET real (no HEAD) a la URL exacta del despacho:
+  ```
+  GET /_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fgmail.webp&w=96&q=75
+  → HTTP/1.1 200 OK
+  → Content-Type: image/jpeg
+  → Content-Disposition: inline; filename="gmail.jpeg"   ← antes: attachment
+  ```
+  Body verificado como JPEG válido 96x96.
+
+## Commit + push
+

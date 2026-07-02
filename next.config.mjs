@@ -16,6 +16,9 @@ const nextConfig = {
     // *.r2.dev cubre el dominio público default de un bucket R2; si se conecta
     // un dominio custom al bucket, agregarlo aquí también.
     remotePatterns: [{ protocol: 'https', hostname: '*.r2.dev' }],
+    // H-BBF-521: default de Next es 'attachment' (image-config.js) — sin esto
+    // /_next/image fuerza descarga en vez de mostrar la imagen inline.
+    contentDispositionType: 'inline',
   },
 
   // Canon §6.3 — CSP environment-aware (no nonce — preserva ISR). B-BBF-WEB-FIX-CSP-ENVIRONMENT.
