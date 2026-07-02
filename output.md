@@ -7456,3 +7456,41 @@ Restauré `capabilities.eyebrow` (es) a `"Servicios"` tras el test.
 ## Veredicto: mitigación D-BBF-04-REV en producción, confirmada de punta a punta
 
 El techo de staleness pasó de ~1h a ~60s (y en la práctica, mucho menos — 9s en esta prueba). Esto es el puente mientras se configura el dominio custom + `disable_edge_cache` (patrón de fondo confirmado en el despacho de investigación anterior). Pendiente, fuera de alcance de este despacho: la configuración de dominio custom es un paso de dashboard de Zavala.
+
+---
+
+# REPORTE — B-BBF-WEB-REVERT-REVALIDATE-3600
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-REVERT-REVALIDATE-3600
+**Tipo:** DETENIDO EN VERIFICACIÓN PRE-EJECUCIÓN — pre-condición no cumplida
+**Workspace:** bbf-web
+
+---
+
+## Verificación de la pre-condición — NO CUMPLIDA
+
+El despacho exige explícitamente: *"PRE-CONDICIÓN (Zavala confirma): dominio custom activo en DO + disable_edge_cache = ON + certificado emitido. Sin esto, NO ejecutar."*
+
+Verifiqué DNS de `sivarbrains.com` antes de tocar cualquier archivo:
+
+```
+dig A sivarbrains.com +short
+→ 147.79.120.151, 148.135.128.46   (IPs de Hostinger — IDÉNTICO al último chequeo)
+
+dig CNAME www.sivarbrains.com +short
+→ www.sivarbrains.com.cdn.hstgr.net.   (CDN de Hostinger — sin cambios)
+```
+
+**El dominio custom NO está activo en DO.** `sivarbrains.com` sigue sirviendo desde Hostinger/WordPress, exactamente igual que en el despacho `B-BBF-WEB-DIAG-PRE-SWITCH`. No hay evidencia de que el switch de DNS haya ocurrido.
+
+## Decisión: DETENIDO, cero cambios ejecutados
+
+No toqué ningún archivo. Los 6 `page.tsx` siguen en `revalidate = 60` (confirmado, sin modificar). Revertir a `3600` ahora mismo — sin el dominio custom ni `disable_edge_cache` activos — **reintroduciría el síntoma original de staleness de hasta ~1h**, exactamente lo que el fix D-BBF-04-REV (puente) resolvió en el despacho anterior.
+
+## Qué falta para poder ejecutar este despacho
+
+1. Confirmar en el dashboard de DO que `sivarbrains.com` está agregado como dominio custom y el certificado SSL está emitido (estado "Active", no "Pending").
+2. Confirmar que `disable_edge_cache` está en `ON` para el componente (requiere el dominio custom del punto 1 — per doc oficial, ver `B-BBF-WEB-DIAG-DISABLE-EDGE-CACHE`).
+3. Actualizar el DNS de `sivarbrains.com` (A/CNAME) para apuntar al dominio custom de DO — esto es lo que confirmaría el switch real.
+4. Solo entonces re-despachar este fix — con la pre-condición ya verificable por mí vía `dig`, no solo por confirmación verbal.
+
+**Sin ejecutar nada más. Esperando que el switch de DNS + configuración de DO se complete primero.**
