@@ -7360,3 +7360,44 @@ Con evidencia directa de doc oficial + confirmación textual de un empleado de D
 **Lo que este veredicto NO cubre** (fuera del alcance de este despacho, ya documentado en despachos anteriores): H-BBF-501 (Vercel activo sobre el mismo Neon) sigue siendo un riesgo independiente, sin relación con esta decisión de cache/CDN.
 
 **No ejecuté ningún cambio** — dominio, env, ni código. Esto decide si DO se queda (con este patrón) o no, con evidencia verificada, no reacción.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-REVALIDATE-60
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-FIX-REVALIDATE-60
+**Tipo:** FIX (Modo Strategic: 1) · **Protocolo:** P-5
+**Rama dedicada:** `fix/revalidate-60` (creada desde `migracion-railway` @ `b8699d2`) — **SIN merge**
+
+---
+
+## Verificación pre-ejecución
+- `grep -rln "export const revalidate = 3600" src/app` → confirmó exactamente los 6 `page.tsx` esperados (+ `CLAUDE.md`, un ejemplo de doc que NO se toca, y `llms-full.txt/route.ts`, un route handler fuera de la lista del despacho, tampoco tocado).
+- Boot log standalone → `[storage] R2 (Cloudflare) ACTIVO` confirmado.
+
+## Cambio aplicado — exactamente 6 archivos, 1 línea cada uno
+
+```
+export const revalidate = 3600;  →  export const revalidate = 60;
+```
+
+En: `[locale]/page.tsx`, `contacto/page.tsx`, `[...pathSegments]/page.tsx`, `cerebro-marca/page.tsx`, `como-trabajamos/page.tsx`, `casos/page.tsx`.
+
+Nada más tocado — revalidación inline (H-524), `next.config.mjs`, env, R2, DNS: todos intactos.
+
+## Verificación post
+
+- `pnpm tsc --noEmit` → **CLEAN**
+- `pnpm build` → **PASS** — la tabla de rutas ya muestra `Revalidate: 1m` (antes `1h`) para todas las rutas afectadas.
+- Boot standalone producción local + `curl -I http://localhost:3001/`:
+  ```
+  Cache-Control: s-maxage=60, stale-while-revalidate=31535940
+  ```
+  **`s-maxage=60`, no 3600 — confirmado.**
+
+### Pendiente (requiere merge, no ejecutado)
+
+- `curl -I` al origen real de DO con `s-maxage=60` — solo verificable después del merge+push+redeploy, que este despacho explícitamente pide NO hacer sin tu OK.
+- "Guardar en admin → contenido en front en ≤60s" — mismo caso, requiere el redeploy en producción.
+
+## Commit (rama dedicada, sin merge)
+

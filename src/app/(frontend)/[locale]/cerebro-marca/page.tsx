@@ -7,7 +7,7 @@ import { buildHreflangBySlugMap } from '@/lib/seo/hreflang';
 import { buildWebPageSchema } from '@/lib/seo/jsonld';
 import { getSiteIdentity } from '@/config/site';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 type Props = { params: Promise<{ locale: 'es' | 'en' }> };
 
