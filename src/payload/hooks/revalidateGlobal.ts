@@ -1,25 +1,31 @@
 import type { GlobalAfterChangeHook } from 'payload';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { purgeCloudflareCache } from '@/lib/cloudflare/purge-cache';
-import { env } from '@/lib/env';
 
 /**
  * Hook canon BBF para revalidación de Payload Globals.
  *
- * Patrón Payload website-cms oficial:
- * - Tag granular `global_${slug}` para fetches con unstable_cache
- * - Path layout invalidation para SSG/ISR pages que consumen el global
+ * Patrón oficial Payload embebido (templates/website/.../revalidatePage.ts,
+ * github.com/payloadcms/payload) — revalidatePath/Tag INLINE, sin HTTP,
+ * sin route handler dedicado. H-BBF-524 revirtió el fetch() HTTP de H-523
+ * (innecesario para Payload embebido en el mismo proceso Next — ese patrón
+ * es para CMS desacoplado). Confirmado con test controlado: inline SÍ
+ * invalida el Full Route Cache cuando corre dentro del Route Handler real
+ * que procesa el save (REST_POST de @payloadcms/next), que es exactamente
+ * el contexto en que corre este hook.
+ *
+ * Path con locale explícito (issue payloadcms/payload#13884): '/' solo no
+ * basta con next-intl — se revalida cada locale (/es, /es/en) por separado.
  *
  * Trazable a D-BBF-KB-98, §13.3 audit (propagación automática), SB_Law I-5.
- *
- * H-BBF-523: revalidatePath/Tag NO se llaman inline aquí — solo surten efecto
- * en el contexto de ejecución de un Route Handler real. Se dispara vía fetch()
- * HTTP a /api/revalidate (ver ese archivo para el porqué).
  *
  * Uso en cualquier Payload Global:
  * ```ts
  * hooks: { afterChange: [revalidateGlobal] }
  * ```
  */
+const LOCALES = ['es', 'en'] as const;
+
 export const revalidateGlobal: GlobalAfterChangeHook = async ({
   doc,
   previousDoc,
@@ -33,23 +39,18 @@ export const revalidateGlobal: GlobalAfterChangeHook = async ({
   req.payload.logger.info(`[revalidate] Global ${global.slug} updated — invalidating cache`);
 
   try {
-    const res = await fetch(`http://127.0.0.1:${process.env.PORT ?? 3000}/api/revalidate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-revalidate-secret': env.PAYLOAD_SECRET },
-      body: JSON.stringify({ paths: ['/'], type: 'layout', tags: [`global_${global.slug}`] }),
-    });
-    if (!res.ok) {
-      req.payload.logger.error(`[revalidate] /api/revalidate respondió ${res.status}`);
+    revalidateTag(`global_${global.slug}`);
+    for (const locale of LOCALES) {
+      revalidatePath(`/${locale}`);
     }
-  } catch (err) {
-    // No-op fuera de Next.js request context (seed scripts, CLI) o si el
-    // fetch interno falla. El cambio se commitió en DB — solo omitimos la
-    // invalidación de cache ISR.
-    req.payload.logger.error({ err }, '[revalidate] fetch a /api/revalidate falló');
+  } catch {
+    // No-op fuera de Next.js request context (seed scripts, CLI).
+    // El cambio se commitió en DB — solo omitimos la invalidación de cache ISR.
   }
 
-  // B-BBF-WEB-FIX-CACHE-CDN-01: revalidatePath/Tag solo invalidan el cache
-  // interno de Next — el edge de Cloudflare (s-maxage) necesita su propio purge.
+  // Capa ADICIONAL independiente (edge de Cloudflare, s-maxage) — no depende
+  // de si la invalidación de arriba tuvo éxito, y no debe tumbar el hook si
+  // faltan credenciales (guard interno en purgeCloudflareCache).
   await purgeCloudflareCache();
 
   return doc;

@@ -6967,3 +6967,69 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({ doc, previousD
 3. Reconciliar `BBF_RegistroMaestro.md` y `SB_RoadmapCanonical.md` con el stack real (H-BBF-520) — workstream de documentación aparte, no bloqueante.
 
 **Esto alimenta AUD-BBF y la reconciliación — no ejecuté ningún cambio de código.** Espero tu confirmación antes de revertir H-BBF-523.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-REVALIDACION-INLINE
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-FIX-REVALIDACION-INLINE
+**Tipo:** FIX (Modo Strategic: 1 + evidencia MODO 3) · **Protocolo:** P-5
+**Rama dedicada:** `fix/revalidacion-inline` (creada desde `migracion-railway` @ `a4311b9`)
+
+---
+
+## Verificación pre-ejecución
+- Estructura de rutas confirmada: `next-intl`, locales `['es','en']`, default `es`, `localePrefix: 'as-needed'`, homepage en `[locale]/page.tsx`.
+- Estado HTTP-fetch (H-523) confirmado antes de revertir.
+
+## Los 4 archivos
+
+### §1 `revalidateGlobal.ts`
+`fetch()` HTTP → `revalidatePath`/`revalidateTag` **inline**. Loop de locales (`['es','en']`) revalidando `/es` y `/en` explícitamente (issue payloadcms/payload#13884 — `'/'` sola no basta con next-intl).
+
+### §2 `Pages/hooks/revalidate.ts`
+Mismo revert. El loop de locales **ya estaba correcto en el código original** desde antes de cualquiera de mis dos fixes — solo se quitó el fetch, restaurando la lógica original intacta.
+
+### §3 `media/index.ts`
+Hook `afterChange` revertido a inline, mismo patrón de loop de locales que `revalidateGlobal.ts`.
+
+### §4 `src/app/api/revalidate/route.ts`
+**Borrado.** Ya no es necesario — sin ese endpoint no hay superficie de red interna que pueda fallar.
+
+### §5 `purgeCloudflareCache()`
+Sin tocar — sigue siendo una capa independiente con su propio guard (`try/catch` + chequeo de env vars), no depende de si `revalidatePath` tuvo éxito.
+
+## Verificación post-cambio
+
+- `pnpm tsc --noEmit` → **CLEAN** (tras rebuild — los primeros errores eran tipos `.next/` obsoletos de las rutas ya borradas, no errores reales)
+- `pnpm build` → **PASS**, `/api/revalidate` ya NO aparece en el manifest de rutas
+
+### Test de cierre correcto (vía Route Handler real, no script externo)
+
+Igual que en la auditoría anterior: creé una ruta temporal (`/api/diag-test-real-hook`, borrada al terminar) que llama `payload.updateGlobal()` dentro de un Route Handler real — esto dispara el hook `afterChange` REAL (ya inline) en el contexto correcto:
+
+```
+baseline: x-nextjs-cache: HIT,  contenido: "Servicios"
+POST /api/diag-test-real-hook → { updatedTo: "INLINE-FINAL-..." }
+GET / después:
+  x-nextjs-cache: MISS
+  contenido: "INLINE-FINAL-..."
+GET /en después: 200, x-nextjs-cache: MISS (confirma el loop de locales funcionando para AMBOS)
+
+Log del server: solo
+  [revalidate] Global site-homepage updated — invalidating cache
+  SIN ECONNREFUSED, sin errores.
+```
+
+**Sin fetch, sin red interna, sin el failure mode que reproduje dos veces en el despacho anterior.**
+
+### Estado de credenciales Cloudflare
+
+`[cloudflare] Purge SKIPPED — faltan CLOUDFLARE_API_TOKEN / CLOUDFLARE_ZONE_ID en runtime` — confirmado ausente en mi entorno local (`.env.local`). **Estado real en runtime de DO: sin confirmar** — esto sigue siendo el candidato más probable para el síntoma original que reportó Zavala, y requiere que él lo revise en el dashboard de DO. No es bloqueante para este fix (el guard interno de `purgeCloudflareCache()` ya lo maneja sin romper el hook).
+
+## Limpieza
+Restauré `capabilities.eyebrow` (es) a `"Servicios"` tras las pruebas.
+
+---
+
+## Commit (rama dedicada, SIN merge)
+
