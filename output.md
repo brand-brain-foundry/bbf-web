@@ -6867,3 +6867,103 @@ curl -X POST https://sivarbrains-web-odjwt.ondigitalocean.app/api/revalidate
 ## Veredicto: H-BBF-523 desplegado en producción
 
 El fix de revalidación on-demand vía HTTP está ahora en `migracion-railway`, pusheado, y confirmado corriendo en DO. Falta el paso final que ya no es de código: que edites algo real en el admin de producción y confirmes que se refleja sin necesidad de otro redeploy — ese es el test de cierre definitivo, y solo tú puedes hacerlo desde el admin real.
+
+---
+
+# REPORTE — B-BBF-WEB-AUDIT-ARQUITECTURA-REAL
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-AUDIT-ARQUITECTURA-REAL
+**Tipo:** AUDITORÍA READ-ONLY (Modo Strategic: 2+3) · **Protocolo:** P-6
+
+---
+
+## ⚠️ Reconocimiento — H-BBF-524 confirmada: mi fix anterior (H-BBF-523) fue arquitectónicamente incorrecto
+
+Este despacho me pidió re-investigar con rigor, no defender la conclusión anterior. Lo hice, y el resultado cambia el veredicto: **el patrón HTTP-fetch que implementé y ya está mergeado/desplegado (`4ace420`) no era necesario, y mi test de cierre anterior tenía un defecto metodológico real.**
+
+### El defecto del test anterior
+
+Mi "prueba de que inline no funciona" comparaba dos cosas que NO son comparables:
+- **Antes:** llamar `revalidatePath` desde un **script tsx separado** (proceso Node distinto al servidor corriendo) — esto SIEMPRE falla/no-opea, para CUALQUIER enfoque, porque un proceso externo no tiene ningún Next.js runtime context al que conectarse (ver el propio comentario original del código: "No-op fuera de Next.js request context (seed scripts, CLI)").
+- **Después:** el fetch HTTP SÍ llegaba al servidor real (otro proceso, vía loopback), así que naturalmente "funcionaba mejor" — pero no porque el fetch HTTP sea necesario, sino porque **cualquier mecanismo que efectivamente llegue al proceso real funciona**.
+
+Nunca probé la comparación correcta: **inline, llamado genuinamente DENTRO del mismo Route Handler que hace el save real** (que es exactamente cómo funciona un save de admin real — Payload's `REST_POST` para globals ES un Route Handler de Next.js, y el hook corre en el mismo call stack).
+
+### Test correcto, hecho en este despacho
+
+Armé una ruta de diagnóstico temporal (`/api/diag-test-inline`, borrada al terminar) que hace `payload.updateGlobal()` + `revalidatePath('/', 'layout')` **inline, en la misma función**, dentro de un Route Handler real corriendo en el standalone de producción local:
+
+```
+baseline: x-nextjs-cache: HIT, contenido: "Servicios"
+POST /api/diag-test-inline → { updatedTo: "INLINE-TEST-..." }
+GET / después:
+  x-nextjs-cache: MISS
+  contenido: "INLINE-TEST-..."   ← funcionó, SIN fetch HTTP, SIN route handler dedicado
+```
+
+**`revalidatePath` inline SÍ funciona correctamente** cuando se ejecuta dentro del contexto real de un Route Handler — que es exactamente donde corre el hook `afterChange` en un save real de admin (no en un script separado).
+
+---
+
+## §1 — La cadena de revalidación real y la causa del síntoma
+
+- **¿Inline o HTTP?** Actualmente (código desplegado en `4ace420`) es **HTTP fetch** — mi fix. Con este despacho, la evidencia dice que era innecesario.
+- **ECONNREFUSED confirmado** — lo reproduje DOS veces en esta sesión (al restaurar valores de prueba con el standalone apagado): `connect ECONNREFUSED 127.0.0.1:3000`. Esto es un **failure mode nuevo que mi fix introdujo** — el enfoque inline nunca podía fallar por una conexión de red rechazada, porque no hace ninguna llamada de red.
+- **Estructura de rutas confirmada:** homepage en `[locale]/page.tsx`, con `next-intl` middleware (`localePrefix: as-needed`) reescribiendo internamente `/` → `/es`. `revalidatePath('/', 'layout')` apunta al **root layout real** (`src/app/layout.tsx`, archivo que sí existe) — por diseño de Next.js, esto invalida en cascada TODOS los layouts y páginas anidados debajo, incluyendo `[locale]/page.tsx`, **independientemente del rewrite**. Confirmado empíricamente que este target funciona (tanto en mi test inline de hoy como en el fetch-based de antes) — **no es un problema de path/type incorrecto**.
+- **`revalidateTag` — confirmado que NUNCA hizo nada útil, en ninguna versión:** `page.tsx` usa `payload.findGlobal()` (Payload Local API — consulta la DB directo, sin pasar por `fetch()`). Next.js Data Cache (el mecanismo que `revalidateTag` invalida) solo aplica a llamadas `fetch()` reales — Local API nunca crea entradas taggeadas. `revalidateTag('global_site-homepage')` es un no-op inofensivo, tanto en la versión original como en la mía. Lo que realmente invalida el contenido es `revalidatePath` sobre el Full Route Cache (mecanismo independiente de fetch tags).
+- **`page.tsx`:** `export const revalidate = 3600;` — sin `dynamic`/`fetchCache`. Layouts sin export propio.
+
+### La causa REAL más probable del síntoma original (no confirmable 100% sin acceso a DO)
+
+Dado que `revalidatePath` inline demostrablemente funciona, el candidato más simple y verificable para "guardo y no se refleja" es: **`purgeCloudflareCache()` no purga nada si `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ZONE_ID` faltan en runtime** — confirmado ausentes en mis pruebas locales (`[cloudflare] Purge SKIPPED`), **estado en runtime real de DO sin confirmar** (env vars del dashboard, fuera de mi alcance). Si Next SÍ regenera correctamente (como demostré) pero Cloudflare sigue sirviendo su copia vieja hasta que expira `s-maxage=3600`, eso solo explica el síntoma completo: el usuario guarda, Next tiene el dato nuevo listo para la próxima visita que llegue al origen, pero Cloudflare intercepta con `cf-cache-status: HIT` y nunca deja pasar esa visita al origen hasta que el caché expira o alguien fuerza un purge — que coincidentalmente ocurre en cada redeploy (Cloudflare suele invalidar por cambio de origin/deploy en algunas configuraciones, o simplemente el tiempo transcurrido entre "reportar el bug" y "el próximo redeploy" alcanza a superar el TTL).
+
+---
+
+## §2 — Mapa del stack real (para reconciliar doctrina)
+
+| Capa | Documentado (RegistroMaestro, vigente hasta 2026-06-30) | Real (código + verificado en producción) |
+|---|---|---|
+| Hosting | Vercel | **DigitalOcean App Platform** (Docker `output: standalone`, 1 instancia confirmada) |
+| Storage media | Vercel Blob (`bbf-web-media-public`) | **Cloudflare R2** vía `@payloadcms/storage-s3`, confirmado ACTIVO. Serving vía proxy `/api/media/file/...` (Payload nunca expone URL pública `r2.dev` directamente — por diseño del adapter, sin `generateFileURL` custom) |
+| Cache | No documentado (asumía Vercel Edge Network) | **3 capas:** (1) Next.js Full Route Cache/ISR (`revalidate=3600`), (2) CDN de Cloudflare delante de DO (`cf-cache-status`, `s-maxage=3600`), (3) el propio DO ingress (`x-do-orig-status`) |
+| DNS | Cloudflare (solo DNS/WAF, según doc) | Cloudflare, pero además actuando como **reverse-proxy cacheante** activo (no solo DNS/WAF) |
+| Deploy secundario | No documentado | **Vercel SIGUE activo y sirviendo `brandbrainfoundry.com`** (confirmado en despacho de reconciliación anterior — `server: Vercel`, mismo Neon `raspy-hat`) — dos deployments corriendo en paralelo contra la misma DB |
+
+**Esto es H-BBF-520**: el drift Vercel→DO nunca se reconcilió en `BBF_RegistroMaestro.md` ni en `SB_RoadmapCanonical.md` — ambos siguen describiendo un stack que el código abandonó hace semanas (evidencia: commits `B-BBF-WEB-RAILWAY-*` desde hace tiempo). Confirmado leyendo ambos documentos de nuevo per protocolo de arranque — sin cambios desde el hallazgo de la reconciliación anterior.
+
+## §3 — Patrón oficial Payload-embebido vs código real
+
+Confirmado contra la fuente primaria — **la plantilla oficial de Payload** (`github.com/payloadcms/payload`, `templates/website/src/collections/Pages/hooks/revalidatePage.ts`, el ejemplo de referencia que Payload mismo recomienda como punto de partida para "Payload embebido en Next.js", exactamente nuestra arquitectura):
+
+```ts
+import { revalidatePath, revalidateTag } from 'next/cache'
+
+export const revalidatePage: CollectionAfterChangeHook<Page> = ({ doc, previousDoc, req: { payload, context } }) => {
+  if (doc._status === 'published') {
+    const path = doc.slug === 'home' ? '/' : `/${doc.slug}`
+    revalidatePath(path)
+    revalidateTag('pages-sitemap', 'max')
+  }
+  return doc
+}
+```
+
+**Llamadas inline, directas, sin `fetch()`, sin route handler dedicado, ni siquiera `async`.** No existe ningún archivo `/api/revalidate/route.ts` en la plantilla oficial. El patrón de "webhook HTTP a un endpoint dedicado" que encontré en un hilo de Discord de la comunidad (y que usé como base de mi fix) es para escenarios de **CMS desacoplado** (Payload como servicio separado del frontend Next.js) — no aplica aquí, donde Payload corre embebido en el mismo proceso Next.js.
+
+**Gap real:** el código de bbf-web (antes de mi fix, y ahora también con mi fix) nunca siguió el patrón oficial al pie de la letra en un aspecto menor — pero el mecanismo base (`revalidatePath` inline) SÍ es el correcto, y mi cambio se alejó de él sin necesidad.
+
+---
+
+## §4 — VEREDICTO
+
+1. **H-BBF-524 confirmada:** mi fix (H-BBF-523, HTTP fetch a `/api/revalidate`) fue una solución arquitectónicamente incorrecta a un síntoma mal diagnosticado. Agregó complejidad (nuevo route handler, nuevo secret, nueva llamada de red) y un failure mode real y reproducible (`ECONNREFUSED`) sin evidencia de que resolviera el síntoma original — mi test de cierre anterior comparaba un script externo (garantizado a fallar) contra el fetch HTTP, no inline-real contra fetch-real.
+2. **El mecanismo `revalidatePath` inline funciona correctamente** en este stack (confirmado con test controlado hoy, dentro de un Route Handler real) — es también el patrón oficial de Payload para arquitecturas embebidas.
+3. **La causa más probable del síntoma ORIGINAL** (antes de cualquiera de mis dos fixes) es `purgeCloudflareCache()` sin credenciales válidas en runtime de DO — confirmado ausentes localmente, sin confirmar en DO. Esto es un problema de configuración (env vars en el dashboard de DO), no de código.
+4. **H-BBF-520** (drift doc Vercel→DO) sigue sin reconciliar en `BBF_RegistroMaestro.md`/`SB_RoadmapCanonical.md`.
+
+## Recomendación (NO ejecutada — este despacho es read-only)
+
+1. **Revertir el fix H-BBF-523** (volver a `revalidatePath`/`revalidateTag` inline, sin el route handler `/api/revalidate` ni los fetch() en los 3 hooks) — restaura el patrón oficial, elimina el failure mode de `ECONNREFUSED`, simplifica el código (A-01).
+2. **Confirmar y corregir `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ZONE_ID` en el runtime de DO** (dashboard, acción de Zavala) — este es el candidato real para el síntoma que originalmente se reportó.
+3. Reconciliar `BBF_RegistroMaestro.md` y `SB_RoadmapCanonical.md` con el stack real (H-BBF-520) — workstream de documentación aparte, no bloqueante.
+
+**Esto alimenta AUD-BBF y la reconciliación — no ejecuté ningún cambio de código.** Espero tu confirmación antes de revertir H-BBF-523.
