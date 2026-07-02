@@ -6811,3 +6811,59 @@ Si `9824ac2` estuviera desplegado, este endpoint existiría (devolvería 401 sin
 - **El síntoma original (H-BBF-523, "guardar en admin no se refleja en el front sin redeploy") sigue sin resolverse en producción**, aunque el fix ya está escrito, probado localmente (test de cierre exitoso documentado en el despacho anterior), y pusheado a su rama.
 
 **No ejecuté merge ni push a `migracion-railway`** — queda a tu decisión. Cuando confirmes, el paso sería: merge (o fast-forward) de `fix/revalidacion-http` → `migracion-railway`, push, y esperar el redeploy de DO para validar en producción real (no solo en el standalone local).
+
+---
+
+# REPORTE — B-BBF-WEB-MERGE-523-PROD
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-MERGE-523-PROD
+**Tipo:** MERGE + DEPLOY (Modo Strategic: 1) · **Protocolo:** P-5
+**Rama:** `migracion-railway`
+
+---
+
+## Verificación pre-ejecución
+- `fix/revalidacion-http` HEAD confirmado `9824ac2` antes de mergear.
+- Los 4 archivos del fix auditado confirmados presentes en la rama: `route.ts`, `revalidateGlobal.ts`, `Pages/hooks/revalidate.ts`, `media/index.ts`.
+- Working tree: cerré primero el reporte pendiente de `output.md` (commit `19fcd58`, solo docs) antes de mergear, para partir limpio.
+
+## Merge (§1-§3)
+
+```
+git checkout migracion-railway
+git merge fix/revalidacion-http --no-ff
+→ Merge made by the 'ort' strategy. Sin conflictos.
+5 files changed, 254 insertions(+), 14 deletions(-)
+create mode 100644 src/app/api/revalidate/route.ts
+```
+
+Commit de merge: `4ace420`. Confirmé los 4 archivos presentes post-merge en `migracion-railway` — sin re-editar nada, exactamente el contenido ya auditado.
+
+## Push + redeploy (§4)
+
+```
+git push origin migracion-railway
+1afda05..4ace420  migracion-railway -> migracion-railway
+```
+
+Esto también subió `1f79239` (el commit de docs que había quedado pendiente en local, mencionado en el despacho anterior) — sin fricción, sin conflicto, como sugería el §5 opcional.
+
+## Test de cierre REAL en producción (post-redeploy)
+
+```
+curl -X POST https://sivarbrains-web-odjwt.ondigitalocean.app/api/revalidate
+→ HTTP/2 401
+→ x-do-orig-status: 401
+→ body: {"revalidated":false,"error":"Unauthorized"}
+```
+
+**401, no 404 — el route handler está desplegado y respondiendo correctamente** (rechaza sin secret, exactamente el comportamiento esperado). El redeploy de DO se completó rápido (probablemente cache de capas Docker, ya que solo cambió código de aplicación, no dependencias).
+
+## Commit desplegado en DO
+
+`4ace420` (merge commit, incluye `9824ac2` + `19fcd58` + `1f79239`).
+
+---
+
+## Veredicto: H-BBF-523 desplegado en producción
+
+El fix de revalidación on-demand vía HTTP está ahora en `migracion-railway`, pusheado, y confirmado corriendo en DO. Falta el paso final que ya no es de código: que edites algo real en el admin de producción y confirmes que se refleja sin necesidad de otro redeploy — ese es el test de cierre definitivo, y solo tú puedes hacerlo desde el admin real.
