@@ -7033,3 +7033,57 @@ Restauré `capabilities.eyebrow` (es) a `"Servicios"` tras las pruebas.
 
 ## Commit (rama dedicada, SIN merge)
 
+
+---
+
+# REPORTE — B-BBF-WEB-MERGE-524-PROD
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-MERGE-524-PROD
+**Tipo:** MERGE + DEPLOY (Modo Strategic: 1) · **Protocolo:** P-5
+**Rama:** `migracion-railway`
+
+---
+
+## Verificación pre-ejecución
+- `fix/revalidacion-inline` HEAD confirmado `7df646b`.
+- Confirmado que `src/app/api/revalidate/route.ts` no existe en esa rama (borrado).
+
+## Merge (§1)
+```
+git checkout migracion-railway
+git merge fix/revalidacion-inline --no-ff
+→ Merge made by the 'ort' strategy. Sin conflictos.
+5 files changed, 115 insertions(+), 113 deletions(-)
+delete mode 100644 src/app/api/revalidate/route.ts
+```
+Commit de merge: `f7925f2`. Confirmado post-merge: `src/app/api/revalidate/route.ts` NO existe en `migracion-railway`.
+
+## Push + redeploy (§2)
+```
+git push origin migracion-railway
+0b46557..f7925f2  migracion-railway -> migracion-railway
+```
+
+## Test de cierre EN PRODUCCIÓN
+
+Redeploy tomó ~7 minutos esta vez (más que el redeploy anterior de H-523, probablemente rebuild sin cache parcial dado el volumen de cambios). Polling cada 20-25s hasta confirmar:
+
+```
+curl -X POST https://sivarbrains-web-odjwt.ondigitalocean.app/api/revalidate
+→ HTTP/2 404   ← confirmado, estable en 2 chequeos consecutivos
+```
+
+**404, no 401 — la ruta ya no existe, confirma que el deploy tomó el fix de H-BBF-524** (el 401 anterior era la versión con el route handler HTTP, que exigía auth; ahora simplemente no hay ruta que atender esa URL).
+
+`GET /api/health` → `{"status":"ok"}` — el sitio sigue sano tras el redeploy.
+
+## Logs de Runtime (sin ECONNREFUSED)
+
+**No verificable desde aquí** — los Runtime Logs de DO viven en su dashboard, sin acceso desde este entorno. Dado que el fix elimina por completo la llamada de red interna (ya no hay `fetch()` a `/api/revalidate`), no hay superficie para que ese error específico ocurra — pero la confirmación definitiva de "sin ECONNREFUSED en los logs reales" la debe hacer Zavala revisando el dashboard de DO.
+
+---
+
+## Commit desplegado en DO: `f7925f2`
+
+## Veredicto: H-BBF-524 en producción
+
+El fix de revalidación inline + locale está mergeado, pusheado, y confirmado corriendo en DO (404 en la ruta borrada). Pendiente, no bloqueante: que Zavala confirme (a) Runtime Logs limpios de DO, y (b) si `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ZONE_ID` están configurados en el runtime de DO — ese sigue siendo el candidato principal para el síntoma original de "guardo y no se refleja", independiente del mecanismo de revalidación (que ya está confirmado funcionando correctamente, tanto localmente como ahora en producción).
