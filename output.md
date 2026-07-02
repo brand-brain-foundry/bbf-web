@@ -7237,3 +7237,66 @@ brandbrainfoundry.com    NS    → mismos NS de Cloudflare
 - **Si Opción B = DNS-only (nube gris) hacia DO, sin proxy de la zona de Zavala:** evita el 1014, pero entonces el Cloudflare de Zavala nunca ve el tráfico — `purgeCloudflareCache()` sería completamente inútil en ese escenario (purgaría una zona que nunca sirvió nada), y el WAF/cache/analytics de Cloudflare de Zavala tampoco aplicarían — sería el Cloudflare de DO el único en el camino, igual que ahora.
 
 **No ejecuté ningún cambio — DNS, env, ni switch.** Esto es un mapa de estado real para que decidas con evidencia verificada, no supuestos.
+
+---
+
+# REPORTE — B-BBF-WEB-RESEARCH-DEPLOY-DEFINITIVO
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-RESEARCH-DEPLOY-DEFINITIVO
+**Tipo:** INVESTIGACIÓN + AUDITORÍA READ-ONLY (Modo Strategic: 3+2) · **Protocolo:** P-6
+**Workspace:** bbf-web + bbf-docs · Alimenta D-BBF-04-REV
+
+---
+
+## §1 (MODO 3) — Mecanismos reales de DO App Platform
+
+Confirmado con doc oficial de DigitalOcean (citas exactas):
+
+- **DO App Platform trae un CDN propio, y ES Cloudflare**: *"App Platform includes a built-in CDN powered by Cloudflare"* ([docs.digitalocean.com/products/app-platform/how-to/configure-external-cdn/](https://docs.digitalocean.com/products/app-platform/how-to/configure-external-cdn/)). Esto confirma con fuente oficial lo que ya había deducido por `dig` en el despacho anterior.
+- **No existe API de purge para App Platform.** El único endpoint de purge de DO (`DELETE /v2/cdn/endpoints/{cdn_id}/cache`, `doctl compute cdn flush`) es exclusivo de **Spaces CDN** (storage de objetos), no de App Platform. Un ingeniero de DO (Kamal Nasser) lo confirma directamente en un thread de comunidad: *"we set a Cache-Control header automatically and explicitly purge the CDN cache on each app deployment"* — **el único purge posible es un redeploy completo**, no hay purge on-demand.
+- **Sí existe un toggle para desactivar el cache edge**: campo `disable_edge_cache` en el app spec (o "Advanced networking and security" en el dashboard). **PERO con 2 restricciones duras que explican por qué nunca lo vimos activo:**
+  1. Requiere que la app tenga **al menos un dominio custom** — el dominio starter `.ondigitalocean.app` (el único que hemos probado toda la sesión) **nunca puede desactivar su cache edge**, sin excepción.
+  2. No funciona si la app tiene un componente de tipo "static site" (no es nuestro caso — somos un service Docker).
+- **Los dominios custom NO evitan el Cloudflare de DO** — el setup estándar de dominio custom en DO es CNAMEar al mismo alias `.ondigitalocean.app`, que YA está detrás del Cloudflare de DO. **No hay ruta directa-al-origen** que evite ese hop, ni con dominio custom ni sin él.
+- **DO no tiene partnership de "Cloudflare for SaaS"** con Cloudflare — no aparece en la lista de partners de Cloudflare, ni en ninguna doc de DO. La única guía oficial de DO ("Use an External CDN in Front of an App Platform App") asume que el CDN externo (ej. el Cloudflare del cliente) se conecta al hostname `.ondigitalocean.app` — que **ya es Cloudflare de DO** — es decir, la propia guía oficial de DO, seguida al pie de la letra con Cloudflare como "CDN externo", produce una cadena Cloudflare→Cloudflare→origen (doble CDN), no la elimina.
+
+## §2 (MODO 3) — Patrón de industria confirmado
+
+- **DNS-only (nube gris) es el patrón estándar y dominante** en las 4 plataformas investigadas (DO, Render, Railway, Fly.io) — confirmado con docs oficiales de cada una. Trade-off explícito en todas: sin proxy, Cloudflare del cliente nunca ve ese tráfico → cero WAF/cache/purge de esa zona para ese dominio.
+- **"Cloudflare for SaaS" / Orange-to-Orange (O2O) es real, pero requiere partnership PaaS↔Cloudflare** (gateado a nivel Enterprise del lado de Cloudflare). **Render SÍ tiene esta partnership confirmada y documentada** ("Cloudflare partners with Render..."). **DigitalOcean NO tiene ninguna partnership equivalente confirmada** — cero evidencia en docs oficiales de DO o de Cloudflare.
+- **No existe ningún caso real documentado y confirmado** de alguien corriendo Next.js/Payload en DO App Platform con su propio dominio proxeado (nube naranja) funcionando limpiamente contra el Cloudflare de DO. El precedente más cercano confirmado es de **Render** (que sí tiene la partnership O2O), no de DO.
+- **Conclusión de industria:** el patrón dominante y probado es dominio custom con SSL nativo del PaaS, DNS-only, y Cloudflare del cliente reservado para dominios/subdominios que NO colisionen con la infraestructura Cloudflare propia del PaaS (ej. un subdominio de marketing aparte).
+
+## §3 (MODO 2) — `s-maxage=3600`: origen y control real
+
+**Confirmado en código, sin ambigüedad:** `next.config.mjs` (grep exhaustivo de `s-maxage`/`Cache-Control`/`cacheControl`) → **cero resultados**. El header `Cache-Control: s-maxage=3600, stale-while-revalidate=...` que hemos visto toda la sesión **lo genera Next.js automáticamente** a partir de `export const revalidate = 3600;`, presente en **6 archivos `page.tsx`** (`[locale]`, `contacto`, `[...pathSegments]`, `cerebro-marca`, `casos`, `como-trabajamos`) — ninguno pisa el header manualmente.
+
+**Sí es 100% controlable desde código, sin depender de ninguna zona Cloudflare externa** — cambiar el valor de `revalidate` en cada `page.tsx` (o pasar a `dynamic = 'force-dynamic'` para desactivar cache de ruta por completo) es un cambio de código puro. **Lo que NO controla el código de la app es la capa de CDN de DO** (§1) — ese cache vive en la infraestructura de DO, fuera del alcance del `Cache-Control` que emite la app (DO respeta ese header para su propio TTL, pero el purge on-demand de esa copia solo ocurre en redeploy, según §1).
+
+## §4 (MODO 2) — H-BBF-501: Vercel activo, riesgo de doble escritura
+
+- **Confirmado (despacho de reconciliación anterior):** Vercel sirve `brandbrainfoundry.com` activamente, apuntando al **mismo Neon** (`raspy-hat`) que usa DO.
+- **`payload_migrations` — última aplicada:** `20260629_201330_s5_service_icon`, batch 49, 2026-06-29. Sin evidencia de migraciones duplicadas o en conflicto — pero esto no descarta drift: si el build desplegado en Vercel es de ANTES de esa fecha, su `payload.config.ts` esperaría un schema distinto al que Neon tiene ahora.
+- **Solo 1 usuario admin existe** (`zavala@brandbrainfoundry.com`) — sin evidencia de sesiones concurrentes distintas escribiendo.
+- **⚠️ Hallazgo nuevo, no pedido explícitamente pero relevante:** `curl https://brandbrainfoundry.com/admin` → **HTTP 500**, pero el HTML SÍ es el shell real del dashboard de Payload (`<title>Dashboard — BBF Admin</title>`, branding real) — **el admin de Payload sigue activo y expuesto en Vercel**, no es un 404. El error 500 podría deberse a schema drift (mi hipótesis principal, sin confirmar) o a un problema de configuración no relacionado — evidencia adicional: el `og:image` embebido apunta a `http://localhost:3000/api/og?...`, señal de que `NEXT_PUBLIC_SITE_URL` (u otra env var) está mal configurada en Vercel — consistente con un deploy abandonado/no mantenido, no necesariamente con conflicto de escritura activo.
+
+**¿Se puede apagar Vercel sin romper `brandbrainfoundry.com`?** No verificable desde aquí — depende de si `brandbrainfoundry.com` sigue siendo un dominio que alguien visita activamente (marketing, links existentes, SEO indexado) o si ya es puramente residual. Esto es decisión de Zavala con visibilidad que yo no tengo (analytics, backlinks, tráfico real).
+
+---
+
+## SÍNTESIS PARA D-BBF-04-REV
+
+| Pregunta | Respuesta con evidencia |
+|---|---|
+| ¿DO permite purgar su CDN por API? | **No** — solo Spaces CDN. Purge = redeploy completo. |
+| ¿Se puede desactivar el cache edge de DO? | Sí (`disable_edge_cache`), pero **requiere dominio custom** — imposible hoy con solo `.ondigitalocean.app`. |
+| ¿Dominio custom evita el Cloudflare de DO? | **No** — mismo hop, sin ruta directa-al-origen. |
+| ¿Existe patrón anti-1014 confirmado para DO? | **No** — el patrón confirmado (DNS-only) sacrifica el Cloudflare propio del cliente por completo. O2O existe pero es exclusivo de Render (partnership), no de DO. |
+| ¿`s-maxage` es controlable sin Cloudflare externo? | **Sí**, 100% desde `page.tsx` — ya lo es. |
+| ¿Riesgo Vercel/Neon confirmado? | Admin de Payload sigue expuesto y activo en Vercel contra el mismo Neon — riesgo real, sin evidencia de conflicto activo aún, pero la superficie existe. |
+
+**Implicación directa para Opciones 1/2/3 (sin decidir por Zavala, solo con la evidencia que pedía el despacho):**
+- Cualquier opción que mantenga Cloudflare del cliente proxeando (nube naranja) hacia DO hereda el riesgo de doble-CDN/1014 sin patrón confirmado que lo resuelva limpiamente en DO (a diferencia de Render).
+- Cualquier opción que use DNS-only pierde el control de cache/purge/WAF de la zona de Zavala — el único cache/purge real sigue siendo el de DO (sin API, solo redeploy) y el ISR interno de Next (ya confirmado funcionando desde el fix H-524).
+- El riesgo de Vercel/Neon es independiente del switch DNS — existe HOY, con o sin decisión de dominio, y vale la pena que Zavala decida si apagar Vercel (o al menos deshabilitar su admin) antes de avanzar con cualquier opción.
+
+**No ejecuté ningún cambio de DNS, env, ni código — puro mapeo de evidencia para la decisión de Zavala.**
