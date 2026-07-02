@@ -6508,3 +6508,173 @@ Nada más tocado en `next.config.mjs` — CSP, `output: standalone`, `remotePatt
 
 ## Commit + push
 
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-VIDEO-CASO
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-DIAG-VIDEO-CASO
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2 — Auditor) · **Protocolo:** P-6
+**Rama:** `migracion-railway` · HEAD verificado = `1afda05` ✓ (incluye fix contentDispositionType, ya confirmado por Zavala que imágenes se ven)
+
+---
+
+## ⚠️ Corrección a la premisa: lo subido a media/21 NO es un video
+
+```json
+// media id=21
+{ "filename": "SB-video-1.webp", "mime_type": "image/webp", "filesize": "60492", "width": "1920", "height": "1080" }
+// media id=22
+{ "filename": "SB-video.webp", "mime_type": "image/webp", "filesize": "60492", "width": "1920", "height": "1080" }
+```
+
+**media/21 y media/22 son la MISMA imagen WEBP** (idéntico filesize 60492 bytes, idénticas dimensiones 1920×1080), subida dos veces con nombres distintos. `mime_type: image/webp` confirma que **no es un archivo de video** (.mp4/.webm) — 60KB tampoco es un tamaño plausible de video, es consistente con un frame/poster estático. Zavala: lo que se subió al admin es una imagen (probablemente el poster/frame del video), no el archivo de video en sí.
+
+## §1 — A qué apunta el front HOY (Neon, literal)
+
+```json
+// site_homepage.case_study_video_poster_id
+22   // → media/22 "SB-video.webp" — SÍ está enlazado, como poster
+
+// site_homepage_case_study_video_sources (el video del CASO Hacienda Real)
+[
+  { "src": "/assets/media/hero/hero.av1.webm", "type": "webm-av1" },
+  { "src": "/assets/media/hero/hero.h264.mp4", "type": "mp4-h264" }
+]
+// ← apunta al video del HERO GENÉRICO de home, NO a Hacienda Real, NO a media/21 ni 22
+
+// site_homepage_hero_media_video_sources (el video del HERO de home, sección distinta)
+[
+  { "src": "/assets/media/hero/SB-Demo-video-1.webm", "type": "webm-av1" },
+  { "src": "/assets/media/hero/SB-Demo-video.mp4", "type": "mp4-h264" }
+]
+// ← apunta a archivos que NUNCA existieron en /public (confirmado en despacho anterior)
+```
+
+**media/21 no está referenciado en ningún campo de video del homepage — es un upload huérfano.**
+
+## §2 — Resolución directa (curl a producción)
+
+| URL | Status |
+|---|---|
+| `/assets/media/hero/hero.av1.webm` (case study, actual) | **200** |
+| `/assets/media/hero/hero.h264.mp4` (case study, actual) | **200** |
+| `/assets/media/hero/SB-Demo-video-1.webm` (hero home) | **404** |
+| `/assets/media/hero/SB-Demo-video.mp4` (hero home) | **404** |
+| `/api/media/file/SB-video-1.webp` (media/21) | **200** |
+| `/api/media/file/SB-video.webp` (media/22) | **200** |
+
+Los videos NO pasan por `/_next/image` (correcto — son `<video>` con `<source>`, no `next/image`). Los del case study se sirven como **assets estáticos de `/public`** vía Next.js directamente (no Payload/R2 — son archivos del repo, `output.md` de despachos previos ya los había listado). Los posters (webp) sí pasan por Payload/R2 vía `/api/media/file/`, igual que las imágenes ya arregladas.
+
+## HTML real de producción (confirma lo anterior end-to-end)
+
+```html
+<!-- Video 1: HERO de home — ROTO -->
+<video poster="/api/media/file/SB-video.webp" aria-label="Sivar Brains ...">
+  <source src="/assets/media/hero/SB-Demo-video-1.webm" .../>  ← 404
+  <source src="/assets/media/hero/SB-Demo-video.mp4" .../>     ← 404
+</video>
+
+<!-- Video 2: CASO Hacienda Real — resuelve, pero es el video EQUIVOCADO -->
+<video poster="/api/media/file/SB-video.webp" aria-label="HACIENDA-REAL · WhatsApp Business · live">
+  <source src="/assets/media/hero/hero.av1.webm" .../>  ← 200, pero es el video genérico del hero
+  <source src="/assets/media/hero/hero.h264.mp4" .../>  ← 200, mismo archivo que el hero de home
+</video>
+```
+
+Ambos `<video>` reusan el **mismo poster** (`SB-video.webp`, media/22) — probablemente un placeholder compartido, no diseño intencional final.
+
+## §3 — Caché: NO es el problema
+
+- `hero.h264.mp4`: `cf-cache-status: BYPASS`, `cache-control: public, max-age=0` — sin caché, siempre pega al origen.
+- Home HTML: `x-nextjs-cache: MISS` (ISR regeneró recientemente, no está sirviendo una versión vieja), `cf-cache-status: HIT` con `age: 1143s` (~19 min) — normal, dentro de la ventana de `s-maxage=3600`.
+- El HTML servido AHORA MISMO ya refleja el estado actual de Neon (los sources del case study SÍ son los de `hero.*`, no un valor viejo cacheado) — si hubiera un problema de caché, veríamos referencias desactualizadas; no es el caso.
+
+---
+
+## VEREDICTO: **H-522-B confirmada** (referencia/dato incorrecto en Neon — NO es caché, un redeploy no lo arregla)
+
+- El video del caso Hacienda Real **técnicamente resuelve y reproduce algo** (200 en ambas fuentes) — pero es el video genérico del hero de home reutilizado, no contenido real de Hacienda Real. Si "no se visualiza" se refiere a que Zavala espera ver SU video recién subido y no lo ve: **es porque nunca se subió un archivo de video real** — solo dos copias de una imagen poster (media/21, media/22), y el campo `case_study_video_sources` sigue apuntando a los archivos estáticos del hero genérico, sin relación con lo que Zavala subió.
+- Un redeploy, purge de CDN, o cualquier acción de caché **no cambiaría nada** — el dato en Neon literalmente no referencia lo que Zavala subió.
+
+## Fix propuesto (NO ejecutado — dos partes, ninguna ejecutable sin más info de Zavala)
+
+1. **Zavala debe subir el archivo de video real** (.mp4/.webm de Hacienda Real) — lo que existe hoy en R2 (media/21, media/22) son imágenes, no sirven como fuente de `<video><source>`.
+2. **Una vez subido**, actualizar `case_study_video_sources` en Neon para apuntar a esa URL real (esto SÍ es "tocar Neon datos" — fuera de mi alcance read-only de este despacho, requiere despacho de ejecución aparte con la URL/ID final confirmado por Zavala).
+3. Nota aparte, no crítica para el caso: el **hero de home (§1, no el caso)** también está roto (404 en sus 2 sources) — archivos que nunca existieron en `/public/assets/media/hero/`. Es un H-BBF distinto, ya lo habíamos documentado como deuda de contenido en el despacho de reconciliación. Vale la pena que Zavala decida si se resuelve en el mismo lote o aparte.
+
+**Escalo:** no ejecuté nada — el siguiente paso depende de que Zavala suba el archivo de video real y confirme la URL/ID a referenciar en Neon.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-REVALIDACION-FONDO
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-DIAG-REVALIDACION-FONDO
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2+3) · **Protocolo:** P-6
+**Rama:** `migracion-railway` · HEAD = `1afda05`
+
+---
+
+## §1 — ¿Payload dispara revalidación al guardar?
+
+**Sí, el hook existe y está bien wireado — pero eso no significa que funcione (ver veredicto).**
+
+- **`src/payload/hooks/revalidateGlobal.ts`** (compartido por 7 globals incl. `SiteHomepage`):
+  ```ts
+  revalidateTag(`global_${global.slug}`);
+  revalidatePath('/', 'layout');
+  await purgeCloudflareCache();
+  ```
+  Guard: si `doc.updatedAt === previousDoc.updatedAt` → early return (no-op). Try/catch envolvente.
+  Wireado en `SiteHomepage.ts` (afterChange) → cubre **texto Y los campos de video/imagen del homepage** (son parte del mismo doc `SiteHomepage`, ej. `hero.media.videoSources`), consistente con que Zavala vea "todo stale" al editar ahí.
+
+- **`Pages` collection** (`Pages/hooks/revalidate.ts`) — mismo patrón, `revalidatePath` por locale + `revalidateTag('sitemap'/'llms-txt')` + purge, solo si `_status === 'published'`.
+
+- **`Media` collection — SIN hook `afterChange` en absoluto.** Confirmado, `src/payload/collections/media/index.ts` no tiene `hooks` key. **Subir/reemplazar un archivo de media directamente (no vía SiteHomepage) NUNCA dispara revalidación ni purge.** Esto es un gap real, pero aislado — no explica por qué el TEXTO también queda stale.
+
+- **`purge-cache.ts`**: POST a `https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`, `purge_everything: true`. Si `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ZONE_ID` faltan en runtime → `console.warn` + no-op silencioso (no rompe el save, pero tampoco purga nada, y es fácil de pasar por alto en logs).
+
+## §2 — Capas de caché en producción (evidencia empírica, no solo lectura de código)
+
+```
+SIN cache-buster (/):
+  cf-cache-status: HIT, age: 2611s (~43min)      ← Cloudflare sirve SU copia, ni toca el origen
+
+CON cache-buster (/?bust=...):
+  cf-cache-status: BYPASS                         ← Cloudflare SÍ pasa al origen esta vez
+  x-nextjs-cache: HIT                              ← pero Next.js TAMBIÉN sirve de su propia caché ISR
+```
+
+**Esto es la evidencia clave:** incluso baipaseando Cloudflare por completo y pegando directo al proceso Next.js real corriendo en DO, **la caché ISR interna de Next.js sigue devolviendo `HIT`**. Esto prueba que el problema **no es únicamente el CDN de Cloudflare** — el propio servidor Next.js, cuando se le pregunta directamente, sigue sirviendo la versión vieja. Si `revalidatePath` hubiera invalidado correctamente la caché ISR al guardar, este request (que sí llega al origen) debería haber mostrado `MISS` o regenerado.
+
+- `page.tsx` → `export const revalidate = 3600;` (única config de cache — sin `dynamic`, sin `fetchCache`).
+- `layout.tsx` (ninguno de los 3 layouts en la cadena) tiene `revalidate`/`dynamic` propio — heredan default.
+
+## §3 — Gap vs. patrón oficial (Next.js + comunidad Payload)
+
+Doc oficial de Next.js instalada (`nextjs.org/docs`, v16.2.10, vía WebFetch — no bundleada en `node_modules/next/dist` en esta versión 15.5.18, confirmado que no existe ese path):
+
+> **Route Handlers**: Marks the path for revalidation. **The revalidation is done on the next visit to the specified path.**
+
+Es decir: `revalidatePath` llamado desde un Route Handler no actualiza nada de inmediato — solo "marca" el path, y la regeneración ocurre en la SIGUIENTE visita. Mi prueba de §2 SÍ incluyó múltiples "siguientes visitas" (varios `curl` con bypass) y ninguna regeneró — lo cual apunta a que el `revalidatePath` **nunca llegó a marcar el path como stale en primer lugar**, no a que "faltó una visita más".
+
+**El patrón documentado por la comunidad de Payload** (búsqueda dirigida, payloadcms.com/community-help): el enfoque estándar es que el hook `afterChange` **NO llama `revalidatePath`/`revalidateTag` directamente** — en cambio, hace un **`fetch()` HTTP real a un route handler dedicado `/api/revalidate`**, y ES ESE route handler (una request Next.js genuina, con su propio contexto de ejecución) el que llama `revalidatePath`/`revalidateTag`.
+
+**Gap identificado:** el código actual (`revalidateGlobal.ts`) llama `revalidatePath`/`revalidateTag` **inline, dentro del ciclo de vida asíncrono de Payload** (el hook `afterChange`, que corre anidado dentro del handler REST de Payload, no como una invocación HTTP fresca a un Route Handler propio). Aunque técnicamente el POST a `/api/globals/site-homepage` SÍ es un Route Handler de Next.js (`REST_POST` en `[...slug]/route.ts`), la ejecución del hook interno de Payload puede no preservar el contexto de ejecución (`AsyncLocalStorage`) que Next.js usa internamente para asociar la llamada a `revalidatePath` con la caché real del servidor — razón por la cual la comunidad de Payload evita esta llamada inline y prefiere el salto HTTP real a un endpoint dedicado.
+
+---
+
+## VEREDICTO: **(c) ambas causas — pero (a) es la dominante y explica el 100% del síntoma por sí sola**
+
+- **(a) El hook está mal wireado arquitectónicamente** (llama `revalidatePath` inline desde dentro del ciclo de Payload, no vía un Route Handler `/api/revalidate` dedicado con `fetch()`) — esto explica por qué **incluso baipaseando Cloudflare completamente, el origen real sigue sirviendo caché vieja**. Esta es la causa raíz que hay que arreglar primero — sin esto, nada más importa.
+- **(b) CDN de DO / Cloudflare edge** también cachea agresivamente (`age: 2611s`, `s-maxage=3600`) y depende de que `purgeCloudflareCache()` tenga los env vars correctos en runtime de DO (no verificable desde aquí) — pero es una capa **secundaria**: aunque se purgue perfectamente, si el origen (a) sigue sirviendo ISR stale, Cloudflare simplemente re-cachearía la MISMA versión vieja en el siguiente fetch al origen.
+- **Media sin hook** es un gap real y aislado (afecta reemplazos de archivo hechos directo en la Media library), pero no explica el síntoma de "texto también stale" que reporta Zavala — eso es 100% explicado por (a).
+
+**¿El SwitchPlan (Cloudflare delante) lo resolvería solo?** **No por sí solo.** Resolvería la capa (b) — Cloudflare como reverse-proxy con purge gestionado — pero si (a) sigue roto, el origen Next.js seguiría devolviendo HTML viejo en cada fetch fresco de Cloudflare al origen. **Hay que arreglar (a) primero; (b) es complementario, no sustituto.**
+
+## Fix de fondo propuesto (NO ejecutado)
+
+1. Crear `app/(frontend)/api/revalidate/route.ts` (Route Handler dedicado, protegido con un secret compartido vía header/query param) que reciba `{ tag? , path? }` y llame `revalidatePath`/`revalidateTag` **desde ahí** — contexto de ejecución garantizado por Next.js.
+2. Modificar `revalidateGlobal.ts` (y `Pages/hooks/revalidate.ts`) para que, en vez de llamar `revalidatePath`/`revalidateTag` inline, hagan `fetch(`${NEXT_PUBLIC_SITE_URL}/api/revalidate?secret=...&tag=...`)` — un HTTP round-trip real al propio servidor.
+3. Agregar `afterChange` a `Media` collection (gap aislado de §1) — mismo patrón de fetch a `/api/revalidate`, disparado por tag (ej. `revalidateTag('media')`) en vez de por path, ya que Media no tiene rutas propias.
+4. Verificar que `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ZONE_ID` estén seteados en runtime de DO (Zavala, dashboard) — capa (b), complementaria.
+
+**Escalo:** no ejecuté nada — el fix de (1)+(2) toca múltiples archivos (nuevo route handler + 2 hooks existentes) y requiere que Zavala confirme el approach antes de tocar el mecanismo de revalidación de todo el sitio.
