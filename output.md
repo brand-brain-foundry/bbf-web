@@ -7401,3 +7401,58 @@ Nada más tocado — revalidación inline (H-524), `next.config.mjs`, env, R2, D
 
 ## Commit (rama dedicada, sin merge)
 
+
+---
+
+# REPORTE — B-BBF-WEB-MERGE-REVALIDATE-60
+**Fecha:** 2026-07-02 · **Despacho:** B-BBF-WEB-MERGE-REVALIDATE-60
+**Tipo:** MERGE + DEPLOY (Modo Strategic: 1) · **Protocolo:** P-5
+**Rama:** `migracion-railway`
+
+---
+
+## Verificación pre-ejecución
+- `fix/revalidate-60` HEAD confirmado `df4d7ce`.
+- Confirmado los 6 `page.tsx` en `revalidate = 60` en esa rama antes de mergear.
+
+## Merge (§1)
+```
+git merge fix/revalidate-60 --no-ff
+→ Merge made by the 'ort' strategy. Sin conflictos.
+7 files changed, 47 insertions(+), 6 deletions(-)
+```
+Commit de merge: `5b014c1`. Confirmado post-merge: los 6 `page.tsx` en `revalidate = 60` en `migracion-railway`.
+
+## Push + redeploy (§2)
+```
+git push origin migracion-railway
+b8699d2..5b014c1  migracion-railway -> migracion-railway
+```
+Redeploy tardó ~8 minutos (dentro del rango observado en despachos anteriores).
+
+## Test de cierre EN PRODUCCIÓN
+
+**`s-maxage=60` confirmado:**
+```
+curl -I https://sivarbrains-web-odjwt.ondigitalocean.app/
+→ Cache-Control: s-maxage=60, stale-while-revalidate=31535940   (antes: 3600)
+```
+
+**Test real de reflejo ≤60s:** guardé un valor de prueba (`R60-TEST-...`) vía Payload Local API contra el Neon compartido con producción (mismo mecanismo que un save real de admin, sin pasar por el hook de revalidación on-demand ya que corrió desde un proceso externo — es decir, este test midió el **peor caso**: solo el techo de 60s, sin la asistencia de la revalidación instantánea de H-524):
+
+```
+t+1s:  no aparece aún
+t+9s:  R60-TEST-1783027202690   ← REFLEJADO
+```
+
+**Reflejado en 9 segundos — muy dentro del techo de 60s.** Confirmado también a través del edge de Cloudflare (no solo bypass): `cf-cache-status: BYPASS`, contenido correcto.
+
+## Commit desplegado en DO: `5b014c1`
+
+Restauré `capabilities.eyebrow` (es) a `"Servicios"` tras el test.
+
+---
+
+## Veredicto: mitigación D-BBF-04-REV en producción, confirmada de punta a punta
+
+El techo de staleness pasó de ~1h a ~60s (y en la práctica, mucho menos — 9s en esta prueba). Esto es el puente mientras se configura el dominio custom + `disable_edge_cache` (patrón de fondo confirmado en el despacho de investigación anterior). Pendiente, fuera de alcance de este despacho: la configuración de dominio custom es un paso de dashboard de Zavala.
