@@ -8351,3 +8351,90 @@ feat(D-BBF-MEDIA-SEO): Fase 0 — campos AEO/SEO en Media collection
 **Fase 0 completa hasta donde el entorno lo permite.** Schema correcto, tipos generados limpios, migración creada y verificada (puramente aditiva, reversible) — pero **no aplicada a la base de datos**, bloqueada por la limitación de TTY ya anticipada en el propio despacho. Nada forzado, nada bypaseado. `alt`/`caption`/`credit` intactos. Fases 1 (rehacer ContentMasters), 2 (`SiteHomepage.ts` string→relación) y 3 (builders + `page.tsx`) quedan explícitamente fuera, como pide el ALCANCE OUT.
 
 **Siguiente paso que requiere de ti:** correr `pnpm payload migrate` en un terminal con TTY para aplicar la migración antes de continuar a Fase 1/2.
+
+---
+
+# REPORTE — B-BBF-WEB-VIDEO-PACKAGE-01
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-VIDEO-PACKAGE-01
+**Tipo:** FEATURE — nueva collection + schema (Modo Strategic: 1, Arquitecto) · **Protocolo:** P-5
+**Decisión:** D-BBF-MEDIA-PACKAGE Opción A (firmada) — subsume Fase 2
+**Rama dedicada:** `feat/video-package-01` (basada en `feat/media-seo-fase0`, NO en fase2) — **SIN merge**
+
+---
+
+## §A-§D — Verificación pre-ejecución
+
+- **§A:** `git status` limpio antes de empezar (solo untracked preexistentes). Rama activa era `feat/media-seo-fase2`. **Cero archivos de migración de Fase 2 a medias** — confirmado con `find -newer` sobre la migración de Fase 0 y `git diff` sobre `migrations/index.ts` (sin diff real). Nada que descartar a nivel archivo — Fase 2 simplemente no se usa como base.
+- **§B:** Confirmado en `feat/media-seo-fase0` (la base real usada): `videoSources[].src` es **texto plano** (`type: 'text'`), no relación — el estado correcto para partir directo al modelo paquete sin pasar por el estado intermedio de Fase 2.
+- **§C:** Confirmado con `pnpm payload migrate:status` (no pude hacer `SELECT` directo, sin credenciales DB — esto es la alternativa equivalente sin tocar secretos): `20260703_154415_media_seo_fase0` aparece con **`Yes`** en la columna de aplicado, batch 50 (el más reciente). Fase 0 está aplicada.
+- **§D:** Re-verificado en vivo (API, no asumido de despachos anteriores): los 4 archivos + 2 posters resuelven a Media docs reales.
+
+| Uso | Archivo | Media ID |
+|---|---|---|
+| Hero, primary | `SB-Demo-video.webm` | 39 |
+| Hero, fallback | `SB-Demo-video.mp4` | 20 |
+| Hero, poster | (actual) | 22 |
+| Case, primary | `SB-Demo-video-HaciendaReal.webm` | 41 |
+| Case, fallback | `SB-Demo-video-HaciendaReal.mp4` | **40** (confirmado — no 20, son archivos distintos) |
+| Case, poster | `SB-Demo-HaciendaReal.webp` | 42 |
+
+**§A-§D sin inconsistencias — se procedió a construir.**
+
+## §1 — Collection `video-packages` creada
+
+`src/payload/collections/videoPackages/index.ts` — replica el patrón de acceso de `Media`/`Entities` (`isAdminOrEditor`/`publicRead`) y el patrón de campos de `contentItems/blocks/Video.ts` (`video`+`poster` → aquí `primary`+`fallback`+`mobile`+`poster`). Los 9 campos exactos pedidos: `title`, `primary` (required), `fallback` (required), `mobile` (opcional), `poster` (opcional), `seoName`, `seoDescription`, `duration`, `inLanguage`.
+
+**Corrección técnica que hice sobre la marcha:** el despacho no especificó el `type` de Payload para el campo que conecta `hero.media` → `video-packages` (solo dijo "upload/relationTo"). Usé `type: 'upload'` en el primer intento y me autocorregí: **`upload` solo es válido cuando `relationTo` apunta a una collection con `upload: true` (como `Media`)**. `video-packages` NO es una collection de upload — es un doc regular con relaciones adentro. El tipo correcto es **`type: 'relationship'`**, que es lo que quedó en el código final.
+
+## §2 — Registrada en `payload.config.ts`
+
+Import + entrada en el array `collections: [...]`, junto a `Redirects` (última existente). Sin tocar orden de las demás.
+
+## §3 — `SiteHomepage.ts`: antes/después
+
+**Hero (`hero.media`) — antes:**
+```ts
+videoPoster: { type: 'upload', relationTo: 'media' }
+videoSources: { type: 'array', fields: [{ src: text }, { type: select }] }
+```
+**Hero — después:**
+```ts
+videoPackage: { type: 'relationship', relationTo: 'video-packages', required: false }
+```
+
+**Case Study (`caseStudy`) — antes:** mismo patrón (`videoPoster` + `videoSources[]`).
+**Case Study — después:** `videoPackage: { type: 'relationship', relationTo: 'video-packages' }`.
+
+**Decisión de diseño confirmada:** el poster **se movió al paquete** (campo `poster` dentro de `video-packages`), tal como recomendaba el diagnóstico — ya no existe `videoPoster` como campo hermano en ninguno de los dos. `mediaAsset` (imagen estática 16:9 alternativa del Case) se dejó intacto, solo actualicé su texto de ayuda (decía "usar videoPoster + videoSources", ahora dice "usar videoPackage" — campo distinto, solo corregí una referencia textual que hubiera quedado obsoleta).
+
+## §4 — `generate:types`: limpio
+
+Confirmado en `payload-types.ts`: interfaz `VideoPackage` completa con los 9 campos y tipos correctos (`primary: number | Media` sin null porque es required; `mobile?/poster?: (number | null) | Media` porque son opcionales). `hero.media.videoPackage?: (number | null) | VideoPackage` y `caseStudy.videoPackage?: (number | null) | VideoPackage` — confirmado que **NO es un string**, es una relación real tipada.
+
+## §5 — Migración: bloqueada por TTY (tercera vez, mismo patrón)
+
+`pnpm payload migrate:create video_package_01` disparó un menú interactivo — Payload no puede decidir solo si `enum_video_packages_in_language` es un enum **nuevo** o un **rename** de `enum_site_homepage_hero_media_video_sources_type` / `..._case_study_video_sources_type` (los enums viejos de codec, coincidencia estructural que dispara la ambigüedad). **Cero archivos creados** (confirmado, mismo chequeo que en Fase 2 — sin proceso colgado, sin diff en `migrations/index.ts`).
+
+**Recomendación con alta confianza para cuando lo corras:** elegir **`+ enum_video_packages_in_language create enum`** — NO renombrar. Los enums viejos (`webm-av1`/`webm-vp9`/`mp4-h264`/etc., valores de **codec**) no tienen ninguna relación semántica con el nuevo enum (`es`/`en`, valores de **idioma**). Un rename sería incorrecto — coincidencia de forma, no de contenido.
+
+## Data-migration (§3 del ALCANCE IN): bloqueada transitivamente, plan documentado
+
+No pude crear los 2 `video-packages` ni re-vincular Hero/Case porque **la tabla `video_packages` no existe todavía** en la base de datos — depende de que la migración de schema (§5, bloqueada) se aplique primero. Plan exacto para cuando eso pase (vía admin, no requiere script — son 2 docs + 2 relaciones):
+
+1. Crear doc `video-packages`: `title: "SB-Demo Hero"`, `primary: media 39`, `fallback: media 20`, `poster: media 22`.
+2. Crear doc `video-packages`: `title: "SB-Demo Hacienda Real"`, `primary: media 41`, `fallback: media 40`, `poster: media 42`.
+3. `hero.media.videoPackage` → paquete 1. `caseStudy.videoPackage` → paquete 2.
+
+## Qué se descartó de Fase 2
+
+La rama `feat/media-seo-fase2` completa (conversión de `videoSources[].src` de texto a `upload`/`relationTo:media`, array de N relaciones) — **no se usó como base ni se mergeó**. Este despacho parte directo de `feat/media-seo-fase0` (Fase 0 sola) al modelo paquete, saltándose el estado intermedio de "array de relaciones sueltas" que Fase 2 había construido. La rama `feat/media-seo-fase2` queda huérfana en el repo (pushed a origin, sin mergear) — no la borré, per SB_Law (no destructivo sin instrucción explícita); si querés que la elimine, decímelo.
+
+## Alcance respetado
+
+No toqué `HeroVideo.tsx` (componente), builders de `VideoObject`, ContentMasters/Canon, ni `Fase 2` (se descarta como pide el despacho, no se aplica). `env`/`DNS`/`R2 config` intactos.
+
+---
+
+## Veredicto
+
+**Collection + schema construidos y verificados end-to-end en código** (§1-§4 completos, con una autocorrección técnica documentada: `relationship` en vez de `upload`). **Migración bloqueada por TTY** (§5) — recomendación clara para cuando la corras. **Data-migration bloqueada transitivamente** hasta que la migración exista — plan de 3 pasos documentado, ejecutable vía admin sin script. Zero secretos. Nada forzado, nada corrompido.
