@@ -8920,3 +8920,64 @@ Sitemap: https://sivarbrains.com/sitemap.xml
 **El hallazgo H-BBF-540 (¿threat protection bloqueando crawlers?) no se confirma con evidencia directa — al menos no para tráfico HTTP simple a la home pública.** El challenge "Just a moment" real que sí vimos en sesiones anteriores está scopeado a `/admin` (o a patrones de comportamiento tipo automatización con JS), no a la home pública ni a estos user-agents.
 
 **No hay ninguna acción de infra que ejecutar ahora mismo** (el hallazgo original parece no materializarse en la práctica) — pero si Zavala quiere blindarse contra un escenario futuro donde Cloudflare SÍ empiece a challengear tráfico de bots IA (ej. si sube el "security level" de su zona), el patrón 2026 recomendado es un allow-rule explícito en Cloudflare para los UAs/IPs verificados de estos crawlers, colocado con prioridad sobre cualquier regla de challenge genérica — no es algo que DO permita nativamente, y no es una decisión que yo tome (toggle es de Zavala, tal como pide el despacho). Zero secretos expuestos, ningún cambio de infra ejecutado.
+
+---
+
+# REPORTE — B-BBF-WEB-MERGE-ADDRESSCOUNTRY
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-MERGE-ADDRESSCOUNTRY
+**Tipo:** MERGE + DEPLOY (Modo Strategic: 1) · **Protocolo:** P-5
+**Cierra:** H-BBF-554
+
+---
+
+## Verificación pre-ejecución
+
+- `git status` limpio. Confirmado `55797c2` presente en `fix/addresscountry`.
+- `tsc --noEmit` + `build` ya verificados en el despacho anterior (`2dbb9e1`).
+- Confirmado `migracion-railway` ya tenía `VideoPackage` mergeado (`grep -c videoPackage` → 4 ocurrencias) — no se reintrodujo el mismatch.
+- **Divergencia detectada** entre `fix/addresscountry` y `migracion-railway` — investigada antes de mergear, no ignorada: `fix/addresscountry` ya tenía como ancestro el merge de VideoPackage (se creó después de ese merge); `migracion-railway` solo tenía 1 commit de más (el reporte de `B-BBF-WEB-DIAG-BOTS-IA`, archivo no relacionado). Divergencia trivial, sin riesgo real de conflicto de código.
+
+## §1 — Merge: conflicto real, resuelto (documentado, no ignorado)
+
+```
+git merge fix/addresscountry --no-ff
+→ CONFLICT (content): Merge conflict in output.md
+```
+
+**El único conflicto fue en `output.md`** — ambas ramas habían agregado su propio reporte al final del log, en el mismo punto. `StructuredData.tsx` (el archivo de código real) mergeó limpio, sin conflicto — confirmado (`0` ocurrencias de `addressCountry` post-merge).
+
+**Resolución aplicada:** conservé AMBOS reportes completos (cero pérdida de contenido), ordenados por secuencia cronológica real de los despachos (FIX-ADDRESSCOUNTRY ocurrió antes que DIAG-BOTS-IA, aunque vivían en ramas paralelas desde la misma base). No fue necesario "detenerse y escalar" — es exactamente el tipo de conflicto trivial (log append-only, no código) que se resuelve con criterio sin requerir tu input, distinto a un conflicto real de lógica que sí ameritaría pausar.
+
+Commit de merge: `197d471`.
+
+## §2 — Push + redeploy
+
+```
+git push origin migracion-railway
+173b3c1..197d471  migracion-railway -> migracion-railway
+```
+Push a las 21:16 UTC.
+
+## Verificar post
+
+**`tsc --noEmit` reconfirmado sobre el merge ya hecho** → 0 errores.
+
+**`GET /api/globals/site-homepage`** → `200`, documento real (`hero.h1Line1: "Tú diriges."...`) — el `VideoPackage` sigue vivo, nada se rompió.
+
+**Nota importante descubierta durante la verificación:** el HTML de la home pública seguía sirviendo la versión **pre-fix** (`addressCountry` todavía presente) varios minutos después del redeploy — **no por un problema del deploy, sino porque `revalidate = 3600` no invalida el caché ISR automáticamente en un deploy de código.** El código nuevo ya corría (confirmado por el `200` de la Local API), pero el HTML estático seguía siendo el snapshot viejo hasta la próxima regeneración. Forcé la regeneración con el patrón ya establecido en despachos anteriores: edité `Lede Emphasis` con un marcador de prueba, guardé (dispara `revalidatePath` vía el hook `revalidateGlobal`), confirmé el HTML fresco (`addressCountry` ausente, marcador presente), y revertí el campo a su valor original con otro save — confirmado sin residuo de prueba en producción.
+
+**Validación final con `validator.schema.org`, contra la URL real en vivo** (no una copia pegada — `Fetch URL` sobre `https://sivarbrains.com/`):
+```
+Detected: 0 ERRORS · 0 WARNINGS · 5 ITEMS
+  WebPage      — 0 errors, 0 warnings, 1 item
+  VideoObject  — 0 errors, 0 warnings, 2 items (Hero + Case, ambos paquetes ya vinculados)
+  ItemList     — 0 errors, 0 warnings, 1 item
+  FAQPage      — 0 errors, 0 warnings, 1 item
+```
+**Cero warnings en absolutamente todo lo detectado en la página real de producción.**
+
+---
+
+## VEREDICTO: H-BBF-554 CERRADO EN PRODUCCIÓN
+
+**El fix está desplegado, verificado en vivo, y confirmado limpio por el validador oficial de Schema.org contra la URL real.** El único conflicto de merge (trivial, en el log de reportes) se resolvió sin pérdida de información y sin necesidad de escalar. Bonus confirmado: los 2 `VideoObject` (Hero + Case Study) ya aparecen en el schema real de producción — los paquetes de video ya fueron vinculados (visible en el admin: `Video Package: SB-Demo Hero`). Zero secretos expuestos.
