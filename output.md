@@ -8020,3 +8020,105 @@ video[1] (Case Study):   networkState=1 (IDLE) · readyState=4 (HAVE_ENOUGH_DATA
 **H-BBF-542, H-BBF-544 y H-BBF-522 — los tres CERRADOS.** Hero y Case Study (Hacienda Real) ambos con doble fuente (webm-vp9 + mp4-h264), ambos verificados `206`, ambos confirmados cargando y listos para reproducir (`readyState=4`, sin errores). Campos hermanos intactos. Cero cambios de código, cero secretos.
 
 Sigue pendiente, fuera de este despacho: si el contenido real de §3 (Case Study) debe ser un video propio de Hacienda Real en vez de `SB-Demo-video` como referencia compartida — decisión de contenido tuya (D-BBF-07), ya aplicada aquí per tu confirmación explícita de usar `SB-Demo-video` como referencia en ambos.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-VIDEO-SEO
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-DIAG-VIDEO-SEO
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2+3) · **Protocolo:** P-6
+**Hallazgo:** H-BBF-543 · **NO se ejecutó ningún cambio**
+
+---
+
+## §1 (Modo 2) — JSON-LD existente
+
+`application/ld+json` se inyecta en: `page.tsx` (home), `cerebro-marca/page.tsx`, `contacto/page.tsx`, `como-trabajamos/page.tsx`, más helpers en `src/lib/seo/jsonld.ts`, `src/lib/seo/jsonLd/*.ts`, `src/components/seo/{JsonLd,StructuredData}.tsx`.
+
+Tipos ya en uso: `WebPage`, `WebSite`, `Organization`, `ImageObject`, `ContactPage`, `BreadcrumbList`, `ContactPoint`, `FAQPage`, `Article`, `Person`, `Service`, `ItemList`, **`VideoObject`**.
+
+**`VideoObject` YA existe** (`page.tsx:82-98`) — pero es básico:
+```js
+{
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  '@id': `${siteDomain}/#video-hero`,
+  name: hero.media.demoLabel,
+  description: hero.media.footCaption ?? hero.media.demoLabel,
+  thumbnailUrl,
+  uploadDate: site.updatedAt,       // ⚠️ fecha de actualización del GLOBAL, no del video real
+  inLanguage: ...,
+  contentUrl: heroVideoSrc,          // toma solo la PRIMERA fuente del array (ahora .webm)
+}
+```
+
+**Faltan** (propiedades Schema.org VideoObject recomendadas por Google para rich results, no presentes):
+- `duration` (ISO 8601, ej. `PT33S`) — el dato existe en el archivo (33s, confirmado vía ffprobe) pero no se lee ni se inyecta.
+- `caption` / `subtitles` (referencia a WebVTT) — no existe el archivo, ver §4.
+- `embedUrl` — no aplica (no es un embed de terceros), no es gap real.
+
+**Gap adicional no cubierto por el despacho pero relevante:** el video de **Case Study (Hacienda Real)** (`caseStudy.videoSources`) **no tiene ningún `VideoObject` propio** — solo existe el del Hero. Un `VideoObject` para el video del caso (con su propio `name`/`description` ligados a Hacienda Real, no al Hero) sería parte natural del mismo fix.
+
+## §2 (Modo 2) — Schema de Payload: campos disponibles vs faltantes
+
+`SiteHomepage.ts` → grupo `media` (Hero, líneas 100-172): `chromeLabel`, `videoPoster` (upload), `videoSources[].{src,type}`, `demoLabel`, `footCaption`. **Nada más.**
+
+**No existen campos para:** `duration` (numérico o ISO 8601), `transcript` (texto plano o referencia), `caption`/subtítulos (upload de `.vtt`), fecha de publicación específica del video (usa `site.updatedAt` como proxy, no un campo propio).
+
+**Veredicto §2: sí hay que extender el schema.** No es solo un problema de componente — faltan los campos de origen de datos. Mínimo viable: `duration` (number, segundos — se puede derivar/setear manualmente, no hay forma de leerlo automáticamente del archivo en el `beforeChange` sin invocar ffprobe server-side, fuera de alcance de un fix simple) + `captionsFile` (upload, `.vtt`) si se decide dar soporte a subtítulos.
+
+## §3 (Modo 3, bbf-docs) — ¿doctrina existente o gap del canon?
+
+Revisé los 8 docs SEO-AEO canónicos (`SB_DocumentationIndex.md` §3, confirmado v1.0–v2.2, todos en `04-strategic/web-public/Content/Final/`). `VideoObject` aparece mencionado en exactamente 2:
+
+- `SEO-AEO-cerebro-marca-SB.md:920`: *"Considerar video corto con su `VideoObject` Schema"* — ítem de **futuro, no firmado**, en la sección "próximos pasos", sobre un video que **no existe todavía** en esa página.
+- `SEO-AEO-como-trabajamos-SB.md:972`: mismo patrón — *"Evaluar video corto con `VideoObject` Schema"*, especulativo, video no existente.
+
+**Ninguno de los 8 docs define un patrón/doctrina de VideoObject, transcript o captions para el Hero (home) o el Case Study (Hacienda Real)** — que son los videos que SÍ existen hoy en producción. Búsqueda en `BBF_WebPublicaTopologiaCanon_v0_1.md` (Canon §5.2.3, la fuente de los tipos Schema.org obligatorios): no menciona `VideoObject` en la lista de schemas requeridos (`Organization`, `Article`, `CaseStudy`, `FAQPage`, `BreadcrumbList`, `PodcastEpisode`/`Series`, `Person`).
+
+**Veredicto §3: es un gap del canon, no una desviación de doctrina existente.** El `VideoObject` que ya está en `page.tsx` (H-BBF-543 lo llama "básico") se implementó ad-hoc (marcado `A6 (AEO)` en el comentario) sin que el Canon lo especificara — no hay contradicción que resolver, solo un patrón a definir y, una vez definido, agregarlo al Canon §5.2.3.
+
+## §4 (Modo 2) — Captions/transcript: confirmado que NO existen
+
+- `grep track` en `HeroVideo.tsx` → **cero resultados**. El componente no soporta `<track>` en absoluto (ni la prop, ni el sub-componente compound).
+- `find *.vtt` en todo el repo → **cero archivos**.
+- Campo de caption en Payload: el único "caption" que existe es el de `Media` (alt-text de imagen) y el de `VideoBlock` (`contentItems/blocks/Video.ts:19`, un texto de figura/leyenda visible, NO un archivo WebVTT de subtítulos).
+
+**Confirmado: no hay soporte de captions/transcript en ningún nivel** (dato, schema, ni componente).
+
+## §5 (Modo 2) — Thumbnail: cumple el requisito de Google
+
+```
+GET /api/media/22 → { filename: "SB-video.webp", width: 1920, height: 1080, mimeType: "image/webp" }
+```
+
+**1920×1080 — muy por encima del mínimo recomendado por Google (≥1200px ancho para elegibilidad de thumbnail grande).** Servido vía `/api/media/file/SB-video.webp`, combinado en `page.tsx:79-81` con `siteId.siteDomain` (`https://sivarbrains.com`) → URL absoluta HTTPS pública, ya confirmada accesible en despachos anteriores. **Sin gap en §5.**
+
+## §6 (Modo 3) — ¿El video tiene habla o es mudo/ambiental?
+
+Sin acceso a `curl`/descarga directa permitido por el sandbox para el archivo completo, usé `ffprobe`/`ffmpeg` (sí disponibles localmente) apuntando directo a la URL pública:
+
+- **Stream de audio confirmado:** códec Opus, estéreo, 48kHz, tag de idioma `eng`, duración `33.224s` (coincide exacto con `video.duration` observado en browser).
+- **`silencedetect` (umbral -30dB, mín 0.5s):** solo **un** gap de silencio detectado, de 0.89s (29.47s–30.36s) — el resto de los 33s tiene audio continuo, no es un track vacío ni ambiental-esporádico.
+
+**No puedo confirmar si el contenido es habla (voz humana) vs. música/SFX de fondo** — eso requeriría transcripción real (Whisper u otro STT), que no ejecuté (herramienta no disponible en este entorno, y bajar/transcribir el archivo completo excede el alcance read-only de este despacho). **Esto queda para que tú lo confirmes** (ya lo sabes, es tu contenido) — determina si aplica un transcript real o si basta con `description` + (opcionalmente) captions descriptivos genéricos tipo "[música de fondo]".
+
+---
+
+## VEREDICTO CC — qué existe vs qué falta
+
+| Elemento | Estado |
+|---|---|
+| `VideoObject` para el Hero | ✅ Existe, básico — falta `duration`, falta `caption`/transcript |
+| `VideoObject` para Case Study (Hacienda Real) | ❌ **No existe** — gap no capturado por el despacho original, pero real |
+| Campos Payload para duration/transcript/captions | ❌ No existen — requiere extender schema |
+| Doctrina canónica (8 docs SEO-AEO + Canon §5.2.3) | ❌ No define un patrón — gap del canon, no desviación |
+| `<track>` / `.vtt` / soporte de captions en componente | ❌ No existe en ningún nivel |
+| Thumbnail (1920×1080, HTTPS público) | ✅ Cumple con margen |
+| Naturaleza del audio (habla vs. música) | ⚠️ Audio continuo confirmado (33s, solo 1 gap de silencio) — tipo de contenido sin confirmar, decisión/conocimiento tuyo |
+
+**El fix real (no ejecutado, definido aquí para tu decisión) tendría 3 partes:**
+1. Extender `SiteHomepage.ts` (Hero + `caseStudy`): agregar `duration` (y `captionsFile` si aplica).
+2. Extender `videoObjectSchema` en `page.tsx` con `duration` + un segundo `VideoObject` para el Case Study.
+3. Si el audio tiene habla real (tu confirmación en §6): generar `.vtt` + campo de subida + `<track>` en `HeroVideo.tsx`. Si es solo música/ambiental: omitir captions, quizás anotar `"videoQuality": "HD"` o similar no es prioritario.
+
+**No ejecuté nada de esto** — es diagnóstico puro, per el despacho. Zero secretos expuestos.
