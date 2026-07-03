@@ -8122,3 +8122,89 @@ Sin acceso a `curl`/descarga directa permitido por el sandbox para el archivo co
 3. Si el audio tiene habla real (tu confirmación en §6): generar `.vtt` + campo de subida + `<track>` en `HeroVideo.tsx`. Si es solo música/ambiental: omitir captions, quizás anotar `"videoQuality": "HD"` o similar no es prioritario.
 
 **No ejecuté nada de esto** — es diagnóstico puro, per el despacho. Zero secretos expuestos.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-SCHEMA-DTS
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-DIAG-SCHEMA-DTS
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2+3) · **Protocolo:** P-6
+**Hallazgo:** H-BBF-543 (preparación builder) · **NO se ejecutó ningún cambio**
+
+---
+
+## §1 — ¿`schema-dts` tipado o JSON-LD a mano?
+
+**Ambos conviven, y sí hay un patrón builder establecido — pero VideoObject no lo sigue.**
+
+`schema-dts` está instalado (`package.json:75`, `^2.0.0`) y se usa en 4 builders bajo `src/lib/seo/jsonLd/`:
+- `webPage.ts` → `buildWebPageJsonLd({page, locale, domain}): WithContext<WebPage>`
+- `breadcrumbList.ts` → `buildBreadcrumbJsonLd`
+- `faqPage.ts` → `buildFaqPageJsonLd`
+- `article.ts` → `buildArticleJsonLd`
+
+Todos exportados vía barrel `src/lib/seo/jsonLd/index.ts`. Patrón consistente: función pura, recibe datos planos + `locale` + `domain`, devuelve objeto tipado con `WithContext<T>` de `schema-dts` (type-safety en compile time contra el spec de Schema.org).
+
+**El `VideoObject` actual (`page.tsx:82-98`) NO sigue este patrón** — es un objeto literal inline, sin tipo `schema-dts`, construido directo en el page component. Tampoco lo sigue el `webPageSchema` que vi en el mismo archivo (`page.tsx:114-...`) — page.tsx solo importa `buildFaqPageJsonLd` (línea 24) del barrel; `webPageSchema` y `videoObjectSchema` están hardcodeados ahí mismo, duplicando lo que `buildWebPageJsonLd` ya resuelve. **Gap de consistencia adicional, no pedido por el despacho pero relevante**: dos objetos deberían migrar al patrón builder, no solo VideoObject.
+
+**Veredicto §1: extender el patrón, no crear uno nuevo.** Un `buildVideoObjectJsonLd({...}): WithContext<VideoObject>` en `src/lib/seo/jsonLd/videoObject.ts` es exactamente consistente con lo que ya existe.
+
+## §2 — Data-flow actual del VideoObject (`page.tsx:82-98`)
+
+| Campo VideoObject | Fuente Payload | Línea |
+|---|---|---|
+| `name` | `hero.media.demoLabel` | 86 |
+| `description` | `hero.media.footCaption ?? hero.media.demoLabel` | 87 |
+| `thumbnailUrl` | derivado de `hero.media.videoPoster` → `posterUrl` (línea 64-68) + `siteId.siteDomain` | 79-81, 88 |
+| `uploadDate` | `site.updatedAt` (fecha de actualización del GLOBAL completo, NO del video) | 89 |
+| `inLanguage` | derivado de `locale` (`es-SV`/`en-US`, hardcoded, no de Payload) | 90 |
+| `contentUrl` | `hero.media.videoSources?.[0]?.src` (primera fuente del array — hoy el `.webm`) | 78, 91-97 |
+
+**Nada hardcoded de contenido real** — todo viene de Payload vía `site` (el `findGlobal('site-homepage')` de la línea 39). Solo `inLanguage` usa un mapeo hardcoded del locale, no un campo de Payload (aceptable, es derivado del contexto de render, no contenido editorial).
+
+**Confirmado el gap ya reportado en H-BBF-543:** no hay `duration` (existe el dato real, 33s confirmado vía `ffprobe` en el despacho anterior, pero no se lee de ningún campo porque no existe el campo).
+
+## §3 — ¿Existen `@id` de Organization y CaseStudy para conectar por `@graph`?
+
+**Organization: SÍ existe**, `@id: "${domain}/#org"` (`src/components/seo/StructuredData.tsx:184`), emitido a nivel layout (todas las páginas) dentro de un `@graph` real (línea 181). Un `VideoObject` podría referenciarlo con `publisher: {'@id': domain + '#org'}` sin duplicar datos.
+
+**CaseStudy: NO existe en ningún archivo del repo** (`grep -rn "'CaseStudy'"` → cero resultados). La regla `50-seo-geo.md` del proyecto menciona `CaseStudy custom schema en cada Case` como requisito, pero **nunca se implementó** — es deuda existente, no algo que este despacho deba resolver, pero **bloquea conectar el VideoObject del Case Study (Hacienda Real) a una entidad `CaseStudy` por `@id`** porque esa entidad no existe todavía. El VideoObject del Case tendría que vivir standalone (sin `isPartOf`/`about` hacia un CaseStudy) hasta que esa deuda se resuelva aparte.
+
+## §4 — Canon §5.2.3: lista exacta + formato ContentMaster
+
+**Canon §5.2.3** (`BBF_WebPublicaTopologiaCanon_v0_1.md:610-646`) — lista **exacta y completa** de schemas obligatorios:
+1. `Organization` (todas las páginas, vía layout root)
+2. `Article` (cada Post)
+3. `FAQPage` (páginas con preguntas frecuentes)
+4. `BreadcrumbList` (páginas anidadas)
+
+**`VideoObject` NO aparece en esta lista** — confirma otra vez (ya lo vi en el despacho anterior) que es un gap del Canon, no una desviación de doctrina. Nota aparte: la regla `50-seo-geo.md` (que cita esta misma fuente) menciona además `CaseStudy`, `PodcastEpisode`/`Series` y `Person` que tampoco están en este §5.2.3 del Canon v0_1 — sugiere que la regla del proyecto es más aspiracional/adelantada que el Canon formal, o que hay una versión más nueva del Canon no localizada. Lo señalo como discrepancia a revisar, no la resuelvo yo.
+
+**Formato ContentMaster** (`SB_ContentMaster_Homepage.md`, confirmado **v1.2**, coincide con lo que pide el despacho): documento estructurado en secciones `§N.M`, cada campo editorial con su valor ES/EN en bloques de cita. Ejemplo real (§2.1 Hero, ver §5 abajo): título, lede, énfasis, botones, ticker — todo como texto plano versionado, no JSON.
+
+## §5 — ¿El ContentMaster Homepage tiene sección para campos del video?
+
+**No existe — hay que crearla.** `§2.1 Hero` (`SB_ContentMaster_Homepage.md:142-166`) tiene: Título (H1), Lede ES/EN, Énfasis ES/EN, Botones, Ticker. **Cero mención de "video" en todo el documento** (`grep -i video` → sin resultados).
+
+Hoy el `VideoObject` reutiliza `demoLabel`/`footCaption` — campos pensados como **labels de UI** (la etiqueta bajo el video, el texto del footer del frame), no como copy editorial optimizado para AEO/GEO (ej. una `description` de 1-2 frases pensada para que un LLM la cite, distinta de lo que se ve en pantalla). Confundir ambos usos es exactamente el tipo de atajo que erosiona calidad AEO con el tiempo.
+
+**Se necesita agregar una subsección** (ej. `§2.1.1 Hero — Video` o similar) con al menos: `name` (título corto del video, distinto del demoLabel), `description` (AEO-ready, 1-2 frases), y si aplica, un resumen de qué muestra el video (para servir de base al `transcript`/`caption` si Zavala confirma que el audio tiene habla, pendiente de H-BBF-543 §6).
+
+---
+
+## VEREDICTO CC
+
+| Pregunta | Respuesta |
+|---|---|
+| ¿Extender builder o crear uno nuevo? | **Extender** — `src/lib/seo/jsonLd/videoObject.ts`, mismo patrón que los 4 builders existentes (`WithContext<VideoObject>` de `schema-dts`) |
+| ¿Conectar a Organization por `@graph`? | **Sí, ya existe el `@id`** (`${domain}/#org`) — usar `publisher: {'@id': ...}` |
+| ¿Conectar a CaseStudy por `@graph`? | **No es posible hoy** — `CaseStudy` no está implementado en ningún lado (deuda separada, fuera de este fix) |
+| ¿Qué rellenar en ContentMaster? | **Crear subsección nueva** en `SB_ContentMaster_Homepage.md` §2.1 — no reutilizar `demoLabel`/`footCaption` como si fueran copy AEO |
+| ¿Canon lo exige? | **No** — gap confirmado, no desviación (§5.2.3 no incluye VideoObject) |
+
+**Definición del fix (no ejecutado, para tu decisión):**
+1. `bbf-docs`: agregar subsección de video al ContentMaster Homepage (y al de Case Hacienda Real) con `name`/`description` AEO-ready.
+2. `bbf-web`: crear `buildVideoObjectJsonLd` en `src/lib/seo/jsonLd/videoObject.ts`, tipado con `schema-dts`, leyendo los nuevos campos de ContentMaster/Payload (no `demoLabel`/`footCaption`) + `duration` (campo nuevo en schema, ver despacho anterior) + `publisher: {'@id': domain+'#org'}`.
+3. Instanciar un segundo `VideoObject` para el Case Study (standalone, sin conexión a `CaseStudy` hasta que esa entidad exista).
+4. (Opcional, fuera de alcance de VideoObject) Migrar `webPageSchema` inline de `page.tsx` a usar `buildWebPageJsonLd` — inconsistencia detectada en §1, no bloqueante.
+
+**No ejecuté nada — puro diagnóstico, per el despacho.** Zero secretos expuestos.
