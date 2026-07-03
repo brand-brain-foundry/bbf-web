@@ -7734,3 +7734,90 @@ Guardado vía Payload admin: **"Updated successfully."**
 ## Veredicto
 
 **Dato corregido, verificado contra archivos que existen y sirven 200, cero cambio de código, cero secretos tocados.** Pendiente únicamente tu confirmación visual en browser normal para cerrar H-BBF-522 definitivamente.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-R2-VIDEO-SERVING
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-DIAG-R2-VIDEO-SERVING
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2+1) · **Protocolo:** P-6
+**Hallazgo:** H-BBF-541 · **NO se ejecutó ningún fix, NO se tocó el dato**
+
+---
+
+## Nota de método
+
+Curl directo a `sivarbrains.com` fue denegado por el sandbox de este entorno (restricción de red saliente, no relacionada con Cloudflare). Repliqué exactamente las mismas pruebas (`fetch()` con headers `Range`, leyendo `status`/`headers` reales) desde un tab de browser ya autenticado sobre producción real — mismo resultado observable que `curl -I`, solo un canal de ejecución distinto.
+
+## §1 — El video en R2
+
+```
+GET /api/media/20  (Payload Media API, publicRead)
+→ { id: 20, filename: "SB-Demo-video.mp4", mimeType: "video/mp4", filesize: 17895696 }
+```
+
+Confirmado: `media/20` existe, es `SB-Demo-video.mp4`, 17.9 MB, `video/mp4`. **El `.webm` NO existe** — probado directo:
+
+```
+HEAD /api/media/file/SB-Demo-video-1.webm → 404 (application/json)
+HEAD /api/media/file/SB-Demo-video.webm   → 404 (application/json)
+```
+
+Zavala solo subió el `.mp4`. Nunca hubo un `.webm` en R2 con ese nombre (ni variante).
+
+## §2 — Range requests: **funcionan perfectamente, contradicen la hipótesis del despacho**
+
+```js
+fetch('/api/media/file/SB-Demo-video.mp4', {headers: {Range: 'bytes=0-1023'}})
+→ status: 206
+→ content-type: video/mp4
+→ content-length: 1024
+→ content-range: bytes 0-1023/17895696
+→ accept-ranges: bytes
+→ server: cloudflare, cf-ray: presente, cf-cache-status: DYNAMIC
+
+fetch('/api/media/file/SB-video.webp', {headers: {Range: 'bytes=0-1023'}})  // poster, comparación
+→ status: 206  (mismo comportamiento correcto)
+```
+
+**El video responde `206 Partial Content` correctamente — igual que el poster.** No hay diferencia de comportamiento entre ambos. La hipótesis principal del despacho (Range requests rotos) queda **descartada por evidencia directa**.
+
+## §3 — El route handler: código fuente leído completo
+
+`node_modules/@payloadcms/storage-s3@3.84.1/dist/getFile.js` (registrado como `staticHandler` del adapter en `dist/adapter.js:40`, invocado por `/api/media/file/:filename` vía `@payloadcms/plugin-cloud-storage/dist/plugin.js:74-80`):
+
+- Hace `headObject` primero para obtener `ContentLength` real (necesario para validar/calcular el range antes de pedir el stream).
+- Usa `getRangeRequestInfo` (utilidad interna de `payload/internal`) para parsear el header `Range` y calcular `rangeStart`/`rangeEnd`/status (206 parcial, 200 completo, 416 inválido).
+- Llama `client.getObject({..., Range: rangeForS3})` — sí pasa el `Range` a S3/R2, no descarga el archivo completo a memoria.
+- Devuelve `object.Body` como **stream** (`isNodeReadableStream` check explícito) — no buffer completo. Maneja abort/error del stream correctamente.
+- Setea `Content-Type` desde `headObject.ContentType` (metadata real de R2, no adivinado).
+
+**Conclusión §3: el handler está bien implementado — soporta Range, hace streaming real, content-type correcto.** No hay bug de código en el adapter oficial que usamos.
+
+## §4 — Content-Type + CORS
+
+- `Content-Type: video/mp4` — correcto, confirmado en headers reales (§2).
+- `Access-Control-Allow-Origin`: `null` (no presente). **No es un problema**: el `<video>` del Hero no usa `crossOrigin`, y la request es same-origin (`sivarbrains.com` → `sivarbrains.com`) — CORS no aplica aquí.
+- `Access-Control-Allow-Methods: PUT, PATCH, POST, GET, DELETE, OPTIONS` sí presente (Payload lo agrega por defecto al collection route).
+
+## §5 — Cloudflare sobre `/api/media/file/`
+
+`server: cloudflare`, `cf-ray` presente, `cf-cache-status: DYNAMIC` (no cacheado, pasa directo al origen) — **Cloudflare no interceptó ni rompió la request de Range.** El `206` y el `content-range` llegaron intactos hasta el fetch del browser. **Sin evidencia de interferencia del threat-protection/challenge sobre este endpoint específico**, al menos para requests hechas desde una sesión de browser ya "pasada" (con cookies de clearance existentes).
+
+## §6 — El `.webm` real
+
+Confirmado en §1: **NO existe** ningún `.webm` en R2 bajo ningún nombre relacionado (`SB-Demo-video.webm`, `SB-Demo-video-1.webm`). Solo el `.mp4` (`media/20`) fue subido.
+
+---
+
+## VEREDICTO DE CC
+
+**H-BBF-541 tal como está planteado ("el video R2 no se sirve") NO SE CONFIRMA.** El endpoint `/api/media/file/SB-Demo-video.mp4` sirve **perfectamente** ahora mismo: `206`, `video/mp4`, `Content-Range` correcto, streaming real, sin interferencia de Cloudflare. El código del adapter (`@payloadcms/storage-s3@3.84.1`) está correctamente implementado — Range requests, streaming, content-type: todo bien.
+
+**La causa raíz real de H-BBF-522 (el bug original) nunca fue "R2 no sirve el video".** Fue que el valor guardado en `hero.media.videoSources[].src` usaba el **prefijo de ruta equivocado**: `/assets/media/hero/SB-Demo-video.mp4` (prefijo estático, `public/`) en vez de `/api/media/file/SB-Demo-video.mp4` (prefijo del proxy R2). El archivo `SB-Demo-video.mp4` nunca existió bajo `/assets/media/hero/` (esa carpeta solo tiene `hero.av1.webm`/`hero.h264.mp4`, los assets canon D-87) — por eso 404 bajo esa ruta, mientras que el mismo nombre de archivo bajo el prefijo R2 correcto sirve 200/206 sin problema.
+
+**Esto reabre una decisión de arquitectura para Zavala** (no la tomo yo — solo diagnóstico):
+
+- **El fix ya aplicado** (`B-BBF-WEB-FIX-VIDEO-DATO`, apunta a los estáticos canon `hero.av1.webm` + `hero.h264.mp4`) **funciona** y ya está verificado sirviendo. Pero usa los assets de fallback genéricos del repo, no el video real que subiste (`SB-Demo-video.mp4`, el contenido real de la demo).
+- **La alternativa real** sería apuntar `hero.media.videoSources[].src` a `/api/media/file/SB-Demo-video.mp4` (con `type: mp4-h264`) — usa tu video real, ya confirmado sirviendo perfecto vía R2. Como no existe `.webm`, esta alternativa tendría solo 1 `<source>` (mp4), sin el fallback AV1/VP9 WebM.
+
+**No revertí el parche ni cambié nada — es decisión tuya cuál de los dos assets (el genérico canon vs tu video real en R2) debe quedar en el Hero.** Zero secretos expuestos en este diagnóstico.
