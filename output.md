@@ -8527,3 +8527,118 @@ GET /admin/globals/site-homepage 200 in 26768ms   (segunda vez, ya compilado)
 **Recomendación (no una decisión — es tuya):** dado que `page.tsx` todavía no está listo (Fase 3 sin empezar), la Opción 2 (revertir) es la que restaura el admin de producción MÁS RÁPIDO y sin dejar nada a medias. La Opción 1 requiere terminar Fase 3 primero, que es más trabajo antes de que el admin vuelva a funcionar.
 
 Zero secretos expuestos. Nada ejecutado — esperando tu decisión.
+
+---
+
+# REPORTE — B-BBF-WEB-VIDEO-PACKAGE-02
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-VIDEO-PACKAGE-02
+**Tipo:** FIX — alinear código a schema (Modo Strategic: 1, Arquitecto) · **Protocolo:** P-5
+**Decisión:** D-BBF-MEDIA-PACKAGE (Fase-Package-02, firmada) · Resuelve H-BBF-550
+**Rama:** `feat/video-package-01` (continuada, no nueva) — **SIN merge a `migracion-railway`**
+
+---
+
+## §A-§E — Verificación pre-ejecución
+
+- **§A:** rama `feat/video-package-01` confirmada, pero el working tree tenía la migración `20260703_173610_video_package_01.{ts,json}` **sin commitear** (apareció aplicada por fuera de este agente, resolviendo el TTY que había quedado bloqueado). La commiteé primero (`a71c907`) para no arrastrar working tree sucio dentro de este fix.
+- **§B — hallazgo más importante de la verificación:** `GET /api/video-packages` (local, `read: publicRead`) → `{"docs":[],"totalDocs":0}`. **Los 2 paquetes NO existen todavía.** Además, mientras verificaba esto confirmé algo más grave de lo que el despacho anterior había reportado: `https://sivarbrains.com/api/globals/site-homepage` responde **`500 Something went wrong`** en producción real ahora mismo — no es solo el admin, es la Local API completa. La home pública sigue viéndose bien solo porque sirve **HTML de ISR cacheado de antes del incidente** (confirmado: el contenido visible coincide con el estado previo). Cualquier regeneración fresca fallaría igual que el admin.
+- **§C:** `HeroVideoSourceProps` confirmado: `{ src: string; type: HeroVideoSourceType }`, sin soporte de `media`.
+- **§D:** Confirmadas las líneas exactas de `page.tsx` (data-fetch en 37-98 del archivo original, JSX en 221/320, script en 486) y el patrón builder existente (`buildFaqPageJsonLd`, `schema-dts`, `WithContext<T>`).
+- **§E:** Patrón confirmado — función pura, recibe datos planos, devuelve objeto tipado con `WithContext`.
+
+## §1 — `HeroVideo.tsx`
+
+```diff
+ export interface HeroVideoSourceProps {
+   src: string;
+   type: HeroVideoSourceType;
++  media?: string; // art direction (D-BBF-MEDIA-PACKAGE §5) — mobile futuro
+ }
+
+-function HeroVideoSource({ src, type }: HeroVideoSourceProps) {
++function HeroVideoSource({ src, type, media }: HeroVideoSourceProps) {
+   return (
+-    <source ... src={src} type={mimeType} />
++    <source ... src={src} type={mimeType} media={media} />
+   );
+ }
+```
+
+## §2 — `page.tsx`: antes/después
+
+**Fetch de datos — antes:** `depth: 1`. **Después:** `depth: 2` (necesario: `videoPackage` es nivel 1, `videoPackage.primary/fallback/poster` son nivel 2 — sin esto llegan como IDs sueltos, no `Media` completos con `.url`).
+
+**Antes** (Hero, simplificado):
+```ts
+const posterUrl = hero.media.videoPoster?.url ?? '/hero-poster.png';
+const heroVideoSrc = hero.media.videoSources?.[0]?.src;
+// videoObjectSchema inline, contentUrl = heroVideoSrc
+```
+```tsx
+{hero.media.videoSources?.map((s) => <HeroVideo.Source key={s.src} src={s.src} type={s.type} />)}
+```
+
+**Después:**
+```ts
+const heroPkg = hero.media.videoPackage && typeof hero.media.videoPackage === 'object' ? hero.media.videoPackage : undefined;
+const heroPrimary = heroPkg?.primary && typeof heroPkg.primary === 'object' ? heroPkg.primary as Media : undefined;
+const heroFallback = /* idem con fallback */;
+const posterUrl = (heroPkg?.poster as Media)?.url ?? '/hero-poster.png';
+const heroVideoObjectSchema = heroPrimary?.url ? buildVideoObjectJsonLd({ ...contentUrl: heroPrimary.url... }) : null;
+```
+```tsx
+{heroPrimary?.url && <HeroVideo.Source src={heroPrimary.url} type={primaryMimeToSourceType(heroPrimary.mimeType)} />}
+{heroFallback?.url && <HeroVideo.Source src={heroFallback.url} type={fallbackMimeToSourceType(heroFallback.mimeType)} />}
+```
+
+**Decisión técnica documentada:** `VideoPackage` no guarda "type"/codec por fuente (confirmado en el diagnóstico anterior — `mimeType` solo no distingue VP9 de AV1). Como `primary`/`fallback` son **roles fijos por diseño** (primary = mejor codec moderno, fallback = universal), derivé un default acorde al rol: `primaryMimeToSourceType` asume `webm-vp9` salvo `.mov`, `fallbackMimeToSourceType` asume `mp4-h264` salvo `.mov`. Es una decisión razonable dado el constraint (`ALCANCE OUT` prohibía re-editar la collection), no un valor inventado sin criterio.
+
+**Case Study:** mismo patrón, con `casePkg`/`casePrimary`/`caseFallback`/`casePosterMedia`.
+
+## §3 — `src/lib/seo/jsonLd/videoObject.ts` (nuevo)
+
+```ts
+export function buildVideoObjectJsonLd(opts: BuildVideoObjectOptions): WithContext<VideoObject> {
+  return {
+    '@context': 'https://schema.org', '@type': 'VideoObject', '@id': opts.id,
+    name: opts.name, description: opts.description,
+    thumbnailUrl: opts.thumbnailUrl, contentUrl: opts.contentUrl,
+    uploadDate: opts.uploadDate,
+    ...(opts.duration ? { duration: `PT${Math.round(opts.duration)}S` } : {}),
+    inLanguage: opts.inLanguage,
+    publisher: { '@id': opts.publisherId },
+  };
+}
+```
+
+Registrado en `src/lib/seo/jsonLd/index.ts` junto a los otros 4 builders. **2 instancias en `page.tsx`** (Hero + Case Study), cada una condicional a `primary?.url` (si el paquete no existe o no tiene `primary`, no se emite ese `VideoObject` — no se rompe nada, simplemente no hay ese schema todavía). `publisher: {'@id': domain+'#org'}` conecta a la `Organization` ya emitida en `StructuredData.tsx`, sin duplicar datos (C-01).
+
+## §4 — `pnpm tsc --noEmit`
+
+```
+Antes: 10 errores (TS2339/TS7006, videoPoster/videoSources no existen)
+Después: 0 errores
+```
+2 errores intermedios propios (`uploadDate: string | null | undefined` no asignable a `string`) resueltos con `site.updatedAt ?? new Date().toISOString()` — fallback razonable, `site.updatedAt` es prácticamente siempre real (viene de un global de Payload).
+
+## §5 — `pnpm build`
+
+**Completo, sin errores.** `Compiled successfully in 4.9min`, lint con solo warnings preexistentes (no relacionados — `MobileMenu`, `WAAgenda`, `WAChat`, ninguno tocado por este fix), **22/22 páginas estáticas generadas**, incluida `/[locale]` (home). Ruta home confirma `revalidate: 1h` como se espera.
+
+**Nota de proceso:** corrí `pnpm dev` (local) en paralelo con `pnpm build` para verificar el admin — esto causó que ambos procesos compitieran por el mismo directorio `.next/`, produciendo un error de módulo (`Cannot find module vendor-chunks/@smithy...`) en el dev server al final. **Es un artefacto de correr ambos a la vez, no un bug de código** — confirmado porque el `build` (que sí importa para el deploy real) completó limpio, y el dev server había respondido `200` limpio en `/admin/globals/site-homepage` y `/api/video-packages` ANTES de que arrancara el build paralelo.
+
+## Estado del admin local (antes del build paralelo)
+
+`GET /admin/globals/site-homepage` → `200` (confirmado, sin errores de servidor). `GET /api/video-packages` → `200`, `{totalDocs: 0}`.
+
+---
+
+## VEREDICTO — ¿listo para merge + deploy?
+
+**El código está listo.** `tsc` limpio, `build` completo, 22/22 páginas generadas, admin local responde `200` con código+schema en sincronía. Esto es exactamente lo que hacía falta para resolver H-BBF-550 (el mismatch código-DB del despacho anterior).
+
+**Lo que falta, y es tuyo decidir el momento (no lo hice):**
+1. **Merge `feat/video-package-01` → `migracion-railway` + push** — esto por sí solo ya arregla el `500` de producción (el código vuelve a coincidir con la DB ya migrada).
+2. **Crear los 2 `video-packages`** (Hero: primary=media 39, fallback=media 20, poster=media 22; Case: primary=media 41, fallback=media 40, poster=media 42 — mapeo ya confirmado en el despacho anterior) — sin esto, el deploy arregla el error 500 pero el Hero/Case no mostrarán video (el código maneja el caso `null` con gracia, sin romper, simplemente no hay `<source>` que renderizar).
+
+**Recomiendo hacer ambos pasos juntos** (merge+deploy, luego crear los paquetes en el admin ya funcional) para minimizar el tiempo con el sitio sirviendo solo el HTML cacheado viejo. Zero secretos expuestos, nada mergeado sin tu confirmación.
