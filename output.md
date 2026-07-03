@@ -7867,3 +7867,89 @@ Guardado vía Payload admin: **"Updated successfully."**
 ## Veredicto
 
 **Dato corregido a tu video real en R2, verificado en la fuente de verdad (API), campos hermanos intactos, cero cambio de código, cero secretos.** El legacy (`hero.av1.webm`/`hero.h264.mp4`) fue removido del Hero. Pendiente tu confirmación visual en browser normal para cerrar H-BBF-522 definitivamente con D-BBF-VIDEO-HERO aplicada.
+
+---
+
+# REPORTE — B-BBF-WEB-VERIFY-WEBM-Y-SECCION3
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-VERIFY-WEBM-Y-SECCION3
+**Tipo:** VERIFICACIÓN + DIAGNÓSTICO READ-ONLY (Modo Strategic: 2+1) · **Protocolo:** P-6
+**Hallazgos:** H-BBF-542, H-BBF-544, H-BBF-522 (cierre) · **NO se ejecutó ningún cambio de dato**
+
+---
+
+## §1 — El `.webm` nuevo: **SÍ sirve, confirmado**
+
+```js
+fetch('/api/media/file/SB-Demo-video.webm', {headers: {Range: 'bytes=0-1023'}})
+→ status: 206
+→ content-type: video/webm
+→ content-range: bytes 0-1023/18453545
+→ accept-ranges: bytes
+```
+
+**Filename exacto en R2** (confirmado vía `/api/media?where[filename][like]=webm`): `media/39` = `SB-Demo-video.webm`, `mimeType: video/webm`, `filesize: 18453545` (18.45 MB).
+
+**Codec confirmado por inspección directa del contenedor** (fetch de los primeros 64KB, búsqueda del `CodecID` EBML/Matroska — no adivinado):
+- `V_VP9` → **presente** (video, VP9 confirmado — coincide con lo esperado)
+- `V_VP8` → ausente
+- `V_AV01` → ausente
+- `A_OPUS` → **presente** (audio, Opus)
+
+**Antes daba 404 (línea 7762 del log anterior) — ahora sirve 206 correctamente.** El upload de Zavala está completo y funcional.
+
+## §2 — Hero: H-BBF-522 confirmado cerrado
+
+```
+GET /api/globals/site-homepage?depth=0&locale=es
+→ hero.media.videoSources = [{ src: "/api/media/file/SB-Demo-video.mp4", type: "mp4-h264" }]
+```
+
+Coincide exactamente con el commit `9de94d8`. Una sola fuente, el video real, sirviendo `206` (re-confirmado en el despacho anterior).
+
+**Recomendación (NO ejecutada — esperando tu OK):** dado que §1 confirma el `.webm` sirviendo con codec VP9, el patrón óptimo de doble fuente (`R-BBF-VIDEO-2026`) sería:
+
+```json
+[
+  { "src": "/api/media/file/SB-Demo-video.webm", "type": "webm-vp9" },
+  { "src": "/api/media/file/SB-Demo-video.mp4",  "type": "mp4-h264" }
+]
+```
+
+VP9/WebM primero (mejor compresión, browsers modernos lo prefieren), MP4/H.264 como fallback universal. No lo apliqué — es exactamente el cambio de dato que el despacho pide dejar pendiente de tu confirmación.
+
+## §3 — Case Study (Hacienda Real): H-BBF-544 confirmado, apunta a legacy
+
+**Corrección de dato: `Cases.videoSources` no es una collection separada** — es un campo anidado en el mismo global `SiteHomepage` (`site.caseStudy`, ver `page.tsx:49` `caseStudy: cs`). `/api/cases` no existe (404); el campo real es `caseStudy.videoSources` dentro de `site-homepage`.
+
+```
+GET /api/globals/site-homepage?depth=0&locale=es
+→ caseStudy.videoSources = [
+    { src: "/assets/media/hero/hero.av1.webm", type: "webm-av1" },
+    { src: "/assets/media/hero/hero.h264.mp4", type: "mp4-h264" }
+  ]
+→ caseStudy.mediaChromeLabel = "HACIENDA-REAL · WhatsApp Business · live"
+```
+
+**Confirmado: la sección §3 (caso Hacienda Real) sigue apuntando a los estáticos genéricos del Hero** (`hero.av1.webm`/`hero.h264.mp4`, los mismos assets canon D-87), no a contenido propio del caso. El `mediaChromeLabel` ya dice "HACIENDA-REAL", así que el video mostrado (genérico) no coincide con el label (específico) — inconsistencia de contenido, no de código.
+
+**Pregunta abierta para ti (Capa B, D-BBF-07 — no la respondo yo):** ¿el video de §3 debe ser:
+- (a) el mismo `SB-Demo-video` (mp4/webm) que ya usa el Hero, o
+- (b) un video propio y distinto grabado específicamente para el caso Hacienda Real (aún no subido a R2, en cuyo caso habría que subirlo primero)?
+
+**No ejecuté ningún cambio en §3** — ni siquiera un placeholder — hasta que confirmes cuál de las dos opciones aplica.
+
+---
+
+## VEREDICTO
+
+| # | Hallazgo | Estado |
+|---|---|---|
+| H-BBF-542 | `.webm` subido por Zavala | ✅ Confirmado sirviendo `206`, `video/webm`, codec VP9 real (`V_VP9` en contenedor) |
+| H-BBF-522 | Hero video | ✅ **CERRADO** — `hero.media.videoSources` = video real R2, `mp4-h264`, confirmado en API |
+| H-BBF-544 | Case Study (§3) apunta a legacy | ✅ Confirmado — `caseStudy.videoSources` sigue en `hero.av1.webm`/`hero.h264.mp4`, label dice "HACIENDA-REAL" pero el video es el genérico |
+
+**Dos decisiones pendientes de tu OK antes de tocar cualquier dato:**
+1. ¿Agrego el `.webm` (VP9) como primera fuente del Hero, junto al `.mp4` ya funcionando? (patrón doble-fuente óptimo, cero riesgo — ambos ya confirmados sirviendo)
+2. ¿Qué video va en §3 (Case Study Hacienda Real) — el mismo `SB-Demo-video`, o uno propio pendiente de subir?
+
+Zero secretos expuestos. Cero cambios ejecutados en este despacho.
