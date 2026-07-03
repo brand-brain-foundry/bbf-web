@@ -117,9 +117,16 @@ HeroVideoRoot.displayName = 'HeroVideo';
 export interface HeroVideoSourceProps {
   src: string;
   type: HeroVideoSourceType;
+  /**
+   * Art direction opcional (D-BBF-MEDIA-PACKAGE §5) — media query HTML5
+   * nativo para servir una fuente distinta según viewport (ej. variante
+   * mobile del paquete). Sin variante mobile hoy, pero el soporte queda
+   * listo para cuando exista.
+   */
+  media?: string;
 }
 
-function HeroVideoSource({ src, type }: HeroVideoSourceProps) {
+function HeroVideoSource({ src, type, media }: HeroVideoSourceProps) {
   const mimeType = SOURCE_TYPE_MAP[type];
   return (
     <source
@@ -127,6 +134,7 @@ function HeroVideoSource({ src, type }: HeroVideoSourceProps) {
       data-source-type={type}
       src={src}
       type={mimeType}
+      media={media}
     />
   );
 }
