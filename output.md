@@ -8642,3 +8642,54 @@ Después: 0 errores
 2. **Crear los 2 `video-packages`** (Hero: primary=media 39, fallback=media 20, poster=media 22; Case: primary=media 41, fallback=media 40, poster=media 42 — mapeo ya confirmado en el despacho anterior) — sin esto, el deploy arregla el error 500 pero el Hero/Case no mostrarán video (el código maneja el caso `null` con gracia, sin romper, simplemente no hay `<source>` que renderizar).
 
 **Recomiendo hacer ambos pasos juntos** (merge+deploy, luego crear los paquetes en el admin ya funcional) para minimizar el tiempo con el sitio sirviendo solo el HTML cacheado viejo. Zero secretos expuestos, nada mergeado sin tu confirmación.
+
+---
+
+# REPORTE — B-BBF-WEB-MERGE-VIDEO-PACKAGE
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-MERGE-VIDEO-PACKAGE
+**Tipo:** MERGE + DEPLOY (Modo Strategic: 1) · **Protocolo:** P-5
+**Cierra:** H-BBF-550 (500 en producción)
+
+---
+
+## Verificación pre-ejecución
+
+- `git status` limpio en `feat/video-package-01` (solo untracked preexistentes).
+- Confirmado `038023f` presente en la rama.
+- `git merge-base --is-ancestor migracion-railway feat/video-package-01` → **sin divergencia**.
+- **Reconfirmado justo antes del merge** (no asumido de despachos anteriores): `pnpm payload migrate:status` → `20260703_173610_video_package_01` = **`Yes`**, batch 51. `pnpm tsc --noEmit` → **0 errores**.
+
+## §1 — Merge
+
+```
+git merge feat/video-package-01 --no-ff
+→ Merge made by the 'ort' strategy. Sin conflictos.
+15 files changed, 45100 insertions(+), 173 deletions(-)
+```
+Commit de merge: `ad3928e`. Post-merge reconfirmado: `videoPackage` presente en `SiteHomepage.ts` (4 ocurrencias), `tsc --noEmit` limpio sobre el código ya mergeado en `migracion-railway`.
+
+## §2 — Push + redeploy
+
+```
+git push origin migracion-railway
+a0dc7e9..ad3928e  migracion-railway -> migracion-railway
+```
+Push a las 19:40 UTC. Redeploy confirmado completo entre el minuto 4 y el minuto 8 (el primer chequeo a los ~4 min todavía daba `500`; el segundo, más cerca de los 8 min, ya daba `200`) — dentro del rango histórico de este proyecto.
+
+## Verificación post — el cierre de H-BBF-550
+
+**`GET /api/globals/site-homepage`** (vía `fetch` en browser, sin curl):
+- Antes del redeploy: `500`, `{"errors":[{"message":"Something went wrong."}]}`
+- Después del redeploy: **`200`**, con el documento real completo (`{"id":1,"hero":{"h1Line1":"Tú diriges."...`)
+
+**`/admin/globals/site-homepage`**: carga completo (título `Editing - Site Homepage — BBF Admin`, confirmado con screenshot — todas las secciones renderizadas: Hero, Capabilities, Case Study, Why, Method, Closing, SEO+GEO). **Bonus confirmado visualmente:** la nueva collection **"Video Packages"** ya aparece en el sidebar del admin, bajo "Content" — el schema desplegado coincide con el código.
+
+**Homepage pública** (`GET /`): `200`, `Cache-Control: s-maxage=3600` — regenera sin error (no solo sirve caché viejo, la Local API que usa `page.tsx` ya no falla).
+
+---
+
+## VEREDICTO: H-BBF-550 CERRADO
+
+**El mismatch código-schema está resuelto.** Producción vuelve a tener código y base de datos en sincronía — commit desplegado `ad3928e`. Cero secretos expuestos, cero curl pelado (todo verificado vía `fetch` en browser autenticado).
+
+**Pendiente, fuera de este despacho (ALCANCE OUT — Zavala, en el admin ya funcional):** crear los 2 `video-packages` (Hero: primary=media 39/fallback=media 20/poster=media 22; Case: primary=media 41/fallback=media 40/poster=media 42) y vincularlos en `hero.media.videoPackage` / `caseStudy.videoPackage` — sin esto, el sitio funciona pero el Hero y el Case Study no muestran video (fallback silencioso a solo poster, sin romper nada).
