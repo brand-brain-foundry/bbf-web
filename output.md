@@ -8451,3 +8451,79 @@ pnpm tsc --noEmit
 ## Veredicto
 
 **Collection + schema construidos y verificados end-to-end en código** (§1-§4 completos, con una autocorrección técnica documentada: `relationship` en vez de `upload`). **Migración bloqueada por TTY** (§5) — recomendación clara para cuando la corras. **Data-migration bloqueada transitivamente** hasta que la migración exista — plan de 3 pasos documentado, ejecutable vía admin sin script. **`page.tsx` queda roto a nivel de tipos, confirmado y esperado** — coincide exactamente con la condición de escalada del despacho, no se tocó el componente. Zero secretos. Nada forzado, nada corrompido.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-ADMIN-404
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-DIAG-ADMIN-404
+**Tipo:** DIAGNÓSTICO READ-ONLY URGENTE (Modo Strategic: 2) · **Protocolo:** P-6
+**Incidente:** admin producción `site-homepage` → "Nothing found" tras aplicar `video_package_01` a Neon
+**NO se ejecutó ningún fix**
+
+---
+
+## §1 — ¿Qué rama corre en producción HOY?
+
+`migracion-railway`. Confirmado leyendo el código de esa rama directamente (no asumido):
+
+```
+git show migracion-railway:src/payload/globals/SiteHomepage.ts | grep videoPackage/videoPoster/videoSources
+→ línea 114: name: 'videoPoster'
+→ línea 123: name: 'videoSources'
+→ línea 1148/1158: mismos campos en caseStudy
+```
+
+**`migracion-railway` NO tiene el schema de `video-packages` — sigue esperando `videoPoster`/`videoSources`, los campos que la migración recién aplicada ELIMINÓ de la base de datos.** Esto es la causa, confirmada, no una hipótesis.
+
+## §2 — Estado de `site_homepage` en Neon tras la migración
+
+No tengo credenciales para `SELECT` directo (sin acceso a `.env.local`, por diseño del sandbox). Usé el equivalente sin tocar secretos: **leí la migración `20260703_173610_video_package_01.ts` que apareció en el working tree** (aplicada por alguien con TTY — probablemente vos, dado que resolvió el prompt de "create enum" que documenté como bloqueado en el despacho anterior). El SQL de esa migración, leído completo, confirma exactamente:
+
+```sql
+DROP TABLE "site_homepage_hero_media_video_sources" CASCADE;
+DROP TABLE "site_homepage_case_study_video_sources" CASCADE;
+ALTER TABLE "site_homepage" DROP CONSTRAINT "..._video_poster_id_media_id_fk" (x2);
+ALTER TABLE "site_homepage" DROP COLUMN "hero_media_video_poster_id";
+ALTER TABLE "site_homepage" DROP COLUMN "case_study_video_poster_id";
+DROP TYPE "enum_site_homepage_hero_media_video_sources_type";
+DROP TYPE "enum_site_homepage_case_study_video_sources_type";
+-- + CREATE TABLE "video_packages" / "video_packages_locales"
+-- + ADD COLUMN "hero_media_video_package_id" / "case_study_video_package_id"
+```
+
+**Confirmado con `pnpm payload migrate:status`** (alternativa a `SELECT`, no requiere leer credenciales — el comando usa el env ya cargado del proceso): `20260703_173610_video_package_01` aparece con **`Yes`**, batch 51 — es la migración más reciente aplicada. Las columnas viejas (`video_poster_id`, las tablas `*_video_sources`) **ya no existen** en la base a la que este entorno se conecta. `site_homepage` sigue existiendo como global (la migración no la borra, solo le quita/agrega columnas) — el global en sí no desapareció, sus columnas de video sí cambiaron.
+
+## §3 — El mismatch exacto
+
+**Confirmado, no solo probable:** el código desplegado en producción (`migracion-railway`) declara en su `SiteHomepage.ts` los campos `hero.media.videoPoster` (relación a `media`) y `hero.media.videoSources[]` (array con `src`/`type`). Cuando Payload arranca con ESE código y intenta resolver esos campos contra una base de datos donde `hero_media_video_poster_id` y las tablas `*_video_sources` **ya no existen** (dropeadas por la migración), la consulta no puede completarse como el código espera. Esto es exactamente un mismatch schema-código: **código viejo + base de datos nueva**, la combinación opuesta a que sea segura.
+
+## §4 — ¿La migración se aplicó al mismo Neon que usa producción?
+
+No puedo confirmarlo leyendo la cadena de conexión (bloqueado por diseño — ver rechazos anteriores de `cat`/`grep` sobre `.env.local` en esta misma sesión). **Evidencia indirecta, pero fuerte:** en despachos anteriores de esta misma sesión (`B-BBF-WEB-FIX-VIDEO-DATO`, `B-BBF-WEB-VIDEO-DOBLE-FUENTE`), escribí datos vía Payload directamente desde este mismo entorno local y **confirmé que el cambio se reflejaba de inmediato en `sivarbrains.com` en producción real** (con on-demand revalidation, H-524) — eso solo es posible si este entorno y producción comparten la misma base de datos Neon. No tengo motivo para creer que eso cambió entre despachos. **Conclusión con alta confianza, no con certeza absoluta:** sí, es la misma base de datos — lo cual es precisamente por qué el mismatch de §3 es visible en producción real y no solo en un entorno de prueba aislado.
+
+## §5 — Local en `feat/video-package-01` (código Y schema coinciden): ¿carga bien?
+
+Levanté `pnpm dev` en esta rama (que sí tiene el schema `videoPackage` correspondiente a la migración ya aplicada) y pedí `/admin/globals/site-homepage`:
+
+```
+GET /admin/globals/site-homepage 200 in 117142ms  (primera vez, compilando 4828 módulos)
+GET /admin/globals/site-homepage 200 in 26768ms   (segunda vez, ya compilado)
+```
+
+**Cero errores en el log del servidor** (`grep -i error` → sin resultados) en ninguna de las dos requests. No pude completar la verificación visual completa — el admin local exige su propia sesión (dominio `localhost` no comparte cookies con `sivarbrains.com`), y no tengo credenciales para loguearme ahí (ni debo — entrar contraseñas no es algo que yo hago). Pero el dato que sí tengo — **200 limpio, cero excepciones del lado del servidor, con código y schema en sincronía** — es evidencia consistente con: el problema NO es la migración en sí (que está bien y es reversible), es específicamente que producción tiene el código viejo mirando la base nueva.
+
+---
+
+## VEREDICTO CC — causa raíz confirmada
+
+**El 404/"Nothing found" en el admin de producción es un mismatch código-schema, no una migración corrupta ni una tabla perdida.** La migración `video_package_01` está bien construida (confirmé el SQL completo, con `down()` reversible) y se aplicó correctamente a la base de datos — el problema es que **el código que corre en DO (`migracion-railway`) nunca se actualizó** para coincidir con esa migración. Se aplicó un cambio de base de datos pensado para una rama (`feat/video-package-01`) contra la base de datos compartida con producción, sin desplegar el código correspondiente — exactamente el orden inverso de lo seguro (código primero o simultáneo, nunca DB-primero cuando hay columnas que se DROPEAN).
+
+**El fix (no lo ejecuté, es tu decisión, dos caminos):**
+
+**Opción 1 — Avanzar (desplegar el código):** mergear `feat/video-package-01` a `migracion-railway` y push. **PERO** — recordar el hallazgo del despacho anterior: `page.tsx` tiene 10 errores de TypeScript porque el componente todavía lee `videoPoster`/`videoSources` viejos. **No se puede desplegar solo el schema — hay que completar también la actualización de `page.tsx`/`HeroVideo.tsx` para consumir `videoPackage`** antes de este merge, o el build fallará o el runtime tendrá el mismo tipo de error (código esperando campos que ya no existen, en la dirección opuesta esta vez).
+
+**Opción 2 — Revertir (bajar la migración):** correr el `down()` de `20260703_173610_video_package_01` (ya confirmado reversible, restaura `video_poster_id` + las tablas `*_video_sources` con su estructura exacta) para que la base de datos vuelva a coincidir con el código YA desplegado (`migracion-railway`), mientras se termina Fase 3 (componente) con calma antes de re-aplicar.
+
+**Recomendación (no una decisión — es tuya):** dado que `page.tsx` todavía no está listo (Fase 3 sin empezar), la Opción 2 (revertir) es la que restaura el admin de producción MÁS RÁPIDO y sin dejar nada a medias. La Opción 1 requiere terminar Fase 3 primero, que es más trabajo antes de que el admin vuelva a funcionar.
+
+Zero secretos expuestos. Nada ejecutado — esperando tu decisión.
