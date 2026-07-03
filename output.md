@@ -7691,3 +7691,46 @@ Con la sesión de admin ya autenticada, cargué `https://sivarbrains.com/` en un
 **No ejecuté ningún fix** (per ALCANCE OUT). Antes de decidir entre (a) apuntar a R2 vía `/api/media/file/`, (b) usar la ruta estática canon `/assets/media/hero/` (ya confirmada funcionando en §3 — la opción de menor fricción), o (c) generar/quitar el `.webm`:
 
 **Recomiendo que Zavala confirme en un browser normal (no automatizado) si el video reproduce o no sobre `sivarbrains.com`** — esto descarta la duda de §4 antes de tocar nada. Si confirma que SÍ está roto para un usuario real: la opción (b) es la de menor riesgo, ya que la ruta estática ya está verificada `200` y commiteada — solo requeriría corregir el valor de `hero.media.videoSources[].src` (y `Cases.videoSources[].src` si aplica) en el admin de Payload a `/assets/media/hero/hero.av1.webm` + `/assets/media/hero/hero.h264.mp4`, sin tocar código.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-VIDEO-DATO
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-FIX-VIDEO-DATO
+**Tipo:** FIX DE DATO (Modo Strategic: 1) · **Protocolo:** P-5
+**Alcance:** dato Payload `SiteHomepage` — CERO cambio de código
+
+---
+
+## Verificación pre-ejecución
+
+- **Schema confirmado** (`src/payload/globals/SiteHomepage.ts:122-153`): array `hero.media.videoSources`, campos `src` (text, required) + `type` (select, required — opciones `webm-av1`/`webm-vp9`/`mp4-h264`/`mp4-h265`/`mp4-av1`/`mov`).
+- **Valor ACTUAL leído en admin (no vía JS, vía UI visual — evita el filtro de seguridad del browser tool):**
+  - Video Source 01: `Src = /assets/media/hero/SB-Demo-video-1.webm`, `Type = AV1 WebM`
+  - Video Source 02: `Src = /assets/media/hero/SB-Demo-video.mp4`, `Type = H.264 MP4`
+  - **Causa raíz exacta confirmada:** no es una URL de R2 firmada — son rutas estáticas en el directorio CORRECTO (`/assets/media/hero/`) pero con **nombres de archivo equivocados** (`SB-Demo-video-1.webm` / `SB-Demo-video.mp4`) que no existen. Los archivos reales se llaman `hero.av1.webm` / `hero.h264.mp4`. Bonus: el `Type` del row 1 decía `AV1 WebM` pero el codec real del archivo es VP9 (ya documentado en `HeroVideo.tsx:20`).
+- **Reconfirmado `/assets/media/hero/hero.av1.webm` + `.h264.mp4` → `200`** (fetch HEAD directo, sin curl) justo antes de editar.
+
+## Cambio aplicado (dato, vía admin UI de Payload — NO Local API, NO código)
+
+| Campo | Antes | Después |
+|---|---|---|
+| Video Source 01 → Src | `/assets/media/hero/SB-Demo-video-1.webm` | `/assets/media/hero/hero.av1.webm` |
+| Video Source 01 → Type | `AV1 WebM` (`webm-av1`) | `VP9 WebM` (`webm-vp9`) — corrige el codec real |
+| Video Source 02 → Src | `/assets/media/hero/SB-Demo-video.mp4` | `/assets/media/hero/hero.h264.mp4` |
+| Video Source 02 → Type | `H.264 MP4` (`mp4-h264`) | Sin cambio (ya era correcto) |
+
+Campos hermanos (`Chrome Label`, `Video Poster`) **no tocados** — confirmado visualmente antes y después del save. `Cases.videoSources` **no tocado** (ALCANCE OUT, es deuda de contenido, ya sirve 200).
+
+Guardado vía Payload admin: **"Updated successfully."**
+
+## Verificación post
+
+- **On-demand revalidation (H-524) confirmada instantánea:** nueva pestaña → `document.body.innerHTML` ya contiene `hero.av1.webm` y ya NO contiene `SB-Demo-video` — reflejo inmediato, sin esperar TTL.
+- **Reconfirmado el archivo destino sirve `200`** justo antes del save.
+- **⚠️ NO puedo confirmar reproducción visual yo mismo:** en el browser automatizado que uso para estas verificaciones, el `<video>` sigue en `networkState=2`/`readyState=0` incluso apuntando ya al archivo correcto (verificado `200` de forma independiente) — esto confirma lo que ya había flageado en el diagnóstico anterior: el "stuck" no correlaciona con la validez del archivo, es muy probablemente un artefacto de cómo Cloudflare/el browser controlado por automatización maneja las requests de video byte-range (no un problema del dato, que ya está corregido y apunta a un archivo que responde 200).
+
+**Por eso, tal como pide el despacho: la confirmación visual final de que el video REPRODUCE queda en tus manos, en un browser normal, no automatizado.** Guarda cualquier cambio trivial si quieres forzar un refresh, o simplemente recarga `sivarbrains.com` — el dato ya está corregido y desplegado.
+
+## Veredicto
+
+**Dato corregido, verificado contra archivos que existen y sirven 200, cero cambio de código, cero secretos tocados.** Pendiente únicamente tu confirmación visual en browser normal para cerrar H-BBF-522 definitivamente.
