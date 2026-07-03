@@ -8208,3 +8208,88 @@ Hoy el `VideoObject` reutiliza `demoLabel`/`footCaption` — campos pensados com
 4. (Opcional, fuera de alcance de VideoObject) Migrar `webPageSchema` inline de `page.tsx` a usar `buildWebPageJsonLd` — inconsistencia detectada en §1, no bloqueante.
 
 **No ejecuté nada — puro diagnóstico, per el despacho.** Zero secretos expuestos.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-MEDIA-SEO
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-DIAG-MEDIA-SEO
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2+3) · **Protocolo:** P-6
+**Decisión a definir:** D-BBF-MEDIA-SEO · **NO se ejecutó ningún cambio**
+
+**Nota de estado:** la Fase 1 de `B-BBF-DOCS-VIDEO-SCHEMA-CANON` (4 archivos editados en `bbf-docs`, rama `video-schema-canon-H-BBF-543`) sigue **sin commitear**, exactamente como se pidió — confirmado `git status` antes de empezar este despacho.
+
+---
+
+## §1 — Media collection hoy
+
+`src/payload/collections/media/index.ts` — campos: `alt` (text, required, localized), `caption` (text, localized), `credit` (text, no localized). `upload.mimeTypes: ['image/*', 'video/*']` — **acepta ambos en la misma collection**, pero no hay ningún campo que distinga comportamiento por tipo (ej. un campo `duration` condicional solo para video). Payload popula automáticamente `mimeType`/`width`/`height`/`filesize` para cualquier upload (no está en el código custom, es comportamiento nativo del collection `upload`), pero **`duration` NO se auto-popula** (Payload no invoca `ffprobe`; sería trabajo agregarlo en un hook).
+
+## §2 — ¿El asset ES la fuente de verdad hoy?
+
+**No, de forma inconsistente — depende del campo.**
+
+| Campo | Tipo Payload | ¿Relación real a Media? |
+|---|---|---|
+| `hero.media.videoPoster` | `upload`, `relationTo: 'media'` | ✅ Sí |
+| `caseStudy.videoPoster` | `upload`, `relationTo: 'media'` | ✅ Sí |
+| `hero.media.videoSources[].src` | `text` (string suelto) | ❌ **No** — path escrito a mano |
+| `caseStudy.videoSources[].src` | `text` (string suelto) | ❌ **No** — mismo problema |
+
+**El archivo de video (el asset en sí) NO es una relación Payload — es un string.** Esto es la causa raíz estructural de TODOS los bugs de esta cadena de despachos (H-BBF-522/541/542/544): typos posibles (`.mpm`), prefijos equivocados (`/assets/media/hero/` vs `/api/media/file/`), sin autocompletado ni validación de que el archivo exista. El poster SÍ está bien resuelto (relación real) — por eso nunca tuvo bugs.
+
+**Ya existe el patrón correcto en el mismo código base, sin aplicar al Hero:** `src/payload/collections/contentItems/blocks/Video.ts` — su campo `video` (el archivo, no solo el poster) es `type: 'upload', relationTo: 'media', required: true`. El Hero podría seguir exactamente este patrón y no lo hace.
+
+## §3 — Patrón de metadata SEO por asset: no existe
+
+`ImageObject` se usa en 3 lugares (`page.tsx:124`, `StructuredData.tsx:188`, `jsonld.ts:39`) — **los 3 hardcodeados** (ej. `page.tsx:125`, la OG image usa literal `/og-image.png`, no un Media doc real). **Cero builder** `buildImageObjectJsonLd` (no existe el archivo). **`alt` (el campo de accesibilidad/SEO que sí existe en cada Media doc) nunca se usa en ningún JSON-LD** — `grep "\.alt\b"` en todo `src/lib/seo` y las pages → cero resultados.
+
+**Veredicto §3: no hay ningún patrón de "metadata SEO por asset" que seguir — es un gap más amplio que solo VideoObject.** El video no es un caso aislado; las imágenes tienen el mismo problema (metadata rica en el asset, cero conexión a structured data).
+
+## §4 — Poster/thumbnail: confirmado, ya es un asset real
+
+Respondido en §2: `videoPoster` en Hero y Case Study es `upload`/`relationTo: 'media'` en ambos — es un Media doc real, con su propio `alt`/`caption`/`credit` disponibles (aunque tampoco se leen hoy, ver §3).
+
+## §5 — Inventario de consumidores de Media
+
+```
+grep -rn "relationTo: 'media'" src/payload/
+```
+
+**12 puntos con relación real a Media** (patrón correcto): `Entities` collection, `contentItems` (doc principal + blocks `Video`/`Image`/`Gallery`), `SiteHomepage` (6 imágenes en distintas secciones + 2 `videoPoster`), `SEO.ts` (`defaultOgImage`), `SiteNavigation.ts` (logo/nav).
+
+**Solo 2 puntos con el patrón roto** (`text` suelto, no relación): `hero.media.videoSources` y `caseStudy.videoSources` — ambos en `SiteHomepage.ts`, ambos ya identificados en despachos anteriores.
+
+**El problema está contenido exactamente a estos 2 campos — no es un patrón que se repita en más lugares.** El resto del sistema (10 de 12 puntos) ya usa relaciones reales.
+
+## §6 — Fase 1 sin commitear: qué campos deberían vivir en el asset
+
+Lo que puse en los 2 ContentMasters (`SB_ContentMaster_Homepage.md` §2.1.1, `SB_ContentMaster_CasoHaciendaReal.md` §2.1.1) y en el nuevo `BBF_VideoSchemaCanon.md` §3 (campos Payload propuestos):
+
+| Campo que propuse | Dónde lo puse (Fase 1, sin commitear) | Dónde debería vivir según este diagnóstico |
+|---|---|---|
+| `duration` | Nuevo campo en `hero.media` / `caseStudy` (page-level, en `BBF_VideoSchemaCanon.md` §3) | **Media collection** — es intrínseco al archivo, no a la página. Si el mismo video se usa en 2 páginas (como hoy), `duration` debería existir UNA vez, no duplicarse. |
+| `videoName` (ES/EN) | ContentMaster Homepage §2.1.1 + Case §2.1.1 (2 copias, contenido distinto) | **Tensión real, no resuelta por mí** — ver Veredicto |
+| `videoDescription` (ES/EN) | Idem | Idem |
+
+**La tensión que este despacho hace explícita:** seguí el precedente de `alt` (Media, asset-level, una sola fuente para cualquier uso) al diagnosticar en `B-BBF-WEB-DIAG-SCHEMA-DTS`, pero al ESCRIBIR el contenido real (Fase 1) terminé poniendo `videoName`/`videoDescription` **por página**, no por asset — porque el mismo archivo (`SB-Demo-video`) hoy representa cosas distintas en el Hero (demo general de capacidad) y en el Case (WhatsApp Business específico de Hacienda Real, per tu confirmación explícita de que es una referencia compartida). Un campo asset-level forzaría una sola descripción para ambos usos, perdiendo esa especificidad contextual — o exigiría que cada contexto tenga su propio video real (sin compartir), lo cual resolvería la tensión pero es una decisión de contenido/producción, no de arquitectura.
+
+---
+
+## VEREDICTO CC — ¿puede Media ser la fuente de verdad de optimización?
+
+**Sí, parcialmente — y debe serlo para lo que es intrínseco al archivo.** No para todo.
+
+**Debe vivir en Media (asset-level), sin ambigüedad:**
+- `duration` — propiedad física del archivo.
+- El archivo de video mismo — `videoSources[].src` debería convertirse en una relación `upload`/`relationTo: 'media'` (como ya hace `videoPoster` en el mismo schema, y como ya hace `VideoBlock.video` en `contentItems`). Esto elimina la clase entera de bugs de esta cadena de despachos (typos, prefijos equivocados) — Payload no permite guardar una relación a un doc que no existe.
+
+**Requiere decisión de contenido, no solo arquitectura — no lo resuelvo yo:**
+- `videoName`/`videoDescription` — **si** cada contexto de uso (Hero, Case) siempre tendrá su propio video real y distinto (nunca compartido), entonces sí deberían vivir en Media (un asset = una descripción, igual que `alt`). **Si** se sigue permitiendo reutilizar el mismo archivo como referencia genérica en múltiples contextos (como hoy, por tu propia decisión), entonces necesitan un mecanismo de override contextual — o bien viven en Media como default + un campo opcional page-level que lo sobreescribe cuando aplica, o bien se aceptan como page-level permanentemente (como los puse en Fase 1) sabiendo que eso es lo que se hace hoy con `alt` en ningún otro lado del sistema (osea, sería la primera excepción al patrón).
+
+**Cambio estructural que este veredicto define, si se firma D-BBF-MEDIA-SEO:**
+1. `Media` collection: agregar `duration` (number, opcional — solo aplica a `mimeType` de video).
+2. `SiteHomepage.ts`: convertir `videoSources[].src` (text) → `videoSources[].video` (upload, `relationTo: 'media'`), en Hero y en `caseStudy`, replicando exactamente el patrón de `VideoBlock`.
+3. Rehacer la Fase 1 (ContentMasters + Canon) para reflejar que `duration` vive en Media, no en la página — y decidir explícitamente el punto de `videoName`/`videoDescription` (page-level permanente vs. asset-level con override) antes de re-escribir esas subsecciones.
+4. El código (`page.tsx`) tendría que leer `videoSources[].video` (un Media doc completo, con `alt`/`filesize`/`mimeType`/`duration` ya disponibles) en vez de `videoSources[].src` (string) — cambio de código, Fase 2, fuera de este despacho.
+
+**No ejecuté nada de esto.** Recomiendo NO commitear la Fase 1 de `bbf-docs` tal como está — necesita reescribirse una vez que decidas el punto de `videoName`/`videoDescription`. Zero secretos expuestos.
