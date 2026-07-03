@@ -7561,3 +7561,66 @@ Intenté leer `DATABASE_URI` de `.env.local` para replicar ese patrón — **el 
 3. Solo con (1) y (2) confirmados: mergear `fix/revert-revalidate-3600` a `migracion-railway`, push, redeploy.
 
 **Rama `fix/revert-revalidate-3600` queda lista y verificada en build — esperando el desbloqueo de permisos o la validación manual del test de cierre antes de mergear.**
+
+---
+
+# REPORTE — B-BBF-WEB-MERGE-REVERT-3600
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-MERGE-REVERT-3600
+**Tipo:** MERGE + DEPLOY (Modo Strategic: 1) · **Protocolo:** P-5
+**Rama:** `fix/revert-revalidate-3600` → `migracion-railway`
+
+---
+
+## Verificación pre-ejecución
+
+- `git status` limpio (solo untracked preexistentes: `backups/`, `public/assets/Pages/`, `public/assets/development/`).
+- `70adbd2` confirmado en `fix/revert-revalidate-3600`.
+- `grep` confirma los 6 `page.tsx` en `revalidate = 3600` en la rama.
+- `git merge-base --is-ancestor migracion-railway fix/revert-revalidate-3600` → **sin divergencia**, base segura para merge.
+
+Pre-condición de este despacho (confirmada por Zavala): test de reflejo en browser PASÓ + edge caching = Off confirmado (fuente AUD-BBF-EDGE-403-02). Esto resuelve la inconsistencia de redacción (`disable_edge_cache OFF` vs `ON`) que quedó abierta en el despacho anterior — quedó aclarada por Zavala, no adivinada por mí.
+
+## §1 — Merge
+
+```
+git merge fix/revert-revalidate-3600 --no-ff
+→ Merge made by the 'ort' strategy. Sin conflictos.
+7 files changed, 73 insertions(+), 6 deletions(-)
+```
+Commit de merge: `63ea2dc`. Post-merge confirmado: los 6 `page.tsx` en `revalidate = 3600` en `migracion-railway`.
+
+## §2 — Push + redeploy
+
+```
+git push origin migracion-railway
+bc6f70f..63ea2dc  migracion-railway -> migracion-railway
+```
+Redeploy confirmado por Zavala en el dashboard de DO ("Pushed 63ea2dc to migracion-railway"). Tardó ~8 minutos (dentro del rango histórico).
+
+## Verificación post — en browser, sin curl pelado
+
+**Cache-Control confirmado vía `fetch()` desde la propia página (no curl, evita el 403 de threat protection):**
+
+```js
+await fetch('/', {cache: 'no-store'}).then(r => r.headers.get('cache-control'))
+```
+- Antes del redeploy: `s-maxage=60, stale-while-revalidate=31535940`
+- Después del redeploy: `s-maxage=3600, stale-while-revalidate=31532400` ✓
+
+**Test de reflejo inmediato en producción real (admin ya autenticado en el browser, sesión existente):**
+
+1. Edité `Site Homepage` → `Hero Section` → `Lede Emphasis`, de `"Con tu voz, en cada canal."` a `"Con tu voz, en cada canal. [TEST-R3600-01]"`. Save.
+2. Nueva pestaña → `https://sivarbrains.com/` → `document.body.innerText.includes('TEST-R3600-01')` → **`true`**, reflejado de inmediato (sin esperar TTL).
+3. Reverted el campo a su valor original exacto. Save.
+4. Misma pestaña, recarga → `hasTestMarker: false, hasOriginal: true` — confirmado reflejo inmediato de la reversión también. **Sin residuo de prueba en producción.**
+
+## Veredicto: D-BBF-04-REV CERRADA
+
+- Dominio custom activo (Cloudflare NS + CNAME a DO), confirmado por `dig` en el despacho anterior y ahora en producción real.
+- `disable_edge_cache` = Off (edge de DO apagado), confirmado por Zavala.
+- On-demand revalidation (H-524) funciona de punta a punta en producción con el dominio nuevo: reflejo inmediato en ambas direcciones (set y revert).
+- `revalidate = 3600` es ahora la red de seguridad correcta — no el mecanismo principal de actualización, que es el on-demand ya confirmado.
+
+**Commit desplegado en producción: `63ea2dc`.** Cero secretos expuestos — todo el test se hizo vía UI de admin autenticada, sin tocar `.env.local` ni ninguna credencial.
+
+**Arquitectura de cache definitiva, cerrada.**
