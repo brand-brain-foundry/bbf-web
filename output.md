@@ -8351,3 +8351,64 @@ feat(D-BBF-MEDIA-SEO): Fase 0 — campos AEO/SEO en Media collection
 **Fase 0 completa hasta donde el entorno lo permite.** Schema correcto, tipos generados limpios, migración creada y verificada (puramente aditiva, reversible) — pero **no aplicada a la base de datos**, bloqueada por la limitación de TTY ya anticipada en el propio despacho. Nada forzado, nada bypaseado. `alt`/`caption`/`credit` intactos. Fases 1 (rehacer ContentMasters), 2 (`SiteHomepage.ts` string→relación) y 3 (builders + `page.tsx`) quedan explícitamente fuera, como pide el ALCANCE OUT.
 
 **Siguiente paso que requiere de ti:** correr `pnpm payload migrate` en un terminal con TTY para aplicar la migración antes de continuar a Fase 1/2.
+
+---
+
+# REPORTE — B-BBF-WEB-MEDIA-SEO-FASE2
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-MEDIA-SEO-FASE2
+**Tipo:** FEATURE — schema Payload (Modo Strategic: 1) · **Protocolo:** P-5 · **Decisión:** D-BBF-MEDIA-SEO (causa raíz)
+**Rama dedicada:** `feat/media-seo-fase2` — **SIN merge**
+
+---
+
+## Desviación técnica de la rama base (documentada, no silenciosa)
+
+El despacho pedía crear `feat/media-seo-fase2` desde `migracion-railway`. **No lo hice así** — `migracion-railway` no tiene el código de Fase 0 (`feat/media-seo-fase0` sigue sin mergear), solo la base de datos lo tiene (según tu confirmación de precondición). Crear desde `migracion-railway` habría hecho que `generate:types`/`migrate:create` de esta fase intentaran re-agregar los 4 campos de Fase 0 como si no existieran en código, generando una migración duplicada/rota. **Ramifiqué desde `feat/media-seo-fase0` en su lugar** — mismo contenido + la base correcta para que Fase 2 se apile encima sin conflicto.
+
+## Verificación pre-ejecución
+
+- Confirmado el patrón de `contentItems/blocks/Video.ts` (`video: {type:'upload', relationTo:'media', required:true}`) — replicado exacto.
+- **Leí el valor ACTUAL de ambos `videoSources` antes de tocar el schema** (vía API, `fetch` en browser) — y encontré que **el dato cambió desde el despacho anterior**: `caseStudy.videoSources` ya NO apunta a `SB-Demo-video` (el genérico compartido con el Hero) — ahora apunta a `SB-Demo-video-HaciendaReal.webm`/`.mp4`, un video **propio y dedicado** para el caso. Esto resuelve de facto la pregunta abierta de "¿mismo video o uno propio?" del despacho anterior — parece que ya se subió el video real.
+
+**Mapeo de Media docs confirmado** (para la data-migration, aún no aplicada — ver más abajo):
+
+| Uso | Archivo | Media ID | mimeType | filesize |
+|---|---|---|---|---|
+| Hero, fuente 1 | `SB-Demo-video.webm` | **39** | video/webm | 18.45 MB |
+| Hero, fuente 2 | `SB-Demo-video.mp4` | **20** | video/mp4 | 17.9 MB |
+| Case, fuente 1 | `SB-Demo-video-HaciendaReal.webm` | **41** | video/webm | 3.11 MB |
+| Case, fuente 2 | `SB-Demo-video-HaciendaReal.mp4` | **40** | video/mp4 | 12.44 MB |
+
+Los 4 resuelven a un Media doc real — **ningún caso de "no puedo resolver el archivo"** (la condición de parada del despacho no aplicó).
+
+## §1 — Schema convertido (completo)
+
+`SiteHomepage.ts`, ambos arrays (`hero.media.videoSources` y `caseStudy.videoSources`): campo `src` (text) → **`video`** (`upload`, `relationTo: 'media'`, `required: true`) — replica exacto `Video.ts`. Campo `type` (codec) **sin cambios** — evaluado explícitamente: `mimeType` solo (`video/webm`) no distingue codec (VP9 vs AV1), y `Media` no guarda esa info — mantenerlo explícito por fuente sigue siendo necesario.
+
+`pnpm payload generate:types` → limpio. Confirmado en `payload-types.ts`: `video: number | Media` en ambos arrays — es una relación real, no un string.
+
+## §2 — Migración: **bloqueada por TTY, esta vez en `migrate:create` mismo** (no solo en `migrate`)
+
+A diferencia de Fase 0 (donde `migrate:create` corrió limpio y solo `migrate` se colgó), esta vez **`migrate:create` mismo** disparó un prompt interactivo — Payload no puede determinar automáticamente si `video_id` (la nueva columna) es una columna **nueva** o un **rename** de `src` (ambigüedad razonable: incluso puede detectar que estructuralmente se ve como un rename). El prompt es un menú de flechas (no aceptable vía texto plano por stdin) — sin TTY, no lo puedo resolver.
+
+**Cero archivos creados** (verificado: `find -newer` sobre migraciones previas → solo `index.ts` sin diff real, nada corrupto ni a medias). Detuve ahí, tal como pide el despacho ("DETENERSE SI: migración requiere TTY").
+
+**Recomendación para cuando lo corras vos:** elegir **`+ video_id create column`**, **NO** `~ src › video_id rename column`. Un rename asumiría que el string de texto (`/api/media/file/SB-Demo-video.mp4`) es reutilizable como un ID de relación — no lo es. Crear la columna nueva (vacía) y popular vía UPDATE con los IDs de la tabla de arriba es lo correcto.
+
+## §3 — Data-migration: mapeo preparado, NO aplicado (depende de §2)
+
+No pude escribir el `UPDATE` de re-vinculación porque no existe el archivo de migración para editarlo (bloqueado en §2). El mapeo exacto (tabla arriba) queda listo para cuando la migración se cree — cada fila del array `videoSources` (identificable por su `id` interno, ej. `6a4790ee971d4f08fb60ebc4` para Hero fuente 1) debe apuntar al Media ID correspondiente.
+
+## §4 — Override (`videoNameOverride`/`videoDescriptionOverride`): NO ejecutado — sigue sin decisión, y el hallazgo de §pre-ejecución la cambia
+
+El despacho dejaba esto como pregunta abierta ("¿Zavala eligió override?"). No lo ejecuté por dos razones:
+1. No estaba resuelta en el texto del despacho.
+2. **El hallazgo de que `caseStudy` ya tiene su propio video dedicado (no compartido) cambia el análisis**: si Hero y Case ya nunca comparten el mismo archivo, la tensión asset-vs-page-level del despacho anterior (`B-BBF-WEB-DIAG-MEDIA-SEO`) se resuelve sola — `seoName`/`seoDescription` en `Media` (Fase 0) bastarían sin necesitar override, porque cada asset ya tiene un solo significado real.
+
+**Pregunta para ti:** ¿confirmas que Hero y Case ya no comparten el mismo video (por lo que veo en el dato actual), y que por eso el override ya NO es necesario? Si es así, `§4` se cierra sin código — los campos de Fase 0 (`seoName`/`seoDescription` en Media) son suficientes.
+
+---
+
+## Veredicto
+
+**Schema convertido y verificado (§1), listo para commitear en rama dedicada.** Migración y data-migration (§2, §3) bloqueadas por TTY — mapeo completo documentado arriba para cuando la corras. §4 pendiente de tu confirmación, con un hallazgo nuevo que probablemente lo simplifica a "no hace falta". Zero secretos. Nada forzado.
