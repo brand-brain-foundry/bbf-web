@@ -197,7 +197,7 @@ export async function StructuredData({ locale }: { locale: string }) {
         sameAs,
         knowsLanguage: ['es', 'en'],
         areaServed: [
-          { '@type': 'Country', name: 'El Salvador', addressCountry: 'SV' },
+          { '@type': 'Country', name: 'El Salvador' },
           { '@type': 'AdministrativeArea', name: 'Latin America' },
         ],
       },
