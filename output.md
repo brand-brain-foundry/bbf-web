@@ -8412,3 +8412,80 @@ El despacho dejaba esto como pregunta abierta ("¿Zavala eligió override?"). No
 ## Veredicto
 
 **Schema convertido y verificado (§1), listo para commitear en rama dedicada.** Migración y data-migration (§2, §3) bloqueadas por TTY — mapeo completo documentado arriba para cuando la corras. §4 pendiente de tu confirmación, con un hallazgo nuevo que probablemente lo simplifica a "no hace falta". Zero secretos. Nada forzado.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-VIDEO-PACKAGE
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-DIAG-VIDEO-PACKAGE
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2+3) · **Protocolo:** P-6
+**Decisión a definir:** D-BBF-MEDIA-PACKAGE · **NO se ejecutó ningún cambio**
+**Rama de lectura:** `feat/media-seo-fase2` (schema Fase 0+2 ya en código, sin mergear)
+
+---
+
+## §1 — Media collection tras Fase 0/2
+
+Un video = **2 Media docs completamente separados**, uno por archivo/formato (confirmado con datos reales de Fase 2: `SB-Demo-video.webm` = doc `39`, `SB-Demo-video.mp4` = doc `20` — dos IDs, dos docs). Payload's `upload` collection es **1 archivo = 1 doc**, sin excepción — no hay mecanismo nativo de "múltiples archivos en un doc" salvo `imageSizes` (que es solo para variantes de tamaño de UNA imagen, no aplica a video ni a formatos distintos).
+
+**Consecuencia directa, no capturada por Fase 0:** los campos que Fase 0 agregó a `Media` (`seoName`, `seoDescription`, `duration`) viven **por archivo**, no por "video". Hoy, si alguien llena `duration` en el doc `39` (webm) y no en el `20` (mp4) — o los llena con valores distintos por error — no hay nada que lo detecte. Es la misma clase de problema de duplicación/desincronización que Fase 2 resolvió para el *path* del archivo, pero reaparece para la *metadata*.
+
+## §2 — Consumo real del componente hoy
+
+`page.tsx` (aún sin actualizar a Fase 3, tal como pide el ALCANCE OUT de despachos anteriores) sigue leyendo `s.src`/`s.type` de `videoSources[]` (líneas 221-222, 321) — **campo que ya no existe en el schema actual** (Fase 2 lo renombró a `video`). Esto es un estado transitorio esperado, no un bug nuevo — confirma que Fase 3 (actualizar `page.tsx`) es upstream-bloqueante antes de que esto funcione en producción.
+
+**El patrón de consumo es un array plano de N fuentes**, sin noción de "paquete": `hero.media.videoSources?.map((s) => <HeroVideo.Source src={s.src} type={s.type} />)`. Para el `VideoObject` (línea 78), el código YA elige implícitamente `videoSources[0]` como "la" fuente canónica (`heroVideoSrc = hero.media.videoSources?.[0]?.src`) — es decir, **el concepto de "un paquete = una fuente canónica + fallbacks" ya existe implícitamente en el código**, solo que no está formalizado como una entidad.
+
+## §3 — ¿Payload soporta bien un "VideoPackage"?
+
+**Sí, de forma idiomática — es exactamente el mismo primitivo que ya usa `Media` y `Video.ts`.** Dos formas evaluadas:
+
+**Opción A — Collection dedicada `VideoPackage`:**
+```typescript
+{
+  slug: 'video-packages',
+  fields: [
+    { name: 'seoName', type: 'text', localized: true },
+    { name: 'seoDescription', type: 'textarea', localized: true },
+    { name: 'duration', type: 'number' },        // UNA sola vez por video, no por archivo
+    { name: 'inLanguage', type: 'select', options: [...] },
+    { name: 'primary', type: 'upload', relationTo: 'media', required: true },   // ej. webm-vp9
+    { name: 'fallback', type: 'upload', relationTo: 'media', required: true },  // ej. mp4-h264
+    { name: 'mobile', type: 'upload', relationTo: 'media', required: false },   // art direction, §5
+    { name: 'poster', type: 'upload', relationTo: 'media', required: false },
+  ],
+}
+```
+Las páginas (Hero, Case Study) tendrían **un solo campo** `relationTo: 'video-packages'` en vez del array `videoSources[]` + el campo `videoPoster` separado.
+
+**Opción B — Grupo de campos dentro del doc consumidor** (lo que Fase 2 ya hace, solo que con relaciones reales): mantener `videoSources[]` (array de relaciones `upload/relationTo:media`) + `videoPoster` como campos hermanos del mismo padre (Hero/CaseStudy), sin una entidad `VideoPackage` propia.
+
+**Payload soporta ambas sin fricción** — no hay una limitación técnica que fuerce una sobre otra. La diferencia es de diseño de datos, no de capacidad de la herramienta.
+
+## §4 — Poster en el modelo paquete
+
+Hoy: `videoPoster` es un campo **hermano** de `videoSources[]` (mismo padre — `hero.media` o `caseStudy`), no parte del array. **En un modelo paquete, el poster se movería DENTRO del paquete** (campo `poster` del `VideoPackage`, como en el ejemplo de §3) — **totalmente factible**, es literalmente el mismo patrón que ya usa `contentItems/blocks/Video.ts` (`video` + `poster`, dos `upload` en el mismo bloque). No hay obstáculo técnico.
+
+## §5 — Art direction (mobile vs desktop): confirmado que NO existe hoy
+
+`HeroVideoSourceProps` (`HeroVideo.tsx:117-120`) solo tiene `src` y `type` — **sin prop `media`**. El `<source>` renderizado (línea 122-130) no setea el atributo HTML `media` en ningún punto. **Confirmado: agregar una variante mobile requeriría cambio de componente, no solo de dato** — habría que agregar `media?: string` a `HeroVideoSourceProps` y pasarlo al `<source>` (`<source media={media} .../>`). Esto es Fase 3+ código, no bloquea la decisión de datos de este despacho, pero sí significa que un campo `mobile` en el paquete quedaría sin efecto visual hasta ese cambio.
+
+## §6 — VideoObject builder: no existe aún, pero la pregunta se responde igual
+
+`src/lib/seo/jsonLd/videoObject.ts` **no existe** (`find` → cero resultados; el directorio solo tiene `article.ts`, `breadcrumbList.ts`, `faqPage.ts`, `webPage.ts`) — Fase 3 no ha empezado, consistente con reportes anteriores.
+
+**¿Es factible 1 `VideoObject` por paquete (no por formato)? Sí — y es la única forma correcta.** La guía de Google para `VideoObject` espera **un solo `contentUrl`** (el mejor/canónico) por pieza de contenido de video — emitir un `VideoObject` separado por cada formato (webm Y mp4) haría que buscadores/IA vean "2 videos" donde hay uno, diluyendo señal en vez de reforzarla. El código actual YA hace esto implícitamente (§2, `videoSources[0]`) — un `VideoPackage` simplemente le da un nombre y una entidad real a lo que el código ya asume.
+
+---
+
+## VEREDICTO CC — Opción A (paquete) vs B (docs + convención)
+
+**Recomiendo Opción A — `VideoPackage` como collection propia.** Razones, con evidencia de este mismo despacho:
+
+1. **§1 muestra un problema real que B no resuelve**: `duration`/`seoName`/`seoDescription` en `Media` (Fase 0) se duplican por archivo (webm y mp4 del mismo video necesitan el mismo valor, sin nada que lo garantice). Un paquete los centraliza — se llenan UNA vez.
+2. **§6 confirma que el `VideoObject` necesita exactamente esta forma** (una fuente canónica, no N) — el paquete es el molde natural para ese builder.
+3. **§4 confirma que el poster encaja sin fricción** dentro del paquete, igual que ya hace `Video.ts`.
+4. **Es el mismo primitivo de Payload que el proyecto ya usa en 12 lugares** (relaciones `upload`/`relationTo`, confirmado en el despacho anterior) — no es una abstracción nueva para Payload, es aplicar el patrón existente un nivel más arriba.
+
+**Costo de la Opción A, con honestidad:** implica revisar Fase 0 — los campos `seoName`/`seoDescription`/`duration` que se agregaron a `Media` quedarían redundantes para videos que usan paquete (aunque podrían mantenerse como fallback genérico para media suelta, imágenes sin paquete, etc. — no hay que borrarlos, solo dejar de ser la fuente primaria para video). Esto es un ajuste de alcance, no un desperdicio — Fase 0 sigue sirviendo a imágenes y assets sin paquete.
+
+**No ejecuté nada.** Esto define la forma exacta de `D-BBF-MEDIA-PACKAGE` para que la firmes — si confirmas Opción A, el siguiente despacho sería crear la collection `video-packages` + migrar Hero/Case Study a referenciarla (nueva fase, con su propia migración de datos usando los IDs ya mapeados en el despacho de Fase 2). Zero secretos expuestos.
