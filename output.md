@@ -8693,3 +8693,95 @@ Push a las 19:40 UTC. Redeploy confirmado completo entre el minuto 4 y el minuto
 **El mismatch código-schema está resuelto.** Producción vuelve a tener código y base de datos en sincronía — commit desplegado `ad3928e`. Cero secretos expuestos, cero curl pelado (todo verificado vía `fetch` en browser autenticado).
 
 **Pendiente, fuera de este despacho (ALCANCE OUT — Zavala, en el admin ya funcional):** crear los 2 `video-packages` (Hero: primary=media 39/fallback=media 20/poster=media 22; Case: primary=media 41/fallback=media 40/poster=media 42) y vincularlos en `hero.media.videoPackage` / `caseStudy.videoPackage` — sin esto, el sitio funciona pero el Hero y el Case Study no muestran video (fallback silencioso a solo poster, sin romper nada).
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-CAMPOS-Y-SCHEMA
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-DIAG-CAMPOS-Y-SCHEMA
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2+1) · **Protocolo:** P-6
+**Hallazgos:** H-BBF-553, H-BBF-549, H-BBF-554 · **NO se ejecutó ningún fix**
+
+---
+
+## §1 (H-BBF-553) — `mediaAsset` huérfano: confirmado
+
+`SiteHomepage.ts:1111-1119` (`caseStudy`):
+```ts
+{
+  name: 'mediaAsset',
+  type: 'upload',
+  relationTo: 'media',
+  required: false,
+  admin: {
+    description: 'Imagen estática 16:9 del caso. Si se prefiere video, usar videoPackage.',
+  },
+},
+```
+
+**`page.tsx`: cero referencias a `mediaAsset`** (`grep` → sin resultados). **Ningún componente lo consume tampoco** (`grep -rl` sobre `src/components/` → sin resultados). El campo existe en el schema y es editable en el admin, pero **nada en el frontend lo lee** — un editor podría subir una imagen ahí y no pasaría absolutamente nada visible en el sitio.
+
+**La propia descripción del campo confirma que sí hubo intención de uso:** "Si se prefiere video, usar videoPackage" implica que `mediaAsset` debía ser la alternativa cuando NO se prefiere video (un fallback estático 16:9) — ese `if/else` nunca se implementó en `page.tsx`. Hoy `page.tsx` simplemente no renderiza nada si `casePrimary?.url` no existe (confirmado en el fix anterior, `B-BBF-WEB-VIDEO-PACKAGE-02`) — no cae a `mediaAsset` como alternativa.
+
+**VEREDICTO §1: no es un campo obsoleto que sobra — es una feature a medio construir.** Dos caminos:
+- **(a) Implementar el fallback** (`casePrimary?.url ? <video>... : mediaAsset?.url ? <img>... : null`) — cumple la intención original, mínimo cambio en `page.tsx` (un condicional más).
+- **(b) Eliminar el campo** — si se decide que el Case Study SIEMPRE debe tener video (nunca imagen estática), simplifica el schema pero contradice lo que la propia descripción del campo promete.
+
+No recomiendo (b) sin confirmación explícita — el campo documenta una decisión de producto (video vs. imagen estática) que no me corresponde revertir solo porque nunca se conectó.
+
+## §2 (H-BBF-549) — Duplicación Media ↔ VideoPackage: confirmada, 4 campos exactos
+
+**Media** (`media/index.ts`): `alt`, `caption`, `credit`, `seoName`, `seoDescription`, `duration`, `inLanguage` (7 campos).
+**VideoPackage** (`videoPackages/index.ts`): `title`, `primary`, `fallback`, `mobile`, `poster`, `seoName`, `seoDescription`, `duration`, `inLanguage` (9 campos).
+
+**Duplicados exactos (mismo nombre, mismo tipo): `seoName`, `seoDescription`, `duration`, `inLanguage`.**
+
+**¿Cuál usa el código?** Confirmado con `grep` sobre `page.tsx`: **`heroPkg?.seoName`, `casePkg?.seoName`, `heroPkg?.duration`, `casePkg?.duration`, `resolveInLanguage(heroPkg?.inLanguage)`** — el builder `videoObject.ts` y `page.tsx` leen **exclusivamente de `VideoPackage`** (`heroPkg`/`casePkg`), **nunca de `Media`**. Confirmé además con `grep -rn "\.seoName\b"` en todo `src/` que **no hay ningún otro código que lea estos 4 campos desde `Media`** — ni siquiera para imágenes sueltas (no existe todavía un `buildImageObjectJsonLd` que los use).
+
+**VEREDICTO §2: los 4 campos en `Media` están 100% muertos hoy — cero código los lee, para video o para imagen.**
+
+| Opción | Impacto |
+|---|---|
+| **(a) Eliminar de Media** | Requiere migración (drop columns). Limpio, sin ambigüedad de fuente de verdad. Pierde la posibilidad de dar metadata AEO a una imagen suelta que NO forma parte de un `VideoPackage` (ej. una imagen de blog post) — pero hoy nada usa esa posibilidad tampoco. |
+| **(b) Dejar solo para imágenes sueltas** (mantener en Media, documentar que NO aplica a video) | Cero cambio de schema, solo doc/comentario aclarando el alcance real. Sigue siendo código muerto hasta que exista un `buildImageObjectJsonLd` que los lea — deuda que persiste, solo mejor etiquetada. |
+| **(c) Mantener como está** | Confuso — dos "fuentes de verdad" con el mismo nombre de campo, alto riesgo de que alguien llene `Media.seoName` pensando que afecta el `VideoObject` (no hace nada). |
+
+**Recomiendo (a) si se confirma que ningún flujo futuro cercano necesita SEO de imagen suelta, o (b) si sí — pero (b) exige documentar explícitamente en el `admin.description` de cada campo de Media que "esto NO aplica a video, usa VideoPackage" para evitar el error de editor descrito en (c).**
+
+## §3 (H-BBF-554) — `addressCountry` mal anidado: confirmado, línea exacta
+
+`src/components/seo/StructuredData.tsx:200`:
+```ts
+areaServed: [
+  { '@type': 'Country', name: 'El Salvador', addressCountry: 'SV' },
+  { '@type': 'AdministrativeArea', name: 'Latin America' },
+],
+```
+
+**El bug exacto:** `addressCountry` **no es una propiedad válida de `Country`** en Schema.org — es una propiedad de **`PostalAddress`** (usada para especificar el país de una dirección postal, típicamente un código ISO 3166-1 alpha-2 o un objeto `Country`). Poner `addressCountry: 'SV'` dentro de un objeto `{'@type': 'Country', ...}` es estructuralmente inválido — es como decir "este País tiene, como propiedad, un código de país" (circular, sin sentido en el vocabulario de Schema.org). Un validador de Rich Results probablemente ignora o marca esta propiedad como desconocida para el tipo `Country`.
+
+**Confirmé que no existe ningún `address`/`PostalAddress` en ningún otro lugar del archivo** (`grep "'address'\|address:"` → sin resultados) — esto no es un typo aislado, es la única mención de `addressCountry` en todo el componente. Alguien mezcló dos conceptos distintos: "el área que sirve la Organization" (`areaServed: Country`, correcto tal cual sin `addressCountry`) y "la dirección postal de la Organization" (`address: PostalAddress` con `addressCountry`, que nunca se creó).
+
+**VEREDICTO §3, el fix exacto:**
+```ts
+// areaServed: Country NO necesita addressCountry — se elimina:
+areaServed: [
+  { '@type': 'Country', name: 'El Salvador' },
+  { '@type': 'AdministrativeArea', name: 'Latin America' },
+],
+// SI se quiere también una PostalAddress real (opcional, decisión de producto
+// aparte — no está claro que una Organization SaaS remota la necesite):
+address: { '@type': 'PostalAddress', addressCountry: 'SV' },
+```
+La corrección mínima (quitar `addressCountry` de `Country`) resuelve el error estructural sin agregar nada. Agregar `address` es una decisión de contenido separada, no implícita en el bug.
+
+---
+
+## RESUMEN — 3 fixes definidos, ninguno ejecutado
+
+| # | Hallazgo | Fix definido | Ejecutar requiere |
+|---|---|---|---|
+| H-BBF-553 | `mediaAsset` huérfano | Implementar fallback en `page.tsx` (recomendado) o eliminar campo | Tu confirmación: ¿el Case Study puede no tener video? |
+| H-BBF-549 | 4 campos duplicados Media/VideoPackage | Eliminar de Media, o quedar solo-documentado para imágenes sueltas | Tu decisión: ¿se planea SEO de imagen suelta pronto? |
+| H-BBF-554 | `addressCountry` mal anidado | Quitar de `Country`, agregar `address: PostalAddress` si se quiere (opcional) | Ejecutable de inmediato, sin decisión pendiente — es un bug puro |
+
+Zero secretos expuestos. Nada ejecutado.
