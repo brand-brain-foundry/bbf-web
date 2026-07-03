@@ -7821,3 +7821,49 @@ Confirmado en §1: **NO existe** ningún `.webm` en R2 bajo ningún nombre relac
 - **La alternativa real** sería apuntar `hero.media.videoSources[].src` a `/api/media/file/SB-Demo-video.mp4` (con `type: mp4-h264`) — usa tu video real, ya confirmado sirviendo perfecto vía R2. Como no existe `.webm`, esta alternativa tendría solo 1 `<source>` (mp4), sin el fallback AV1/VP9 WebM.
 
 **No revertí el parche ni cambié nada — es decisión tuya cuál de los dos assets (el genérico canon vs tu video real en R2) debe quedar en el Hero.** Zero secretos expuestos en este diagnóstico.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-VIDEO-DATO-REAL
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-FIX-VIDEO-DATO-REAL
+**Tipo:** FIX DE DATO (Modo Strategic: 1) · **Protocolo:** P-5 · **Decisión:** D-BBF-VIDEO-HERO
+**Alcance:** dato Payload `SiteHomepage` — CERO cambio de código
+
+---
+
+## Verificación pre-ejecución
+
+- Reconfirmado `/api/media/file/SB-Demo-video.mp4` con `Range: bytes=0-1023` → **`206`**, `video/mp4`, `Content-Range: bytes 0-1023/17895696` — igual que en `a31b0e7`.
+- **Valor ACTUAL leído en admin antes de tocar nada:** `hero.media.videoSources` tenía 2 filas (el legacy de `6b9f7f2`):
+  - Video Source 01: `Src = /assets/media/hero/hero.av1.webm`, `Type = VP9 WebM`
+  - Video Source 02: `Src = /assets/media/hero/hero.h264.mp4`, `Type = H.264 MP4`
+- Schema reconfirmado (`SiteHomepage.ts:139-150`): `type` = select con `mp4-h264` como opción exacta ("H.264 MP4").
+
+## Cambio aplicado (dato, vía admin UI — NO código)
+
+1. **Eliminada** Video Source 02 (`hero.h264.mp4`) — ya no aplica, se reemplaza por una sola fuente real.
+2. Video Source 01 editada:
+   - `Src`: `/assets/media/hero/hero.av1.webm` → **`/api/media/file/SB-Demo-video.mp4`**
+   - `Type`: `VP9 WebM` → **`H.264 MP4`** (`mp4-h264`)
+
+**Resultado final del array** (confirmado vía `GET /api/globals/site-homepage?depth=0&locale=es`, fuente de verdad, no HTML renderizado):
+```json
+[{"id":"6a4515e56b9c255c2cc80143","src":"/api/media/file/SB-Demo-video.mp4","type":"mp4-h264"}]
+```
+Exactamente 1 fila, exactamente el valor pedido.
+
+Campos hermanos **intactos** (confirmado visual antes/después): `Chrome Label` (`sivar-brains · live feed`), `Video Poster` (`SB-video.webp`), `Demo Label`, `Foot Caption`, `Ticker Items`. `Cases.videoSources` **no tocado** (ALCANCE OUT).
+
+Guardado vía Payload admin: **"Updated successfully."**
+
+## Verificación post
+
+- **On-demand revalidation confirmada** vía la fuente de verdad (API global, no HTML) — instantánea.
+- **Falsa alarma detectada y descartada durante la verificación:** al buscar `hero.av1.webm` en el HTML servido de `/`, aparecía todavía presente (3-5 veces, en 4 fetches consecutivos). Investigué el índice exacto de cada aparición contra la posición de cada `data-hero-video` en el documento: el string viejo cae **después** del segundo `<video data-hero-video>` (el de **Case Study**, `Cases.videoSources`, fuera de alcance de este despacho), no del primero (Hero, el que edité). El primer `<video>` (Hero) ya tiene exactamente 1 `<source>` con `SB-Demo-video.mp4` — confirmado por posición de índice en el HTML real. **No es una regresión ni un problema de propagación — es contenido de una sección distinta que nunca se tocó.**
+- **⚠️ Igual que en el despacho anterior, no puedo confirmar reproducción visual yo mismo:** el `<video>` del Hero en mi browser automatizado sigue en `networkState=2`/`readyState=0` — mismo patrón ya explicado (probable artefacto de cómo Cloudflare/automatización tratan las requests de video), no relacionado con el dato (ya verificado 100% correcto y sirviendo `206` de forma independiente).
+
+**Por eso, tal como pide el despacho: la confirmación visual final de que TU video (el real, no el genérico) reproduce queda en tus manos, en un browser normal.**
+
+## Veredicto
+
+**Dato corregido a tu video real en R2, verificado en la fuente de verdad (API), campos hermanos intactos, cero cambio de código, cero secretos.** El legacy (`hero.av1.webm`/`hero.h264.mp4`) fue removido del Hero. Pendiente tu confirmación visual en browser normal para cerrar H-BBF-522 definitivamente con D-BBF-VIDEO-HERO aplicada.
