@@ -2225,11 +2225,11 @@ export interface SiteHomepage {
       videoSources?:
         | {
             /**
-             * Path relativo o URL del archivo de video.
+             * Archivo de video (Media doc real, no path suelto).
              */
-            src: string;
+            video: number | Media;
             /**
-             * Codec / contenedor del video.
+             * Codec / contenedor del video. NO se deriva de mimeType — un mismo mimeType (ej. video/webm) puede ser VP9 o AV1, y Media no guarda el codec.
              */
             type: 'webm-av1' | 'webm-vp9' | 'mp4-h264' | 'mp4-h265' | 'mp4-av1' | 'mov';
             id?: string | null;
@@ -2732,11 +2732,11 @@ export interface SiteHomepage {
     videoSources?:
       | {
           /**
-           * URL del archivo de video.
+           * Archivo de video (Media doc real, no path suelto).
            */
-          src: string;
+          video: number | Media;
           /**
-           * Codec / contenedor del video.
+           * Codec / contenedor del video. NO se deriva de mimeType — Media no guarda el codec.
            */
           type: 'webm-av1' | 'webm-vp9' | 'mp4-h264' | 'mp4-h265' | 'mp4-av1' | 'mov';
           id?: string | null;
@@ -3679,7 +3679,7 @@ export interface SiteHomepageSelect<T extends boolean = true> {
               videoSources?:
                 | T
                 | {
-                    src?: T;
+                    video?: T;
                     type?: T;
                     id?: T;
                   };
@@ -3917,7 +3917,7 @@ export interface SiteHomepageSelect<T extends boolean = true> {
         videoSources?:
           | T
           | {
-              src?: T;
+              video?: T;
               type?: T;
               id?: T;
             };

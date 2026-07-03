@@ -130,10 +130,16 @@ export const SiteHomepage: GlobalConfig = {
                   },
                   fields: [
                     {
-                      name: 'src',
-                      type: 'text',
+                      // D-BBF-MEDIA-SEO (Fase 2): relación real a Media, no string
+                      // (causa raíz H-BBF-522/541/542/544 — typos y prefijos
+                      // equivocados eran posibles con texto suelto; Payload no
+                      // permite guardar una relación a un doc inexistente).
+                      // Replica exacto el patrón de contentItems/blocks/Video.ts.
+                      name: 'video',
+                      type: 'upload',
+                      relationTo: 'media',
                       required: true,
-                      admin: { description: 'Path relativo o URL del archivo de video.' },
+                      admin: { description: 'Archivo de video (Media doc real, no path suelto).' },
                     },
                     {
                       name: 'type',
@@ -147,7 +153,10 @@ export const SiteHomepage: GlobalConfig = {
                         { label: 'AV1 MP4', value: 'mp4-av1' },
                         { label: 'QuickTime MOV', value: 'mov' },
                       ],
-                      admin: { description: 'Codec / contenedor del video.' },
+                      admin: {
+                        description:
+                          'Codec / contenedor del video. NO se deriva de mimeType — un mismo mimeType (ej. video/webm) puede ser VP9 o AV1, y Media no guarda el codec.',
+                      },
                     },
                   ],
                 },
@@ -1166,10 +1175,13 @@ export const SiteHomepage: GlobalConfig = {
               },
               fields: [
                 {
-                  name: 'src',
-                  type: 'text',
+                  // D-BBF-MEDIA-SEO (Fase 2): relación real a Media, no string
+                  // (mismo fix que hero.media.videoSources — ver comentario ahí).
+                  name: 'video',
+                  type: 'upload',
+                  relationTo: 'media',
                   required: true,
-                  admin: { description: 'URL del archivo de video.' },
+                  admin: { description: 'Archivo de video (Media doc real, no path suelto).' },
                 },
                 {
                   name: 'type',
@@ -1183,7 +1195,10 @@ export const SiteHomepage: GlobalConfig = {
                     { label: 'AV1 MP4', value: 'mp4-av1' },
                     { label: 'QuickTime MOV', value: 'mov' },
                   ],
-                  admin: { description: 'Codec / contenedor del video.' },
+                  admin: {
+                    description:
+                      'Codec / contenedor del video. NO se deriva de mimeType — Media no guarda el codec.',
+                  },
                 },
               ],
             },
