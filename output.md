@@ -8435,6 +8435,19 @@ No toqué `HeroVideo.tsx` (componente), builders de `VideoObject`, ContentMaster
 
 ---
 
+## `pnpm tsc --noEmit`: confirma el trigger de escalada que el propio despacho anticipó
+
+El despacho lista explícitamente como condición de "DETENERSE Y ESCALAR": *"el cambio en `SiteHomepage.ts` rompe el consumo en `page.tsx` de forma que exigiría tocar el componente (fuera de alcance — reportar, no forzar)."* Corrí el type-check para confirmarlo con evidencia, no asumirlo:
+
+```
+pnpm tsc --noEmit
+→ 10 errores TS2339/TS7006 en page.tsx, todos por videoPoster/videoSources
+  ya no existir (ahora es videoPackage) — líneas 66, 67, 72, 73, 75, 78,
+  221, 320.
+```
+
+**Confirmado — es exactamente lo que el despacho anticipó, no una sorpresa.** `page.tsx` queda en estado roto de TypeScript hasta la fase siguiente (actualizar el componente para consumir `videoPackage.primary`/`.fallback`/`.poster` en vez de `videoPoster`/`videoSources[]`). **No lo arreglé** — está explícitamente en ALCANCE OUT y es una de las condiciones de escalada listadas. `pnpm build` fallaría hoy por este mismo motivo si se corriera contra esta rama — normal y esperado, no ejecutar merge a `migracion-railway` hasta que la fase de componente cierre esto.
+
 ## Veredicto
 
-**Collection + schema construidos y verificados end-to-end en código** (§1-§4 completos, con una autocorrección técnica documentada: `relationship` en vez de `upload`). **Migración bloqueada por TTY** (§5) — recomendación clara para cuando la corras. **Data-migration bloqueada transitivamente** hasta que la migración exista — plan de 3 pasos documentado, ejecutable vía admin sin script. Zero secretos. Nada forzado, nada corrompido.
+**Collection + schema construidos y verificados end-to-end en código** (§1-§4 completos, con una autocorrección técnica documentada: `relationship` en vez de `upload`). **Migración bloqueada por TTY** (§5) — recomendación clara para cuando la corras. **Data-migration bloqueada transitivamente** hasta que la migración exista — plan de 3 pasos documentado, ejecutable vía admin sin script. **`page.tsx` queda roto a nivel de tipos, confirmado y esperado** — coincide exactamente con la condición de escalada del despacho, no se tocó el componente. Zero secretos. Nada forzado, nada corrompido.
