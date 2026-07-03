@@ -8293,3 +8293,61 @@ Lo que puse en los 2 ContentMasters (`SB_ContentMaster_Homepage.md` §2.1.1, `SB
 4. El código (`page.tsx`) tendría que leer `videoSources[].video` (un Media doc completo, con `alt`/`filesize`/`mimeType`/`duration` ya disponibles) en vez de `videoSources[].src` (string) — cambio de código, Fase 2, fuera de este despacho.
 
 **No ejecuté nada de esto.** Recomiendo NO commitear la Fase 1 de `bbf-docs` tal como está — necesita reescribirse una vez que decidas el punto de `videoName`/`videoDescription`. Zero secretos expuestos.
+
+---
+
+# REPORTE — B-BBF-WEB-MEDIA-SEO-FASE0
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-MEDIA-SEO-FASE0
+**Tipo:** FEATURE — schema Payload (Modo Strategic: 1) · **Protocolo:** P-5 · **Decisión:** D-BBF-MEDIA-SEO
+**Rama dedicada:** `feat/media-seo-fase0` (creada desde `migracion-railway`) — **SIN merge**
+
+---
+
+## Verificación pre-ejecución
+
+- `git status` limpio en `migracion-railway` antes de crear la rama (solo untracked preexistentes).
+- Confirmados campos actuales de `media/index.ts`: `alt`, `caption`, `credit` — **sin tocar**, se reutilizan tal cual pide el despacho.
+- Confirmado el patrón a replicar (`contentItems/blocks/Video.ts`, `relationTo: 'media'`) — referencia, no se toca en esta fase (eso es Fase 2).
+
+## Cambio aplicado (`src/payload/collections/media/index.ts`)
+
+4 campos nuevos, todos opcionales (cero trabajo obligatorio en el caso normal, A-01):
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `seoName` | `text`, `localized` | AEO-ready, distinto de `alt` |
+| `seoDescription` | `textarea`, `localized` | AEO-ready, distinto de `caption` |
+| `duration` | `number` | Condicional: solo visible en admin si `mimeType` empieza con `video/` (`admin.condition`) |
+| `inLanguage` | `select` (es/en) | Idioma hablado del contenido del asset, independiente del locale de la página |
+
+## Verificación post
+
+- **`pnpm payload generate:types`** → limpio, sin errores. Confirmado en `payload-types.ts`: los 4 campos aparecen en `interface Media` con los tipos correctos (`seoName?: string | null`, `duration?: number | null`, `inLanguage?: ('es' | 'en') | null`, etc.), JSDoc con las descripciones tal cual se escribieron.
+- **`pnpm payload migrate:create media-seo-fase0`** → exitoso, sin TTY. Migración creada en `src/payload/migrations/20260703_154415_media_seo_fase0.ts` — puramente aditiva:
+  ```sql
+  CREATE TYPE "enum_media_in_language" AS ENUM('es', 'en');
+  ALTER TABLE "media" ADD COLUMN "duration" numeric;
+  ALTER TABLE "media" ADD COLUMN "in_language" "enum_media_in_language";
+  ALTER TABLE "media_locales" ADD COLUMN "seo_name" varchar;
+  ALTER TABLE "media_locales" ADD COLUMN "seo_description" varchar;
+  ```
+  Con su `down()` reversible (drop de las 4 columnas + el enum).
+
+## Migración: creada, NO aplicada — bloqueada por TTY, tal como anticipó el despacho
+
+Ejecuté `pnpm payload migrate` — el proceso quedó colgado (cero output, cero avance de CPU tras varios chequeos) consistente con esperar una confirmación interactiva en stdin que este entorno no puede proveer (stdin conectado a `/dev/null`). **Detuve el proceso limpiamente** (sin forzar, sin `--force`, sin bypasear el prompt) tal como indica el despacho ("DETENERSE SI... reportar, no forzar"). La base de datos real (Neon) **no fue tocada** — la migración nunca llegó a ejecutar SQL (cero logs de "Starting migration" que sí aparecieron en `migrate:create`).
+
+**Pendiente: Zavala debe correr `pnpm payload migrate` manualmente** (con TTY real) para aplicar esta migración a la base de datos antes de que los campos existan en producción.
+
+## Commit (rama dedicada, sin merge)
+
+```
+feat(D-BBF-MEDIA-SEO): Fase 0 — campos AEO/SEO en Media collection
+```
+5 archivos: `media/index.ts`, `payload-types.ts`, `migrations/20260703_154415_media_seo_fase0.{ts,json}`, `migrations/index.ts` (barrel auto-actualizado por `migrate:create`).
+
+## Veredicto
+
+**Fase 0 completa hasta donde el entorno lo permite.** Schema correcto, tipos generados limpios, migración creada y verificada (puramente aditiva, reversible) — pero **no aplicada a la base de datos**, bloqueada por la limitación de TTY ya anticipada en el propio despacho. Nada forzado, nada bypaseado. `alt`/`caption`/`credit` intactos. Fases 1 (rehacer ContentMasters), 2 (`SiteHomepage.ts` string→relación) y 3 (builders + `page.tsx`) quedan explícitamente fuera, como pide el ALCANCE OUT.
+
+**Siguiente paso que requiere de ti:** correr `pnpm payload migrate` en un terminal con TTY para aplicar la migración antes de continuar a Fase 1/2.
