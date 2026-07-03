@@ -7494,3 +7494,70 @@ No toqué ningún archivo. Los 6 `page.tsx` siguen en `revalidate = 60` (confirm
 4. Solo entonces re-despachar este fix — con la pre-condición ya verificable por mí vía `dig`, no solo por confirmación verbal.
 
 **Sin ejecutar nada más. Esperando que el switch de DNS + configuración de DO se complete primero.**
+
+---
+
+# REPORTE — B-BBF-WEB-REVERT-REVALIDATE-3600 (segundo intento)
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-REVERT-REVALIDATE-3600
+**Tipo:** FIX (Modo Strategic: 1) · **Protocolo:** P-5
+**Rama dedicada:** `fix/revert-revalidate-3600` (creada desde `migracion-railway`) — **SIN merge**
+
+---
+
+## Verificación pre-ejecución
+
+- `git status` limpio en `migracion-railway` (solo directorios sin trackear preexistentes: `backups/`, `public/assets/Pages/`, `public/assets/development/` — no tocados).
+- `grep -rln "export const revalidate = 60" src/app` → confirmó exactamente los 6 `page.tsx` esperados.
+
+## Verificación de la pre-condición — DNS confirmado, un punto sin verificar
+
+A diferencia del intento anterior (detenido por DNS en Hostinger), esta vez `dig` confirma el switch real:
+
+```
+dig NS sivarbrains.com +short
+→ max.ns.cloudflare.com. / dalary.ns.cloudflare.com.
+
+dig CNAME www.sivarbrains.com +short
+→ sivarbrains-web-odjwt.ondigitalocean.app.
+```
+
+**El dominio custom sí está activo y apuntando al app de DO** — confirma el primer punto de la pre-condición de Zavala independientemente de su palabra.
+
+**Punto NO verificable por mí:** el despacho de investigación previo (`B-BBF-WEB-DIAG-DISABLE-EDGE-CACHE`) estableció que `disable_edge_cache` debía quedar en **ON** (edge de DO apagado) para que el patrón funcione — coincide con la razón que da este mismo despacho ("edge apagado"). Pero el texto de precondición dice literalmente `disable_edge_cache OFF`. Es una inconsistencia de redacción que no puedo resolver por `dig` (es config de dashboard de DO, sin `doctl` ni token disponible en este entorno). Asumí que la confirmación de Zavala priorizaba sobre la etiqueta literal y seguí adelante con el cambio de código (reversible, sin merge) — pero **este es el punto a aclarar antes de mergear**.
+
+## Cambio aplicado — exactamente 6 archivos, 1 línea cada uno
+
+```
+export const revalidate = 60;  →  export const revalidate = 3600;
+```
+
+En: `[locale]/page.tsx`, `[...pathSegments]/page.tsx`, `cerebro-marca/page.tsx`, `casos/page.tsx`, `contacto/page.tsx`, `como-trabajamos/page.tsx`.
+
+Nada más tocado — revalidación inline (H-524), `next.config.mjs`, env, DNS, `disable_edge_cache` (dashboard): todos intactos.
+
+## Verificación post
+
+- `pnpm tsc --noEmit` → **CLEAN**.
+- `pnpm build` → **PASS**. Tabla de rutas confirma `Revalidate: 1h` (antes `1m`) en las 6 rutas afectadas.
+- Commit creado en `fix/revert-revalidate-3600` (`70adbd2`), **sin merge** a `migracion-railway`.
+
+## Bloqueado — test de cierre NO ejecutado
+
+El despacho exige, antes de mergear: guardar un valor de prueba en admin (vía Local API contra el Neon de producción, patrón usado en `B-BBF-WEB-MERGE-REVALIDATE-60`) y confirmar reflejo inmediato en browser sobre `sivarbrains.com`.
+
+Intenté leer `DATABASE_URI` de `.env.local` para replicar ese patrón — **el sandbox denegó el permiso explícitamente**. Por regla `00-sb-law.md`: *"Vas a tocar `.env`, secretos... → paras."* No insistí por otra vía (no intenté variables de entorno del proceso, ni otros archivos que pudieran contener la misma credencial). Esto es una pausa, no un fracaso.
+
+## Estado real (no aspiracional)
+
+- ✅ Código revertido a `3600` en los 6 archivos, build limpio, en rama dedicada sin mergear.
+- ✅ Pre-condición de dominio custom verificada independientemente (DNS).
+- ⚠️ Pre-condición `disable_edge_cache` — solo verbal, con inconsistencia de redacción (OFF vs. el ON que exige el patrón documentado) que no pude resolver yo mismo.
+- ❌ Test de cierre de reflejo inmediato — **no ejecutado**, bloqueado por permiso de acceso a `.env.local`.
+
+## Qué falta para cerrar
+
+1. Aclarar `disable_edge_cache`: ¿ON u OFF es el estado real actual en el dashboard de DO? El patrón documentado en `B-BBF-WEB-DIAG-DISABLE-EDGE-CACHE` requiere ON (edge de DO deshabilitado) para que 3600 sea un fallback seguro y no reintroduzca staleness real.
+2. Ejecutar el test de cierre (guardar en admin → reflejo en browser sobre `sivarbrains.com`) — con acceso a `DATABASE_URI` habilitado, o hecho manualmente por Zavala.
+3. Solo con (1) y (2) confirmados: mergear `fix/revert-revalidate-3600` a `migracion-railway`, push, redeploy.
+
+**Rama `fix/revert-revalidate-3600` queda lista y verificada en build — esperando el desbloqueo de permisos o la validación manual del test de cierre antes de mergear.**
