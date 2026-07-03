@@ -8981,3 +8981,251 @@ Detected: 0 ERRORS · 0 WARNINGS · 5 ITEMS
 ## VEREDICTO: H-BBF-554 CERRADO EN PRODUCCIÓN
 
 **El fix está desplegado, verificado en vivo, y confirmado limpio por el validador oficial de Schema.org contra la URL real.** El único conflicto de merge (trivial, en el log de reportes) se resolvió sin pérdida de información y sin necesidad de escalar. Bonus confirmado: los 2 `VideoObject` (Hero + Case Study) ya aparecen en el schema real de producción — los paquetes de video ya fueron vinculados (visible en el admin: `Video Package: SB-Demo Hero`). Zero secretos expuestos.
+
+---
+
+# REPORTE — B-BBF-DOCS-VERIFY-CANON-DETALLE
+**Fecha:** 2026-07-04 · **Despacho:** B-BBF-DOCS-VERIFY-CANON-DETALLE
+**Tipo:** AUDIT — verificación de detalle, read-only (Modo Strategic: 2, Auditor)
+**Workspace verificado:** `/Volumes/PK/BBF/Repos/bbf-docs` · **Rama:** `feat/video-package-canon` @ `84deabc`
+
+---
+
+## Protocolo de arranque
+`SB_DocumentationIndex.md` → `BBF_RegistroMaestro.md` → `SB_RoadmapCanonical.md` re-confirmados desde el despacho anterior. Sin drift detectado desde el último cierre. Cero cambios ejecutados en este despacho — 100% lectura/verificación.
+
+---
+
+## §1 — Diff exacto de Canon §5.2.3
+
+```diff
+@@ -644,6 +644,28 @@ Sitemap: https://brandbrainfoundry.com/sitemap.xml
+ **BreadcrumbList (en páginas anidadas):**
+ - Mejora navegación crawlers
+ 
++**VideoObject (en cada página que consume un `VideoPackage` — Hero, Case Study):**
++- Doctrina completa: `BBF_VideoPackageCanon.md` (03-canon/web-public/). Decisión: D-BBF-MEDIA-PACKAGE.
++- **Invariante:** 1 VideoObject por paquete (`contentUrl` único, la fuente `primary`), NUNCA uno por formato (`fallback`/`mobile` son detalles de entrega `<source>`, no entidades separadas).
++- Construido server-side vía builder tipado `schema-dts` (`buildVideoObjectJsonLd`), nunca inline ni post-hidratación.
++- `publisher` conecta por `@id` a la Organization ya emitida en el layout root — no duplica `name`/`url`/`logo` (C-01).
++```json
++{
++  "@context": "https://schema.org",
++  "@type": "VideoObject",
++  "@id": "URL de la página#video",
++  "name": "AEO-ready, distinto de labels de UI",
++  "description": "1-2 frases citables",
++  "thumbnailUrl": "URL del poster",
++  "contentUrl": "URL de la fuente primary",
++  "uploadDate": "ISO 8601",
++  "duration": "ISO 8601 duration (PT{n}S), opcional",
++  "inLanguage": "es-SV | en-US",
++  "publisher": {"@id": "https://brandbrainfoundry.com/#org"}
++}
++```
++- Validar con `validator.schema.org` (Google Rich Results Test no evalúa este tipo de entidad).
++
+ ### §5.3 On-page GEO tactics (en cada Post)
+```
+
+**ANTES:** Organization → Article → FAQPage → BreadcrumbList → §5.3.
+**DESPUÉS:** Organization → Article → FAQPage → BreadcrumbList → **VideoObject** → §5.3.
+
+**Confirmado: las 8 propiedades canónicas están presentes** — `name`, `description`, `thumbnailUrl`, `uploadDate`, `contentUrl`, `duration`, `inLanguage`, `publisher` (vía `@id`). ✅
+
+---
+
+## §2 — Estructura de los 3 docs creados
+
+| Doc | Existe | Path real | Headers confirmados |
+|---|---|---|---|
+| `BBF_VideoPackageResearch.md` | ✅ | `05-governance/research/BBF_VideoPackageResearch.md` | §0 Propósito, §1-§5 (los 5 hilos R-BBF-VIDEO-2026/VIDEO-SEO-2026/MEDIA-SEO-2026/MEDIA-PACKAGE-2026/VIDEO-SCHEMA-2026), Síntesis para el Canon |
+| `BBF_VideoPackageCanon.md` | ✅ | `03-canon/web-public/BBF_VideoPackageCanon.md` | §0 Invariante, §1 Collection, §2 Invariante 1/paquete, §3 Builder, §4 Consumo, §5 Deudas, §6 Validación |
+| `BBF_VideoPackageAudit.md` | ✅ | `05-governance/audits/BBF_VideoPackageAudit.md` | §1 Cadena H-BBF-522→554, §2 Lecciones L-BBF (5: **L-BBF-305, 306, 307, 308, 309**), §3 Deudas registradas (7) |
+
+**Confirmado: el Audit contiene exactamente 5 lecciones L-BBF (305-309) y 7 filas de deuda en la tabla §3** (conteo literal `grep` de filas: 7).
+
+**Ubicación:** sigue el criterio de categoría semántica del Index §3 (canon/investigación/auditoría), no el patrón de nombre `R-BBF-*`/`AUD-BBF-*` de sus vecinos de carpeta — desviación ya señalada y justificada en el reporte del despacho anterior (instrucción explícita "nomenclatura BBF_NameType estricta"), pendiente de confirmación de Zavala sobre si generaliza hacia adelante.
+
+---
+
+## §3 — Index §3.2/§7.6/§11 — diff exacto
+
+```diff
+@@ -179,6 +179,9 @@
+ | 6 | Investigación | R-BBF-2026 §1-§18 | 103 hallazgos H-01..H-103 backing D-XX | — | 3cd29a9 |
+ | 6 | Investigación | R-BBF-2026 §19 | 52 hallazgos H-104..H-155 — Architecture Integration | — | FASE B |
++| 1 | Canon web-public | BBF_VideoPackageCanon | Doctrina VideoPackage: collection, invariante 1 VideoObject/paquete, builder, validación | v1.0 | feat/video-package-canon |
++| 6 | Investigación | BBF_VideoPackageResearch | 5 hilos R-BBF-VIDEO-*/MEDIA-* con fuentes citadas, backing de VideoPackage | v1.0 | feat/video-package-canon |
++| 6 | Auditoría | BBF_VideoPackageAudit | Cadena H-BBF-522→554, 5 lecciones L-BBF-305..309, 7 deudas registradas | v1.0 | feat/video-package-canon |
+ | 0 | Tracker | SB_FASE_BC_Tracker | ... |
+
+@@ -434,8 +437,9 @@
+ | D-DOC-INDEX-05 | Versioning: v1.X bumps + changelog en header | Este documento |
++| D-BBF-MEDIA-PACKAGE | Opción A: collection `video-packages` dedicada (...) 1 VideoObject por paquete | BBF_VideoPackageCanon.md |
+-**Total decisiones firmadas: ~103**
++**Total decisiones firmadas: ~104**
+
+@@ -569,6 +573,9 @@
+ | NOTA-FUTURE-REVIEW-2027-Q1 | FacebookBot Disallow — revisión semestral | 2027-Q1 | DIFERIDA |
++| NOTA-FUTURE-H551 | Branch Neon staging — deuda infra prioritaria (causa raíz H-BBF-550) | Próxima migración destructiva contra Neon compartido | ACTIVA — PRIORITARIA |
++| NOTA-FUTURE-H549 | Decisión roadmap: 4 campos muertos en `Media` (...) | Cuando se planee SEO de imagen suelta (`ImageObject`) | ACTIVA |
++| NOTA-FUTURE-H553 | Decisión D-BBF-07: `mediaAsset` huérfano en Case Study (...) | Confirmación Zavala: ¿Case Study puede no tener video? | ACTIVA |
+```
+
+**Confirmado: los 3 canónicos están en el mapa §3.2, `D-BBF-MEDIA-PACKAGE` está en §7.6 (total ~103→~104), y H-551/H-549/H-553 están en §11.** ✅
+
+---
+
+## §4 — Trabajo sin-commitear de Zavala: intacto
+
+```
+$ git stash list
+(vacío)
+
+$ git status --short
+ M 00-context/BBF/BBF_RegistroMaestro.md
+ M 00-context/SB_FASE_BC_Tracker.md
+ M 03-canon/design-system/BBF_DesignSystemCanon_v1_0.md
+ M 04-strategic/web-public/Content/Final/SB_ContentMaster_Homepage.md
+?? .claude/skills/sb-db-backup/
+?? 04-strategic/web-public/BBF_SwitchPlan.md
+?? 04-strategic/web-public/Design/BBF_DesignDebt_Menores.md
+```
+
+**Confirmado: cero stash pendiente, los 4 modificados + 3 untracked de Zavala siguen presentes sin cambios** — coincide exactamente con el estado post-restauración del despacho anterior. Nada se perdió, nada se tocó.
+
+---
+
+## VEREDICTO: DOCTRINA VERIFICADA CONFORME
+
+Los 4 puntos de verificación (§1-§4) coinciden exactamente con lo reportado en el despacho anterior (B-BBF-DOCS-VIDEO-PACKAGE-CANON). Sin discrepancias. Sin cambios ejecutados en este despacho — 100% read-only, tal como exigía el protocolo.
+
+Único punto abierto (no es una discrepancia, es una decisión pendiente ya señalada): confirmar si `BBF_NameType` reemplaza `R-BBF-*`/`AUD-BBF-*` en `05-governance/` hacia adelante, o si fue excepción puntual de este despacho.
+
+Zero secretos expuestos.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-PULPO-DESIGNSYSTEM
+**Fecha:** 2026-07-04 · **Despacho:** B-BBF-WEB-DIAG-PULPO-DESIGNSYSTEM
+**Tipo:** DIAGNÓSTICO — read-only (Modo Strategic: 2 Auditor + 3 Investigador + 1 Arquitecto)
+**Decisión a definir:** D-BBF-PULPO · **NO se ejecutó ninguna conversión ni cambio de código**
+
+---
+
+## Protocolo de arranque
+
+`SB_DocumentationIndex.md` (ya conocido de despachos previos) → `BBF_RegistroMaestro.md` (leído completo §0-§6, sin mención previa de "pulpo"/"octopus"/mascota — territorio nuevo) → `SB_RoadmapCanonical.md` (sin mención). Design System Canon consultado: `bbf-docs/03-canon/design-system/BBF_DesignSystemCanon_v1_0.md` §18.1 (arquitectura 8 niveles) + §18.2 (reglas emergentes R-BBF-DS-01..04).
+
+---
+
+## §1 — El motor real (`octopus.js`, 344 líneas, leído completo)
+
+**Valores hardcodeados confirmados** (`tmp/pulpo-pixel/octopus.js`):
+
+| Valor | Línea | Literal | Naturaleza |
+|---|---|---|---|
+| `accent` | 38 | `#255ff1` | Color — cuerpo del pulpo |
+| `eyeColor` | 39 | `#ebe3d4` | Color — ojos |
+| `inkColor` | 40 | `#1c1c22` | Color — tinta (partícula oscura) |
+| `inkColor2` | 41 | `#2b2b34` | Color — tinta (variante) |
+| `scale` | 43 | `1` (× sprite HEAD 15×11 celdas, `cell = 2.7 * scale`) | Dimensión — tamaño sprite |
+| `zIndex` | 45 | `9999` | Capa — overlay |
+| `gap` | 46 | `68` | Distancia — px al cursor al seguir |
+| `margin` | 51 | `22` | Distancia — margen de evasión de obstáculos |
+| `dpr` | 114 | `Math.min(1.75, devicePixelRatio)` | Render — cap de densidad de píxel |
+| `_obsTimer` interval | 90 | `900` ms | Comportamiento — recálculo de obstáculos |
+| `speed` | 42 | `1` (default, multiplicador) | Comportamiento — velocidad global |
+
+**Confirmado — `pointer-events:none` del overlay** (línea 63): `c.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:' + this.zIndex + ';'` — el canvas nunca intercepta clics/hovers, coincide con lo que `INSTRUCCIONES.md` promete.
+
+**Confirmado — listeners `passive`** (líneas 86-89): `pointermove` (`{ passive: true }`), `pointerdown` (`{ passive: true }`), `scroll` (`{ passive: true }`). `resize` NO es passive (no lo necesita — no es un listener de scroll/touch).
+
+**Confirmado — `prefers-reduced-motion` respetado** (línea 54-55): `this.reduced = window.matchMedia(...).matches; if (this.reduced) this.speed *= 0.5;` — **reduce la velocidad a la mitad, NO desactiva el motor.** Esto es parcial respecto al estándar WCAG (que pide minimizar, no solo atenuar) — nota para §3.
+
+---
+
+## §2 — El design system existente (mapeo con linaje real)
+
+**Confirmado los 8 niveles** (`BBF_DesignSystemCanon_v1_0.md` §18.1): `preset → tokens (3-tier) → intención (surface-roles) → atom → componente → template → sección → surface`. Criterio de pertenencia: **todo valor visual deriva de `var(--bbf-*)` con linaje madre→fórmula→valor**; **excepción documentada para canvas engines** (R-BBF-DS-03): "WebGL/Canvas 2D no pueden leer CSS vars. Hex documentados con equivalencias de token son aceptados en: `blob-intents.ts`, `BlobBackground.tsx`."
+
+**Precedente real ya en producción** (`src/lib/blob/blob-intents.ts`): un motor Canvas/WebGL (`BlobScene`) ya resuelve exactamente este problema — cada hex lleva un comentario inline `// --bbf-color-X (razón)`, y los params puramente numéricos de comportamiento (`speed: 220`, `deform: 0`) se documentan explícitamente como **"no tokens — no tienen primitivo de color"**. Este es el patrón a replicar para Pulpo, no uno nuevo a inventar.
+
+**Hallazgos de color — dos coincidencias EXACTAS, sin necesidad de token nuevo:**
+- `accent: '#255ff1'` = `--bbf-color-blue-500` (primitive, `src/styles/tokens/primitives/colors.css:82`, "canon blue auxiliar D-BBF-KB-104") = **`--bbf-accent-blue`** (semantic, `src/styles/tokens/semantic/colors.css:147`) — **este es el accent de marca post-rebrand (D-REBRAND-01: blue PRIMARY)**. Coincidencia exacta, cero desviación de hex.
+- `eyeColor: '#ebe3d4'` = `--bbf-color-sand-deep-shade` (primitive, `colors.css:48`, "hero bg Q1-Op-A T6.7") — coincidencia exacta.
+
+**Sin coincidencia exacta (candidatos a "requiere token nuevo" — ver §5):**
+- `inkColor: '#1c1c22'` / `inkColor2: '#2b2b34'` — no matchea ninguna rampa existente (`black-600: #1a1a1a`, `dark-bg: #0a0a0a`, `dark-bg-elevated: #1a1a1a` son los más cercanos, ninguno exacto).
+
+**Fórmula de espaciado (`src/styles/tokens/primitives/spacing.css`):** escala VIVA, MADRE `--bbf-space-base: 0.25rem` (4px), grid lineal `calc(base × N)`. `gap: 68` = `4 × 17` — **matemáticamente cae en la fórmula (base×17)**, pero no existe un `--bbf-space-17` nombrado hoy (la escala salta de `space-16` [64px] a `space-20` [80px]). Ver §5 para el veredicto de si esto amerita un token nuevo o si es un parámetro de comportamiento del motor (como `speed`/`deform` en blob-intents.ts).
+
+**z-index (`primitives/z-index.css`):** `--bbf-z-max: 9999` — **coincidencia EXACTA** con el `zIndex: 9999` del pulpo. Cero desviación.
+
+---
+
+## §3 — Gate de capacidad
+
+**Lo que el motor detecta HOY:**
+- ✅ `prefers-reduced-motion` (línea 54) — pero solo atenúa velocidad ×0.5, no desactiva.
+- ❌ `hardwareConcurrency` — NO se lee en ningún punto de `octopus.js`.
+- ❌ Mobile / `pointer: coarse` — NO se detecta; el motor corre igual en cualquier viewport/input.
+
+**Precedente ya construido en el mismo repo** (`BlobBackground.tsx:109-129`), motor Canvas/WebGL comparable:
+```js
+if (navigator.hardwareConcurrency <= 2 || !webGLSupported()) { setUseFallback(true); return; }
+const mobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < MOBILE_WIDTH;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+```
+**Lo que falta en Pulpo para alcanzar el mismo estándar** (R-BBF-CANVAS-MASCOT-2026 — cargar tras LCP, condicional a capacidad):
+1. Gate de `hardwareConcurrency` (o CPU-bound equivalente — Pulpo es Canvas 2D puro, no WebGL, por lo que el costo real es menor que Blob, pero el mismo principio de "no cargar en hardware débil" aplica).
+2. Gate de mobile/`pointer: coarse` — decisión de diseño pendiente: ¿el pulpo tiene sentido en mobile (sin cursor, solo `followTouch`)? El motor YA soporta touch (`followTouch: true` default), así que esto es una decisión de UX, no solo de rendimiento.
+3. `prefers-reduced-motion` debería desactivar completamente (o degradar a un estado estático), no solo atenuar velocidad — más alineado con el patrón WCAG 2.1 SC 2.3.3 que BlobBackground ya sigue (congela/descongela, no solo atenúa).
+4. Carga diferida post-LCP — HOY el motor arranca inmediato en `DOMContentLoaded` (o al invocar `init()`), sin ningún gate de tiempo/visibilidad.
+
+---
+
+## §4 — CSP + montaje
+
+**CSP actual** (`next.config.mjs:24-54`, Canon §6.3 "opción pragmática", D-BBF-WEB-08 — sin nonce):
+```
+script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com
+```
+**Confirmado: permite el canvas overlay + el script sin fricción.** `'unsafe-inline'` ya está en el allowlist (decisión arquitectónica ya firmada, no nueva), así que tanto un `<script src="/octopus.js">` same-origin como un `<script>` inline (si se optara por ese patrón) pasarían la CSP sin cambios. El canvas (`c.setAttribute`, `getContext('2d')`) no toca ninguna directiva CSP — Canvas 2D no está restringido por `img-src`/`media-src`/etc.
+
+**Cómo se montaría sin bloquear LCP:** no existe hoy un patrón de "vanilla script + `data-auto`" en el codebase — sería inconsistente con la arquitectura React/Next (D-99 Server+Client split, componentes en `atoms/`/`molecules/`). El patrón correcto, replicando el precedente real de `BlobBackground.tsx`:
+1. Puerto del motor a un Client Component (`'use client'`), montado vía `next/dynamic(() => import(...), { ssr: false })` — evita que el motor corra en el servidor y difiere su bundle del critical path inicial.
+2. El `useEffect` de montaje se gatea igual que Blob: capacidad → surface/mobile → `prefers-reduced-motion` → recién ahí `requestAnimationFrame`.
+3. Carga "tras LCP": el precedente Turnstile (`Turnstile.tsx:105`, `next/script strategy="afterInteractive"`) confirma que el codebase ya tiene un patrón establecido para diferir scripts no críticos — aplicable aquí, o alternativamente un `IntersectionObserver`/`requestIdleCallback` si se monta como componente en vez de script externo.
+
+---
+
+## §5 — Linaje madre→fórmula→valor por cada literal
+
+| Literal | Madre / token existente | Fórmula | Veredicto |
+|---|---|---|---|
+| `accent: #255ff1` | `--bbf-accent-blue` (= `--bbf-color-blue-500`) | Directo, coincidencia exacta | ✅ **Usa token existente. Cero token nuevo.** |
+| `eyeColor: #ebe3d4` | `--bbf-color-sand-deep-shade` | Directo, coincidencia exacta | ✅ **Usa token existente. Cero token nuevo.** |
+| `inkColor: #1c1c22` | Ninguno exacto (más cercano: `--bbf-color-black-600` #1a1a1a, Δ mínimo) | — | ⚠️ **Requiere decisión de diseño** — Opción A: adoptar `black-600` (desviación cosmética mínima, cero token nuevo). Opción B: nuevo primitive `--bbf-color-ink-*` si Zavala quiere el tono exacto (el pulpo tiene un tinte azul-frío sutil que `black-600` no tiene). |
+| `inkColor2: #2b2b34` | Ninguno exacto | — | ⚠️ **Requiere decisión de diseño** — mismo patrón que `inkColor`. |
+| `zIndex: 9999` | `--bbf-z-max` | Directo, coincidencia exacta | ✅ **Usa token existente. Cero token nuevo.** |
+| `gap: 68` | `--bbf-space-base` (4px) | `68 = base × 17` — cae en la fórmula pero sin token nombrado (`space-16`→`space-20` sin `space-17`) | ⚠️ **Requiere decisión:** (a) nuevo primitive `--bbf-space-17` (68px) si se trata como spacing canónico, o (b) tratarlo como parámetro de comportamiento del motor (no CSS layout, es distancia física en canvas-space) siguiendo el precedente de `blob-intents.ts` donde params numéricos de comportamiento NO llevan token — análogo a `speed`/`deform`. **Recomendación: opción (b)**, es coherente con R-BBF-DS-03 y evita inflar la escala de spacing con un valor de un solo consumer. |
+| `margin: 22` | Ninguna fórmula limpia (`space-5`=20px, `space-5.5` no existe) | — | ⚠️ Mismo tratamiento que `gap` — parámetro de comportamiento, no spacing CSS. |
+| `scale: 1` / `dpr cap 1.75` / `speed: 1` / `intervalo 900ms` | N/A — son constantes de comportamiento del motor, no valores visuales de diseño | — | ✅ **Sin linaje requerido** — mismo tratamiento que `speed`/`lightIntensity`/`deform` en `blob-intents.ts` (documentados como "PARAMS NUMÉRICOS: valores de comportamiento — no tokens, no tienen primitivo"). |
+
+---
+
+## VEREDICTO CC
+
+**(a) Viabilidad de convertir sin hardcode:** **ALTA, con 2 desviaciones cosméticas menores.** 3 de 4 colores (accent, eyeColor, zIndex) ya matchean tokens EXACTOS existentes — mejor resultado posible, cero deuda nueva ahí. Los 2 colores de tinta (`inkColor`/`inkColor2`) no tienen equivalente exacto pero la desviación es mínima (variación de tono, no de familia) — resoluble con una decisión de diseño de 2 opciones, no con arquitectura nueva.
+
+**(b) Qué tokens nuevos requiere:** **Ninguno estrictamente obligatorio.** El único candidato real a "token nuevo" es `--bbf-space-17` (68px) para el `gap`, y la recomendación de este auditor es NO crearlo — tratar `gap`/`margin` como parámetros de comportamiento del motor (como ya hace `blob-intents.ts` con `speed`/`deform`), consistente con el precedente R-BBF-DS-03 y evitando inflar la escala de spacing con un valor de un único consumer (A-01 simplicidad). La única decisión de diseño real pendiente es `inkColor`/`inkColor2`: adoptar `black-600` (cero token nuevo, desviación cosmética) o crear un primitive `ink-*` dedicado — **decisión de Zavala**, no arquitectónica.
+
+**(c) El gate de capacidad:** **Insuficiente hoy, brecha conocida y ya resuelta en el mismo repo.** Falta `hardwareConcurrency`, falta mobile/`pointer:coarse`, y `prefers-reduced-motion` solo atenúa en vez de desactivar. El fix no requiere diseño nuevo — es copiar el patrón ya validado en producción de `BlobBackground.tsx:109-129`.
+
+**(d) CSP:** **Sin fricción.** La CSP pragmática ya vigente (`'self' 'unsafe-inline'`) cubre el script y el canvas sin cambios. El único trabajo real es arquitectónico (portar de vanilla-script a Client Component con `next/dynamic` + gate + defer post-LCP), no de seguridad.
+
+**Conclusión general:** el motor es viable para integrarse al design system con **cero tokens nuevos obligatorios**, aprovechando 3 coincidencias exactas ya existentes (`--bbf-accent-blue`, `--bbf-color-sand-deep-shade`, `--bbf-z-max`) y tratando los parámetros de comportamiento puro (gap/margin/speed/dpr/intervalo) bajo la misma excepción de canvas engine que ya cubre `blob-intents.ts`. El trabajo real de conversión es: (1) decisión de 2 opciones sobre ink colors, (2) portar a Client Component con el gate de capacidad ya existente en `BlobBackground.tsx`, (3) diferir montaje post-LCP. **D-BBF-PULPO puede firmarse como: Opción A (adoptar black-600 para ink, cero tokens nuevos) + patrón BlobBackground para capacidad/montaje** — pendiente de tu firma, nada se ejecutó.
+
+Zero secretos expuestos. Zero cambios de código — 100% read-only per instrucción del despacho.
