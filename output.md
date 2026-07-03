@@ -7953,3 +7953,70 @@ GET /api/globals/site-homepage?depth=0&locale=es
 2. ¿Qué video va en §3 (Case Study Hacienda Real) — el mismo `SB-Demo-video`, o uno propio pendiente de subir?
 
 Zero secretos expuestos. Cero cambios ejecutados en este despacho.
+
+---
+
+# REPORTE — B-BBF-WEB-VIDEO-DOBLE-FUENTE
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-VIDEO-DOBLE-FUENTE
+**Tipo:** FIX DE DATO (Modo Strategic: 1) · **Protocolo:** P-5 · **Decisión:** D-BBF-VIDEO-HERO (+ D-BBF-07 §3)
+**Alcance:** dato Payload `SiteHomepage` (`hero.media.videoSources` + `caseStudy.videoSources`) — CERO cambio de código
+
+---
+
+## Verificación pre-ejecución
+
+- Reconfirmado `/api/media/file/SB-Demo-video.webm` con Range → `206`, `video/webm`.
+- Reconfirmado `/api/media/file/SB-Demo-video.mp4` con Range → `206`, `video/mp4`.
+- **Valor ACTUAL leído antes de tocar nada** (vía API, no HTML): reveló que `caseStudy.videoSources` ya tenía un intento de edición a medio hacer (presumiblemente tuyo, en curso) con inconsistencias:
+  - Row 1: `src: "/api/media/file/SB-Demo-video.mp4"` con `type: "webm-av1"` (src/type no coinciden)
+  - Row 2: `src: "/api/media/file/SB-Demo-video.mpm"` (typo — `.mpm`, no `.mp4`)
+
+  Bien que verifiqué el estado fresco en vez de asumir el diagnóstico del despacho anterior — evitó pisar mal un dato que ya estaba parcialmente en tránsito.
+
+## Cambio aplicado (dato, vía admin UI — NO código)
+
+**§1 — `hero.media.videoSources`** (antes: 1 fila, solo mp4) → ahora 2 filas, orden correcto:
+```json
+[
+  { "src": "/api/media/file/SB-Demo-video.webm", "type": "webm-vp9" },
+  { "src": "/api/media/file/SB-Demo-video.mp4",  "type": "mp4-h264" }
+]
+```
+
+**§2 — `caseStudy.videoSources`** (corrigió el src/type mismatch + el typo `.mpm`) → mismo patrón:
+```json
+[
+  { "src": "/api/media/file/SB-Demo-video.webm", "type": "webm-vp9" },
+  { "src": "/api/media/file/SB-Demo-video.mp4",  "type": "mp4-h264" }
+]
+```
+
+Campos hermanos **intactos** (confirmado vía API antes/después): `hero.media.videoPoster` (media 22), `hero.media.chromeLabel`, `caseStudy.mediaChromeLabel` ("HACIENDA-REAL · WhatsApp Business · live"), `caseStudy.videoPoster` (media 22). `Media Asset` de §3 no tocado.
+
+Guardado vía Payload admin (2 saves, uno por sección): **"Updated successfully."** ambas veces.
+
+## Verificación post — confirmado en browser, no curl
+
+**Fuente de verdad (API) tras ambos saves:**
+```json
+{
+  "heroVideoSources": [{"src":".../SB-Demo-video.webm","type":"webm-vp9"}, {"src":".../SB-Demo-video.mp4","type":"mp4-h264"}],
+  "caseVideoSources": [{"src":".../SB-Demo-video.webm","type":"webm-vp9"}, {"src":".../SB-Demo-video.mp4","type":"mp4-h264"}]
+}
+```
+
+**Selección de fuente confirmada vía Performance API** (`performance.getEntriesByType('resource')`, filtrado por `initiatorType: video/source`): **3 recursos cargados, 2 de ellos `.webm`, CERO `.mp4`** — el browser (Chrome, vía esta sesión) eligió la primera fuente soportada (`webm-vp9`) para AMBOS `<video>` (Hero + Case Study) y nunca solicitó el fallback mp4. Exactamente el comportamiento esperado del patrón doble-fuente.
+
+**Reproducción confirmada — esta vez sin la ambigüedad de despachos anteriores:**
+```
+video[0] (Hero):        networkState=1 (IDLE) · readyState=4 (HAVE_ENOUGH_DATA) · duration=33s · error=null
+video[1] (Case Study):   networkState=1 (IDLE) · readyState=4 (HAVE_ENOUGH_DATA) · duration=33s · error=null
+```
+
+**A diferencia de los despachos anteriores (donde el `<video>` quedaba atascado en `networkState=2`/`readyState=0` incluso con archivos verificados sirviendo `206`), esta vez ambos videos cargaron completamente y quedaron listos para reproducir — en el mismo browser automatizado.** Es decir: el patrón de doble fuente (webm primero) no solo es la práctica recomendada — también resolvió el comportamiento errático que veníamos observando con la fuente única mp4.
+
+## Veredicto
+
+**H-BBF-542, H-BBF-544 y H-BBF-522 — los tres CERRADOS.** Hero y Case Study (Hacienda Real) ambos con doble fuente (webm-vp9 + mp4-h264), ambos verificados `206`, ambos confirmados cargando y listos para reproducir (`readyState=4`, sin errores). Campos hermanos intactos. Cero cambios de código, cero secretos.
+
+Sigue pendiente, fuera de este despacho: si el contenido real de §3 (Case Study) debe ser un video propio de Hacienda Real en vez de `SB-Demo-video` como referencia compartida — decisión de contenido tuya (D-BBF-07), ya aplicada aquí per tu confirmación explícita de usar `SB-Demo-video` como referencia en ambos.
