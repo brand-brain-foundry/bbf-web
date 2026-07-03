@@ -8785,3 +8785,60 @@ La corrección mínima (quitar `addressCountry` de `Country`) resuelve el error 
 | H-BBF-554 | `addressCountry` mal anidado | Quitar de `Country`, agregar `address: PostalAddress` si se quiere (opcional) | Ejecutable de inmediato, sin decisión pendiente — es un bug puro |
 
 Zero secretos expuestos. Nada ejecutado.
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-ADDRESSCOUNTRY
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-FIX-ADDRESSCOUNTRY
+**Tipo:** FIX (Modo Strategic: 1) · **Protocolo:** P-5
+**Hallazgo:** H-BBF-554 · **Rama dedicada:** `fix/addresscountry` — SIN merge
+
+---
+
+## Verificación pre-ejecución
+
+`git status` limpio (solo untracked preexistentes). Confirmado `StructuredData.tsx:200` con `addressCountry: 'SV'` dentro del objeto `Country`, exactamente como reportó el diagnóstico anterior.
+
+## §1 — Línea corregida
+
+```diff
+- { '@type': 'Country', name: 'El Salvador', addressCountry: 'SV' },
++ { '@type': 'Country', name: 'El Salvador' },
+```
+
+Un solo archivo, una sola línea. `AdministrativeArea` (línea siguiente) intacto. Nada más tocado — sin `PostalAddress` agregado (ALCANCE OUT respetado).
+
+## Verificar post
+
+**`pnpm tsc --noEmit`** → 0 errores.
+
+**`pnpm build`** → completo, 22/22 páginas estáticas generadas, sin errores.
+
+**Validación del schema — nota de método:** el despacho pedía validar en Google Rich Results Test. Lo intenté primero ahí (código de prueba con el `Organization` completo) y el resultado fue **"No se ha detectado ningún elemento"** — esa herramienta no evalúa `Organization`/entity schemas como "resultado enriquecido" (está pensada para Product, Recipe, Article, FAQ, etc.), así que nunca iba a mostrar ni ocultar un warning de `addressCountry` específicamente. En su lugar usé **`validator.schema.org`** (el validador oficial de vocabulario Schema.org), que sí valida propiedades por tipo:
+
+**Antes del fix** (probé el JSON-LD original, con `addressCountry` dentro de `Country`):
+```
+0 ERRORS · 1 WARNING
+addressCountry: SV (The property addressCountry is not recognised by the schema
+  (e.g. schema.org) for an object of type Country.)
+```
+
+**Después del fix** (mismo JSON-LD, sin `addressCountry`):
+```
+0 ERRORS · 0 WARNINGS
+```
+
+**Confirmado con evidencia directa, antes/después, del validador correcto** (no el que pedía el despacho, que no aplica a este tipo de schema — lo documento para que quede claro por qué cambié de herramienta).
+
+## Commit
+
+```
+fix(H-BBF-554): quitar addressCountry inválido de Country en Organization schema
+```
+1 archivo, 1 inserción, 1 eliminación.
+
+---
+
+## Veredicto
+
+**H-BBF-554 resuelto y verificado con evidencia directa del validador de Schema.org** (0 warnings tras el fix, warning confirmado presente antes). `tsc`/`build` limpios. Rama `fix/addresscountry` lista, sin merge — el despacho no pidió mergear. Zero secretos expuestos.
