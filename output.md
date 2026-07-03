@@ -8293,3 +8293,352 @@ Lo que puse en los 2 ContentMasters (`SB_ContentMaster_Homepage.md` §2.1.1, `SB
 4. El código (`page.tsx`) tendría que leer `videoSources[].video` (un Media doc completo, con `alt`/`filesize`/`mimeType`/`duration` ya disponibles) en vez de `videoSources[].src` (string) — cambio de código, Fase 2, fuera de este despacho.
 
 **No ejecuté nada de esto.** Recomiendo NO commitear la Fase 1 de `bbf-docs` tal como está — necesita reescribirse una vez que decidas el punto de `videoName`/`videoDescription`. Zero secretos expuestos.
+
+---
+
+# REPORTE — B-BBF-WEB-MEDIA-SEO-FASE0
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-MEDIA-SEO-FASE0
+**Tipo:** FEATURE — schema Payload (Modo Strategic: 1) · **Protocolo:** P-5 · **Decisión:** D-BBF-MEDIA-SEO
+**Rama dedicada:** `feat/media-seo-fase0` (creada desde `migracion-railway`) — **SIN merge**
+
+---
+
+## Verificación pre-ejecución
+
+- `git status` limpio en `migracion-railway` antes de crear la rama (solo untracked preexistentes).
+- Confirmados campos actuales de `media/index.ts`: `alt`, `caption`, `credit` — **sin tocar**, se reutilizan tal cual pide el despacho.
+- Confirmado el patrón a replicar (`contentItems/blocks/Video.ts`, `relationTo: 'media'`) — referencia, no se toca en esta fase (eso es Fase 2).
+
+## Cambio aplicado (`src/payload/collections/media/index.ts`)
+
+4 campos nuevos, todos opcionales (cero trabajo obligatorio en el caso normal, A-01):
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `seoName` | `text`, `localized` | AEO-ready, distinto de `alt` |
+| `seoDescription` | `textarea`, `localized` | AEO-ready, distinto de `caption` |
+| `duration` | `number` | Condicional: solo visible en admin si `mimeType` empieza con `video/` (`admin.condition`) |
+| `inLanguage` | `select` (es/en) | Idioma hablado del contenido del asset, independiente del locale de la página |
+
+## Verificación post
+
+- **`pnpm payload generate:types`** → limpio, sin errores. Confirmado en `payload-types.ts`: los 4 campos aparecen en `interface Media` con los tipos correctos (`seoName?: string | null`, `duration?: number | null`, `inLanguage?: ('es' | 'en') | null`, etc.), JSDoc con las descripciones tal cual se escribieron.
+- **`pnpm payload migrate:create media-seo-fase0`** → exitoso, sin TTY. Migración creada en `src/payload/migrations/20260703_154415_media_seo_fase0.ts` — puramente aditiva:
+  ```sql
+  CREATE TYPE "enum_media_in_language" AS ENUM('es', 'en');
+  ALTER TABLE "media" ADD COLUMN "duration" numeric;
+  ALTER TABLE "media" ADD COLUMN "in_language" "enum_media_in_language";
+  ALTER TABLE "media_locales" ADD COLUMN "seo_name" varchar;
+  ALTER TABLE "media_locales" ADD COLUMN "seo_description" varchar;
+  ```
+  Con su `down()` reversible (drop de las 4 columnas + el enum).
+
+## Migración: creada, NO aplicada — bloqueada por TTY, tal como anticipó el despacho
+
+Ejecuté `pnpm payload migrate` — el proceso quedó colgado (cero output, cero avance de CPU tras varios chequeos) consistente con esperar una confirmación interactiva en stdin que este entorno no puede proveer (stdin conectado a `/dev/null`). **Detuve el proceso limpiamente** (sin forzar, sin `--force`, sin bypasear el prompt) tal como indica el despacho ("DETENERSE SI... reportar, no forzar"). La base de datos real (Neon) **no fue tocada** — la migración nunca llegó a ejecutar SQL (cero logs de "Starting migration" que sí aparecieron en `migrate:create`).
+
+**Pendiente: Zavala debe correr `pnpm payload migrate` manualmente** (con TTY real) para aplicar esta migración a la base de datos antes de que los campos existan en producción.
+
+## Commit (rama dedicada, sin merge)
+
+```
+feat(D-BBF-MEDIA-SEO): Fase 0 — campos AEO/SEO en Media collection
+```
+5 archivos: `media/index.ts`, `payload-types.ts`, `migrations/20260703_154415_media_seo_fase0.{ts,json}`, `migrations/index.ts` (barrel auto-actualizado por `migrate:create`).
+
+## Veredicto
+
+**Fase 0 completa hasta donde el entorno lo permite.** Schema correcto, tipos generados limpios, migración creada y verificada (puramente aditiva, reversible) — pero **no aplicada a la base de datos**, bloqueada por la limitación de TTY ya anticipada en el propio despacho. Nada forzado, nada bypaseado. `alt`/`caption`/`credit` intactos. Fases 1 (rehacer ContentMasters), 2 (`SiteHomepage.ts` string→relación) y 3 (builders + `page.tsx`) quedan explícitamente fuera, como pide el ALCANCE OUT.
+
+**Siguiente paso que requiere de ti:** correr `pnpm payload migrate` en un terminal con TTY para aplicar la migración antes de continuar a Fase 1/2.
+
+---
+
+# REPORTE — B-BBF-WEB-VIDEO-PACKAGE-01
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-VIDEO-PACKAGE-01
+**Tipo:** FEATURE — nueva collection + schema (Modo Strategic: 1, Arquitecto) · **Protocolo:** P-5
+**Decisión:** D-BBF-MEDIA-PACKAGE Opción A (firmada) — subsume Fase 2
+**Rama dedicada:** `feat/video-package-01` (basada en `feat/media-seo-fase0`, NO en fase2) — **SIN merge**
+
+---
+
+## §A-§D — Verificación pre-ejecución
+
+- **§A:** `git status` limpio antes de empezar (solo untracked preexistentes). Rama activa era `feat/media-seo-fase2`. **Cero archivos de migración de Fase 2 a medias** — confirmado con `find -newer` sobre la migración de Fase 0 y `git diff` sobre `migrations/index.ts` (sin diff real). Nada que descartar a nivel archivo — Fase 2 simplemente no se usa como base.
+- **§B:** Confirmado en `feat/media-seo-fase0` (la base real usada): `videoSources[].src` es **texto plano** (`type: 'text'`), no relación — el estado correcto para partir directo al modelo paquete sin pasar por el estado intermedio de Fase 2.
+- **§C:** Confirmado con `pnpm payload migrate:status` (no pude hacer `SELECT` directo, sin credenciales DB — esto es la alternativa equivalente sin tocar secretos): `20260703_154415_media_seo_fase0` aparece con **`Yes`** en la columna de aplicado, batch 50 (el más reciente). Fase 0 está aplicada.
+- **§D:** Re-verificado en vivo (API, no asumido de despachos anteriores): los 4 archivos + 2 posters resuelven a Media docs reales.
+
+| Uso | Archivo | Media ID |
+|---|---|---|
+| Hero, primary | `SB-Demo-video.webm` | 39 |
+| Hero, fallback | `SB-Demo-video.mp4` | 20 |
+| Hero, poster | (actual) | 22 |
+| Case, primary | `SB-Demo-video-HaciendaReal.webm` | 41 |
+| Case, fallback | `SB-Demo-video-HaciendaReal.mp4` | **40** (confirmado — no 20, son archivos distintos) |
+| Case, poster | `SB-Demo-HaciendaReal.webp` | 42 |
+
+**§A-§D sin inconsistencias — se procedió a construir.**
+
+## §1 — Collection `video-packages` creada
+
+`src/payload/collections/videoPackages/index.ts` — replica el patrón de acceso de `Media`/`Entities` (`isAdminOrEditor`/`publicRead`) y el patrón de campos de `contentItems/blocks/Video.ts` (`video`+`poster` → aquí `primary`+`fallback`+`mobile`+`poster`). Los 9 campos exactos pedidos: `title`, `primary` (required), `fallback` (required), `mobile` (opcional), `poster` (opcional), `seoName`, `seoDescription`, `duration`, `inLanguage`.
+
+**Corrección técnica que hice sobre la marcha:** el despacho no especificó el `type` de Payload para el campo que conecta `hero.media` → `video-packages` (solo dijo "upload/relationTo"). Usé `type: 'upload'` en el primer intento y me autocorregí: **`upload` solo es válido cuando `relationTo` apunta a una collection con `upload: true` (como `Media`)**. `video-packages` NO es una collection de upload — es un doc regular con relaciones adentro. El tipo correcto es **`type: 'relationship'`**, que es lo que quedó en el código final.
+
+## §2 — Registrada en `payload.config.ts`
+
+Import + entrada en el array `collections: [...]`, junto a `Redirects` (última existente). Sin tocar orden de las demás.
+
+## §3 — `SiteHomepage.ts`: antes/después
+
+**Hero (`hero.media`) — antes:**
+```ts
+videoPoster: { type: 'upload', relationTo: 'media' }
+videoSources: { type: 'array', fields: [{ src: text }, { type: select }] }
+```
+**Hero — después:**
+```ts
+videoPackage: { type: 'relationship', relationTo: 'video-packages', required: false }
+```
+
+**Case Study (`caseStudy`) — antes:** mismo patrón (`videoPoster` + `videoSources[]`).
+**Case Study — después:** `videoPackage: { type: 'relationship', relationTo: 'video-packages' }`.
+
+**Decisión de diseño confirmada:** el poster **se movió al paquete** (campo `poster` dentro de `video-packages`), tal como recomendaba el diagnóstico — ya no existe `videoPoster` como campo hermano en ninguno de los dos. `mediaAsset` (imagen estática 16:9 alternativa del Case) se dejó intacto, solo actualicé su texto de ayuda (decía "usar videoPoster + videoSources", ahora dice "usar videoPackage" — campo distinto, solo corregí una referencia textual que hubiera quedado obsoleta).
+
+## §4 — `generate:types`: limpio
+
+Confirmado en `payload-types.ts`: interfaz `VideoPackage` completa con los 9 campos y tipos correctos (`primary: number | Media` sin null porque es required; `mobile?/poster?: (number | null) | Media` porque son opcionales). `hero.media.videoPackage?: (number | null) | VideoPackage` y `caseStudy.videoPackage?: (number | null) | VideoPackage` — confirmado que **NO es un string**, es una relación real tipada.
+
+## §5 — Migración: bloqueada por TTY (tercera vez, mismo patrón)
+
+`pnpm payload migrate:create video_package_01` disparó un menú interactivo — Payload no puede decidir solo si `enum_video_packages_in_language` es un enum **nuevo** o un **rename** de `enum_site_homepage_hero_media_video_sources_type` / `..._case_study_video_sources_type` (los enums viejos de codec, coincidencia estructural que dispara la ambigüedad). **Cero archivos creados** (confirmado, mismo chequeo que en Fase 2 — sin proceso colgado, sin diff en `migrations/index.ts`).
+
+**Recomendación con alta confianza para cuando lo corras:** elegir **`+ enum_video_packages_in_language create enum`** — NO renombrar. Los enums viejos (`webm-av1`/`webm-vp9`/`mp4-h264`/etc., valores de **codec**) no tienen ninguna relación semántica con el nuevo enum (`es`/`en`, valores de **idioma**). Un rename sería incorrecto — coincidencia de forma, no de contenido.
+
+## Data-migration (§3 del ALCANCE IN): bloqueada transitivamente, plan documentado
+
+No pude crear los 2 `video-packages` ni re-vincular Hero/Case porque **la tabla `video_packages` no existe todavía** en la base de datos — depende de que la migración de schema (§5, bloqueada) se aplique primero. Plan exacto para cuando eso pase (vía admin, no requiere script — son 2 docs + 2 relaciones):
+
+1. Crear doc `video-packages`: `title: "SB-Demo Hero"`, `primary: media 39`, `fallback: media 20`, `poster: media 22`.
+2. Crear doc `video-packages`: `title: "SB-Demo Hacienda Real"`, `primary: media 41`, `fallback: media 40`, `poster: media 42`.
+3. `hero.media.videoPackage` → paquete 1. `caseStudy.videoPackage` → paquete 2.
+
+## Qué se descartó de Fase 2
+
+La rama `feat/media-seo-fase2` completa (conversión de `videoSources[].src` de texto a `upload`/`relationTo:media`, array de N relaciones) — **no se usó como base ni se mergeó**. Este despacho parte directo de `feat/media-seo-fase0` (Fase 0 sola) al modelo paquete, saltándose el estado intermedio de "array de relaciones sueltas" que Fase 2 había construido. La rama `feat/media-seo-fase2` queda huérfana en el repo (pushed a origin, sin mergear) — no la borré, per SB_Law (no destructivo sin instrucción explícita); si querés que la elimine, decímelo.
+
+## Alcance respetado
+
+No toqué `HeroVideo.tsx` (componente), builders de `VideoObject`, ContentMasters/Canon, ni `Fase 2` (se descarta como pide el despacho, no se aplica). `env`/`DNS`/`R2 config` intactos.
+
+---
+
+## `pnpm tsc --noEmit`: confirma el trigger de escalada que el propio despacho anticipó
+
+El despacho lista explícitamente como condición de "DETENERSE Y ESCALAR": *"el cambio en `SiteHomepage.ts` rompe el consumo en `page.tsx` de forma que exigiría tocar el componente (fuera de alcance — reportar, no forzar)."* Corrí el type-check para confirmarlo con evidencia, no asumirlo:
+
+```
+pnpm tsc --noEmit
+→ 10 errores TS2339/TS7006 en page.tsx, todos por videoPoster/videoSources
+  ya no existir (ahora es videoPackage) — líneas 66, 67, 72, 73, 75, 78,
+  221, 320.
+```
+
+**Confirmado — es exactamente lo que el despacho anticipó, no una sorpresa.** `page.tsx` queda en estado roto de TypeScript hasta la fase siguiente (actualizar el componente para consumir `videoPackage.primary`/`.fallback`/`.poster` en vez de `videoPoster`/`videoSources[]`). **No lo arreglé** — está explícitamente en ALCANCE OUT y es una de las condiciones de escalada listadas. `pnpm build` fallaría hoy por este mismo motivo si se corriera contra esta rama — normal y esperado, no ejecutar merge a `migracion-railway` hasta que la fase de componente cierre esto.
+
+## Veredicto
+
+**Collection + schema construidos y verificados end-to-end en código** (§1-§4 completos, con una autocorrección técnica documentada: `relationship` en vez de `upload`). **Migración bloqueada por TTY** (§5) — recomendación clara para cuando la corras. **Data-migration bloqueada transitivamente** hasta que la migración exista — plan de 3 pasos documentado, ejecutable vía admin sin script. **`page.tsx` queda roto a nivel de tipos, confirmado y esperado** — coincide exactamente con la condición de escalada del despacho, no se tocó el componente. Zero secretos. Nada forzado, nada corrompido.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-ADMIN-404
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-DIAG-ADMIN-404
+**Tipo:** DIAGNÓSTICO READ-ONLY URGENTE (Modo Strategic: 2) · **Protocolo:** P-6
+**Incidente:** admin producción `site-homepage` → "Nothing found" tras aplicar `video_package_01` a Neon
+**NO se ejecutó ningún fix**
+
+---
+
+## §1 — ¿Qué rama corre en producción HOY?
+
+`migracion-railway`. Confirmado leyendo el código de esa rama directamente (no asumido):
+
+```
+git show migracion-railway:src/payload/globals/SiteHomepage.ts | grep videoPackage/videoPoster/videoSources
+→ línea 114: name: 'videoPoster'
+→ línea 123: name: 'videoSources'
+→ línea 1148/1158: mismos campos en caseStudy
+```
+
+**`migracion-railway` NO tiene el schema de `video-packages` — sigue esperando `videoPoster`/`videoSources`, los campos que la migración recién aplicada ELIMINÓ de la base de datos.** Esto es la causa, confirmada, no una hipótesis.
+
+## §2 — Estado de `site_homepage` en Neon tras la migración
+
+No tengo credenciales para `SELECT` directo (sin acceso a `.env.local`, por diseño del sandbox). Usé el equivalente sin tocar secretos: **leí la migración `20260703_173610_video_package_01.ts` que apareció en el working tree** (aplicada por alguien con TTY — probablemente vos, dado que resolvió el prompt de "create enum" que documenté como bloqueado en el despacho anterior). El SQL de esa migración, leído completo, confirma exactamente:
+
+```sql
+DROP TABLE "site_homepage_hero_media_video_sources" CASCADE;
+DROP TABLE "site_homepage_case_study_video_sources" CASCADE;
+ALTER TABLE "site_homepage" DROP CONSTRAINT "..._video_poster_id_media_id_fk" (x2);
+ALTER TABLE "site_homepage" DROP COLUMN "hero_media_video_poster_id";
+ALTER TABLE "site_homepage" DROP COLUMN "case_study_video_poster_id";
+DROP TYPE "enum_site_homepage_hero_media_video_sources_type";
+DROP TYPE "enum_site_homepage_case_study_video_sources_type";
+-- + CREATE TABLE "video_packages" / "video_packages_locales"
+-- + ADD COLUMN "hero_media_video_package_id" / "case_study_video_package_id"
+```
+
+**Confirmado con `pnpm payload migrate:status`** (alternativa a `SELECT`, no requiere leer credenciales — el comando usa el env ya cargado del proceso): `20260703_173610_video_package_01` aparece con **`Yes`**, batch 51 — es la migración más reciente aplicada. Las columnas viejas (`video_poster_id`, las tablas `*_video_sources`) **ya no existen** en la base a la que este entorno se conecta. `site_homepage` sigue existiendo como global (la migración no la borra, solo le quita/agrega columnas) — el global en sí no desapareció, sus columnas de video sí cambiaron.
+
+## §3 — El mismatch exacto
+
+**Confirmado, no solo probable:** el código desplegado en producción (`migracion-railway`) declara en su `SiteHomepage.ts` los campos `hero.media.videoPoster` (relación a `media`) y `hero.media.videoSources[]` (array con `src`/`type`). Cuando Payload arranca con ESE código y intenta resolver esos campos contra una base de datos donde `hero_media_video_poster_id` y las tablas `*_video_sources` **ya no existen** (dropeadas por la migración), la consulta no puede completarse como el código espera. Esto es exactamente un mismatch schema-código: **código viejo + base de datos nueva**, la combinación opuesta a que sea segura.
+
+## §4 — ¿La migración se aplicó al mismo Neon que usa producción?
+
+No puedo confirmarlo leyendo la cadena de conexión (bloqueado por diseño — ver rechazos anteriores de `cat`/`grep` sobre `.env.local` en esta misma sesión). **Evidencia indirecta, pero fuerte:** en despachos anteriores de esta misma sesión (`B-BBF-WEB-FIX-VIDEO-DATO`, `B-BBF-WEB-VIDEO-DOBLE-FUENTE`), escribí datos vía Payload directamente desde este mismo entorno local y **confirmé que el cambio se reflejaba de inmediato en `sivarbrains.com` en producción real** (con on-demand revalidation, H-524) — eso solo es posible si este entorno y producción comparten la misma base de datos Neon. No tengo motivo para creer que eso cambió entre despachos. **Conclusión con alta confianza, no con certeza absoluta:** sí, es la misma base de datos — lo cual es precisamente por qué el mismatch de §3 es visible en producción real y no solo en un entorno de prueba aislado.
+
+## §5 — Local en `feat/video-package-01` (código Y schema coinciden): ¿carga bien?
+
+Levanté `pnpm dev` en esta rama (que sí tiene el schema `videoPackage` correspondiente a la migración ya aplicada) y pedí `/admin/globals/site-homepage`:
+
+```
+GET /admin/globals/site-homepage 200 in 117142ms  (primera vez, compilando 4828 módulos)
+GET /admin/globals/site-homepage 200 in 26768ms   (segunda vez, ya compilado)
+```
+
+**Cero errores en el log del servidor** (`grep -i error` → sin resultados) en ninguna de las dos requests. No pude completar la verificación visual completa — el admin local exige su propia sesión (dominio `localhost` no comparte cookies con `sivarbrains.com`), y no tengo credenciales para loguearme ahí (ni debo — entrar contraseñas no es algo que yo hago). Pero el dato que sí tengo — **200 limpio, cero excepciones del lado del servidor, con código y schema en sincronía** — es evidencia consistente con: el problema NO es la migración en sí (que está bien y es reversible), es específicamente que producción tiene el código viejo mirando la base nueva.
+
+---
+
+## VEREDICTO CC — causa raíz confirmada
+
+**El 404/"Nothing found" en el admin de producción es un mismatch código-schema, no una migración corrupta ni una tabla perdida.** La migración `video_package_01` está bien construida (confirmé el SQL completo, con `down()` reversible) y se aplicó correctamente a la base de datos — el problema es que **el código que corre en DO (`migracion-railway`) nunca se actualizó** para coincidir con esa migración. Se aplicó un cambio de base de datos pensado para una rama (`feat/video-package-01`) contra la base de datos compartida con producción, sin desplegar el código correspondiente — exactamente el orden inverso de lo seguro (código primero o simultáneo, nunca DB-primero cuando hay columnas que se DROPEAN).
+
+**El fix (no lo ejecuté, es tu decisión, dos caminos):**
+
+**Opción 1 — Avanzar (desplegar el código):** mergear `feat/video-package-01` a `migracion-railway` y push. **PERO** — recordar el hallazgo del despacho anterior: `page.tsx` tiene 10 errores de TypeScript porque el componente todavía lee `videoPoster`/`videoSources` viejos. **No se puede desplegar solo el schema — hay que completar también la actualización de `page.tsx`/`HeroVideo.tsx` para consumir `videoPackage`** antes de este merge, o el build fallará o el runtime tendrá el mismo tipo de error (código esperando campos que ya no existen, en la dirección opuesta esta vez).
+
+**Opción 2 — Revertir (bajar la migración):** correr el `down()` de `20260703_173610_video_package_01` (ya confirmado reversible, restaura `video_poster_id` + las tablas `*_video_sources` con su estructura exacta) para que la base de datos vuelva a coincidir con el código YA desplegado (`migracion-railway`), mientras se termina Fase 3 (componente) con calma antes de re-aplicar.
+
+**Recomendación (no una decisión — es tuya):** dado que `page.tsx` todavía no está listo (Fase 3 sin empezar), la Opción 2 (revertir) es la que restaura el admin de producción MÁS RÁPIDO y sin dejar nada a medias. La Opción 1 requiere terminar Fase 3 primero, que es más trabajo antes de que el admin vuelva a funcionar.
+
+Zero secretos expuestos. Nada ejecutado — esperando tu decisión.
+
+---
+
+# REPORTE — B-BBF-WEB-VIDEO-PACKAGE-02
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-VIDEO-PACKAGE-02
+**Tipo:** FIX — alinear código a schema (Modo Strategic: 1, Arquitecto) · **Protocolo:** P-5
+**Decisión:** D-BBF-MEDIA-PACKAGE (Fase-Package-02, firmada) · Resuelve H-BBF-550
+**Rama:** `feat/video-package-01` (continuada, no nueva) — **SIN merge a `migracion-railway`**
+
+---
+
+## §A-§E — Verificación pre-ejecución
+
+- **§A:** rama `feat/video-package-01` confirmada, pero el working tree tenía la migración `20260703_173610_video_package_01.{ts,json}` **sin commitear** (apareció aplicada por fuera de este agente, resolviendo el TTY que había quedado bloqueado). La commiteé primero (`a71c907`) para no arrastrar working tree sucio dentro de este fix.
+- **§B — hallazgo más importante de la verificación:** `GET /api/video-packages` (local, `read: publicRead`) → `{"docs":[],"totalDocs":0}`. **Los 2 paquetes NO existen todavía.** Además, mientras verificaba esto confirmé algo más grave de lo que el despacho anterior había reportado: `https://sivarbrains.com/api/globals/site-homepage` responde **`500 Something went wrong`** en producción real ahora mismo — no es solo el admin, es la Local API completa. La home pública sigue viéndose bien solo porque sirve **HTML de ISR cacheado de antes del incidente** (confirmado: el contenido visible coincide con el estado previo). Cualquier regeneración fresca fallaría igual que el admin.
+- **§C:** `HeroVideoSourceProps` confirmado: `{ src: string; type: HeroVideoSourceType }`, sin soporte de `media`.
+- **§D:** Confirmadas las líneas exactas de `page.tsx` (data-fetch en 37-98 del archivo original, JSX en 221/320, script en 486) y el patrón builder existente (`buildFaqPageJsonLd`, `schema-dts`, `WithContext<T>`).
+- **§E:** Patrón confirmado — función pura, recibe datos planos, devuelve objeto tipado con `WithContext`.
+
+## §1 — `HeroVideo.tsx`
+
+```diff
+ export interface HeroVideoSourceProps {
+   src: string;
+   type: HeroVideoSourceType;
++  media?: string; // art direction (D-BBF-MEDIA-PACKAGE §5) — mobile futuro
+ }
+
+-function HeroVideoSource({ src, type }: HeroVideoSourceProps) {
++function HeroVideoSource({ src, type, media }: HeroVideoSourceProps) {
+   return (
+-    <source ... src={src} type={mimeType} />
++    <source ... src={src} type={mimeType} media={media} />
+   );
+ }
+```
+
+## §2 — `page.tsx`: antes/después
+
+**Fetch de datos — antes:** `depth: 1`. **Después:** `depth: 2` (necesario: `videoPackage` es nivel 1, `videoPackage.primary/fallback/poster` son nivel 2 — sin esto llegan como IDs sueltos, no `Media` completos con `.url`).
+
+**Antes** (Hero, simplificado):
+```ts
+const posterUrl = hero.media.videoPoster?.url ?? '/hero-poster.png';
+const heroVideoSrc = hero.media.videoSources?.[0]?.src;
+// videoObjectSchema inline, contentUrl = heroVideoSrc
+```
+```tsx
+{hero.media.videoSources?.map((s) => <HeroVideo.Source key={s.src} src={s.src} type={s.type} />)}
+```
+
+**Después:**
+```ts
+const heroPkg = hero.media.videoPackage && typeof hero.media.videoPackage === 'object' ? hero.media.videoPackage : undefined;
+const heroPrimary = heroPkg?.primary && typeof heroPkg.primary === 'object' ? heroPkg.primary as Media : undefined;
+const heroFallback = /* idem con fallback */;
+const posterUrl = (heroPkg?.poster as Media)?.url ?? '/hero-poster.png';
+const heroVideoObjectSchema = heroPrimary?.url ? buildVideoObjectJsonLd({ ...contentUrl: heroPrimary.url... }) : null;
+```
+```tsx
+{heroPrimary?.url && <HeroVideo.Source src={heroPrimary.url} type={primaryMimeToSourceType(heroPrimary.mimeType)} />}
+{heroFallback?.url && <HeroVideo.Source src={heroFallback.url} type={fallbackMimeToSourceType(heroFallback.mimeType)} />}
+```
+
+**Decisión técnica documentada:** `VideoPackage` no guarda "type"/codec por fuente (confirmado en el diagnóstico anterior — `mimeType` solo no distingue VP9 de AV1). Como `primary`/`fallback` son **roles fijos por diseño** (primary = mejor codec moderno, fallback = universal), derivé un default acorde al rol: `primaryMimeToSourceType` asume `webm-vp9` salvo `.mov`, `fallbackMimeToSourceType` asume `mp4-h264` salvo `.mov`. Es una decisión razonable dado el constraint (`ALCANCE OUT` prohibía re-editar la collection), no un valor inventado sin criterio.
+
+**Case Study:** mismo patrón, con `casePkg`/`casePrimary`/`caseFallback`/`casePosterMedia`.
+
+## §3 — `src/lib/seo/jsonLd/videoObject.ts` (nuevo)
+
+```ts
+export function buildVideoObjectJsonLd(opts: BuildVideoObjectOptions): WithContext<VideoObject> {
+  return {
+    '@context': 'https://schema.org', '@type': 'VideoObject', '@id': opts.id,
+    name: opts.name, description: opts.description,
+    thumbnailUrl: opts.thumbnailUrl, contentUrl: opts.contentUrl,
+    uploadDate: opts.uploadDate,
+    ...(opts.duration ? { duration: `PT${Math.round(opts.duration)}S` } : {}),
+    inLanguage: opts.inLanguage,
+    publisher: { '@id': opts.publisherId },
+  };
+}
+```
+
+Registrado en `src/lib/seo/jsonLd/index.ts` junto a los otros 4 builders. **2 instancias en `page.tsx`** (Hero + Case Study), cada una condicional a `primary?.url` (si el paquete no existe o no tiene `primary`, no se emite ese `VideoObject` — no se rompe nada, simplemente no hay ese schema todavía). `publisher: {'@id': domain+'#org'}` conecta a la `Organization` ya emitida en `StructuredData.tsx`, sin duplicar datos (C-01).
+
+## §4 — `pnpm tsc --noEmit`
+
+```
+Antes: 10 errores (TS2339/TS7006, videoPoster/videoSources no existen)
+Después: 0 errores
+```
+2 errores intermedios propios (`uploadDate: string | null | undefined` no asignable a `string`) resueltos con `site.updatedAt ?? new Date().toISOString()` — fallback razonable, `site.updatedAt` es prácticamente siempre real (viene de un global de Payload).
+
+## §5 — `pnpm build`
+
+**Completo, sin errores.** `Compiled successfully in 4.9min`, lint con solo warnings preexistentes (no relacionados — `MobileMenu`, `WAAgenda`, `WAChat`, ninguno tocado por este fix), **22/22 páginas estáticas generadas**, incluida `/[locale]` (home). Ruta home confirma `revalidate: 1h` como se espera.
+
+**Nota de proceso:** corrí `pnpm dev` (local) en paralelo con `pnpm build` para verificar el admin — esto causó que ambos procesos compitieran por el mismo directorio `.next/`, produciendo un error de módulo (`Cannot find module vendor-chunks/@smithy...`) en el dev server al final. **Es un artefacto de correr ambos a la vez, no un bug de código** — confirmado porque el `build` (que sí importa para el deploy real) completó limpio, y el dev server había respondido `200` limpio en `/admin/globals/site-homepage` y `/api/video-packages` ANTES de que arrancara el build paralelo.
+
+## Estado del admin local (antes del build paralelo)
+
+`GET /admin/globals/site-homepage` → `200` (confirmado, sin errores de servidor). `GET /api/video-packages` → `200`, `{totalDocs: 0}`.
+
+---
+
+## VEREDICTO — ¿listo para merge + deploy?
+
+**El código está listo.** `tsc` limpio, `build` completo, 22/22 páginas generadas, admin local responde `200` con código+schema en sincronía. Esto es exactamente lo que hacía falta para resolver H-BBF-550 (el mismatch código-DB del despacho anterior).
+
+**Lo que falta, y es tuyo decidir el momento (no lo hice):**
+1. **Merge `feat/video-package-01` → `migracion-railway` + push** — esto por sí solo ya arregla el `500` de producción (el código vuelve a coincidir con la DB ya migrada).
+2. **Crear los 2 `video-packages`** (Hero: primary=media 39, fallback=media 20, poster=media 22; Case: primary=media 41, fallback=media 40, poster=media 42 — mapeo ya confirmado en el despacho anterior) — sin esto, el deploy arregla el error 500 pero el Hero/Case no mostrarán video (el código maneja el caso `null` con gracia, sin romper, simplemente no hay `<source>` que renderizar).
+
+**Recomiendo hacer ambos pasos juntos** (merge+deploy, luego crear los paquetes en el admin ya funcional) para minimizar el tiempo con el sitio sirviendo solo el HTML cacheado viejo. Zero secretos expuestos, nada mergeado sin tu confirmación.

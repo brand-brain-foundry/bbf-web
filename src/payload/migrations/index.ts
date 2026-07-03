@@ -47,6 +47,8 @@ import * as migration_20260627_170430_contacto_page from './20260627_170430_cont
 import * as migration_20260628_122719_metodo_to_como_trabajamos from './20260628_122719_metodo_to_como_trabajamos';
 import * as migration_20260628_122720_metodo_update_nav_records from './20260628_122720_metodo_update_nav_records';
 import * as migration_20260629_201330_s5_service_icon from './20260629_201330_s5_service_icon';
+import * as migration_20260703_154415_media_seo_fase0 from './20260703_154415_media_seo_fase0';
+import * as migration_20260703_173610_video_package_01 from './20260703_173610_video_package_01';
 
 export const migrations = [
   {
@@ -292,6 +294,16 @@ export const migrations = [
   {
     up: migration_20260629_201330_s5_service_icon.up,
     down: migration_20260629_201330_s5_service_icon.down,
-    name: '20260629_201330_s5_service_icon'
+    name: '20260629_201330_s5_service_icon',
+  },
+  {
+    up: migration_20260703_154415_media_seo_fase0.up,
+    down: migration_20260703_154415_media_seo_fase0.down,
+    name: '20260703_154415_media_seo_fase0',
+  },
+  {
+    up: migration_20260703_173610_video_package_01.up,
+    down: migration_20260703_173610_video_package_01.down,
+    name: '20260703_173610_video_package_01'
   },
 ];

@@ -11,7 +11,7 @@ import { SectionHeader } from '@/components/molecules/SectionHeader';
 import { Lissajous } from '@/components/atoms/Lissajous';
 import { HeroMediaFrame, HeroRecTimer } from '@/components/molecules/HeroMediaFrame';
 import { HeroTicker } from '@/components/molecules/HeroTicker';
-import { HeroVideo } from '@/components/molecules/HeroVideo';
+import { HeroVideo, type HeroVideoSourceType } from '@/components/molecules/HeroVideo';
 import { CapabilityCard } from '@/components/molecules/CapabilityCard';
 import { CapabilityScene } from '@/components/molecules/CapabilityScene';
 import { Heading } from '@/components/atoms/Heading';
@@ -22,6 +22,7 @@ import { Reveal } from '@/components/atoms/Reveal';
 import type { Media } from '@/payload/payload-types';
 import { interpolateDeep, interpolate } from '@/lib/content-interpolation';
 import { buildFaqPageJsonLd } from '@/lib/seo/jsonLd/faqPage';
+import { buildVideoObjectJsonLd } from '@/lib/seo/jsonLd/videoObject';
 import { getSiteIdentity } from '@/config/site';
 import { getCtaByKey } from '@/lib/payload/getSiteCtaLibrary';
 import { Timeline } from '@/components/molecules/Timeline';
@@ -36,7 +37,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   const payload = await getPayload({ config });
   const [rawSite, siteId] = await Promise.all([
-    payload.findGlobal({ slug: 'site-homepage', locale: l, depth: 1 }),
+    // depth:2 (antes 1) — D-BBF-MEDIA-PACKAGE: hero.media.videoPackage y
+    // caseStudy.videoPackage son una relación (nivel 1); sus propios campos
+    // primary/fallback/poster son relaciones A MEDIA (nivel 2) — sin depth:2
+    // esos llegarían como IDs sueltos, no como Media completos con .url.
+    payload.findGlobal({ slug: 'site-homepage', locale: l, depth: 2 }),
     getSiteIdentity(l),
   ]);
   // D-PLACEHOLDER-01: interpolateDeep cubre TODOS los campos del global en una pasada.
@@ -61,41 +66,83 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   // §6 Cierre CTA — resolved from SiteCtaLibrary (D-S456-02: outline+secondary via ctaKey)
   const closingCta = cls?.ctaKey ? await getCtaByKey(cls.ctaKey, l) : null;
 
-  // G-02: fallback a hero-poster.png estático si admin no tiene poster subido (LCP)
-  const posterUrl =
-    hero.media.videoPoster && typeof hero.media.videoPoster === 'object'
-      ? ((hero.media.videoPoster as Media).url ?? '/hero-poster.png')
-      : '/hero-poster.png';
+  // D-BBF-MEDIA-PACKAGE (Fase-Package-02) — helpers agnósticos (I-1..I-5,
+  // sin voz/marca hardcodeada). VideoPackage no guarda "type" por fuente
+  // (el diagnóstico confirmó que mimeType solo no distingue codec) —
+  // primary/fallback son roles fijos por diseño: primary = mejor codec
+  // moderno, fallback = universal. Se deriva un default razonable acorde
+  // a ese rol, no un valor inventado.
+  const toAbsoluteUrl = (url: string) =>
+    url.startsWith('http') ? url : `${siteId.siteDomain}${url}`;
+  const primaryMimeToSourceType = (mimeType?: string | null): HeroVideoSourceType =>
+    mimeType === 'video/quicktime' ? 'mov' : 'webm-vp9';
+  const fallbackMimeToSourceType = (mimeType?: string | null): HeroVideoSourceType =>
+    mimeType === 'video/quicktime' ? 'mov' : 'mp4-h264';
 
-  // §3 Caso — video poster URL (si existe)
-  const casePosterUrl =
-    cs?.videoPoster && typeof cs.videoPoster === 'object'
-      ? ((cs.videoPoster as Media).url ?? undefined)
+  const heroPkg =
+    hero.media.videoPackage && typeof hero.media.videoPackage === 'object'
+      ? hero.media.videoPackage
       : undefined;
-  const caseVideoSources = cs?.videoSources ?? [];
+  const heroPrimary =
+    heroPkg?.primary && typeof heroPkg.primary === 'object'
+      ? (heroPkg.primary as Media)
+      : undefined;
+  const heroFallback =
+    heroPkg?.fallback && typeof heroPkg.fallback === 'object'
+      ? (heroPkg.fallback as Media)
+      : undefined;
+  const heroPosterMedia =
+    heroPkg?.poster && typeof heroPkg.poster === 'object' ? (heroPkg.poster as Media) : undefined;
 
-  // A6 (AEO): VideoObject básico para el hero video — citable por IA/buscadores
-  const heroVideoSrc = hero.media.videoSources?.[0]?.src ?? undefined;
-  const thumbnailUrl = posterUrl.startsWith('http')
-    ? posterUrl
-    : `${siteId.siteDomain}${posterUrl}`;
-  const videoObjectSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'VideoObject',
-    '@id': `${siteId.siteDomain}/#video-hero`,
-    name: hero.media.demoLabel,
-    description: hero.media.footCaption ?? hero.media.demoLabel,
-    thumbnailUrl,
-    uploadDate: site.updatedAt,
-    inLanguage: l === 'es' ? 'es-SV' : 'en-US',
-    ...(heroVideoSrc
-      ? {
-          contentUrl: heroVideoSrc.startsWith('http')
-            ? heroVideoSrc
-            : `${siteId.siteDomain}${heroVideoSrc}`,
-        }
-      : {}),
-  };
+  // G-02: fallback a hero-poster.png estático si admin no tiene poster subido (LCP)
+  const posterUrl = heroPosterMedia?.url ?? '/hero-poster.png';
+
+  const casePkg =
+    cs?.videoPackage && typeof cs.videoPackage === 'object' ? cs.videoPackage : undefined;
+  const casePrimary =
+    casePkg?.primary && typeof casePkg.primary === 'object'
+      ? (casePkg.primary as Media)
+      : undefined;
+  const caseFallback =
+    casePkg?.fallback && typeof casePkg.fallback === 'object'
+      ? (casePkg.fallback as Media)
+      : undefined;
+  const casePosterMedia =
+    casePkg?.poster && typeof casePkg.poster === 'object' ? (casePkg.poster as Media) : undefined;
+  const casePosterUrl = casePosterMedia?.url ?? undefined;
+
+  const resolveInLanguage = (pkgLang?: 'es' | 'en' | null): 'es-SV' | 'en-US' =>
+    (pkgLang ?? l) === 'es' ? 'es-SV' : 'en-US';
+
+  // A6 (AEO): 1 VideoObject por paquete (contentUrl único — heroPrimary),
+  // NUNCA uno por formato (diagnóstico D-BBF-MEDIA-PACKAGE §6).
+  const heroVideoObjectSchema = heroPrimary?.url
+    ? buildVideoObjectJsonLd({
+        id: `${siteId.siteDomain}/#video-hero`,
+        name: heroPkg?.seoName || hero.media.demoLabel,
+        description: heroPkg?.seoDescription || hero.media.footCaption || hero.media.demoLabel,
+        thumbnailUrl: toAbsoluteUrl(posterUrl),
+        contentUrl: toAbsoluteUrl(heroPrimary.url),
+        uploadDate: site.updatedAt ?? new Date().toISOString(),
+        duration: heroPkg?.duration,
+        inLanguage: resolveInLanguage(heroPkg?.inLanguage),
+        publisherId: `${siteId.siteDomain}/#org`,
+      })
+    : null;
+
+  const caseVideoObjectSchema = casePrimary?.url
+    ? buildVideoObjectJsonLd({
+        id: `${siteId.siteDomain}/#video-case`,
+        name: casePkg?.seoName || cs?.mediaChromeLabel || cs?.h2Line1 || '',
+        description: casePkg?.seoDescription || cs?.lead || cs?.mediaChromeLabel || '',
+        thumbnailUrl: toAbsoluteUrl(casePosterUrl ?? posterUrl),
+        contentUrl: toAbsoluteUrl(casePrimary.url),
+        uploadDate: site.updatedAt ?? new Date().toISOString(),
+        duration: casePkg?.duration,
+        inLanguage: resolveInLanguage(casePkg?.inLanguage),
+        publisherId: `${siteId.siteDomain}/#org`,
+      })
+    : null;
 
   // G-19: FAQPage JSON-LD from admin faq[] (Sprint 2 — campo canónico, no hardcoded)
   const faqItems = (site.seo?.faq ?? [])
@@ -218,9 +265,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                     poster={posterUrl}
                     ariaLabel={hero.media.demoLabel}
                   >
-                    {hero.media.videoSources?.map((s) => (
-                      <HeroVideo.Source key={s.src} src={s.src} type={s.type} />
-                    ))}
+                    {heroPrimary?.url && (
+                      <HeroVideo.Source
+                        src={heroPrimary.url}
+                        type={primaryMimeToSourceType(heroPrimary.mimeType)}
+                      />
+                    )}
+                    {heroFallback?.url && (
+                      <HeroVideo.Source
+                        src={heroFallback.url}
+                        type={fallbackMimeToSourceType(heroFallback.mimeType)}
+                      />
+                    )}
                   </HeroVideo>
                 </HeroMediaFrame.VideoShell>
                 <HeroMediaFrame.Foot className="bbf-hero__media-foot">
@@ -310,16 +366,23 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   timestamp={cs.mediaTimestamp ?? 'captura · 23:04 viernes'}
                 />
                 <HeroMediaFrame.VideoShell>
-                  {caseVideoSources.length > 0 ? (
+                  {casePrimary?.url ? (
                     <HeroVideo
                       controls
                       preload="metadata"
                       poster={casePosterUrl}
                       ariaLabel={cs.mediaChromeLabel ?? cs.h2Line1 ?? undefined}
                     >
-                      {caseVideoSources.map((s) => (
-                        <HeroVideo.Source key={s.src} src={s.src} type={s.type} />
-                      ))}
+                      <HeroVideo.Source
+                        src={casePrimary.url}
+                        type={primaryMimeToSourceType(casePrimary.mimeType)}
+                      />
+                      {caseFallback?.url && (
+                        <HeroVideo.Source
+                          src={caseFallback.url}
+                          type={fallbackMimeToSourceType(caseFallback.mimeType)}
+                        />
+                      )}
                     </HeroVideo>
                   ) : null}
                 </HeroMediaFrame.VideoShell>
@@ -418,10 +481,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(videoObjectSchema) }}
-      />
+      {heroVideoObjectSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(heroVideoObjectSchema) }}
+        />
+      )}
+      {caseVideoObjectSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(caseVideoObjectSchema) }}
+        />
+      )}
     </>
   );
 }

@@ -77,6 +77,7 @@ export interface Config {
     surfaces: Surface;
     signals: Signal;
     redirects: Redirect;
+    'video-packages': VideoPackage;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -95,6 +96,7 @@ export interface Config {
     surfaces: SurfacesSelect<false> | SurfacesSelect<true>;
     signals: SignalsSelect<false> | SignalsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
+    'video-packages': VideoPackagesSelect<false> | VideoPackagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -202,6 +204,22 @@ export interface Media {
   alt: string;
   caption?: string | null;
   credit?: string | null;
+  /**
+   * Nombre corto AEO-ready del asset (ej. name de VideoObject/ImageObject). Distinto de alt/caption — pensado para citación por IA, no para UI.
+   */
+  seoName?: string | null;
+  /**
+   * Descripción AEO-ready (1-2 frases citables) del asset. Distinta de caption — no es copy de interfaz.
+   */
+  seoDescription?: string | null;
+  /**
+   * Duración en segundos. Solo aplica a video (mimeType video/*).
+   */
+  duration?: number | null;
+  /**
+   * Idioma hablado/hablado en el contenido del asset (ej. audio de un video) — independiente del locale de la página que lo consume.
+   */
+  inLanguage?: ('es' | 'en') | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -904,6 +922,51 @@ export interface Redirect {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "video-packages".
+ */
+export interface VideoPackage {
+  id: number;
+  /**
+   * Nombre interno del paquete (solo admin, no AEO — ver seoName).
+   */
+  title: string;
+  /**
+   * Fuente principal (mejor codec, ej. webm-vp9).
+   */
+  primary: number | Media;
+  /**
+   * Fuente de respaldo (codec universal, ej. mp4-h264).
+   */
+  fallback: number | Media;
+  /**
+   * Variante mobile opcional (art direction). Requiere soporte de atributo media en el componente — pendiente, ver H-BBF-543 §5.
+   */
+  mobile?: (number | null) | Media;
+  /**
+   * Imagen poster/thumbnail del paquete.
+   */
+  poster?: (number | null) | Media;
+  /**
+   * Nombre corto AEO-ready del video (name de VideoObject). Distinto de labels de UI.
+   */
+  seoName?: string | null;
+  /**
+   * Descripción AEO-ready (1-2 frases citables) del video.
+   */
+  seoDescription?: string | null;
+  /**
+   * Duración en segundos. Una sola vez por video (no por formato).
+   */
+  duration?: number | null;
+  /**
+   * Idioma hablado del contenido del video.
+   */
+  inLanguage?: ('es' | 'en') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1057,6 +1120,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'redirects';
         value: number | Redirect;
+      } | null)
+    | ({
+        relationTo: 'video-packages';
+        value: number | VideoPackage;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1135,6 +1202,10 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   credit?: T;
+  seoName?: T;
+  seoDescription?: T;
+  duration?: T;
+  inLanguage?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1639,6 +1710,23 @@ export interface RedirectsSelect<T extends boolean = true> {
   from?: T;
   to?: T;
   type?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "video-packages_select".
+ */
+export interface VideoPackagesSelect<T extends boolean = true> {
+  title?: T;
+  primary?: T;
+  fallback?: T;
+  mobile?: T;
+  poster?: T;
+  seoName?: T;
+  seoDescription?: T;
+  duration?: T;
+  inLanguage?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2196,25 +2284,9 @@ export interface SiteHomepage {
        */
       chromeLabel?: string | null;
       /**
-       * Imagen poster del video (se muestra antes de carga).
+       * Paquete de video (primary/fallback/mobile/poster + AEO). Reemplaza videoPoster + videoSources[].
        */
-      videoPoster?: (number | null) | Media;
-      /**
-       * Fuentes de video en orden de prioridad (mejor codec primero).
-       */
-      videoSources?:
-        | {
-            /**
-             * Path relativo o URL del archivo de video.
-             */
-            src: string;
-            /**
-             * Codec / contenedor del video.
-             */
-            type: 'webm-av1' | 'webm-vp9' | 'mp4-h264' | 'mp4-h265' | 'mp4-av1' | 'mov';
-            id?: string | null;
-          }[]
-        | null;
+      videoPackage?: (number | null) | VideoPackage;
       /**
        * Etiqueta del tipo de demostración (muted, bajo el video).
        */
@@ -2699,29 +2771,13 @@ export interface SiteHomepage {
      */
     mediaTimestamp?: string | null;
     /**
-     * Imagen estática 16:9 del caso. Si se prefiere video, usar videoPoster + videoSources.
+     * Imagen estática 16:9 del caso. Si se prefiere video, usar videoPackage.
      */
     mediaAsset?: (number | null) | Media;
     /**
-     * Imagen poster del video del caso (mostrada antes de carga). Opcional.
+     * Paquete de video del caso (primary/fallback/mobile/poster + AEO). Reemplaza videoPoster + videoSources[].
      */
-    videoPoster?: (number | null) | Media;
-    /**
-     * Fuentes de video del caso en orden de prioridad (mejor codec primero). Vacío → placeholder.
-     */
-    videoSources?:
-      | {
-          /**
-           * URL del archivo de video.
-           */
-          src: string;
-          /**
-           * Codec / contenedor del video.
-           */
-          type: 'webm-av1' | 'webm-vp9' | 'mp4-h264' | 'mp4-h265' | 'mp4-av1' | 'mov';
-          id?: string | null;
-        }[]
-      | null;
+    videoPackage?: (number | null) | VideoPackage;
     /**
      * Las 3 fases del caso (Situación→Construcción→Operación). Exactamente 3.
      */
@@ -3655,14 +3711,7 @@ export interface SiteHomepageSelect<T extends boolean = true> {
           | T
           | {
               chromeLabel?: T;
-              videoPoster?: T;
-              videoSources?:
-                | T
-                | {
-                    src?: T;
-                    type?: T;
-                    id?: T;
-                  };
+              videoPackage?: T;
               demoLabel?: T;
               footCaption?: T;
             };
@@ -3893,14 +3942,7 @@ export interface SiteHomepageSelect<T extends boolean = true> {
         mediaChromeLabel?: T;
         mediaTimestamp?: T;
         mediaAsset?: T;
-        videoPoster?: T;
-        videoSources?:
-          | T
-          | {
-              src?: T;
-              type?: T;
-              id?: T;
-            };
+        videoPackage?: T;
         phases?:
           | T
           | {
