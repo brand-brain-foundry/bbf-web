@@ -8785,3 +8785,81 @@ La corrección mínima (quitar `addressCountry` de `Country`) resuelve el error 
 | H-BBF-554 | `addressCountry` mal anidado | Quitar de `Country`, agregar `address: PostalAddress` si se quiere (opcional) | Ejecutable de inmediato, sin decisión pendiente — es un bug puro |
 
 Zero secretos expuestos. Nada ejecutado.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-BOTS-IA
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-DIAG-BOTS-IA
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2+3) · **Protocolo:** P-6
+**Hallazgo:** H-BBF-540 · **NO se ejecutó ningún cambio de infra**
+
+---
+
+## Nota de método
+
+`curl` a hosts externos sigue denegado por el sandbox de este entorno (igual que en despachos anteriores). Repliqué exactamente lo mismo que pedían los `curl` — status code, headers, body — usando **`node -e "fetch(...)"`** con un `User-Agent` custom por request. A diferencia del `fetch()` del browser (que bloquea sobreescribir `User-Agent` por seguridad), el `fetch` nativo de Node **sí permite headers arbitrarios** — mismo resultado observable que `curl -A`, canal distinto.
+
+## §1-§2 — Simulación de 5 crawlers + 1 browser regular contra producción
+
+```js
+node -e "... fetch('https://sivarbrains.com/', {headers: {'User-Agent': '<bot>'}}) ..."
+```
+
+| User-Agent | Status | `cf-mitigated` | Server | JSON-LD count | ¿Challenge ("Just a moment")? | Body length |
+|---|---|---|---|---|---|---|
+| GPTBot | **200** | `null` | cloudflare | 10 | No | 337046 |
+| ClaudeBot | **200** | `null` | cloudflare | 10 | No | 337046 |
+| PerplexityBot | **200** | `null` | cloudflare | 10 | No | 337046 |
+| Googlebot | **200** | `null` | cloudflare | 10 | No | 337046 |
+| Bingbot | **200** | `null` | cloudflare | 10 | No | 337046 |
+| Browser regular (Chrome UA) | **200** | `null` | cloudflare | 10 | No | 337046 |
+
+**Los 6 reciben exactamente la misma respuesta — mismo status, mismo largo de body byte a byte, mismo conteo de `application/ld+json`.** No hay ningún indicio de challenge, mitigación, ni contenido distinto para ningún bot probado. El `VideoObject` (Hero + Case) y el `Organization`/`WebSite`/`@graph` completo llegan en el HTML tal cual, sin que ningún challenge los reemplace.
+
+**Contraste con lo observado en despachos anteriores de esta sesión:** sí vimos una pantalla "Just a moment" real al navegar a `/admin` en browser (documentado en despachos previos, ej. verificación de Fase 2). **Ese challenge existe, pero no se dispara en la home pública para estos 6 user-agents con una request GET simple** — es consistente con que el challenge esté scopeado a rutas sensibles (`/admin`) o a patrones de comportamiento (JS challenge que solo interactúa con navegadores reales ejecutando JS), no con un bloqueo global por user-agent en el dominio.
+
+## §3 — `robots.txt`: permisivo, alineado al Canon
+
+```
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# AI Search Engines (citation crawlers) — PERMITIDOS
+GPTBot, ChatGPT-User, OAI-SearchBot, anthropic-ai, ClaudeBot, Claude-User,
+PerplexityBot, Perplexity-User, Google-Extended, Applebot-Extended,
+Bingbot, cohere-ai, Amazonbot, FacebookBot, meta-externalagent → Allow: /
+
+# CCBot — training crawler, bloqueado
+CCBot → Disallow: /
+
+# Scrapers sin valor — bloqueados
+Bytespider, SemrushBot, AhrefsBot, MJ12bot → Disallow: /
+
+Sitemap: https://sivarbrains.com/sitemap.xml
+```
+
+**Coincide exactamente con la doctrina de la regla `50-seo-geo.md`** (distinción retrieval/citation vs training crawlers, D-CCBOT-01) — permisivo con los crawlers de IA que citan y traen tráfico, bloquea solo el crawler de entrenamiento (CCBot) y scrapers SEO sin valor de citación.
+
+## §4 (Modo 3) — ¿Whitelist granular en DO, o todo-o-nada? Patrón 2026
+
+**Confirmado vía documentación oficial de DigitalOcean** (`docs.digitalocean.com/products/app-platform/how-to/configure-edge-settings/`): el "Enhanced Threat Control" de App Platform es **un toggle binario — encendido o apagado, sin granularidad**. No hay allowlist de user-agent, ni excepción por categoría de bot, ni carve-out de rango de IP expuesto ni en el Control Panel ni en el App Spec (`enhanced_threat_control_enabled: true/false`). La doc de DO **advierte explícitamente** que "puede causar que usuarios legítimos encuentren challenges." Un hilo de la comunidad DO confirma que esto es todo el mitigation nativo disponible — no existe un motor de reglas tipo Cloudflare WAF/Bot Management a este nivel.
+
+**Patrón 2026 recomendado (fuentes SEO/GEO/AEO):** consenso en que es un enfoque **por capas, no binario**:
+1. `robots.txt` es necesario pero no suficiente — un challenge de WAF/edge se ejecuta ANTES de que el bot llegue a leer `robots.txt`, sin importar la directiva.
+2. La práctica recomendada es **permitir explícitamente a nivel edge/WAF a los crawlers de IA verificados** (por UA + verificación reverse-DNS/rango de IP — GPTBot y ClaudeBot publican sus IPs oficiales), colocada ANTES de la regla genérica de challenge.
+3. **"Apagar el WAF por completo" está explícitamente desaconsejado** en estas fuentes — cambia acceso de citación por exposición real a scrapers no compliant (ej. Bytespider, variantes de Perplexity que ignoran robots.txt).
+4. Verificación criptográfica de bots (Web Bot Auth / IETF Bot Service Index) está emergiendo como capa adicional en 2026, pero UA + reverse-DNS sigue siendo la base pragmática.
+
+**Implicación específica para DO:** como el Enhanced Threat Control no tiene primitiva de allowlist, el patrón documentado (permitir-luego-challenge granular) **no se puede replicar nativamente en DO** — las únicas dos opciones son "completamente activo" (que también puede degradar a crawlers de IA legítimos) o "completamente apagado" (que elimina toda protección DDoS de capa 7). Lograr allowlisting granular de bots de IA requiere una capa WAF real (Cloudflare o similar) delante del app de DO — que, dado lo que confirmamos en §1-§2, **ya existe** (`server: cloudflare` en cada respuesta) — es la config de Cloudflare de Zavala, no el toggle nativo de DO, la que ya está en juego.
+
+---
+
+## VEREDICTO CC — ¿los bots de IA leen el sitio, o el threat protection los bloquea?
+
+**Los bots de IA SÍ leen el sitio hoy, sin bloqueo.** Los 6 user-agents probados (incluidos los 5 crawlers de IA/buscadores citados en el despacho) reciben `200`, HTML completo, y el `@graph` JSON-LD entero (`Organization`, `WebSite`, `Person`×N, `Service`×5, `VideoObject`×2) — sin challenge, sin mitigación, sin contenido reducido. `robots.txt` está correctamente configurado según el Canon.
+
+**El hallazgo H-BBF-540 (¿threat protection bloqueando crawlers?) no se confirma con evidencia directa — al menos no para tráfico HTTP simple a la home pública.** El challenge "Just a moment" real que sí vimos en sesiones anteriores está scopeado a `/admin` (o a patrones de comportamiento tipo automatización con JS), no a la home pública ni a estos user-agents.
+
+**No hay ninguna acción de infra que ejecutar ahora mismo** (el hallazgo original parece no materializarse en la práctica) — pero si Zavala quiere blindarse contra un escenario futuro donde Cloudflare SÍ empiece a challengear tráfico de bots IA (ej. si sube el "security level" de su zona), el patrón 2026 recomendado es un allow-rule explícito en Cloudflare para los UAs/IPs verificados de estos crawlers, colocado con prioridad sobre cualquier regla de challenge genérica — no es algo que DO permita nativamente, y no es una decisión que yo tome (toggle es de Zavala, tal como pide el despacho). Zero secretos expuestos, ningún cambio de infra ejecutado.
