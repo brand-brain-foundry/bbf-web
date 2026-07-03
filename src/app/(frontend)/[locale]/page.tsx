@@ -26,7 +26,7 @@ import { getSiteIdentity } from '@/config/site';
 import { getCtaByKey } from '@/lib/payload/getSiteCtaLibrary';
 import { Timeline } from '@/components/molecules/Timeline';
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
