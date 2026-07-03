@@ -80,4 +80,4 @@ export default async function DynamicPage({ params }: PageParams) {
   );
 }
 
-export const revalidate = 60;
+export const revalidate = 3600;
