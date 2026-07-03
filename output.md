@@ -7624,3 +7624,70 @@ await fetch('/', {cache: 'no-store'}).then(r => r.headers.get('cache-control'))
 **Commit desplegado en producción: `63ea2dc`.** Cero secretos expuestos — todo el test se hizo vía UI de admin autenticada, sin tocar `.env.local` ni ninguna credencial.
 
 **Arquitectura de cache definitiva, cerrada.**
+
+---
+
+# REPORTE — B-BBF-WEB-FIX-VIDEO-COMPONENTE
+**Fecha:** 2026-07-03 · **Despacho:** B-BBF-WEB-FIX-VIDEO-COMPONENTE
+**Tipo:** DIAGNÓSTICO READ-ONLY (Modo Strategic: 2+1) · **Protocolo:** P-6
+**Hallazgo:** H-BBF-522 (reabierto) · **NO se ejecutó ningún fix — solo diagnóstico, per ALCANCE OUT**
+
+---
+
+## §1 — grep "assets/media/hero"
+
+```
+grep -rn "assets/media/hero" src/
+```
+
+**Único hallazgo: documentación/comentarios, CERO en lógica ejecutable:**
+
+| Archivo | Línea | Contexto |
+|---|---|---|
+| `src/components/molecules/HeroVideo/CLAUDE.md` | 16, 137-139 | JSDoc de ejemplo (`poster`, `.webm`, `.mp4`) |
+| `src/components/molecules/HeroVideo/HeroVideo.tsx` | 20, 53 | Comentario JSDoc (`Path canon:` y nota de codec) |
+| `src/components/sections/HeroSection/CLAUDE.md` | 123-124 | JSDoc de ejemplo |
+
+**Ningún `.tsx` de lógica real contiene la ruta hardcodeada.** El string solo vive en comentarios/documentación, nunca en código que se ejecuta.
+
+## §2 — Componente real: 100% data-driven, sin hardcode
+
+`HeroVideo.tsx` (`src/components/molecules/HeroVideo/HeroVideo.tsx:78-132`) es puramente presentacional — recibe `src` como prop vía `children` (`HeroVideo.Source`), cero lógica de resolución de rutas dentro del componente.
+
+El **wiring real** vive en `src/app/(frontend)/[locale]/page.tsx`, con **dos usos independientes**:
+
+1. **Hero principal** (`page.tsx:215-224`) — lee `hero.media.videoSources` (Payload global `SiteHomepage`, campo `hero.media.videoSources`, schema en `src/payload/globals/SiteHomepage.ts:123-153`). Sin guard: si el array viene vacío, igual renderiza `<video>` sin `<source>` (gap menor, no la causa raíz).
+2. **Case video** (`page.tsx:314-323`) — lee `caseVideoSources` (= `cs?.videoSources`, línea 75), un campo **distinto** en la colección `Cases` (migración `20260602_130000_case_study_video.ts`). Este SÍ tiene guard (`caseVideoSources.length > 0 ? (...) : null`, línea 313).
+
+**Conclusión §2:** son dos fuentes de datos independientes en Payload. Un fix aplicado a una NO afecta a la otra — esto coincide exactamente con el framing del despacho ("el fix de Neon anterior no aplica al componente real").
+
+## §3 — Qué existe dónde
+
+- **`public/assets/media/hero/`** (D-87 canon): existen `hero.av1.webm` (2.28 MB, WebM válido) y `hero.h264.mp4` (4.27 MB) — **ambos trackeados en git** (`git ls-files` los confirma) y **presentes en el HEAD actual de `migracion-railway`** (`git cat-file -e HEAD:...` → sí). NO están en `.gitignore`.
+- **Verificado en producción real ahora mismo** (fetch HEAD directo, sin curl): `/assets/media/hero/hero.av1.webm` → **200**, `/assets/media/hero/hero.h264.mp4` → **200**. La ruta estática canon SÍ es servida correctamente hoy.
+- **`/assets/media/hero/hero-poster.jpg`** (referenciado en JSDoc) → **404**. Coincide con `TD-M5-D3-01` (poster nunca se generó ahí). El poster real que SÍ se usa es `/hero-poster.png` en la raíz de `public/` (generado por `src/scripts/generate-hero-poster.ts`, usado como fallback en `page.tsx:64-68`).
+- **R2 vía `/api/media/file/`**: confirmado funcionando — el poster del Hero en producción (`SB-video.webp`) carga con `200` desde ahí.
+- **`.webm` real existe** (no es un placeholder) — confirmado `file` = WebM válido.
+
+## §4 — La desconexión real, con evidencia de browser en producción
+
+Con la sesión de admin ya autenticada, cargué `https://sivarbrains.com/` en un tab limpio y verifiqué el DOM real:
+
+- **2 `<video data-hero-video>` en la página, 4 `<source>` en total** (2 cada uno) — el array de sources SÍ tiene datos en ambos casos, no está vacío.
+- **Ambos videos quedan permanentemente en `networkState=2` (NETWORK_LOADING) / `readyState=0` (HAVE_NOTHING)**, sin avanzar, sin `error`, incluso 8-10s después del load — nunca llegan a reproducir metadata.
+- El poster del Hero SÍ carga (200, vía R2). El video, no.
+- **No pude leer el valor literal del atributo `src`** de los `<source>` — el filtro de seguridad de la herramienta de browser bloqueó cada intento (`[BLOCKED: Cookie/query string data]`), incluso extrayendo solo el pathname o un booleano. Esto en sí es un dato: sugiere que el valor real **contiene un query string** (consistente con una URL firmada de R2), no la ruta estática plana `/assets/media/hero/...` (que no tiene query string y sí se comprobó accesible en §3).
+- **CSP revisado en vivo** (`content-security-policy` header real): `media-src 'self' https://*.r2.dev` — permite R2.dev explícitamente, así que un bloqueo de CSP es improbable como causa.
+- **Sin errores en consola** del browser (ni CSP violation, ni media error) — inusual si fuera un bloqueo duro.
+
+**⚠️ Limitación honesta de este diagnóstico:** no puedo descomponente si el "stuck" que observé es (a) un bug real que afecta a usuarios reales, o (b) un artefacto de que Cloudflare trata distinto las requests de video byte-range hechas desde un browser controlado por automatización/CDP (ya vimos un challenge "Just a moment" en `/admin` antes; es plausible que las requests de rango de video pasen por inspección repetida y se cuelguen solo en este contexto). **No puedo confirmar cuál de las dos sin que Zavala lo verifique en un browser normal** (no automatizado) sobre `sivarbrains.com`.
+
+## VEREDICTO CC
+
+**Causa raíz NO es el código.** `page.tsx` y `HeroVideo.tsx` son correctamente data-driven — cero ruta hardcodeada en lógica ejecutable (§1-§2). La ruta estática canon (`/assets/media/hero/*.{webm,mp4}`) existe, está commiteada, y responde `200` en producción ahora mismo (§3).
+
+**La causa raíz está en el DATO guardado en Payload**, específicamente el campo `hero.media.videoSources[].src` (`SiteHomepage` global, schema `src/payload/globals/SiteHomepage.ts:133-137`) — y posiblemente también `Cases.videoSources` (ambos videos quedaron stuck). El valor ahí guardado no es la ruta estática que funciona, sino (con alta probabilidad, por el bloqueo de "cookie/query string" al leerlo) algo con query string — consistente con una URL de R2 firmada, vieja o mal generada, aplicada por el "fix de Neon anterior" mencionado en el despacho, que corrigió el campo equivocado o generó una URL que no resuelve.
+
+**No ejecuté ningún fix** (per ALCANCE OUT). Antes de decidir entre (a) apuntar a R2 vía `/api/media/file/`, (b) usar la ruta estática canon `/assets/media/hero/` (ya confirmada funcionando en §3 — la opción de menor fricción), o (c) generar/quitar el `.webm`:
+
+**Recomiendo que Zavala confirme en un browser normal (no automatizado) si el video reproduce o no sobre `sivarbrains.com`** — esto descarta la duda de §4 antes de tocar nada. Si confirma que SÍ está roto para un usuario real: la opción (b) es la de menor riesgo, ya que la ruta estática ya está verificada `200` y commiteada — solo requeriría corregir el valor de `hero.media.videoSources[].src` (y `Cases.videoSources[].src` si aplica) en el admin de Payload a `/assets/media/hero/hero.av1.webm` + `/assets/media/hero/hero.h264.mp4`, sin tocar código.
