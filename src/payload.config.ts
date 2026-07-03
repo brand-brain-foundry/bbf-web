@@ -16,6 +16,7 @@ import { ContentItems } from './payload/collections/contentItems';
 import { Surfaces } from './payload/collections/surfaces';
 import { Signals } from './payload/collections/signals';
 import { Redirects } from './payload/collections/redirects';
+import { VideoPackages } from './payload/collections/videoPackages';
 
 import { SocialLinks } from './payload/globals/SocialLinks';
 import { SEO } from './payload/globals/SEO';
@@ -92,6 +93,7 @@ export default buildConfig({
     Surfaces,
     Signals,
     Redirects,
+    VideoPackages,
   ],
 
   globals: [

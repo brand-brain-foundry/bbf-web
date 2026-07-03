@@ -111,45 +111,18 @@ export const SiteHomepage: GlobalConfig = {
                   },
                 },
                 {
-                  name: 'videoPoster',
-                  type: 'upload',
-                  relationTo: 'media',
+                  // D-BBF-MEDIA-PACKAGE (Opción A, firmada): reemplaza
+                  // videoPoster + videoSources[] (Fase 2, descartada) por
+                  // una sola relación al paquete — poster/primary/fallback
+                  // viven ahí, no dispersos en campos hermanos.
+                  name: 'videoPackage',
+                  type: 'relationship',
+                  relationTo: 'video-packages',
                   required: false,
                   admin: {
-                    description: 'Imagen poster del video (se muestra antes de carga).',
+                    description:
+                      'Paquete de video (primary/fallback/mobile/poster + AEO). Reemplaza videoPoster + videoSources[].',
                   },
-                },
-                {
-                  name: 'videoSources',
-                  type: 'array',
-                  minRows: 0,
-                  label: { en: 'Video Sources', es: 'Fuentes de Video' },
-                  admin: {
-                    initCollapsed: true,
-                    description: 'Fuentes de video en orden de prioridad (mejor codec primero).',
-                  },
-                  fields: [
-                    {
-                      name: 'src',
-                      type: 'text',
-                      required: true,
-                      admin: { description: 'Path relativo o URL del archivo de video.' },
-                    },
-                    {
-                      name: 'type',
-                      type: 'select',
-                      required: true,
-                      options: [
-                        { label: 'AV1 WebM', value: 'webm-av1' },
-                        { label: 'VP9 WebM', value: 'webm-vp9' },
-                        { label: 'H.264 MP4', value: 'mp4-h264' },
-                        { label: 'H.265 MP4', value: 'mp4-h265' },
-                        { label: 'AV1 MP4', value: 'mp4-av1' },
-                        { label: 'QuickTime MOV', value: 'mov' },
-                      ],
-                      admin: { description: 'Codec / contenedor del video.' },
-                    },
-                  ],
                 },
                 {
                   name: 'demoLabel',
@@ -1141,51 +1114,21 @@ export const SiteHomepage: GlobalConfig = {
               required: false,
               admin: {
                 description:
-                  'Imagen estática 16:9 del caso. Si se prefiere video, usar videoPoster + videoSources.',
+                  'Imagen estática 16:9 del caso. Si se prefiere video, usar videoPackage.',
               },
             },
             {
-              name: 'videoPoster',
-              type: 'upload',
-              relationTo: 'media',
+              // D-BBF-MEDIA-PACKAGE (Opción A, firmada): reemplaza
+              // videoPoster + videoSources[] (Fase 2, descartada) — mismo
+              // fix que hero.media.videoPackage, ver comentario ahí.
+              name: 'videoPackage',
+              type: 'relationship',
+              relationTo: 'video-packages',
               required: false,
               admin: {
                 description:
-                  'Imagen poster del video del caso (mostrada antes de carga). Opcional.',
+                  'Paquete de video del caso (primary/fallback/mobile/poster + AEO). Reemplaza videoPoster + videoSources[].',
               },
-            },
-            {
-              name: 'videoSources',
-              type: 'array',
-              minRows: 0,
-              label: { en: 'Video Sources', es: 'Fuentes de Video' },
-              admin: {
-                initCollapsed: true,
-                description:
-                  'Fuentes de video del caso en orden de prioridad (mejor codec primero). Vacío → placeholder.',
-              },
-              fields: [
-                {
-                  name: 'src',
-                  type: 'text',
-                  required: true,
-                  admin: { description: 'URL del archivo de video.' },
-                },
-                {
-                  name: 'type',
-                  type: 'select',
-                  required: true,
-                  options: [
-                    { label: 'AV1 WebM', value: 'webm-av1' },
-                    { label: 'VP9 WebM', value: 'webm-vp9' },
-                    { label: 'H.264 MP4', value: 'mp4-h264' },
-                    { label: 'H.265 MP4', value: 'mp4-h265' },
-                    { label: 'AV1 MP4', value: 'mp4-av1' },
-                    { label: 'QuickTime MOV', value: 'mov' },
-                  ],
-                  admin: { description: 'Codec / contenedor del video.' },
-                },
-              ],
             },
             {
               name: 'phases',
