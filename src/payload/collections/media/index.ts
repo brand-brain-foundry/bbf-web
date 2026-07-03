@@ -58,5 +58,51 @@ export const Media: CollectionConfig = {
       name: 'credit',
       type: 'text',
     },
+    // D-BBF-MEDIA-SEO (Fase 0): campos AEO/SEO a nivel asset — fuente de
+    // verdad única (C-01) para VideoObject/ImageObject, en vez de
+    // reutilizar alt/caption o duplicar copy por página consumidora.
+    {
+      name: 'seoName',
+      type: 'text',
+      localized: true,
+      required: false,
+      admin: {
+        description:
+          'Nombre corto AEO-ready del asset (ej. name de VideoObject/ImageObject). Distinto de alt/caption — pensado para citación por IA, no para UI.',
+      },
+    },
+    {
+      name: 'seoDescription',
+      type: 'textarea',
+      localized: true,
+      required: false,
+      admin: {
+        description:
+          'Descripción AEO-ready (1-2 frases citables) del asset. Distinta de caption — no es copy de interfaz.',
+      },
+    },
+    {
+      name: 'duration',
+      type: 'number',
+      required: false,
+      admin: {
+        description: 'Duración en segundos. Solo aplica a video (mimeType video/*).',
+        condition: (data) =>
+          typeof data?.mimeType === 'string' && data.mimeType.startsWith('video/'),
+      },
+    },
+    {
+      name: 'inLanguage',
+      type: 'select',
+      required: false,
+      options: [
+        { label: 'Español', value: 'es' },
+        { label: 'English', value: 'en' },
+      ],
+      admin: {
+        description:
+          'Idioma hablado/hablado en el contenido del asset (ej. audio de un video) — independiente del locale de la página que lo consume.',
+      },
+    },
   ],
 };

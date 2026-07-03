@@ -202,6 +202,22 @@ export interface Media {
   alt: string;
   caption?: string | null;
   credit?: string | null;
+  /**
+   * Nombre corto AEO-ready del asset (ej. name de VideoObject/ImageObject). Distinto de alt/caption — pensado para citación por IA, no para UI.
+   */
+  seoName?: string | null;
+  /**
+   * Descripción AEO-ready (1-2 frases citables) del asset. Distinta de caption — no es copy de interfaz.
+   */
+  seoDescription?: string | null;
+  /**
+   * Duración en segundos. Solo aplica a video (mimeType video/*).
+   */
+  duration?: number | null;
+  /**
+   * Idioma hablado/hablado en el contenido del asset (ej. audio de un video) — independiente del locale de la página que lo consume.
+   */
+  inLanguage?: ('es' | 'en') | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1135,6 +1151,10 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   credit?: T;
+  seoName?: T;
+  seoDescription?: T;
+  duration?: T;
+  inLanguage?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
