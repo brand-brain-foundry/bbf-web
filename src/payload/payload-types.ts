@@ -249,6 +249,247 @@ export interface Page {
    * Full URL path (auto-computed from slug + parent)
    */
   path?: string | null;
+  layout?:
+    | (
+        | {
+            body: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'rich-text';
+          }
+        | {
+            question: string;
+            answer: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq';
+          }
+        | {
+            term: string;
+            definition: string;
+            /**
+             * Schema.org DefinedTerm linked to entity
+             */
+            relatedEntityRef?: (number | null) | Entity;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'definition';
+          }
+        | {
+            variant: 'info' | 'warning' | 'success' | 'note';
+            title?: string | null;
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callout';
+          }
+        | {
+            text: string;
+            author?: string | null;
+            role?: string | null;
+            /**
+             * Publication, book, or context of the quote
+             */
+            source?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'quote';
+          }
+        | {
+            /**
+             * Optional section label rendered alongside the divider
+             */
+            label?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'divider';
+          }
+        | {
+            text: string;
+            href: string;
+            variant: 'primary' | 'secondary' | 'ghost';
+            external?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cta';
+          }
+        | {
+            /**
+             * e.g. "87%", "3x", "$2M"
+             */
+            number: string;
+            unit?: string | null;
+            label: string;
+            /**
+             * Source or qualifying context for the claim
+             */
+            context?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'stat';
+          }
+        | {
+            image: number | Media;
+            alt: string;
+            caption?: string | null;
+            lazyLoad?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'image';
+          }
+        | {
+            video: number | Media;
+            poster?: (number | null) | Media;
+            caption?: string | null;
+            autoplay?: boolean | null;
+            loop?: boolean | null;
+            muted?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'video';
+          }
+        | {
+            images: {
+              image: number | Media;
+              alt: string;
+              caption?: string | null;
+              id?: string | null;
+            }[];
+            layout?: ('grid' | 'carousel') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'gallery';
+          }
+        | {
+            provider: 'youtube' | 'vimeo' | 'spotify' | 'twitter' | 'other';
+            /**
+             * Canonical URL of the content to embed
+             */
+            url: string;
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'embed';
+          }
+        | {
+            language?:
+              | ('typescript' | 'javascript' | 'tsx' | 'css' | 'html' | 'json' | 'bash' | 'sql' | 'python' | 'text')
+              | null;
+            /**
+             * Optional filename shown above the code block
+             */
+            filename?: string | null;
+            content: string;
+            lineNumbers?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'code';
+          }
+        | {
+            title?: string | null;
+            columns: {
+              label: string;
+              /**
+               * Visually highlights this column as the recommended option
+               */
+              highlight?: boolean | null;
+              id?: string | null;
+            }[];
+            rows: {
+              feature: string;
+              values: {
+                /**
+                 * Use "✓", "✗", or descriptive text
+                 */
+                value?: string | null;
+                id?: string | null;
+              }[];
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'comparison-table';
+          }
+        | {
+            /**
+             * Heading shown above the TOC
+             */
+            title?: string | null;
+            mode?: ('auto' | 'manual') | null;
+            /**
+             * Required only when mode is manual
+             */
+            items?:
+              | {
+                  label: string;
+                  /**
+                   * ID of the heading element (without #)
+                   */
+                  anchor: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'table-of-contents';
+          }
+        | {
+            /**
+             * Raw HTML — sanitized server-side before render. Admins only.
+             */
+            html: string;
+            /**
+             * Internal label for identifying this block in the admin UI
+             */
+            label?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'custom-html';
+          }
+      )[]
+    | null;
   /**
    * Parent page (for nested URLs)
    */
@@ -1226,6 +1467,185 @@ export interface PagesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   path?: T;
+  layout?:
+    | T
+    | {
+        'rich-text'?:
+          | T
+          | {
+              body?: T;
+              id?: T;
+              blockName?: T;
+            };
+        faq?:
+          | T
+          | {
+              question?: T;
+              answer?: T;
+              id?: T;
+              blockName?: T;
+            };
+        definition?:
+          | T
+          | {
+              term?: T;
+              definition?: T;
+              relatedEntityRef?: T;
+              id?: T;
+              blockName?: T;
+            };
+        callout?:
+          | T
+          | {
+              variant?: T;
+              title?: T;
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        quote?:
+          | T
+          | {
+              text?: T;
+              author?: T;
+              role?: T;
+              source?: T;
+              id?: T;
+              blockName?: T;
+            };
+        divider?:
+          | T
+          | {
+              label?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cta?:
+          | T
+          | {
+              text?: T;
+              href?: T;
+              variant?: T;
+              external?: T;
+              id?: T;
+              blockName?: T;
+            };
+        stat?:
+          | T
+          | {
+              number?: T;
+              unit?: T;
+              label?: T;
+              context?: T;
+              id?: T;
+              blockName?: T;
+            };
+        image?:
+          | T
+          | {
+              image?: T;
+              alt?: T;
+              caption?: T;
+              lazyLoad?: T;
+              id?: T;
+              blockName?: T;
+            };
+        video?:
+          | T
+          | {
+              video?: T;
+              poster?: T;
+              caption?: T;
+              autoplay?: T;
+              loop?: T;
+              muted?: T;
+              id?: T;
+              blockName?: T;
+            };
+        gallery?:
+          | T
+          | {
+              images?:
+                | T
+                | {
+                    image?: T;
+                    alt?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              layout?: T;
+              id?: T;
+              blockName?: T;
+            };
+        embed?:
+          | T
+          | {
+              provider?: T;
+              url?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        code?:
+          | T
+          | {
+              language?: T;
+              filename?: T;
+              content?: T;
+              lineNumbers?: T;
+              id?: T;
+              blockName?: T;
+            };
+        'comparison-table'?:
+          | T
+          | {
+              title?: T;
+              columns?:
+                | T
+                | {
+                    label?: T;
+                    highlight?: T;
+                    id?: T;
+                  };
+              rows?:
+                | T
+                | {
+                    feature?: T;
+                    values?:
+                      | T
+                      | {
+                          value?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        'table-of-contents'?:
+          | T
+          | {
+              title?: T;
+              mode?: T;
+              items?:
+                | T
+                | {
+                    label?: T;
+                    anchor?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        'custom-html'?:
+          | T
+          | {
+              html?: T;
+              label?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
   parent?: T;
   meta?:
     | T

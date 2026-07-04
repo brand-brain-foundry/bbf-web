@@ -5,6 +5,7 @@ import { pathField } from './fields/path';
 import { computePath } from './hooks/computePath';
 import { revalidatePage } from './hooks/revalidate';
 import { pagesAccess } from './access';
+import { sharedBlocks } from '@/payload/lib/blocks';
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -44,9 +45,14 @@ export const Pages: CollectionConfig = {
       required: true,
       localized: true,
     },
-    // Wave 13 will add layout blocks field (removed until blocks exist)
     slugField,
     pathField,
+    {
+      name: 'layout',
+      type: 'blocks',
+      blocks: sharedBlocks,
+      localized: true,
+    },
     {
       name: 'parent',
       type: 'relationship',

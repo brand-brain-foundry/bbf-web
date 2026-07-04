@@ -15,7 +15,9 @@ import { ComparisonTableBlock } from './ComparisonTable';
 import { TableOfContentsBlock } from './TableOfContents';
 import { CustomHtmlBlock } from './CustomHtml';
 
-export const contentItemBlocks = [
+// Compartido entre contentItems y Pages (Wave 13, B-BBF-WEB-PAGES-LAYOUT-01) — una sola fuente,
+// primitivo→específico (SB_TaxComponentes). NO duplicar: ambos consumidores importan de aquí.
+export const sharedBlocks = [
   // M3 originals (3)
   RichTextBlock,
   FaqBlock,
