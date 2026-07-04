@@ -1,4 +1,5 @@
 import { getPayload } from 'payload';
+import { PulpoPixelLoader } from '@/components/atoms/PulpoPixel';
 import config from '@/payload-config';
 import { setRequestLocale } from 'next-intl/server';
 import { HeroSection } from '@/components/sections/HeroSection';
@@ -191,7 +192,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         {/* Outer single-col grid — outer spacing container */}
         <HeroSection.Grid cols="1" className="bbf-hero__grid bbf-container-wide mx-auto w-full">
           <HeroSection.Grid cols="2-1.4-1" className="bbf-hero__head">
-            <div>
+            <div data-oct-obstacle>
               <Heading
                 level="display-hero"
                 color="primary"
@@ -208,7 +209,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </div>
 
             <Reveal variant="up" delay={120}>
-              <div className="bbf-hero__lede flex flex-col items-start gap-5">
+              <div className="bbf-hero__lede flex flex-col items-start gap-5" data-oct-obstacle>
                 <Text className="bbf-lede max-w-[38ch]">
                   {hero.ledeBody ?? ''}
                   {hero.ledeEmphasis && (
@@ -249,7 +250,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
           {/* Media row — full width below head */}
           <Reveal variant="up" delay={240}>
-            <div className="bbf-hero__media flex flex-col gap-0">
+            <div className="bbf-hero__media flex flex-col gap-0" data-oct-obstacle>
               <HeroMediaFrame className="bbf-hero__media-frame">
                 <HeroMediaFrame.Chrome
                   label={hero.media.chromeLabel ?? undefined}
@@ -321,7 +322,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
         <CapabilitiesSection.Grid>
           {(cap?.items ?? []).map((c, i) => (
-            <li key={c.id ?? `cap-${i}`}>
+            <li key={c.id ?? `cap-${i}`} data-oct-obstacle>
               <Reveal variant="fade">
                 <CapabilityCard align={i % 2 === 0 ? 'l' : 'r'} index={i + 1}>
                   <CapabilityCard.Txt
@@ -493,6 +494,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           dangerouslySetInnerHTML={{ __html: JSON.stringify(caseVideoObjectSchema) }}
         />
       )}
+      <PulpoPixelLoader />
     </>
   );
 }
