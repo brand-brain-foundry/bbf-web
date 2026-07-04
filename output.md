@@ -9367,3 +9367,73 @@ Nuevos:       public/assets/pulpo/octopus.js, src/components/atoms/PulpoPixel/{P
 Server de verificación detenido, `git status` limpio de basura (sin `.trace-*`, sin proceso huérfano en :3000).
 
 **No se ha hecho commit.** Con INP resuelto, el único paso pendiente del despacho es el commit + este reporte — pendiente de confirmación explícita de Zavala antes de ejecutar `git commit` (fuera del alcance de lo verificado automáticamente en esta sesión).
+
+---
+
+# REPORTE — B-BBF-WEB-PULPO-MERGE-DEPLOY (ejecutado) + B-BBF-WEB-PULPO-DESACTIVAR (cierre)
+**Fecha:** 2026-07-04 · **Estado:** 🟢 Ambos despachos ejecutados en la misma sesión.
+
+## Parte 1 — B-BBF-WEB-PULPO-MERGE-DEPLOY
+
+Zavala confirmó commit ante la pregunta de cierre de la sesión anterior. Ejecutado:
+
+- **§A-§D pre-merge:** `feat/pulpo-pixel` (7f51a45) confirmado como `migracion-railway` + exactamente 1 commit, sin divergencia (`git log feat/pulpo-pixel ^migracion-railway` → solo 7f51a45). `tsc --noEmit` 0 errores. `pnpm build` exit 0, 22/22 páginas.
+- **Merge:** `--no-ff` de `feat/pulpo-pixel` → `migracion-railway`, commit `84d579c`. Sin conflictos.
+- **Push:** `git push origin migracion-railway` → `34933c9..84d579c`. Disparó Autodeploy en DigitalOcean.
+
+**INP en producción: NO llegó a medirse.** La sesión fue interrumpida por el usuario en medio de la verificación (un `WebFetch` a producción fue rechazado explícitamente). Antes de continuar, Zavala emitió el siguiente despacho (`B-BBF-WEB-PULPO-DESACTIVAR`) con la premisa de que el pulpo "nunca se mergeó a migracion-railway" — premisa que ya no era cierta en ese momento. Se detuvo la ejecución automática, se reportó la discrepancia explícitamente, y se confirmó con Zavala vía pregunta directa antes de tocar más código.
+
+## Parte 2 — B-BBF-WEB-PULPO-DESACTIVAR
+
+### Verificación de discrepancia (antes de ejecutar)
+
+`git merge-base --is-ancestor 7f51a45 migracion-railway` → **SÍ, está mergeado.** Confirmado también en `origin/migracion-railway` (ya pusheado). Verificación directa en `https://sivarbrains.com/` (vía chrome-devtools, `evaluate_script`):
+
+```json
+{"hasOctopusPet": true, "canvasFound": true, "canvasAttrs": {"pointerEvents": "none"}, "octopusJsStatus": 200}
+```
+
+2 `<canvas>` en la página; el segundo con `position:fixed; z-index:9999; pointer-events:none; aria-hidden:true` — el pulpo, **live en producción** con el deploy ya completo. Reporté esto a Zavala antes de proceder — el despacho tal como estaba escrito (solo tocar `feat/pulpo-pixel`) no habría desactivado nada en producción.
+
+Zavala confirmó: fix directo en `migracion-railway` + push, replicado en `feat/pulpo-pixel`.
+
+### Ejecución
+
+**§1 `page.tsx` (migracion-railway) — antes/después:**
+
+| Elemento | Antes | Después |
+|---|---|---|
+| Import | `import { PulpoPixelLoader } from '@/components/atoms/PulpoPixel';` (línea 2) | removido |
+| Montaje | `<PulpoPixelLoader />` (línea 497, antes de `</>`) | removido |
+| `data-oct-obstacle` | 4 ocurrencias (hero title div, hero lede div, hero media div, cada `<li>` de CapabilitiesSection.Grid) | las 4 removidas (huérfanas sin el motor) |
+
+`grep -n "PulpoPixel\|data-oct-obstacle" page.tsx` → 0 matches, confirmado.
+
+**§2 componente:** `src/components/atoms/PulpoPixel/{PulpoPixel.tsx, PulpoPixelLoader.tsx, index.ts}` y `public/assets/pulpo/octopus.js` — **intactos, sin tocar.** `atoms/index.ts` sigue exportando `PulpoPixel` (el barrel export no rompe nada al no usarse).
+
+**Verificación:** `tsc --noEmit` 0 errores. `pnpm build` exit 0, 22/22 páginas — First Load JS de `/[locale]` bajó de 216kB → 214kB (confirma que el bundle del pulpo salió del homepage).
+
+**Commits:**
+- `migracion-railway`: `42bf960` — `chore(D-BBF-PULPO): desactivar PulpoPixel del home (componente preservado, reactivable)`. Pusheado (`84d579c..42bf960`).
+- `feat/pulpo-pixel`: `fae50f0` — mismo cambio via `git cherry-pick 42bf960`, limpio sin conflictos. No pusheado (feature branch).
+
+### Verificación post-deploy en producción
+
+Primeras 2 recargas (`ignoreCache:true`) tras el push seguían mostrando el pulpo activo — `x-nextjs-cache: HIT` con `cache-control: s-maxage=3600`, indicando que el ISR/build previo seguía sirviéndose mientras DO completaba el nuevo build+swap (Next.js + Payload build típicamente 5-10 min). Tras ~13 minutos desde el push:
+
+```json
+{"hasOctopusPet": false, "canvasCount": 1, "pulpoCanvasStillThere": false, "nextjsCache": "HIT", "date": "Sat, 04 Jul 2026 08:39:12 GMT"}
+```
+
+Solo queda 1 `<canvas>` en la página (no el del pulpo). Consola sin errores atribuibles (único warning: `THREE.Clock deprecated`, preexistente, no relacionado).
+
+### Para reactivar en el futuro
+
+En `src/app/(frontend)/[locale]/page.tsx`:
+1. Restaurar el import: `import { PulpoPixelLoader } from '@/components/atoms/PulpoPixel';` (después de la línea 1, antes de `import config from '@/payload-config';`).
+2. Restaurar el montaje: `<PulpoPixelLoader />` justo antes del `</>` de cierre (después de los `<script>` JSON-LD).
+3. Opcional: restaurar los 4 `data-oct-obstacle` si se quiere que el motor detecte obstáculos (hero title, hero lede, hero media, cada `<li>` de CapabilitiesSection.Grid) — el componente funciona sin ellos, simplemente sin evasión de esos bloques.
+
+El componente completo vive intacto en `src/components/atoms/PulpoPixel/` y `public/assets/pulpo/octopus.js` — cero trabajo perdido, cero re-portar el motor.
+
+Zero secretos expuestos.
