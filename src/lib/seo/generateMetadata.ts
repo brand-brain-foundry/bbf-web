@@ -53,6 +53,7 @@ export async function generatePageMetadata({
       (defaults?.defaultDescription as string | undefined);
     const ogImageRaw = (meta?.image ?? defaults?.defaultOgImage) as { url?: string } | undefined;
     const pageUrl = path ? `${siteUrl}/${locale}/${path}` : `${siteUrl}/${locale}`;
+    const noIndex = Boolean(meta?.noIndex);
 
     return {
       title,
@@ -78,16 +79,22 @@ export async function generatePageMetadata({
         title,
         description,
       },
-      robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-          index: true,
-          follow: true,
-          'max-snippet': -1,
-          'max-image-preview': 'large',
-        },
-      },
+      robots: noIndex
+        ? {
+            index: false,
+            follow: false,
+            googleBot: { index: false, follow: false },
+          }
+        : {
+            index: true,
+            follow: true,
+            googleBot: {
+              index: true,
+              follow: true,
+              'max-snippet': -1,
+              'max-image-preview': 'large',
+            },
+          },
     };
   } catch {
     return { title: SITE_NAME_FALLBACK };

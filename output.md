@@ -9750,3 +9750,102 @@ Nuevos:       migrations/20260704_143226_pages_layout.{ts,json}
 ```
 
 Zero secretos expuestos.
+
+---
+
+# REPORTE — B-BBF-WEB-NOINDEX-01 (ejecutado)
+**Fecha:** 2026-07-04 · **Modo:** Arquitecto (1) · **Rama:** `feat/seo-noindex` (desde `migracion-railway`)
+**Decisión:** D-BBF-PRIVACY Fase 2 — cierra el hardcode `index:true` (regla madre).
+
+> **Nota de contexto:** esta rama parte de `migracion-railway` (no de `feat/pages-layout`, que vive aparte sin mergear). El campo `layout` de Fase 1 NO está presente aquí — es intencional, el despacho la scopea como rama independiente.
+
+## §A-§E — verificación pre-ejecución
+
+- **§A:** `migracion-railway` limpio (solo directorios preexistentes). Rama `feat/seo-noindex` creada desde ahí.
+- **§B:** `payload.config.ts:155-160` — el `fields()` callback del `seoPlugin` hacía solo un `.map()` sobre `defaultFields` (Overview, MetaTitle, MetaDescription, MetaImage, Preview — confirmado leyendo el código fuente del paquete `@payloadcms/plugin-seo@3.84.1` en `node_modules`), transformando title/description/image a `localized:true`. Para agregar `noIndex` bastaba con que el callback retorne un array con un field extra al final — no requiere override mayor del plugin (A-01 confirmado).
+- **§C:** `generateMetadata.ts:46` ya leía `page.meta` en una constante; el hardcode estaba solo en el bloque `robots` (líneas 81-90), no en el fetch de datos — el cableado era mínimo.
+- **§D:** el campo se agrega dentro del grupo `meta` existente de `Pages` (no un campo top-level nuevo) → Postgres lo materializa como columna nueva (`meta_no_index`) en la tabla `pages` (+ `version_meta_no_index` en `_pages_v` por versions/drafts) → **sí requiere migración aditiva.**
+- **§E:** confirmado — `seoPlugin({ collections: ['pages'] })` es la única collection con SEO plugin aplicado (`grep` de `seoMeta|'seo'|noIndex` en el resto de `src/payload/collections/` → 0 resultados). Alcance real: solo `Pages`, no "todas las collections con SEO" porque no hay otras.
+
+## §1 — Campo noIndex en payload.config.ts
+
+```diff
+       fields: ({ defaultFields }) =>
+-        defaultFields.map((field) =>
+-          'name' in field && ['title', 'description', 'image'].includes(field.name as string)
+-            ? { ...field, localized: true }
+-            : field,
+-        ),
++        [
++          ...defaultFields.map((field) =>
++            'name' in field && ['title', 'description', 'image'].includes(field.name as string)
++              ? { ...field, localized: true }
++              : field,
++          ),
++          {
++            name: 'noIndex',
++            type: 'checkbox',
++            defaultValue: false,
++            label: { en: 'No index', es: 'No indexar' },
++            admin: { description: { en: '...', es: '...' } },
++          },
++        ],
+```
+
+**`localized: false` (omitido)** — decisión conforme al criterio del propio despacho: noindex es un flag técnico binario, no contenido que varíe por idioma (una página no debería ser indexable en ES y no-indexable en EN a la vez).
+
+## §2 — Lectura condicional en generateMetadata.ts
+
+```diff
+     const ogImageRaw = (meta?.image ?? defaults?.defaultOgImage) as { url?: string } | undefined;
+     const pageUrl = path ? `${siteUrl}/${locale}/${path}` : `${siteUrl}/${locale}`;
++    const noIndex = Boolean(meta?.noIndex);
+     ...
+-      robots: {
+-        index: true,
+-        follow: true,
+-        googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' },
+-      },
++      robots: noIndex
++        ? { index: false, follow: false, googleBot: { index: false, follow: false } }
++        : {
++            index: true,
++            follow: true,
++            googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' },
++          },
+```
+
+Cero hardcode: el valor de `robots` ahora deriva 100% de `page.meta.noIndex`. Página sin el campo (ausente/`null`/`undefined`) → `Boolean(undefined)` = `false` → rama `index:true` (comportamiento actual preservado, sin regresión para páginas existentes).
+
+## §3 — generate:types + migración
+
+`pnpm generate:types` → limpio, `Page.meta.noIndex?: boolean | null` confirmado en `payload-types.ts` (línea 266 + 1240 para el shape de versions).
+
+`pnpm migrate:create seo_noindex` — **corrió sin prompt TTY**, generó `20260704_182953_seo_noindex.ts` directamente. Contenido íntegro (archivo completo, no truncado — solo 14 líneas):
+```sql
+-- up()
+ALTER TABLE "pages" ADD COLUMN "meta_no_index" boolean DEFAULT false;
+ALTER TABLE "_pages_v" ADD COLUMN "version_meta_no_index" boolean DEFAULT false;
+-- down()
+ALTER TABLE "pages" DROP COLUMN "meta_no_index";
+ALTER TABLE "_pages_v" DROP COLUMN "version_meta_no_index";
+```
+**100% aditiva** — 2 `ADD COLUMN` con `DEFAULT false` (páginas existentes quedan indexables por default, sin cambio de comportamiento) en `up()`, `down()` es el rollback simétrico exacto. Cero `DROP`/`ALTER` destructivo, inspeccionado línea por línea (lección H-550). **No aplicada** — pendiente TTY de Zavala.
+
+## Verificación POST
+
+- `pnpm tsc --noEmit` → 0 errores.
+- `pnpm build` → exit 0, 22/22 páginas, sin warnings nuevos.
+- **Checkbox en admin (tab SEO):** por construcción del plugin — el array que retorna `fields()` se convierte íntegro en `meta.fields` dentro del tab "SEO" (mismo mecanismo que ya coloca `title/description/image` ahí, confirmado leyendo el código fuente del plugin en §B). El campo `noIndex` queda en esa misma posición automáticamente — no requiere UI custom.
+- **`noIndex=true` → `index:false` en el HTML / `false`/ausente → `index:true`:** verificado **por lectura de código** (ternario determinístico, sin rama alternativa posible) — **NO verificado end-to-end contra HTML real**, porque no existe ninguna instancia de `Pages` en la base de datos hoy (Fase 1 dejó el schema listo, pero crear una Page es Fase 3, explícitamente OUT de este despacho). Verificación en vivo queda pendiente para cuando exista al menos una Page de prueba.
+
+## Estado de archivos (sin commit todavía)
+
+```
+Modificados: payload.config.ts, src/lib/seo/generateMetadata.ts, payload-types.ts (auto), migrations/index.ts (auto)
+Nuevos:      migrations/20260704_182953_seo_noindex.{ts,json}
+```
+
+2 archivos de código tocados a mano (`payload.config.ts`, `generateMetadata.ts`) — dentro del límite de 3 del despacho.
+
+Zero secretos expuestos.

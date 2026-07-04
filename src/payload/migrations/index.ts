@@ -50,6 +50,7 @@ import * as migration_20260629_201330_s5_service_icon from './20260629_201330_s5
 import * as migration_20260703_154415_media_seo_fase0 from './20260703_154415_media_seo_fase0';
 import * as migration_20260703_173610_video_package_01 from './20260703_173610_video_package_01';
 import * as migration_20260704_143226_pages_layout from './20260704_143226_pages_layout';
+import * as migration_20260704_182953_seo_noindex from './20260704_182953_seo_noindex';
 
 export const migrations = [
   {
@@ -310,6 +311,11 @@ export const migrations = [
   {
     up: migration_20260704_143226_pages_layout.up,
     down: migration_20260704_143226_pages_layout.down,
-    name: '20260704_143226_pages_layout'
+    name: '20260704_143226_pages_layout',
+  },
+  {
+    up: migration_20260704_182953_seo_noindex.up,
+    down: migration_20260704_182953_seo_noindex.down,
+    name: '20260704_182953_seo_noindex',
   },
 ];
