@@ -9545,3 +9545,77 @@ Esta auditoría es de solo lectura — no se tocó código. La decisión de cier
 Los hallazgos 3-6 pueden agendarse para después del cierre sin bloquear, a discreción de Zavala.
 
 Zero secretos expuestos.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-PRIVACY-STRUCTURE (READ-ONLY, nada creado)
+**Fecha:** 2026-07-04 · **Modo:** Auditor (2) + 1 · **Origen:** D-BBF-WEBCLOSURE #2 (privacy policy, crítico legal)
+**Método:** lectura directa de schema Payload (`src/payload/collections/Pages`, `src/payload/collections/contentItems`, `src/payload/globals/SiteNavigation.ts`), `src/payload.config.ts`, catch-all renderer (`[...pathSegments]/page.tsx`), y `@payloadcms/plugin-seo` (código del paquete en `node_modules`). Cero archivos creados o modificados.
+
+## §1 — ¿Existe el patrón Page?
+
+**Sí.** `src/payload/collections/Pages/index.ts` — collection `pages` ya registrada en `payload.config.ts:88`. Campos actuales:
+
+| Campo | Tipo | Localized | Notas |
+|---|---|---|---|
+| `title` | text | ✅ | requerido |
+| `slug` | text | ✅ | auto-generado desde title, editable, sidebar |
+| `path` | text | ✅ | auto-computado (slug + parent), readOnly |
+| `parent` | relationship→pages | — | para URLs anidadas |
+
+**Hallazgo clave: la collection NO tiene campo de contenido hoy.** El propio código lo documenta: `Pages/index.ts:47` — `// Wave 13 will add layout blocks field (removed until blocks exist)`. Confirmado además en el renderer (`[...pathSegments]/page.tsx:64`): ya lee `page.layout` como array de blocks, pero ese campo **no existe todavía en el schema** — hoy renderizaría solo el `<h1>{title}</h1>` sin body.
+
+**Veredicto §1:** una privacy policy **debe ser una instancia de `Pages`**, no un tipo nuevo — el patrón ya existe, ya tiene ruteo dinámico (`[...pathSegments]`), ya tiene SEO plugin aplicado. Lo único que falta para que CUALQUIER Page (no solo privacy) tenga contenido real es agregar el campo `layout` tipo `blocks` — trabajo ya anticipado como "Wave 13", no específico de privacy.
+
+## §2 — Anti-duplicación (regla madre)
+
+**El contenido largo YA tiene su sistema de blocks — no se necesita nada nuevo.** `src/payload/collections/contentItems/blocks/index.ts` exporta `contentItemBlocks`: 14 block schemas (`rich-text`, `faq`, `definition`, `callout`, `quote`, `divider`, `cta`, `stat`, `image`, `video`, `gallery`, `embed`, `code`, `comparison-table`, `table-of-contents`, `custom-html`). Los renderers React correspondientes (`src/components/blocks/BlockRenderer.tsx` + 14 componentes) son **agnósticos** — no están acoplados a `ContentItems`, viven en `src/components/blocks/` (no en `contentItems/`), y el catch-all de Pages ya los importa (`BlockRenderer` en `[...pathSegments]/page.tsx:11`).
+
+**Regla madre cumplida sin duplicar:** el futuro campo `layout` de `Pages` (Wave 13) reutilizaría el mismo array `contentItemBlocks` (o una extracción compartida de ese array a una ubicación neutral, ej. `src/payload/lib/blocks/`, si se quiere desacoplar el nombre `contentItems` — decisión de nomenclatura, no de arquitectura). Una privacy policy con múltiples secciones (Datos que recolectamos, Cómo los usamos, Derechos GDPR, Cookies, Contacto) se compondría con bloques `rich-text` (y opcionalmente `table-of-contents` para navegación interna, `faq` si se estructura como preguntas).
+
+**Campos ya existentes que sirven sin duplicar:** `title`, `slug`, `path`, `parent` (para anidar `/legal/privacidad` bajo un futuro `/legal` si se quisiera), y todo el tab SEO (§3). Cero campos nuevos necesarios en `Pages` más allá del `layout` blocks (que no es específico de privacy, es un gap general de la collection).
+
+## §3 — Optimización integral automática (SEO/AEO/GEO/LLMO)
+
+**Confirmado — se auto-genera para `Pages` vía `@payloadcms/plugin-seo`** (`payload.config.ts:151-175`):
+- Tab "SEO" separado (`tabbedUI: true`) con campos `meta.title`, `meta.description`, `meta.image` — **los 3 mapeados a `localized: true`** explícitamente en el `fields()` callback (línea 155-160), es decir ES+EN nativo.
+- `generateTitle`/`generateDescription`/`generateURL` auto-completan defaults desde `title`/`path` si el editor no llena el campo manualmente (líneas 161-174).
+- El catch-all (`[...pathSegments]/page.tsx:21-26`) ya consume esto vía `generatePageMetadata()` (`src/lib/seo/generateMetadata.ts`), + JSON-LD `WebPage` y `BreadcrumbList` auto-generados por página (líneas 57-62 del catch-all).
+
+**Gap real — `noindex` NO existe hoy.** Inspeccioné el paquete `@payloadcms/plugin-seo@3.84.1` directamente (`node_modules/.pnpm/.../dist/index.js:9-24`): los `defaultFields` son solo `Overview, MetaTitle, MetaDescription, MetaImage, Preview` — **no incluye ningún campo de `noindex`/robots**, y el `fields()` callback en `payload.config.ts` solo transforma los defaults (no agrega uno nuevo). Peor aún: `src/lib/seo/generateMetadata.ts:81-90` **hardcodea `robots: { index: true, follow: true, ... }` para toda página**, sin ninguna rama condicional. Es decir: aunque se agregara un checkbox `noIndex` al admin hoy, el renderer no lo leería — haría falta cablear ambas puntas (campo + lectura condicional en `generateMetadata.ts`).
+
+**Veredicto §3:** SEO/i18n se auto-generan correctamente para cualquier Page nueva (privacy incluida). Pero **el control de `noindex` (típicamente deseado para privacy/legal — indexable pero de baja prioridad, o noindex directo según se decida) no existe en ningún punto de la cadena hoy** — es un gap general de la collection `Pages`, no algo que se resuelva solo con crear la página.
+
+## §4 — Footer / navegación sin hardcode
+
+**Ya existe el mecanismo, explícitamente diseñado para este caso — actualmente "dormido".** `src/payload/globals/SiteNavigation.ts`:
+- `footerGroups[].links[].linkTarget` (línea 17-44) es un campo `group` polimórfico: **`routeKey`** (select desde `ROUTE_KEYS`, rutas fijas file-based) **o `page`** (`relationship→pages`, línea 36-42) — el propio código lo documenta: *"Dormido hasta que existan Pages"*.
+- `src/i18n/pathnames.ts` (SSOT de `routeKey`) **no tiene ninguna entrada reservada para privacy/legal** — confirma que el patrón correcto es `page` (relationship dinámico), no un `routeKey` nuevo.
+
+**Veredicto §4:** agregar el link al footer una vez que exista la Page es **100% operación de admin, cero código**: crear la Page (slug `privacidad`/`privacy`), luego en `SiteNavigation` → `footerGroups` → agregar un link con `linkTarget.page` apuntando a esa Page. El campo `label` ya es localized (ES/EN independientes). Sin hardcode, sin tocar `Footer.tsx`.
+
+## §5 — i18n ES+EN
+
+**Confirmado, nativo.** `payload.config.ts:113-117` — `localization: { locales: ['es','en'], defaultLocale:'es', fallback:true }` aplica a toda la instancia de Payload. `Pages.title/slug/path` ya son `localized:true` (§1). El tab SEO también (§3). Una privacy policy viviría como **un solo documento Payload** con valores ES y EN en cada campo localized — exactamente el patrón ya usado en el resto del sitio, sin necesidad de dos documentos ni de ningún campo adicional.
+
+## §6 — Cookie consent (inventario, no construcción)
+
+**Confirmado en el despacho anterior (B-BBF-WEB-DIAG-LAUNCH-CLOSURE) y re-verificado ahora: no existe ningún componente de cookie consent/banner en `src/`.** `grep` de `consent|CookieBanner|cookie-banner|CookieConsent` sobre todo `src/` → 0 resultados. No es un componente huérfano sin montar — no existe en absoluto. Cuando D-ANALYTICS-01 se ejecute (activar GA4), este gate deberá construirse desde cero — no hay nada parcial que reutilizar hoy.
+
+---
+
+## VEREDICTO CONSOLIDADO — D-BBF-PRIVACY (propuesta, pendiente de firma)
+
+| Pregunta del despacho | Respuesta |
+|---|---|
+| **(a) Page existente o tipo nuevo?** | **`Pages` existente.** Ya tiene ruteo dinámico, SEO plugin, i18n. No se necesita (ni se justifica per A-01) un tipo nuevo. |
+| **(b) qué campos reutilizar (NO duplicar)** | `title`, `slug`, `path`, `parent` (todos ya localized) + tab SEO completo (`meta.title/description/image`, también localized) + los 14 block schemas de `contentItemBlocks` para el body. **Único campo faltante: `layout` tipo `blocks`** en `Pages` — gap general (Wave 13), no exclusivo de privacy. |
+| **(c) cómo se auto-genera su optimización integral** | Vía `@payloadcms/plugin-seo` ya aplicado a `pages` + `generatePageMetadata()` + JSON-LD `WebPage`/`BreadcrumbList` automático en el catch-all. Funciona hoy para cualquier Page. **Excepción: `noindex` no está implementado en ningún punto de la cadena** (ni campo en plugin, ni lectura en `generateMetadata.ts` — hardcodea `index:true` siempre). |
+| **(d) cómo linkear en footer sin hardcode** | `SiteNavigation.footerGroups[].links[].linkTarget.page` (relationship→pages) — mecanismo ya existente, documentado como "dormido hasta que existan Pages". Operación 100% admin una vez creada la Page. |
+
+**Bloqueadores para ejecutar (fuera del alcance de este despacho, solo diagnóstico):**
+1. Agregar campo `layout` (tipo `blocks`, reutilizando `contentItemBlocks`) a `Pages` — necesario para que la privacy policy tenga contenido real, no solo un `<h1>`.
+2. Si se quiere `noindex` controlable desde admin: agregar el campo al `fields()` callback del `seoPlugin` en `payload.config.ts` **y** cablear la lectura condicional en `src/lib/seo/generateMetadata.ts:81-90` (hoy hardcodea `index:true`).
+3. Cookie consent banner (§6) sigue sin existir — no bloquea la creación de la privacy policy en sí, pero el contenido de la política probablemente necesitará describir un mecanismo de consent que todavía no existe (inconsistencia de contenido vs. realidad técnica a vigilar cuando se redacte el texto legal).
+
+Ningún archivo fue creado ni modificado en esta auditoría. Zero secretos expuestos.
