@@ -9437,3 +9437,111 @@ En `src/app/(frontend)/[locale]/page.tsx`:
 El componente completo vive intacto en `src/components/atoms/PulpoPixel/` y `public/assets/pulpo/octopus.js` — cero trabajo perdido, cero re-portar el motor.
 
 Zero secretos expuestos.
+
+---
+
+# REPORTE — B-BBF-WEB-DIAG-LAUNCH-CLOSURE (READ-ONLY, sin fixes)
+**Fecha:** 2026-07-04 · **Modo:** Auditor (2) + 3 · **Hallazgo base:** H-BBF-556
+**Método:** verificación en vivo contra `sivarbrains.com` (contexto de navegador aislado, visitante nuevo) + agente Explore read-only sobre el código fuente + `bbf-docs`. Cero cambios ejecutados.
+
+## §1 — GA4 / Consent (LEGAL, CRÍTICO)
+
+**Hallazgo invertido respecto a la hipótesis H-BBF-556.** La hipótesis era "GA4 dispara sin consentimiento". La realidad es más simple y distinta: **GA4 no está implementado en absoluto.**
+
+Evidencia en vivo (contexto aislado, visitante nuevo, antes de cualquier interacción):
+- 0 requests a `googletagmanager.com` o `google-analytics.com` en la carga completa de la home.
+- `window.gtag` → `undefined`. `window.dataLayer` → `undefined`.
+- HTML servido (`fetch` + inspección de texto completo): 0 menciones de `gtag`, `googletagmanager`, `google-analytics`, `consent` o `cookie`.
+
+Evidencia en código (agente Explore):
+- `grep` exhaustivo de `gtag|GTM-|googletagmanager|google-analytics|G-[A-Z0-9]{6,}` en `src/` solo matchea el CSP (`next.config.mjs`) y un enum de catálogo (`capturedFrom: 'ga4'` en `Signals` — no es un tracker activo).
+- Ningún `<Script>` de analytics en ningún layout (`app/layout.tsx`, `(frontend)/layout.tsx`, `[locale]/layout.tsx`, `(payload)/layout.tsx`).
+- `next.config.mjs:29` trae un comentario explícito: *"va.vercel-scripts.com removido — Vercel Analytics se reemplaza por GA4"* — la intención está documentada, **el script nunca se construyó**.
+- **Cero componente de cookie banner / CMP / Consent Mode v2 en todo `src/`** (`grep` de "consent", "CookieBanner", "cookie-banner" → 0 resultados). No es un componente huérfano sin montar — no existe, punto.
+- **Cero página de privacy/cookie policy** (`find` por privacidad/privacy/cookies/legal en `src/app` → 0 archivos). El Footer solo renderiza `footerGroups` dinámico desde el CMS — no hay link hardcodeado a una política, y no puede confirmarse desde código si el CMS tiene esa entrada cargada.
+
+**Veredicto §1:**
+- Riesgo GDPR de "GA4 sin consent" hoy: **prácticamente nulo** — no hay nada que dispare sin consentimiento porque no hay nada que dispare.
+- Riesgo latente: **ALTO**. D-ANALYTICS-01 (canon firmado) dice explícitamente "GA4 activo + el cookie consent sigue vigente" — si alguien activa GA4 copiando el patrón documentado sin construir antes el consent gate, el sitio pasaría de "sin tracking" a "tracking sin consentimiento" en un solo commit, sin ninguna barrera que lo prevenga hoy.
+- **Riesgo legal independiente y más urgente que GA4: no existe página de privacidad/cookies mientras el sitio ya recolecta PII activamente** (nombre, email, mensaje) vía el formulario de contacto y el newsletter signup, ambos live en producción. Esto es un gap de cumplimiento **ya activo**, no latente — no depende de que GA4 se active.
+
+## §2 — Cabeceras HTTP de seguridad (SEGURIDAD)
+
+**PASS.** Confirmado en vivo (`fetch` headers contra `https://sivarbrains.com/`) y en código (`next.config.mjs:25-74`):
+
+| Header | Valor en producción | Veredicto |
+|---|---|---|
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | ✅ |
+| `X-Content-Type-Options` | `nosniff` | ✅ |
+| `X-Frame-Options` | `DENY` | ✅ |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | ✅ |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=()` | ✅ |
+| `Content-Security-Policy` | presente, `script-src 'self' 'unsafe-inline' ...` | ✅ (sin nonce, decisión ya firmada D-BBF-WEB-08) |
+
+Los 5 headers exigidos por `.claude/rules/40-security-csp.md` están completos y con valores exactos. Único hallazgo menor: el CSP en el código real ya migró de `va.vercel-scripts.com`/`*.public.blob.vercel-storage.com` (Vercel) a `*.r2.dev` (Cloudflare R2) — consistente con la migración de infra a Railway/DO, pero **la regla `.claude/rules/40-security-csp.md` quedó desactualizada** (documentation drift, no riesgo de seguridad).
+
+**CSRF / forms:**
+- No existen route handlers REST `/api/contact` ni `/api/newsletter/subscribe` — ambos son **Server Actions** (`src/lib/actions/contact.ts`, `src/lib/actions/newsletter.ts`), protegidos por la validación nativa de Origin/Host de Next.js Server Actions (no hay token CSRF manual, ni hace falta con ese mecanismo).
+- **Contacto:** defensa en profundidad completa — honeypot + time-check (mín. 2000ms) + rate-limit Upstash (3/10min, más estricto que los "5/hora" documentados en la regla — discrepancia doc-vs-código menor) + Cloudflare Turnstile server-side + Zod + disposable-email check.
+- **Newsletter: asimetría de seguridad** — solo rate-limit (3/hora) + Zod + disposable-email. **Sin honeypot, sin Turnstile.** Más vulnerable a spam/bots que el form de contacto.
+
+**Veredicto §2:** headers de seguridad sólidos, sin gaps. CSRF cubierto por mecanismo nativo. Único hallazgo real: **newsletter signup con protección anti-bot más débil que contacto** (prioridad MEDIA).
+
+## §3 — Config GA4 (ANALYTICS)
+
+Consecuencia directa de §1: no hay nada que configurar porque no hay implementación. GA4 measurement ID no existe ni hardcodeado ni en env var (`NEXT_PUBLIC_GA_ID` no existe en el código). Cero eventos de conversión — ni pageview ni custom events, porque no hay `gtag(` en ningún archivo de `src/`.
+
+**Veredicto §3:** N/A — no hay riesgo de hardcode porque no hay implementación que auditar. El gap real es de **negocio**: cero datos de analytics colectándose hoy en producción, pese a que la doctrina (D-ANALYTICS-01) asume que sí.
+
+## §4 — CWV + WCAG (OPTIMIZACIÓN)
+
+Medido en producción real (`sivarbrains.com`, sin el pulpo — ya desactivado), contexto aislado:
+
+| Métrica | Valor | Umbral "Good" (2026) | Veredicto |
+|---|---|---|---|
+| LCP | 1180ms | ≤2.0s | ✅ |
+| CLS | 0.00 | ≤0.1 | ✅ |
+| INP | 45ms | ≤200ms | ✅ |
+
+Lighthouse (desktop, navigation): **Accessibility 97 · Best Practices 96 · SEO 100 · Agentic Browsing 67**. 3 audits fallidos:
+1. **`color-contrast`** — spans `.bbf-timeline__num` y `.bbf-timeline__badge-label` en la sección "Cómo trabajamos" (timeline) no cumplen ratio de contraste. **Gap WCAG 2.2 AA real, prioridad BAJA-MEDIA** (sección secundaria, no bloquea flujo principal).
+2. **`inspector-issues`** — CSP flag por `'unsafe-inline'` en `script-src`. Ya conocido y aceptado (D-BBF-WEB-08, trade-off documentado para preservar ISR). No es un hallazgo nuevo.
+3. **`agent-accessibility-tree`** — roles ARIA en `<article>` no ideales para navegación de agentes IA. Categoría "agentic browsing" de Lighthouse, no es WCAG 2.2 AA estricto — informativo, no bloqueante.
+
+**Veredicto §4:** CWV excelente, sin regresión post-pulpo. Único gap WCAG real es el contraste del timeline — bajo impacto, fácil de resolver cuando se autorice.
+
+## §5 — Plan de rollback (ROLLBACK)
+
+**Hallazgo más serio de la auditoría.** El plan de rollback documentado en el canon (`BBF_WebPublicaTopologiaCanon_v0_3.md` §27) describe un mecanismo basado en **Vercel + Neon branching**: branch `production-rollback` con snapshot diario, migraciones vía Vercel build hook `postbuild`, reversión vía `vercel rollback` o restore de branch Neon.
+
+**Ese plan no aplica a la infraestructura real.** El repo ya migró a Docker/Railway/DigitalOcean App Platform (`Dockerfile` comentario: *"Railway (B-BBF-WEB-RAILWAY-EJECUCION-01)"*, `next.config.mjs:8` `output: 'standalone'` "requerido por Railway/Docker", headers de producción confirman `x-do-app-origin`). No hay:
+- Script `postbuild` en `package.json` (el build real es `payload generate:importmap && payload generate:types && next build`, sin migración automática).
+- Ninguna referencia a un mecanismo de rollback equivalente para Docker/DO (snapshot de DB pre-deploy, build artifact anterior retenido, plan de reversión DNS) documentado en `bbf-web` ni en `bbf-docs` para el cutover actual.
+- Lo único encontrado sobre "rollback"/"DNS" en `bbf-docs` corresponde a la migración de DNS de mayo 2026 (Hostinger→Cloudflare) y a un incidente de tooling no relacionado (L-BBF-18, cuelgue de npmrc) — ninguno cubre el cutover de producción actual.
+
+**Veredicto §5: CRÍTICO.** Existe doctrina de rollback escrita, pero describe una infraestructura que ya no es la real. Hoy, si el deploy actual de DO fallara o necesitara revertirse, **no hay evidencia de un mecanismo confirmado para hacerlo** — ni snapshot de DB, ni build artifact anterior retenido, ni plan de DNS de reversión, para el stack Docker/DO real.
+
+---
+
+## VEREDICTO CONSOLIDADO — prioridad de riesgo
+
+| # | Hallazgo | Dimensión | Prioridad | Urgencia |
+|---|---|---|---|---|
+| 1 | Plan de rollback documentado (Vercel+Neon) no coincide con infra real (Docker/DO) — sin mecanismo de reversión confirmado para el cutover actual | §5 Rollback | 🔴 CRÍTICA | Antes de considerar el lanzamiento "cerrado" |
+| 2 | No existe página de privacidad/cookies mientras el sitio ya recolecta PII (contacto + newsletter) en producción | §1 Legal | 🔴 CRÍTICA | Ya activo, no depende de GA4 |
+| 3 | GA4 documentado (D-ANALYTICS-01) pero nunca implementado — cero consent gate construido para cuando se active | §1/§3 | 🟠 ALTA (latente) | Antes de implementar GA4, no antes de hoy |
+| 4 | Newsletter signup sin honeypot ni Turnstile (asimetría vs. contacto) | §2 Seguridad | 🟡 MEDIA | Antes del siguiente ciclo de spam relevante |
+| 5 | Contraste insuficiente en timeline "Cómo trabajamos" (`.bbf-timeline__num`, `.bbf-timeline__badge-label`) | §4 WCAG | 🟢 BAJA-MEDIA | Cosmético, sección secundaria |
+| 6 | `.claude/rules/40-security-csp.md` desactualizada (referencias Vercel/blob que ya no aplican) | Documentación | 🟢 BAJA | Higiene de documentación |
+
+**Lo que SÍ está sólido:** headers de seguridad completos (5/5), CSP coherente con la infra real, CWV en producción excelente (LCP 1180ms / CLS 0.00 / INP 45ms, todos "Good"), SEO Lighthouse 100, defensa en profundidad completa en el form de contacto (honeypot+timing+rate-limit+Turnstile+Zod+disposable-email), Server Actions con protección Origin/Host nativa (sin necesidad de CSRF manual).
+
+## Propuesta D-BBF-WEBCLOSURE (pendiente de firma — NO ejecutado, solo diagnóstico)
+
+Esta auditoría es de solo lectura — no se tocó código. La decisión de cierre de lanzamiento le corresponde a Zavala. Como Auditor, la recomendación es que **"cierre de lanzamiento" NO se declare completo** hasta resolver al menos los hallazgos 1 y 2 (ambos 🔴 CRÍTICA), porque:
+- El hallazgo 1 (rollback) es un riesgo operativo activo — cualquier incidente de producción hoy no tiene un camino de reversión confirmado.
+- El hallazgo 2 (privacy policy) es un riesgo legal activo — el sitio ya procesa PII sin política publicada.
+
+Los hallazgos 3-6 pueden agendarse para después del cierre sin bloquear, a discreción de Zavala.
+
+Zero secretos expuestos.
