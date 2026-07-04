@@ -35,7 +35,9 @@ export function resolveLinkHref(target: LinkTargetInput, locale: Locale, fallbac
   const page = target?.page;
   const path = page && typeof page === 'object' ? (page.path ?? null) : null;
   if (path) {
-    return getPathname({ locale, href: path as GetPathnameHref });
+    // page.path no lleva "/" inicial (mismo formato que catch-all page.tsx y
+    // generateURL del seoPlugin, que anteponen "/" al consumirlo) — replicar aquí.
+    return getPathname({ locale, href: `/${path}` as GetPathnameHref });
   }
   const external = target?.external;
   if (external) {

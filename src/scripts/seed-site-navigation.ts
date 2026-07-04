@@ -26,6 +26,8 @@ import { PATHNAMES } from '../i18n/pathnames';
 
 type NavRouteKey = keyof typeof PATHNAMES;
 type NavLink = { routeKey: NavRouteKey; es: string; en: string };
+// D-BBF-PRIVACY Fase 3: link a Page dinámica (linkTarget.page), no routeKey fijo.
+type FooterPageLink = { pageSlug: string; es: string; en: string };
 
 try {
   process.loadEnvFile('.env.local');
@@ -47,17 +49,39 @@ const CTA = {
 } as const;
 
 // Footer honesto: solo /contacto hasta que páginas cornerstone tengan contenido.
-const FOOTER = [
+const FOOTER: Array<{ es: string; en: string; links: NavLink[] }> = [
   {
     es: 'Navegación',
     en: 'Navigation',
     links: [{ routeKey: '/contacto', es: 'Contacto', en: 'Contact' }],
   },
-] as const;
+];
+
+// D-BBF-PRIVACY Fase 3: link a Page dinámica "privacidad"/"privacy" — mismo
+// grupo que Contacto (un solo link legal, no amerita grupo nuevo — A-03).
+const FOOTER_PAGE_LINKS: FooterPageLink[] = [
+  { pageSlug: 'privacidad', es: 'Privacidad', en: 'Privacy' },
+];
 
 async function seedSiteNavigation() {
   const payload = await getPayload({ config });
   console.log('[seed-site-navigation] Iniciando seed canonical NAV (FASE 4.C.1 L6)...');
+
+  // D-BBF-PRIVACY Fase 3: resolver id de la Page "privacidad" para linkTarget.page.
+  const pageLinkIds = new Map<string, number>();
+  for (const pl of FOOTER_PAGE_LINKS) {
+    // @ts-justify: Pages find — mismo patrón que seed-privacy-page.ts
+    const found = await (payload.find as Function)({
+      collection: 'pages',
+      where: { slug: { equals: pl.pageSlug } },
+      locale: 'es',
+      depth: 0,
+      limit: 1,
+    });
+    const page = found.docs[0];
+    if (!page) throw new Error(`[seed-site-navigation] Page slug="${pl.pageSlug}" no existe`);
+    pageLinkIds.set(pl.pageSlug, page.id);
+  }
 
   const buildHeader = (loc: 'es' | 'en') =>
     HEADER.map((h) => ({
@@ -68,9 +92,18 @@ async function seedSiteNavigation() {
     }));
 
   const buildFooter = (loc: 'es' | 'en') =>
-    FOOTER.map((g) => ({
+    FOOTER.map((g, i) => ({
       groupTitle: g[loc],
-      links: g.links.map((l) => ({ label: l[loc], linkTarget: { routeKey: l.routeKey } })),
+      links: [
+        ...g.links.map((l) => ({ label: l[loc], linkTarget: { routeKey: l.routeKey } })),
+        // Los page-links viven en el primer grupo (§7: un solo link legal, no grupo nuevo)
+        ...(i === 0
+          ? FOOTER_PAGE_LINKS.map((pl) => ({
+              label: pl[loc],
+              linkTarget: { page: pageLinkIds.get(pl.pageSlug) },
+            }))
+          : []),
+      ],
     }));
 
   // ── LOCALE ES ──
@@ -128,19 +161,25 @@ async function seedSiteNavigation() {
     );
   }
 
-  // footer_groups_links.label ES (map por route_key, único dentro de footer)
-  const esFooterLinkByKey = Object.fromEntries(
+  // footer_groups_links.label ES — map por route_key O por page_id (D-BBF-PRIVACY F3)
+  const esFooterLinkByRouteKey = Object.fromEntries(
     FOOTER.flatMap((g) => g.links.map((l) => [l.routeKey, l.es])),
   );
+  const esFooterLinkByPageId = Object.fromEntries(
+    FOOTER_PAGE_LINKS.map((pl) => [pageLinkIds.get(pl.pageSlug), pl.es]),
+  );
   const footerLinkRows = await pool.query(
-    `SELECT l.id, l.link_target_route_key FROM site_navigation_footer_groups_links l
+    `SELECT l.id, l.link_target_route_key, l.link_target_page_id FROM site_navigation_footer_groups_links l
      JOIN site_navigation_footer_groups g ON l._parent_id = g.id WHERE g._parent_id = 1`,
   );
   for (const row of footerLinkRows.rows) {
+    const label = row.link_target_page_id
+      ? (esFooterLinkByPageId[row.link_target_page_id as number] ?? '')
+      : (esFooterLinkByRouteKey[row.link_target_route_key as string] ?? '');
     await pool.query(
       `INSERT INTO site_navigation_footer_groups_links_locales (label, _locale, _parent_id)
        VALUES ($1, 'es', $2) ON CONFLICT (_locale, _parent_id) DO UPDATE SET label = EXCLUDED.label`,
-      [esFooterLinkByKey[row.link_target_route_key as string] ?? '', row.id],
+      [label, row.id],
     );
   }
 
@@ -148,7 +187,7 @@ async function seedSiteNavigation() {
   console.log('[seed-site-navigation] ✅ NAV seed COMPLETADO. NAV HONESTO pre-go-live.');
   console.log('   Header: (vacío — páginas cornerstone sin contenido completo aún)');
   console.log('   CTA: Verlo funcionar → /contacto');
-  console.log('   Footer: Navegación → /contacto');
+  console.log('   Footer: Navegación → /contacto, /privacidad|/privacy (D-BBF-PRIVACY F3)');
   console.log('   Para re-mostrar página: añadir a HEADER/FOOTER + re-run este seed.');
   process.exit(0);
 }

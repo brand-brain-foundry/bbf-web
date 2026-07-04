@@ -7,14 +7,20 @@ import { purgeCloudflareCache } from '@/lib/cloudflare/purge-cache';
 // aquí desde el original (issue payloadcms/payload#13884).
 export const revalidatePage: CollectionAfterChangeHook = async ({ doc, req: { payload } }) => {
   if (doc._status === 'published') {
-    const locales = ['es', 'en'] as const;
-    locales.forEach((locale) => {
-      const path = doc.path ? `/${locale}/${doc.path}` : `/${locale}`;
-      revalidatePath(path);
-    });
-    revalidateTag('sitemap');
-    revalidateTag('llms-txt');
-    payload.logger.info(`Revalidated page: ${doc.path}`);
+    try {
+      const locales = ['es', 'en'] as const;
+      locales.forEach((locale) => {
+        const path = doc.path ? `/${locale}/${doc.path}` : `/${locale}`;
+        revalidatePath(path);
+      });
+      revalidateTag('sitemap');
+      revalidateTag('llms-txt');
+      payload.logger.info(`Revalidated page: ${doc.path}`);
+    } catch {
+      // No-op fuera de Next.js request context (seed scripts, CLI) — mismo
+      // patrón que revalidateGlobal.ts. El cambio se commitió en DB — solo
+      // omitimos la invalidación de cache ISR.
+    }
 
     // B-BBF-WEB-FIX-CACHE-CDN-01: revalidatePath/Tag solo invalidan el cache
     // interno de Next — el edge de Cloudflare (s-maxage) necesita su propio purge.
