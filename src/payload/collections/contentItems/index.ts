@@ -10,7 +10,7 @@ import {
   triggerSurfaceRegeneration,
   verifyAuditsBeforePublish,
 } from '@/payload/lib/hooks/contentItemHooks';
-import { contentItemBlocks } from './blocks';
+import { sharedBlocks } from '@/payload/lib/blocks';
 
 export const ContentItems: CollectionConfig = {
   slug: 'contentItems',
@@ -126,7 +126,7 @@ export const ContentItems: CollectionConfig = {
     {
       name: 'blocks',
       type: 'blocks',
-      blocks: contentItemBlocks,
+      blocks: sharedBlocks,
       localized: true,
     },
     {

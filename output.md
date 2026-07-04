@@ -9672,3 +9672,81 @@ Cero archivos de código tocados. Cero commits. Rama `migracion-railway` limpia 
 **Recomendación del Auditor (no decide, solo aporta criterio):** la opción (a) es la de menor riesgo y menor tiempo — permite cerrar D-BBF-WEBCLOSURE #2 (privacy policy) sin esperar a Fase 4 (cookie consent), que es un trabajo más grande y no bloqueante para tener una política de privacidad publicada. La política puede actualizarse después cuando GA4+consent existan realmente — de hecho la sección "Cambios a esta Política" del propio template ya prevé eso.
 
 **Zero código ejecutado, zero secretos expuestos. Esperando instrucción de Zavala sobre ambas pre-condiciones antes de retomar Fase 3.**
+
+---
+
+# REPORTE — B-BBF-WEB-PAGES-LAYOUT-01 (ejecutado)
+**Fecha:** 2026-07-04 · **Modo:** Arquitecto (1) · **Rama:** `feat/pages-layout` (desde `migracion-railway`)
+**Decisión:** D-BBF-PRIVACY Fase 1 — avanza Wave 13 / FASE 4.B. Habilita D-BBF-WEBCLOSURE #2.
+
+## §A-§E — verificación pre-ejecución
+
+- **§A:** `migracion-railway` limpio (solo `backups/`, `public/assets/Pages/`, `public/assets/development/` preexistentes, sin tocar). Rama `feat/pages-layout` creada desde ahí.
+- **§B:** `contentItemBlocks` vivía en `src/payload/collections/contentItems/blocks/index.ts`. Los 14 block files individuales **solo importan `type { Block } from 'payload'`** — cero acoplamiento de código a `ContentItems` (confirmado con `grep` de imports en los 16 archivos). Único consumidor antes de este cambio: `contentItems/index.ts:13`. Dado que SB_TaxComponentes exige tratar los blocks como primitivo compartido (no atado a un consumidor específico), y la extracción es un `git mv` mecánico sin editar lógica, se extrajeron a `src/payload/lib/blocks/` (ubicación neutral, sugerida por el propio despacho, y consistente con el patrón ya existente en `payload/lib/` — access, hooks, surfaces, utils).
+- **§C:** confirmado — `Pages/index.ts` tenía `title/slug/path/parent` + tab SEO (plugin), sin campo de contenido. El comentario `// Wave 13 will add layout blocks field (removed until blocks exist)` (línea 47) confirmaba el gap exacto.
+- **§D:** el catch-all `[...pathSegments]/page.tsx` **ya leía `page.layout`** como array de blocks y ya renderizaba con `BlockRenderer` (líneas 64-77) — escrito de antemano previendo este campo. **Fase 1 no requirió tocar el catch-all**, solo el schema.
+- **§E:** `SiteHomepage` no tiene ningún campo `layout`/`blocks` (`grep` sin resultados) — cero colisión de patrón.
+
+## §1 — Extracción de blocks (regla madre: una sola fuente)
+
+`git mv` de los 16 archivos (`src/payload/collections/contentItems/blocks/*.ts` → `src/payload/lib/blocks/*.ts`), detectado por git como rename puro (sin diff de contenido). En `lib/blocks/index.ts`, único cambio: renombrar el export `contentItemBlocks` → `sharedBlocks` (+ comentario de linaje). **Los 14 blocks en sí no se editaron** (per ALCANCE OUT).
+
+`contentItems/index.ts` actualizado:
+```diff
+- import { contentItemBlocks } from './blocks';
++ import { sharedBlocks } from '@/payload/lib/blocks';
+  ...
+-     blocks: contentItemBlocks,
++     blocks: sharedBlocks,
+```
+
+Confirmado post-cambio: `grep` de `contentItemBlocks|contentItems/blocks` en todo `src/` → 0 resultados residuales.
+
+## §2 — Campo `layout` en Pages
+
+`src/payload/collections/Pages/index.ts` — antes/después:
+```diff
++ import { sharedBlocks } from '@/payload/lib/blocks';
+  ...
+-   // Wave 13 will add layout blocks field (removed until blocks exist)
+    slugField,
+    pathField,
++   {
++     name: 'layout',
++     type: 'blocks',
++     blocks: sharedBlocks,
++     localized: true,
++   },
+    {
+      name: 'parent',
+```
+
+Catch-all `[...pathSegments]/page.tsx`: **sin cambios** — ya renderizaba `page.layout` (§D). Render listo para cuando exista contenido.
+
+## §3 — generate:types
+
+`pnpm generate:types` → `Types written to .../payload-types.ts`, sin errores. Confirmado `Page.layout` presente en el tipo generado (union de los 14 block shapes). `src/app/(payload)/admin/importMap.js` se regeneró automáticamente (efecto esperado del build, no tocado a mano).
+
+## §4 — Migración
+
+`pnpm migrate:create pages_layout` corrió **sin prompt TTY** — generó `20260704_143226_pages_layout.ts` + `.json` directamente. Inspeccionado el contenido: **100% aditivo** — solo `CREATE TYPE` (6 enums nuevos, + 6 espejo para versions `_pages_v_*`), `CREATE TABLE` (16 tablas `pages_blocks_*` + 16 `_pages_v_blocks_*` para el sistema de drafts/versions), `ALTER TABLE ... ADD CONSTRAINT` (FKs), `CREATE INDEX`. **Cero `DROP`/`ALTER ... DROP` en `up()`.** El `down()` es el rollback simétrico correcto (solo dropea lo que `up()` creó). No afecta ninguna tabla de `contentItems` ni de otras collections — confirma que la extracción de blocks no generó drift de schema no relacionado.
+
+**Migración NO aplicada** — queda para que la corras vía TTY (regla: create, no rename; L-BBF-258 sobre el prompt `yes` completo si aplica).
+
+## Verificación POST
+
+- `pnpm tsc --noEmit` → 0 errores.
+- `pnpm build` → exit 0, 22/22 páginas, sin warnings nuevos atribuibles.
+- `contentItems` sigue funcionando: mismo campo `blocks` (nombre sin cambios), mismos 14 block types, solo cambia la fuente del import — build+tsc limpios lo confirman indirectamente (cualquier ruptura de esa collection habría fallado el build).
+- `git status` tras el trabajo: solo los archivos esperados modificados/movidos + 2 archivos nuevos de migración. Directorio viejo `contentItems/blocks/` quedó vacío (git no trackea directorios vacíos, desaparece al commit).
+
+## Estado de archivos (sin commit todavía — pendiente de tu confirmación para commitear en `feat/pages-layout`)
+
+```
+Modificados:  Pages/index.ts, contentItems/index.ts, payload-types.ts,
+              admin/importMap.js (auto), migrations/index.ts (auto)
+Renombrados:  16 archivos contentItems/blocks/*.ts → payload/lib/blocks/*.ts
+Nuevos:       migrations/20260704_143226_pages_layout.{ts,json}
+```
+
+Zero secretos expuestos.
