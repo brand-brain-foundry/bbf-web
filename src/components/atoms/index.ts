@@ -16,3 +16,4 @@ export * from './BrandLogo';
 export * from './MenuIcon';
 export * from './NavLink';
 export * from './Badge';
+export * from './PulpoPixel';

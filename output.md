@@ -9229,3 +9229,141 @@ script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.
 **Conclusión general:** el motor es viable para integrarse al design system con **cero tokens nuevos obligatorios**, aprovechando 3 coincidencias exactas ya existentes (`--bbf-accent-blue`, `--bbf-color-sand-deep-shade`, `--bbf-z-max`) y tratando los parámetros de comportamiento puro (gap/margin/speed/dpr/intervalo) bajo la misma excepción de canvas engine que ya cubre `blob-intents.ts`. El trabajo real de conversión es: (1) decisión de 2 opciones sobre ink colors, (2) portar a Client Component con el gate de capacidad ya existente en `BlobBackground.tsx`, (3) diferir montaje post-LCP. **D-BBF-PULPO puede firmarse como: Opción A (adoptar black-600 para ink, cero tokens nuevos) + patrón BlobBackground para capacidad/montaje** — pendiente de tu firma, nada se ejecutó.
 
 Zero secretos expuestos. Zero cambios de código — 100% read-only per instrucción del despacho.
+
+---
+
+# REPORTE (PARCIAL — SESIÓN INTERRUMPIDA) — B-BBF-WEB-PULPO-01
+**Fecha:** 2026-07-04 · **Despacho:** B-BBF-WEB-PULPO-01
+**Estado:** 🟡 EN PROGRESO — código construido y funcional, verificación de INP inconclusa. NO mergeado. NO cerrado.
+**Rama:** `feat/pulpo-pixel` (desde `migracion-railway`)
+
+Este reporte es un HANDOFF para la próxima sesión — no es un cierre. Léelo completo antes de continuar.
+
+---
+
+## Lo que SÍ está hecho y verificado
+
+### §A-§D pre-condición y verificación pre-ejecución
+- 3 decisiones firmadas por Zavala vía AskUserQuestion: **D1 = Opción A** (ink → `black-600`), **D2 = Opción (b)** (gap/margin/speed/dpr/intervalo = comportamiento, sin token), **D3 = activo en mobile/touch** (sin gate pointer:coarse).
+- Los 3 tokens exactos reconfirmados en su ubicación real: `--bbf-accent-blue` (semantic/colors.css:147), `--bbf-color-sand-deep-shade` (primitives/colors.css:48), `--bbf-z-max` (primitives/z-index.css:22). `--bbf-color-black-600` confirmado (#1a1a1a).
+- `BlobBackground.tsx:109-129` releído completo — patrón de gate (hardwareConcurrency + pointer:coarse + reduced-motion) y de montaje (`injectScript` + engine singleton `enginePromise`) confirmado como el precedente a replicar.
+- `octopus.js` original (`tmp/pulpo-pixel/octopus.js`) releído íntegro antes de portar.
+
+### §1-§2 — Motor portado + tokens mapeados
+- **`public/assets/pulpo/octopus.js`** — copia ÍNTEGRA del motor original. Único diff real (confirmado con `diff` línea por línea): comentarios de linaje (`// --bbf-accent-blue`, `// --bbf-color-sand-deep-shade`, `// --bbf-z-max`, `// comportamiento — no token (D2)`) + los 2 valores de ink cambiados de `#1c1c22`/`#2b2b34` a `#1a1a1a`/`#1a1a1a` (D1). **Cero cambio de lógica** (steering, sprite HEAD, tentáculos, tinta, todo intacto).
+- Cero hex huérfano confirmado por grep — todas las asignaciones de color tienen su comentario de token.
+
+### §1 — Client Component
+- **`src/components/atoms/PulpoPixel/PulpoPixel.tsx`** — wrapper `'use client'`, replica el patrón `injectScript`/`enginePromise` de BlobBackground. Gate: `hardwareConcurrency <= 2` → no monta; `prefers-reduced-motion: reduce` → no monta (DESACTIVA completo, no solo atenúa, a diferencia del motor original — cumple WCAG 2.1 SC 2.3.3 per invariante del despacho). Defer post-LCP vía `requestIdleCallback` (fallback `setTimeout` Safari). Props configurables (`accent`/`eyeColor`/`inkColor`/`obstacleSelector`/`disabled`) con defaults = preset de marca BBF — satisface §5 (preset reutilizable por página).
+- **`src/components/atoms/PulpoPixel/PulpoPixelLoader.tsx`** — wrapper adicional NO PREVISTO en el plan original, necesario porque `next/dynamic(..., {ssr:false})` **no se puede llamar directo dentro de un Server Component** (page.tsx) — Next.js 15 App Router lo bloquea en build (`Failed to compile`). Este archivo es un Client Component cuyo único propósito es contener esa llamada `dynamic()`; `page.tsx` importa `PulpoPixelLoader` (no `PulpoPixel` directo).
+- Barrel exports actualizados: `atoms/PulpoPixel/index.ts` exporta ambos; `atoms/index.ts` agrega `export * from './PulpoPixel'`.
+
+### §4 — Montaje homepage + obstáculos
+- `src/app/(frontend)/[locale]/page.tsx`: `<PulpoPixelLoader />` montado al final (junto a los `<script>` JSON-LD), **actualmente ACTIVO** (no comentado — ver "Estado exacto de archivos" abajo).
+- `data-oct-obstacle` agregado en 4 bloques (títulos, cards, hero — sin tocar lógica de otros componentes, solo el atributo HTML):
+  - Hero title `<div>` (línea ~202)
+  - Hero lede `<div className="bbf-hero__lede...">` (línea ~219) — cubre también los CTAs porque están anidados dentro
+  - Hero media frame `<div className="bbf-hero__media...">` (línea ~260)
+  - Cada `<li>` de CapabilitiesSection.Grid (línea ~332)
+
+### Verificación de build
+- `tsc --noEmit`: **0 errores** (2 corridas, antes y después del fix del loader).
+- `pnpm build`: **exit 0, 22/22 páginas generadas**, sin warnings nuevos atribuibles a mis cambios (los warnings existentes de WAAgendaSequence/WASequence/seed scripts son preexistentes, no tocados).
+- `pointer-events:none` confirmado intacto en el motor portado (grep + verificado en runtime: `document.elementFromPoint()` en el centro del viewport devuelve el `<DIV>` de contenido, NO el canvas — los clicks SÍ pasan a través).
+- Canvas del pulpo confirmado montándose en runtime real: `window.OctopusPet` existe, canvas con `position:fixed; pointer-events:none; z-index:9999; aria-hidden:true`.
+
+---
+
+## 🔴 Lo que quedó INCONCLUSO — el motivo de la interrupción
+
+### Hallazgo de performance sin resolver: posible degradación de INP
+
+Metodología: 2 servidores `pnpm start` (standalone), mismo click (`link "Capacidades"` → `#capacidades`), medido con `chrome-devtools performance_start_trace`.
+
+**Primer intento de medición — INVALIDADO.** Descubrí que `.next/standalone/` NO tenía `.next/static/` ni `public/` completos copiados (gap de infraestructura preexistente del workflow local de este repo, no causado por mí — `output: 'standalone'` requiere copiar manualmente `cp -r .next/static .next/standalone/.next/static` y `cp -r public/. .next/standalone/public/` tras cada build, algo que nunca estaba automatizado aquí). Esto causaba 404/500 masivos en chunks JS/CSS — la página nunca hidrataba React. Las primeras mediciones (LCP 556ms/INP 367ms con pulpo vs LCP 122ms/INP 34ms sin pulpo) **son inválidas** — con hidratación rota, un click en un `<a href="#...">` es navegación nativa del navegador, no una interacción React real.
+
+**Segundo intento — CON assets corregidos (`cp -r` ejecutado, confirmado `OctopusPet` cargando y canvas real montado):**
+
+| Config | LCP | INP | INP breakdown |
+|---|---|---|---|
+| Pulpo OFF | 264 ms | **38 ms** | (no medido en detalle, número bajo) |
+| Pulpo ON | 174 ms | **281 ms** | Input delay 3ms + Processing 2ms + **Presentation delay 277ms** |
+
+**Esto es una diferencia real y repetible (una sola corrida cada config con assets ya corregidos), NO ruido de cold-start** (a diferencia de la primera medición inválida). La sospecha con más fundamento: `octopus.js` corre su `requestAnimationFrame` **sin ningún mecanismo de pausa** — a diferencia de `BlobBackground.tsx` que sí tiene `IntersectionObserver` (pausa si <5% visible) + `visibilitychange` (pausa si tab oculto). El motor del pulpo nunca implementó pausa porque no la necesitaba en su versión standalone original — pero ahora, corriendo 60fps continuo con ~150+ `fillRect()` por frame (sprite + 8 tentáculos × 12 segmentos + ojos + tinta), podría estar compitiendo por el hilo principal justo cuando el navegador necesita pintar el frame post-scroll del click, inflando la "Presentation delay".
+
+**Esto NO está confirmado con certeza — solo 1 corrida por configuración tras el fix de assets.** Estaba a mitad de una 3ª corrida (repetir pulpo-ON para confirmar que el patrón se sostiene) cuando la sesión se interrumpió. El build con pulpo ON ya está hecho y los assets ya están copiados a `.next/standalone/` — falta solo reiniciar el server y repetir la medición 1-2 veces más para tener confianza estadística antes de concluir nada.
+
+**Per el despacho mismo ("CUÁNDO DETENERSE Y ESCALAR: INP degrada medible con el pulpo → reportar antes de mergear"): si esto se confirma, NO se debe mergear sin resolver.** Posible fix (no implementado, es una decisión de diseño): agregar un mecanismo de pausa a `octopus.js` (ej. `pause()`/`resume()` expuestos, análogo a como `blob-scene.js` ya los expone) invocado desde `PulpoPixel.tsx` durante scroll activo o interacciones, o reducir la tasa de refresco cuando no hay input activo. Esto NO se ejecutó — es la primera decisión a tomar en la próxima sesión.
+
+---
+
+## Estado EXACTO de archivos al momento de la interrupción
+
+```
+Rama: feat/pulpo-pixel (sin commit — nada de este despacho está commiteado todavía)
+
+Modificados:
+  src/app/(frontend)/[locale]/page.tsx    ← PulpoPixelLoader ACTIVO (línea 497), 4 data-oct-obstacle agregados
+  src/components/atoms/index.ts           ← agrega export PulpoPixel
+
+Nuevos (untracked):
+  public/assets/pulpo/octopus.js
+  src/components/atoms/PulpoPixel/PulpoPixel.tsx
+  src/components/atoms/PulpoPixel/PulpoPixelLoader.tsx
+  src/components/atoms/PulpoPixel/index.ts
+
+NO relacionados con este despacho (preexistentes, NO tocar):
+  backups/
+  public/assets/Pages/
+  public/assets/development/
+
+Build local: .next/ y .next/standalone/ tienen el build MÁS RECIENTE con pulpo ON
+  (assets ya copiados: cp -r .next/static .next/standalone/.next/static +
+   cp -r public/. .next/standalone/public/). Server actualmente DETENIDO
+  (maté el proceso en :3000 al cerrar la sesión, limpio, sin proceso huérfano).
+
+Archivos de trace temporales (.trace-pulpo-*.json, hasta 478MB) — ELIMINADOS,
+  no dejar basura en el repo.
+```
+
+## Próximos pasos exactos para continuar
+
+1. `pnpm start` (server ya buildeado con pulpo ON + assets copiados — listo para arrancar directo).
+2. Repetir la medición INP 2 veces más (mismo click en "Capacidades") para confirmar si el patrón `INP alto con pulpo / INP bajo sin pulpo` se sostiene, o si la corrida de 281ms fue un outlier.
+3. Si se confirma la degradación: diagnosticar con `performance_analyze_insight` (`INPBreakdown` + posiblemente un trace más largo) exactamente qué main-thread work compite en esa ventana de 277ms — confirmar si es el rAF loop de octopus.js.
+4. Si se confirma como causa: decidir con Zavala el fix (pausa durante scroll, throttle de framerate, reducir complejidad de dibujo, u otra opción) — **no soy yo quien decide el trade-off, solo lo diagnostico**.
+5. Solo después de resolver INP: commit + reporte final + `git status` limpio (sin dejar el server corriendo, sin archivos de trace).
+
+**No se ha hecho ningún commit de este despacho todavía.** Todo el trabajo vive sin commitear en el working tree de `feat/pulpo-pixel`.
+
+---
+
+# REPORTE (CIERRE) — B-BBF-WEB-PULPO-01
+**Fecha:** 2026-07-04 · **Despacho:** B-BBF-WEB-PULPO-01
+**Estado:** 🟢 INP confirmado sin degradación. Pendiente decisión de Zavala sobre commit.
+
+## Continuación de la medición de INP (retomando el punto de interrupción)
+
+Build y assets ya estaban listos del cierre de la sesión anterior (`.next/standalone/` con pulpo ON, `cp -r` de `static/` y `public/` ya aplicado, server detenido limpio, sin archivos de trace ni procesos huérfanos). Arranqué `node .next/standalone/server.js` y repetí la medición de INP con `chrome-devtools performance_start_trace` sobre el mismo click (`link "Capacidades"` → `#capacidades`), 3 veces:
+
+| Corrida | INP (pulpo ON) |
+|---|---|
+| 1 | 45 ms |
+| 2 | 32 ms |
+| 3 | 55 ms |
+
+Comparado con el baseline sin pulpo de la sesión anterior (38 ms, 1 corrida con assets ya corregidos): **las 3 corridas con pulpo ON caen en el mismo rango** (32-55ms), sin patrón de degradación. Confirmé en runtime (vía `evaluate_script`) que el pulpo SÍ estaba activo durante las 3 mediciones: `window.OctopusPet` presente, canvas `position:fixed; pointer-events:none; z-index:9999` montado. También reconfirmé que los clicks pasan a través del canvas (`document.elementFromPoint()` en el centro del viewport devuelve `<ARTICLE>`, no `<CANVAS>`).
+
+**Conclusión: el 281ms reportado en la sesión anterior fue un outlier de esa corrida específica** (posible ruido de cold-start del proceso Node recién levantado, JIT/GC de esa primera interacción tras iniciar el server) — **no una degradación sistemática causada por `octopus.js`**. No hace falta el fix de pausa (`IntersectionObserver`/`visibilitychange`) que se había planteado como hipótesis. Per el criterio del despacho ("INP degrada medible con el pulpo → reportar antes de mergear"): **no se detecta degradación medible, no hay motivo para bloquear el merge por esta causa.**
+
+## Estado actual de archivos (sin cambios de código en esta sesión, solo verificación)
+
+Idéntico al handoff anterior — nada se modificó, solo se corrió y verificó el build ya existente:
+```
+Modificados:  src/app/(frontend)/[locale]/page.tsx, src/components/atoms/index.ts
+Nuevos:       public/assets/pulpo/octopus.js, src/components/atoms/PulpoPixel/{PulpoPixel.tsx,PulpoPixelLoader.tsx,index.ts}
+```
+
+Server de verificación detenido, `git status` limpio de basura (sin `.trace-*`, sin proceso huérfano en :3000).
+
+**No se ha hecho commit.** Con INP resuelto, el único paso pendiente del despacho es el commit + este reporte — pendiente de confirmación explícita de Zavala antes de ejecutar `git commit` (fuera del alcance de lo verificado automáticamente en esta sesión).
