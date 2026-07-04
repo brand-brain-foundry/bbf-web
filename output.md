@@ -9849,3 +9849,85 @@ Nuevos:      migrations/20260704_182953_seo_noindex.{ts,json}
 2 archivos de código tocados a mano (`payload.config.ts`, `generateMetadata.ts`) — dentro del límite de 3 del despacho.
 
 Zero secretos expuestos.
+
+---
+
+# REPORTE — B-BBF-WEB-PRIVACY-PAGE-02 (ejecutado, D-BBF-PRIVACY Fase 3 CERRADA)
+**Fecha:** 2026-07-05 · **Modo:** Arquitecto (1) · **Ramas:** `feat/privacy-page` (bbf-web, integra Fase 1+2+3) + `feat/video-package-canon` (bbf-docs, commit del texto)
+
+## PASO 1 — Ajuste del texto legal (bbf-docs)
+
+Editado `SB_PrivacyPolicy_ES-EN.md` (antes untracked, primer commit incluye ya el ajuste):
+- **§1 placeholders resueltos:** `[[Razón social legal y domicilio]]` → `SIVAR FILMS, SOCIEDAD ANÓNIMA DE CAPITAL VARIABLE` + `Centro Comercial Feria Rosa, Local 219B, San Salvador, El Salvador` + `hola@sivarfilms.com · +503 7729-5285`, ambos idiomas.
+- **§2 relación entidad-marca declarada:** nuevo párrafo en Introducción/Introduction — *"El Sitio Web opera bajo la marca comercial 'Sivar Brains', un proyecto de SIVAR FILMS... responsable legal del tratamiento de los datos."*
+- **§3 cookies/analítica ajustadas a realidad (H-556 opción a):** las 3 menciones señaladas (info recopilada automáticamente, sección Cookies, info de otras fuentes) reescritas para decir solo lo cierto hoy — cookies estrictamente necesarias (idioma), cero analítica/marketing de terceros.
+- **§4 resto del texto: sin tocar** (derechos, retención, seguridad, menores) — per alcance explícito del despacho.
+
+Commit `905644d` en bbf-docs (rama `feat/video-package-canon`, la que estaba activa — no forcé cambio de rama en un repo ajeno). Cero placeholders `[[...]]` residuales confirmado con `grep`.
+
+**Nota de abogado (recordatorio del despacho, no acción mía):** este texto es un ajuste conservador (corrige entidad + quita afirmaciones falsas) — pendiente de validación legal salvadoreña antes de considerarse definitivo.
+
+## PASO 2 — Crear la Page (bbf-web)
+
+### §A-§D verificación pre
+
+- **§A:** `pages_layout` (batch 52) + `seo_noindex` (batch 53) confirmados `Ran: Yes` en Neon compartido.
+- **§B:** el mecanismo es `convertMarkdownToLexical` (oficial, exportado desde `@payloadcms/richtext-lexical/dist/index.js`, no un hack) + `editorConfigFactory.default({config})` para obtener el `editorConfig` sanitizado fuera de un field context. Confirmado leyendo el código fuente del paquete antes de usarlo.
+- **§C:** slug localized confirmado — `privacidad` (ES) / `privacy` (EN), mismo patrón que `title`/`path`.
+- Antes de tocar código: **integré Fase 1 + Fase 2 en una rama nueva `feat/privacy-page`** (`git merge feat/pages-layout` + `git merge feat/seo-noindex` sobre `migracion-railway`), porque ninguna rama existente tenía ambos campos (`layout` y `noIndex`) a la vez, y Fase 3 los necesita juntos. 2 conflictos de merge (ambos en `output.md` — reportes independientes con el mismo punto de anclaje — y uno en `migrations/index.ts` — orden de registro de las 2 migraciones nuevas) resueltos preservando ambos contenidos, sin perder nada. `payload-types.ts` regenerado limpio post-merge (no confié en el auto-merge de git para un archivo generado). `tsc` + `build` limpios tras cada merge.
+
+### §5-§6 — Page creada + contenido cargado
+
+`src/scripts/seed-privacy-page.ts`: convierte el markdown (ya ajustado en Paso 1) a Lexical para ES y EN, crea la Page (`title`, `slug`, `layout: [{blockType:'rich-text', body}]`, `meta.noIndex:true`) vía Payload Local API — **1 sola llamada `create` (ES) + 1 `update` (EN)**, sin el workaround SQL de L-BBF-256, porque `layout` (blocks, `localized:true`) usa fila-por-locale nativa (columna `_locale` en `pages_blocks_rich_text`), no un side-table `_locales` compartido — confirmado inspeccionando la migración de Fase 1 antes de asumir que necesitaba el workaround.
+
+**Bloqueador encontrado y resuelto (no estaba previsto, primera vez que corre este código):** `Pages.afterChange` (`revalidatePage`) llama `revalidatePath()`, que crashea (`Invariant: static generation store missing`) al correr en un script `tsx` standalone — Next.js no expone ese contexto fuera de una request real. Confirmé con una query read-only que el `create` había hecho **rollback completo** (0 filas huérfanas) antes de tocar nada. Encontré que `revalidateGlobal.ts` (hook hermano, para Globals) **ya tenía exactamente el fix** (`try/catch` con el mismo comentario: *"No-op fuera de Next.js request context"*) — apliqué el mismo patrón a `revalidatePage.ts`, no inventé uno nuevo (A-01). Con el fix, `_status:'published'` directo desde el script funciona limpio.
+
+Page creada: **id=3**, `privacidad`/`privacy`, `layout` 1 block c/u, `meta.noIndex=true` ambos, `_status:'published'`.
+
+### §7 — Footer link
+
+Modificado `seed-site-navigation.ts` (el script SSOT único de `SiteNavigation` — no creé uno paralelo que compitiera): agregado `FOOTER_PAGE_LINKS` con el link a la Page `privacidad`/`privacy` vía `linkTarget.page` (resuelto a id en runtime, no hardcodeado), en el mismo grupo "Navegación" que Contacto (un solo link legal no amerita grupo nuevo, A-03). Actualicé también el re-upsert SQL de L-BBF-256 para distinguir links por `route_key` vs `page_id` al reconstruir el label ES (antes solo sabía manejar `route_key`).
+
+**Bug encontrado y resuelto (mismo motivo: primera vez que `linkTarget.page` se ejercita — el propio código lo documentaba como "DORMIDO hasta que existan Pages"):** `resolveLinkHref.ts` pasaba `page.path` (formato sin `/` inicial, ej. `"privacy"`) directo a `getPathname()` sin anteponer `/` — a diferencia de **todos los demás consumers de `page.path`** en el repo (el catch-all hace `` `/${locale}/${path}` ``, el `generateURL` del seoPlugin hace `` `${siteUrl}/${locale}/${path}` ``). Resultado del bug: href resolvía a `"privacy"` (relativo, roto) en vez de `/en/privacy`. Fix de una línea (anteponer `/` antes de pasar a `getPathname`), mismo patrón que los otros 2 consumers ya usaban.
+
+### §8 — Verificación en vivo (post-fix, servidor standalone local contra el Neon compartido)
+
+| Check | ES (`/privacidad`) | EN (`/en/privacy`) |
+|---|---|---|
+| `<meta name="robots">` | `noindex, nofollow` ✅ | `noindex, nofollow` ✅ |
+| `<h1>` | "Política de Privacidad" ✅ | "Privacy Policy" ✅ |
+| Entidad legal en texto | "SIVAR FILMS" + "Feria Rosa" ✅ | ✅ |
+| Placeholders `[[...]]` residuales | 0 ✅ | 0 ✅ |
+| Texto cookies honesto | "no usamos... analítica ni marketing" ✅ | "do not currently use analytics" ✅ |
+| Footer link — texto | "Privacidad" ✅ | "Privacy" ✅ |
+| Footer link — href | `/privacidad` ✅ (post-fix; antes del fix: `"privacidad"` roto) | `/en/privacy` ✅ (post-fix; antes del fix: `"privacy"` roto) |
+
+Verificado con `node -e "fetch(...)"` con `Accept-Language` explícito (el navegador de la sesión tenía una preferencia `en` persistente que redirigía `/privacidad` → `/en/privacidad` — artefacto de negociación de locale del browser, no del código; confirmado con fetch directo que el server responde 200 correctamente a `/privacidad` con `Accept-Language: es`).
+
+## Verificación POST general
+
+- `pnpm tsc --noEmit` → 0 errores (en cada punto: tras cada merge, tras cada fix).
+- `pnpm build` → exit 0, 22/22 páginas, sin warnings nuevos.
+- Cero placeholders `[[...]]` en el contenido publicado.
+- Cero secretos expuestos — ninguna credencial impresa en logs ni en este reporte.
+
+## Estado de archivos (commiteado en `feat/privacy-page`, sin push)
+
+```
+bbf-docs (feat/video-package-canon, commit 905644d):
+  SB_PrivacyPolicy_ES-EN.md (nuevo, con ajuste ya incluido)
+
+bbf-web (feat/privacy-page, commit e9de44c):
+  Nuevo:      src/scripts/seed-privacy-page.ts
+  Modificado: src/scripts/seed-site-navigation.ts (footer link + SQL fix)
+  Modificado: src/payload/collections/Pages/hooks/revalidate.ts (try/catch guard)
+  Modificado: src/lib/nav/resolveLinkHref.ts (fix "/" prefix en page.path)
+```
+
+Rama `feat/privacy-page` = `migracion-railway` + Fase 1 (`feat/pages-layout`) + Fase 2 (`feat/seo-noindex`) + Fase 3, todo mergeado localmente, **sin push a origin** — pendiente de tu decisión sobre cuándo desplegar D-BBF-WEBCLOSURE #2 completo a producción.
+
+## D-BBF-PRIVACY — CERRADA (Fases 1-3)
+
+Con esto, D-BBF-WEBCLOSURE #2 (privacy policy) queda **resuelto en código y datos**, pendiente solo de: (a) merge+push a `migracion-railway` cuando decidas desplegar, (b) validación del texto por abogado salvadoreño, (c) Fase 4 (cookie consent) si más adelante se activa GA4 — no bloqueante para esto.
+
+Zero secretos expuestos.
