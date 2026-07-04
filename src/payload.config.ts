@@ -152,12 +152,26 @@ export default buildConfig({
       collections: ['pages'],
       uploadsCollection: 'media',
       tabbedUI: true,
-      fields: ({ defaultFields }) =>
-        defaultFields.map((field) =>
+      fields: ({ defaultFields }) => [
+        ...defaultFields.map((field) =>
           'name' in field && ['title', 'description', 'image'].includes(field.name as string)
             ? { ...field, localized: true }
             : field,
         ),
+        // D-BBF-PRIVACY Fase 2: noIndex técnico, no de contenido — sin localized (D-BBF-WEBCLOSURE #2)
+        {
+          name: 'noIndex',
+          type: 'checkbox',
+          defaultValue: false,
+          label: { en: 'No index', es: 'No indexar' },
+          admin: {
+            description: {
+              en: 'Prevent search engines from indexing this page (e.g. legal/privacy pages).',
+              es: 'Evita que los buscadores indexen esta página (ej. páginas legales/privacidad).',
+            },
+          },
+        },
+      ],
       generateTitle: ({ doc }) => {
         const title = (doc as Record<string, unknown>).title;
         return `${typeof title === 'string' ? title : 'Untitled'} — ${SITE_NAME_FALLBACK}`;

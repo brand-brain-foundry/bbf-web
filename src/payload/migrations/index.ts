@@ -49,6 +49,7 @@ import * as migration_20260628_122720_metodo_update_nav_records from './20260628
 import * as migration_20260629_201330_s5_service_icon from './20260629_201330_s5_service_icon';
 import * as migration_20260703_154415_media_seo_fase0 from './20260703_154415_media_seo_fase0';
 import * as migration_20260703_173610_video_package_01 from './20260703_173610_video_package_01';
+import * as migration_20260704_182953_seo_noindex from './20260704_182953_seo_noindex';
 
 export const migrations = [
   {
@@ -304,6 +305,11 @@ export const migrations = [
   {
     up: migration_20260703_173610_video_package_01.up,
     down: migration_20260703_173610_video_package_01.down,
-    name: '20260703_173610_video_package_01'
+    name: '20260703_173610_video_package_01',
+  },
+  {
+    up: migration_20260704_182953_seo_noindex.up,
+    down: migration_20260704_182953_seo_noindex.down,
+    name: '20260704_182953_seo_noindex'
   },
 ];
