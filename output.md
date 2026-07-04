@@ -9619,3 +9619,56 @@ Zero secretos expuestos.
 3. Cookie consent banner (§6) sigue sin existir — no bloquea la creación de la privacy policy en sí, pero el contenido de la política probablemente necesitará describir un mecanismo de consent que todavía no existe (inconsistencia de contenido vs. realidad técnica a vigilar cuando se redacte el texto legal).
 
 Ningún archivo fue creado ni modificado en esta auditoría. Zero secretos expuestos.
+
+---
+
+# REPORTE (DETENIDO — PRE-CONDICIONES NO CUMPLIDAS) — B-BBF-WEB-PRIVACY-PAGE-01
+**Fecha:** 2026-07-04 · **Modo:** Arquitecto (1) · **Decisión:** D-BBF-PRIVACY Fase 3
+**Estado:** 🛑 **DETENIDO antes de §1** — las 2 pre-condiciones que el propio despacho exige a Zavala ("Zavala completa antes") no están cumplidas. Cero código tocado, cero Page creada.
+
+## §A — Fase 1 + Fase 2 en Neon: CONFIRMADO ✅
+
+`pnpm migrate:status` corrido en dos checkouts:
+- `feat/pages-layout` → `20260704_143226_pages_layout` — **Batch 52, Ran: Yes**.
+- `feat/seo-noindex` → `20260704_182953_seo_noindex` — **Batch 53, Ran: Yes**.
+
+Ambas migraciones (aditivas, ya auditadas línea por línea en sus respectivos reportes) están aplicadas contra el Neon compartido. La infraestructura de datos para Fase 3 está lista — el bloqueador no es técnico.
+
+## Por qué me detuve — las 2 pre-condiciones fallan
+
+Leí `bbf-docs/04-strategic/web-public/Content/Final/SB_PrivacyPolicy_ES-EN.md` (fuente del texto, per el despacho) antes de tocar cualquier código, como corresponde a B-01 (primitivo→específico: el contenido es el primitivo aquí, no el schema).
+
+**Pre-condición (a) — razón social + domicilio: NO completada.**
+```
+Línea 94 (ES): [[Razón social legal y domicilio — completar antes de publicar]]
+Línea 194 (EN): [[Legal entity name and registered address — complete before publishing]]
+```
+Los placeholders siguen literalmente en el texto, sin rellenar. El despacho es explícito: **"DETENERSE SI: los placeholders legales siguen sin completar"** — no es una sugerencia, es un gate duro.
+
+**Pre-condición (b) — decisión de cookies (H-BBF-556): NO resuelta, y el texto actual es deshonesto respecto al sistema real.**
+
+El template declara activamente un mecanismo de cookies/analítica que no existe:
+- Línea 38 (ES) / 138 (EN): *"Nosotros y nuestros proveedores de servicios podemos recopilar información automáticamente mediante cookies... para dar soporte a la analítica."*
+- Sección completa "Cookies y tecnologías similares" (líneas 56-58 ES / 156-158 EN): describe control de cookies vía navegador, como si hubiera cookies no esenciales activas hoy.
+
+**Esto contradice directamente mi propia auditoría previa** (`B-BBF-WEB-DIAG-LAUNCH-CLOSURE`, más arriba en este mismo archivo): confirmé en vivo contra producción que **no existe ningún GA4/gtag/dataLayer/cookie banner** — cero implementación, cero cookies no esenciales. Publicar este texto tal cual **violaría el invariante B-4 (honestidad) que el propio despacho cita textualmente**: *"el texto no debe declarar mecanismos que no existen — si dice 'analítica por cookies' y no hay GA4/banner, ajustar o construir (H-556, decisión de Zavala)."*
+
+## Qué NO se ejecutó (todo el ALCANCE IN queda pendiente)
+
+- §1 — Page `privacy` no creada (ni schema-side ni contenido).
+- §2 — sin seed/import de markdown a blocks Lexical.
+- §3 — sin link en `SiteNavigation.footerGroups`.
+- §4 — sin verificación de `noindex` en vivo (requiere que exista la Page primero).
+
+Cero archivos de código tocados. Cero commits. Rama `migracion-railway` limpia (solo directorios preexistentes sin relación).
+
+## Lo que falta para desbloquear (decisión de Zavala, no mía)
+
+1. **Completar los placeholders legales** en `SB_PrivacyPolicy_ES-EN.md` — razón social exacta + domicilio registrado de Sivar Brains, ambos idiomas.
+2. **Resolver H-BBF-556** — dos caminos, ambos válidos, pero hay que elegir uno antes de publicar:
+   - **(a) Ajustar el texto**: remover o suavizar las menciones a cookies de analítica no esenciales (dejar solo lo que es cierto hoy — cookies estrictamente necesarias si las hubiera, sin mencionar analítica que no existe), publicando una política honesta del estado actual.
+   - **(b) Construir el mecanismo primero**: implementar GA4 + cookie consent banner (Fase 4, ya scopeada como despacho aparte) ANTES de publicar esta política, para que el texto sea cierto en el momento de publicarse.
+
+**Recomendación del Auditor (no decide, solo aporta criterio):** la opción (a) es la de menor riesgo y menor tiempo — permite cerrar D-BBF-WEBCLOSURE #2 (privacy policy) sin esperar a Fase 4 (cookie consent), que es un trabajo más grande y no bloqueante para tener una política de privacidad publicada. La política puede actualizarse después cuando GA4+consent existan realmente — de hecho la sección "Cambios a esta Política" del propio template ya prevé eso.
+
+**Zero código ejecutado, zero secretos expuestos. Esperando instrucción de Zavala sobre ambas pre-condiciones antes de retomar Fase 3.**
