@@ -11,10 +11,10 @@ import * as path from 'path';
 
 const rootDir = path.resolve(new URL(import.meta.url).pathname, '../../..');
 const srcFile = path.join(rootDir, 'src/lib/content-interpolation.ts');
-const outFile = path.join(
-  rootDir,
-  '../bbf-docs/04-strategic/web-public/Content/Final/SB_PlaceholdersRegistry.md',
-);
+// HUB-05c T2: GENERATED-ARTIFACT vive en bbf-web/src/generated/ (gitignored).
+// Anterior: ../bbf-docs/04-strategic/.../SB_PlaceholdersRegistry.md (morirá en purga D-05c).
+// D-DOC-08: SB_PlaceholdersRegistry.md no es un documento gestionado — es output de este script.
+const outFile = path.join(rootDir, 'src/generated/SB_PlaceholdersRegistry.md');
 
 // ── Extract INTERPOLATION_PLACEHOLDERS from source ───────────────────────
 const src = fs.readFileSync(srcFile, 'utf-8');
