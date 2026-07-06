@@ -11,10 +11,10 @@ import * as path from 'path';
 
 const rootDir = path.resolve(new URL(import.meta.url).pathname, '../../..');
 const srcFile = path.join(rootDir, 'src/lib/content-interpolation.ts');
-const outFile = path.join(
-  rootDir,
-  '../bbf-docs/04-strategic/web-public/Content/Final/SB_PlaceholdersRegistry.md',
-);
+// HUB-05c T2: GENERATED-ARTIFACT vive en bbf-web/src/generated/ (gitignored).
+// Anterior: ../bbf-docs/04-strategic/.../SB_PlaceholdersRegistry.md (morirá en purga D-05c).
+// D-DOC-08: SB_PlaceholdersRegistry.md no es un documento gestionado — es output de este script.
+const outFile = path.join(rootDir, 'src/generated/SB_PlaceholdersRegistry.md');
 
 // ── Extract INTERPOLATION_PLACEHOLDERS from source ───────────────────────
 const src = fs.readFileSync(srcFile, 'utf-8');
@@ -154,7 +154,7 @@ const CANON_CREAR: PlaceholderEntry[] = [
     localized: false,
     phase: 'FASE 4.C',
     scope: 'global',
-    example: '"https://tu-dominio.com"',
+    example: '"https://brandbrainfoundry.com"',
     status: 'crear',
     notes:
       'DISCREPANCIA: field existe en admin, solo falta agregar a interpolate() + INTERPOLATION_PLACEHOLDERS',
@@ -381,7 +381,7 @@ ${inCanonActiveNotInCode.length === 0 ? '_Ninguno._' : inCanonActiveNotInCode.ma
 
 | Campo | Estado |
 |---|---|
-| \`SiteIdentity.producer.url\` (admin field) | ✅ Existe (defaultValue: '' — configurable en admin) |
+| \`SiteIdentity.producer.url\` (admin field) | ✅ Existe (defaultValue: 'https://brandbrainfoundry.com') |
 | Canon §4.2 \`{{producerUrl}}\` | ❌ CREAR — marcado "requiere solo [FASE 4.C]" |
 | \`INTERPOLATION_PLACEHOLDERS\` en código | ❌ NO incluido |
 | \`interpolate()\` helper | ❌ NO implementado |

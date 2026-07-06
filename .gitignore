@@ -101,6 +101,11 @@ backups/*.sql
 scripts/**/*.tmp
 scripts/**/.cache/
 
+# Artifacts generados por scripts de dev (HUB-05c — D-HUB-05c-T2)
+# SB_PlaceholdersRegistry.md es GENERATED-ARTIFACT: producido por generate-placeholders-registry.ts
+# No es fuente de verdad — re-correr el script lo regenera. No vive en bbf-docs (D-DOC-08).
+src/generated/
+
 # Decisión §3.2 plan v3: favicons generados SÍ se commitean
 # (Vercel no corre pnpm assets:favicons en CI, los necesita pre-built)
 # Para invertir en el futuro, descomentar:
