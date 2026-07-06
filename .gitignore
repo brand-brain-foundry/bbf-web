@@ -75,9 +75,20 @@ backups/*.sql
 # NOTA: git no permite negar subdirectorios de un parent ignorado con trailing /.
 # Patrón correcto: ignorar contenidos con *, luego re-incluir rules/.
 .claude/*
-# rules/ contiene doctrina del proyecto — se versiona (D-ANALYTICS-01, D-BBF-WEB-*, etc.)
+# rules/ contiene doctrina del proyecto — se versiona
 !.claude/rules/
 !.claude/rules/**
+# skills/ hooks/ steering/ settings.json agents/ — se versionan (05d-web-2)
+!.claude/skills/
+!.claude/skills/**
+!.claude/hooks/
+!.claude/hooks/**
+!.claude/steering/
+!.claude/steering/**
+!.claude/settings.json
+!.claude/agents/
+!.claude/agents/**
+# feedback-archive/ y plans/ — client-only, no versionar
 
 # ─────────────────────────────────────────────────────────────
 # H1-3-A additions (2026-05-15)

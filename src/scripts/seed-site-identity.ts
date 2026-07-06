@@ -84,7 +84,7 @@ async function seedSiteIdentity() {
 
       // Founders (OntologyPrimitives v1.0.4 canonical — L-BBF-251)
       // Orden CM-HP §1.8: Christian → Brenda → Pedro
-      // url vacío per L-BBF-240 (brandbrainfoundry.com pertenece a BBF Org, no a la Person)
+      // url vacío per L-BBF-240 (dominio del producer pertenece a la Org, no a la Person)
       // Brenda Zavala: nombre v1.0.4 (mandato Zavala 2026-06-10) — CM-HP §1.8 dice "Brenda Gutiérrez"
       //   pero OntologyPrimitives v1.0.4 (más reciente, firmado) gana per L-BBF-251
       founders: [

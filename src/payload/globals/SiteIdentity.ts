@@ -236,7 +236,7 @@ export const SiteIdentity: GlobalConfig = {
         {
           name: 'url',
           type: 'text',
-          defaultValue: 'https://brandbrainfoundry.com',
+          defaultValue: '',
         },
       ],
     },

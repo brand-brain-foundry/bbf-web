@@ -154,7 +154,7 @@ const CANON_CREAR: PlaceholderEntry[] = [
     localized: false,
     phase: 'FASE 4.C',
     scope: 'global',
-    example: '"https://brandbrainfoundry.com"',
+    example: '"https://tu-dominio.com"',
     status: 'crear',
     notes:
       'DISCREPANCIA: field existe en admin, solo falta agregar a interpolate() + INTERPOLATION_PLACEHOLDERS',
@@ -381,7 +381,7 @@ ${inCanonActiveNotInCode.length === 0 ? '_Ninguno._' : inCanonActiveNotInCode.ma
 
 | Campo | Estado |
 |---|---|
-| \`SiteIdentity.producer.url\` (admin field) | ✅ Existe (defaultValue: 'https://brandbrainfoundry.com') |
+| \`SiteIdentity.producer.url\` (admin field) | ✅ Existe (defaultValue: '' — configurable en admin) |
 | Canon §4.2 \`{{producerUrl}}\` | ❌ CREAR — marcado "requiere solo [FASE 4.C]" |
 | \`INTERPOLATION_PLACEHOLDERS\` en código | ❌ NO incluido |
 | \`interpolate()\` helper | ❌ NO implementado |
