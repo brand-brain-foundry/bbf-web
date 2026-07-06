@@ -22,8 +22,9 @@ import { getPayload } from 'payload';
 
 import config from '../payload.config';
 
+// HUB-05c: re-apunta a sb-docs/sb-web/07-contenido (D-DOC-08b: archivos sin frontmatter)
 const CORNERSTONES_DIR =
-  '/Volumes/PK/BBF/Repos/bbf-docs/04-strategic/web-public/Content/cornerstones';
+  '/Volumes/PK/BBF/Repos/bbf-docs/sb-docs/sb-web/07-contenido';
 
 const CORNERSTONE_FILES = [
   {
