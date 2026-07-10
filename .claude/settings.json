@@ -155,6 +155,15 @@
             "timeout": 60
           }
         ]
+      },
+      {
+        "hooks": [{ "type": "command", "command": "/Volumes/PK/BBF/Repos/bbf-command-hub/plugins/bbf-ops/hooks/leak-scan.sh" }]
+      },
+      {
+        "hooks": [{ "type": "command", "command": "/Volumes/PK/BBF/Repos/bbf-command-hub/plugins/bbf-ops/hooks/notify.sh" }]
+      },
+      {
+        "hooks": [{ "type": "command", "command": "/Volumes/PK/BBF/Repos/bbf-command-hub/plugins/bbf-ops/hooks/handoff-state.sh" }]
       }
     ]
   },
