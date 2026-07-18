@@ -186,6 +186,36 @@
           }
         ]
       }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Volumes/PK/BBF/Repos/bbf-command-hub/plugins/bbf-ops/hooks/notify.sh"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Volumes/PK/BBF/Repos/bbf-command-hub/plugins/bbf-ops/hooks/notify.sh"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Volumes/PK/BBF/Repos/bbf-command-hub/plugins/bbf-ops/hooks/notify.sh"
+          }
+        ]
+      }
     ]
   },
   "env": {
