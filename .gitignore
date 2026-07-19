@@ -126,3 +126,7 @@ src/generated/
 .tmp-pixel/
 tmp/
 tmp-verify/
+
+# Despachos EXEC (patrón sivar-brains — coordinación visible vive en el hub)
+despachos/
+.turno-readonly
