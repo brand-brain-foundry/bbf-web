@@ -8,8 +8,8 @@ export const revalidate = 3600;
 export async function GET() {
   const site = await getSiteIdentity('es');
   const BASE_URL = site.siteDomain;
-  const producerName = site.producer?.name ?? 'Brand Brain Foundry';
-  const producerUrl = site.producer?.url ?? 'https://brandbrainfoundry.com';
+  const producerName = site.producer?.name ?? '';
+  const producerUrl = site.producer?.url ?? '';
 
   let pagesMarkdown = '';
   let capabilitiesMarkdown = '';

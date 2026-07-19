@@ -18,8 +18,8 @@ export async function GET() {
     interpolate(site.siteTagline, 'es'),
   ]);
 
-  const producerName = site.producer?.name ?? 'Brand Brain Foundry';
-  const producerUrl = site.producer?.url ?? 'https://brandbrainfoundry.com';
+  const producerName = site.producer?.name ?? '';
+  const producerUrl = site.producer?.url ?? '';
 
   // Founder con GitHub (christian-zavala)
   const zavalaFounder = site.founders?.find((f) => f.name === 'Christian Zavala');
