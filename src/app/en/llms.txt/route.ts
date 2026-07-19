@@ -18,8 +18,8 @@ export async function GET() {
     interpolate(site.siteTagline, 'en'),
   ]);
 
-  const producerName = site.producer?.name ?? 'Brand Brain Foundry';
-  const producerUrl = site.producer?.url ?? 'https://brandbrainfoundry.com';
+  const producerName = site.producer?.name ?? '';
+  const producerUrl = site.producer?.url ?? '';
 
   const zavalaFounder = site.founders?.find((f) => f.name === 'Christian Zavala');
   const zavalaLinkedin = zavalaFounder?.linkedin ?? '';

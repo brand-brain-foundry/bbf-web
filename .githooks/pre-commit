@@ -1,0 +1,27 @@
+#!/bin/bash
+# pre-commit: gitleaks staged — bbf-web
+# gitleaks 8.30.x: --exit-code 2 = leaks; exit 0 = limpio; exit !=2 = error del tool
+# F-07: no usar -q (bug gitleaks); exit-code 2 semántico
+
+set -uo pipefail
+
+if ! command -v gitleaks &>/dev/null; then
+  echo "[pre-commit] gitleaks no encontrado — skip (instalar: brew install gitleaks)" >&2
+  exit 0
+fi
+
+gitleaks protect --staged --no-banner --exit-code 2 --redact --verbose
+GL_STATUS=$?
+
+if [ "$GL_STATUS" -eq 2 ]; then
+  echo "" >&2
+  echo "[pre-commit] S-4: gitleaks detectó secreto en staged files — commit cancelado" >&2
+  echo "  Eliminar el secreto, luego: git add <archivo> && git commit" >&2
+  exit 1
+elif [ "$GL_STATUS" -ne 0 ]; then
+  echo "" >&2
+  echo "[pre-commit] S-4 FAIL-CLOSED: error del tool gitleaks (exit $GL_STATUS) — commit cancelado" >&2
+  exit 1
+fi
+
+exit 0

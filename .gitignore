@@ -75,9 +75,20 @@ backups/*.sql
 # NOTA: git no permite negar subdirectorios de un parent ignorado con trailing /.
 # Patrón correcto: ignorar contenidos con *, luego re-incluir rules/.
 .claude/*
-# rules/ contiene doctrina del proyecto — se versiona (D-ANALYTICS-01, D-BBF-WEB-*, etc.)
+# rules/ contiene doctrina del proyecto — se versiona
 !.claude/rules/
 !.claude/rules/**
+# skills/ hooks/ steering/ settings.json agents/ — se versionan (05d-web-2)
+!.claude/skills/
+!.claude/skills/**
+!.claude/hooks/
+!.claude/hooks/**
+!.claude/steering/
+!.claude/steering/**
+!.claude/settings.json
+!.claude/agents/
+!.claude/agents/**
+# feedback-archive/ y plans/ — client-only, no versionar
 
 # ─────────────────────────────────────────────────────────────
 # H1-3-A additions (2026-05-15)
@@ -89,6 +100,11 @@ backups/*.sql
 # Scripts: temp files generated during development
 scripts/**/*.tmp
 scripts/**/.cache/
+
+# Artifacts generados por scripts de dev (HUB-05c — D-HUB-05c-T2)
+# SB_PlaceholdersRegistry.md es GENERATED-ARTIFACT: producido por generate-placeholders-registry.ts
+# No es fuente de verdad — re-correr el script lo regenera. No vive en bbf-docs (D-DOC-08).
+src/generated/
 
 # Decisión §3.2 plan v3: favicons generados SÍ se commitean
 # (Vercel no corre pnpm assets:favicons en CI, los necesita pre-built)
@@ -110,3 +126,7 @@ scripts/**/.cache/
 .tmp-pixel/
 tmp/
 tmp-verify/
+
+# Despachos EXEC (patrón sivar-brains — coordinación visible vive en el hub)
+despachos/
+.turno-readonly
