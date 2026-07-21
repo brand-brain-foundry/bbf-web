@@ -33,6 +33,7 @@ Estás operando en el ecosistema BBF, el cual funciona bajo el patrón de **Dual
 
 4. **[Stop] - Clausura del Turno:**
    * Al finalizar la meta impuesta, NO debes despedirte del usuario ni terminar tu sesión nativamente.
-   * En su lugar, estás OBLIGADO a ejecutar la skill nativa `cerrar-turno-agy` (ubicada en `.gemini/skills/cerrar-turno-agy/SKILL.md`). Esta skill ejecutará el baseline-diff y subirá tu trabajo concurrente al HUB de forma segura.
+   * **NUEVA REGLA (Pivoteo Seguro de Producto):** Antes de invocar la skill de cierre del HUB, DEBES analizar si has modificado archivos del repositorio de producto (`bbf-web`). Si es así, debes proponer al usuario ejecutar un `git commit` descriptivo y un `git push` de su rama actual. Al ser un comando destructivo, el CLI pausará y le pedirá autorización interactiva al usuario.
+   * Una vez el usuario apruebe y el código de producto esté pusheado (o si el usuario lo rechaza/no hubo cambios), estás OBLIGADO a ejecutar la skill nativa `cerrar-turno-agy` (ubicada en `.gemini/skills/cerrar-turno-agy/SKILL.md`). Esta skill ejecutará el baseline-diff y subirá la metadata administrativa al HUB de forma segura.
 
 **Recuerda:** Tu superpoder es la semántica. Debes leer el `ESTADO_CANONICO.md` provisto por el Hub para entender en qué punto dejó el trabajo el agente anterior (Claude Code o tú mismo en el pasado).
