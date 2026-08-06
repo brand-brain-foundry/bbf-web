@@ -33,6 +33,15 @@ import { SITE_NAME_FALLBACK } from './lib/brand';
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+// R-SEC (HAL-SBWEB-ENV-SECRET-EMPTY-FALLBACK-01): a diferencia de R2 (storage mal configurado
+// no debe crashear el sitio), un PAYLOAD_SECRET vacío firma JWTs inseguros — peor que no arrancar.
+// Validación a nivel de módulo (se evalúa siempre al importar, build y runtime) en vez de
+// instrumentation.ts, que fue eliminado a propósito y no corre confiablemente con output: 'standalone'.
+const payloadSecret = process.env.PAYLOAD_SECRET;
+if (!payloadSecret || payloadSecret.length < 32) {
+  throw new Error('PAYLOAD_SECRET ausente o < 32 chars — el server no arranca por seguridad');
+}
+
 // B-BBF-WEB-FIX-R2-RUNTIME-FINAL: chequeo + log explícito de R2, evaluado siempre que
 // payload.config.ts se importa (build Y runtime) — a diferencia de instrumentation.ts
 // (removido), que Next.js NO garantiza ejecutar de forma confiable con output:'standalone'
@@ -140,7 +149,7 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, 'payload/migrations'),
   }),
 
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: payloadSecret,
 
   typescript: {
     outputFile: path.resolve(dirname, 'payload/payload-types.ts'),
