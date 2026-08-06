@@ -10,10 +10,14 @@
  */
 import type { GlobalConfig } from 'payload';
 import { isAdmin, publicRead } from '@/payload/lib/access';
+import { revalidateGlobal } from '@/payload/hooks/revalidateGlobal';
 
 export const BrandSystem: GlobalConfig = {
   slug: 'brandSystem',
   access: { read: publicRead, update: isAdmin },
+  hooks: {
+    afterChange: [revalidateGlobal],
+  },
   fields: [
     {
       name: 'colors',

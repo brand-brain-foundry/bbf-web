@@ -1,27 +1,18 @@
 import type { CollectionAfterChangeHook, CollectionConfig } from 'payload';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { invalidateContent, layoutScope } from '@/lib/cache/invalidate';
 import { purgeCloudflareCache } from '@/lib/cloudflare/purge-cache';
 import { isAdminOrEditor, publicRead } from '@/payload/lib/access';
 
-const LOCALES = ['es', 'en'] as const;
-
 // H-BBF-523/524: Media no tenía ningún hook afterChange — subir/reemplazar
-// un archivo nunca disparaba revalidación ni purge de CDN, aunque el
-// homepage (y otras páginas) referencian media docs directamente. Sin saber
-// qué páginas exactas consumen cada media doc, se revalida el home de cada
-// locale (mismo patrón que revalidateGlobal.ts) — más simple y correcto que
-// intentar mapear media → páginas consumidoras (A-01). Inline, patrón
-// oficial Payload embebido (ver revalidateGlobal.ts) — no HTTP.
-const revalidateMedia: CollectionAfterChangeHook = async () => {
-  try {
-    revalidateTag('media');
-    for (const locale of LOCALES) {
-      revalidatePath(`/${locale}`);
-    }
-  } catch {
-    // No-op fuera de Next.js request context (seed scripts, CLI).
-  }
-
+// un archivo nunca disparaba revalidación ni purge de CDN. Sin saber qué
+// páginas exactas consumen cada media doc (un asset puede aparecer en
+// cualquier página — logo, imagen de contenido), se usa alcance conservador
+// de layout (cascada total por locale) en vez de intentar mapear media →
+// páginas consumidoras (A-01). Antes de R-CACHE (F2) el path era literal
+// `/${locale}` sin tipo — invalidaba solo el home, nunca el resto (gap #1,
+// R-CACHE F1.3). Inline, patrón oficial Payload embebido — no HTTP.
+const revalidateMedia: CollectionAfterChangeHook = async ({ req }) => {
+  invalidateContent({ paths: layoutScope(), tags: ['media'] }, req.payload.logger);
   await purgeCloudflareCache();
 };
 

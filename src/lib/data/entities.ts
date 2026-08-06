@@ -2,8 +2,9 @@ import { getPayload } from 'payload';
 import { unstable_cache } from 'next/cache';
 
 import config from '@/payload-config';
+import { ENTITY_CACHE_TAG } from '@/lib/data/cacheTags';
 
-export const ENTITY_CACHE_TAG = 'collection_entities';
+export { ENTITY_CACHE_TAG };
 
 /**
  * getEntityBySlug — Lee una Entity por slug desde Payload Local API.
