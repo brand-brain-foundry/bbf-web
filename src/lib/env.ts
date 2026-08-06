@@ -16,13 +16,20 @@ const envSchema = z.object({
   // === Payload CMS ===
   PAYLOAD_SECRET: z.string().min(32),
 
-  // === Cloudflare R2 (media storage) — B-BBF-WEB-RAILWAY-EJECUCION-01, reemplaza Vercel Blob ===
-  // Opcionales aquí (requeridos solo en production, ver superRefine abajo) — "local dev sin
-  // provisionar" es un estado válido documentado en payload.config.ts (el plugin se salta si faltan).
+  // === P-STORAGE (HAL-SBWEB-PROVIDER-COUPLING-01) — selector por config, no por rama ===
+  STORAGE_PROVIDER: z.enum(['r2', 'vercel-blob']).default('r2'),
+
+  // === Cloudflare R2 (media storage) ===
+  // Opcionales aquí (requeridas solo cuando STORAGE_PROVIDER='r2', ver superRefine abajo) —
+  // "sin provisionar" es un estado válido documentado en adapters/r2.ts (el plugin se salta si faltan).
   R2_BUCKET: z.string().min(1).optional(),
   R2_ENDPOINT: z.string().url().optional(),
   R2_ACCESS_KEY_ID: z.string().min(1).optional(),
   R2_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+
+  // === Vercel Blob (media storage) ===
+  // Requerido solo cuando STORAGE_PROVIDER='vercel-blob' (ver superRefine abajo).
+  BLOB_READ_WRITE_TOKEN: z.string().min(1).optional(),
 
   // === Resend (email + newsletter) ===
   RESEND_API_KEY: z.string().min(1),
@@ -54,16 +61,32 @@ const envSchema = z.object({
 
 const R2_KEYS = ['R2_BUCKET', 'R2_ENDPOINT', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY'] as const;
 
-// En production, R2 SÍ es requerido (storage real, no "sin provisionar") — fail-fast
-// si falta cualquiera, en vez de degradar en silencio a storage local efímero.
+// P-STORAGE: las vars requeridas dependen del proveedor SELECCIONADO (STORAGE_PROVIDER),
+// no de NODE_ENV — el proveedor ya no se infiere del entorno, se declara explícitamente.
 const envSchemaProd = envSchema.superRefine((data, ctx) => {
-  if (data.NODE_ENV !== 'production') return;
-  for (const key of R2_KEYS) {
-    if (!data[key]) {
+  if (data.STORAGE_PROVIDER === 'r2') {
+    for (const key of R2_KEYS) {
+      if (!data[key]) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [key],
+          message: `${key} es requerido cuando STORAGE_PROVIDER='r2' (P-STORAGE)`,
+        });
+      }
+    }
+  } else if (data.STORAGE_PROVIDER === 'vercel-blob') {
+    if (!data.BLOB_READ_WRITE_TOKEN) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: [key],
-        message: `${key} es requerido en production (Cloudflare R2 storage — B-BBF-WEB-FIX-R2-STORAGE)`,
+        path: ['BLOB_READ_WRITE_TOKEN'],
+        message:
+          "BLOB_READ_WRITE_TOKEN es requerido cuando STORAGE_PROVIDER='vercel-blob' (P-STORAGE)",
+      });
+    } else if (!data.BLOB_READ_WRITE_TOKEN.startsWith('vercel_blob_rw_')) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['BLOB_READ_WRITE_TOKEN'],
+        message: 'BLOB_READ_WRITE_TOKEN debe tener el prefijo vercel_blob_rw_ (P-STORAGE)',
       });
     }
   }
