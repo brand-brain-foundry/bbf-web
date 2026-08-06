@@ -1,6 +1,19 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionAfterChangeHook, CollectionConfig } from 'payload';
 import { isAdminOrEditor, publicRead } from '@/payload/lib/access';
 import { slugRegex } from '@/payload/lib/utils/ulid';
+import { invalidateContent, layoutScope } from '@/lib/cache/invalidate';
+import { ENTITY_CACHE_TAG } from '@/lib/data/cacheTags';
+import { purgeCloudflareCache } from '@/lib/cloudflare/purge-cache';
+
+// R-CACHE F5: entities no tenía ningún afterChange — sameAs/knowsAbout de
+// una Entity alimenta el JSON-LD Organization en StructuredData.tsx, que
+// se renderiza en el layout raíz (TODAS las páginas) — alcance de layout,
+// no una página específica. Tag `collection_entities` ya existe y ya tiene
+// consumidor real (unstable_cache en src/lib/data/entities.ts).
+const revalidateEntity: CollectionAfterChangeHook = async ({ req }) => {
+  invalidateContent({ paths: layoutScope(), tags: [ENTITY_CACHE_TAG] }, req.payload.logger);
+  await purgeCloudflareCache();
+};
 
 export const Entities: CollectionConfig = {
   slug: 'entities',
@@ -14,6 +27,9 @@ export const Entities: CollectionConfig = {
     read: publicRead,
     update: isAdminOrEditor,
     delete: isAdminOrEditor,
+  },
+  hooks: {
+    afterChange: [revalidateEntity],
   },
   fields: [
     {

@@ -1,9 +1,13 @@
 import type { GlobalConfig } from 'payload';
 import { isAdmin, publicRead } from '@/payload/lib/access';
+import { revalidateGlobal } from '@/payload/hooks/revalidateGlobal';
 
 export const SEO: GlobalConfig = {
   slug: 'seoDefaults',
   access: { read: publicRead, update: isAdmin },
+  hooks: {
+    afterChange: [revalidateGlobal],
+  },
   fields: [
     { name: 'defaultTitle', type: 'text', localized: true },
     // D-FASE-B-08 + D-CROSS-01: interpunkt (U+00B7) + rebrand Sivar Brains

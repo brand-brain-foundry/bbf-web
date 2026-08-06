@@ -1,5 +1,6 @@
 import type { GlobalAfterChangeHook } from 'payload';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { invalidateContent } from '@/lib/cache/invalidate';
+import { globalCacheScope } from './cacheScopeMap';
 import { purgeCloudflareCache } from '@/lib/cloudflare/purge-cache';
 
 /**
@@ -14,18 +15,18 @@ import { purgeCloudflareCache } from '@/lib/cloudflare/purge-cache';
  * que procesa el save (REST_POST de @payloadcms/next), que es exactamente
  * el contexto en que corre este hook.
  *
- * Path con locale explícito (issue payloadcms/payload#13884): '/' solo no
- * basta con next-intl — se revalida cada locale (/es, /es/en) por separado.
+ * El alcance real (qué paths/tipo invalidar) NO vive aquí — lo decide
+ * `cacheScopeMap` (fuente única «Global → alcance», R-CACHE F2). Este hook
+ * solo consulta el mapa e invoca el núcleo `invalidateContent`.
  *
- * Trazable a D-BBF-KB-98, §13.3 audit (propagación automática), SB_Law I-5.
+ * Trazable a D-BBF-KB-98, §13.3 audit (propagación automática), SB_Law I-5,
+ * D-SBWEB-CACHE (R-CACHE).
  *
  * Uso en cualquier Payload Global:
  * ```ts
  * hooks: { afterChange: [revalidateGlobal] }
  * ```
  */
-const LOCALES = ['es', 'en'] as const;
-
 export const revalidateGlobal: GlobalAfterChangeHook = async ({
   doc,
   previousDoc,
@@ -36,17 +37,15 @@ export const revalidateGlobal: GlobalAfterChangeHook = async ({
     return doc;
   }
 
-  req.payload.logger.info(`[revalidate] Global ${global.slug} updated — invalidating cache`);
-
-  try {
-    revalidateTag(`global_${global.slug}`);
-    for (const locale of LOCALES) {
-      revalidatePath(`/${locale}`);
-    }
-  } catch {
-    // No-op fuera de Next.js request context (seed scripts, CLI).
-    // El cambio se commitió en DB — solo omitimos la invalidación de cache ISR.
+  const paths = globalCacheScope[global.slug];
+  if (!paths) {
+    req.payload.logger.warn(
+      `[revalidate] Global ${global.slug} sin entrada en cacheScopeMap — cache no invalidado`,
+    );
+    return doc;
   }
+
+  invalidateContent({ paths, tags: [`global_${global.slug}`] }, req.payload.logger);
 
   // Capa ADICIONAL independiente (edge de Cloudflare, s-maxage) — no depende
   // de si la invalidación de arriba tuvo éxito, y no debe tumbar el hook si
