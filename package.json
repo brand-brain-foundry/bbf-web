@@ -25,6 +25,7 @@
     "seed:cornerstones": "tsx src/scripts/seed-cornerstones.ts"
   },
   "dependencies": {
+    "@fortedigital/nextjs-cache-handler": "2.5.3",
     "@hookform/resolvers": "^5.2.2",
     "@payloadcms/db-postgres": "^3.84.1",
     "@payloadcms/next": "^3.84.1",
@@ -45,6 +46,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.76.0",
+    "redis": "^6.2.0",
     "resend": "^6.12.3",
     "sharp": "^0.34.5",
     "svix": "^1.94.0",

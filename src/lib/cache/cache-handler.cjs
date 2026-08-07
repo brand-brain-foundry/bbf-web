@@ -1,139 +1,123 @@
 /**
  * cacheHandler — adaptador Data Cache de Next.js respaldado por Upstash Redis (P-CACHE).
  *
- * Cierra HAL-SBWEB-ISR-STALE-NO-ONDEMAND-01: sin cacheHandler, revalidateTag() marca el tag
- * en memoria del proceso pero no purga el Data Cache in-memory/filesystem por defecto — el
- * núcleo (invalidateContent) ya emite el tag correcto (verificado por log de runtime), lo que
- * faltaba era este adaptador. NO reemplaza invalidateContent/cacheScopeMap — es el backend que
- * revalidateTag() necesita para que la purga surta efecto.
+ * Reemplaza el handler propio (3 bugs en secuencia: DNS, serialización `a.pipeTo`,
+ * invalidación) por `@fortedigital/nextjs-cache-handler` — mantenido contra los cambios
+ * internos de serialización de Next entre versiones. Cierra HAL-SBWEB-ISR-STALE-NO-ONDEMAND-01
+ * completo (ambas mitades): el crash de prefetch RSC (`a.pipeTo`) y la invalidación por tag/path.
  *
- * CommonJS (.cjs) porque Next carga este archivo con `require()` fuera del pipeline de
- * transpilación de la app — package.json tiene "type":"module", así que un ".js" plano se
- * interpretaría como ESM y `require()` fallaría (ERR_REQUIRE_ESM).
+ * Versión pineada: 2.5.3 — NO 3.x. La línea 3.x del paquete (`peerDependencies.next >=16.1.5`,
+ * keyword "next16") requiere Next 16; producción corre Next 15.5.18. La línea compatible es
+ * 2.x (`peerDependencies.next >=15.2.4`, keyword "next15"), verificado contra el registro npm
+ * — el diagnóstico madre citó mal la versión (asumió que 3.2.0 cubría Next 15).
  *
- * NO usa el SDK `@upstash/redis` (a diferencia de src/lib/redis/client.ts) — habla el protocolo
- * REST de Upstash a mano con `node:https`. Motivo medido, no supuesto: `@upstash/redis` llama al
- * `fetch()` GLOBAL, que Next.js parchea para rastrear "dynamic server usage" durante el render
- * estático. Next invoca get()/set() de este handler DENTRO del mismo contexto de render de cada
- * ruta — el `fetch()` interno del SDK, al no llevar `cache` explícito (Next 15: sin `cache`
- * explícito = no-store), se atribuye a la ruta y dispara `DynamicServerError` en el 100% de las
- * llamadas (108/108 medido en build real contra Redis real, 2026-08-07). Poner `cache:'force-cache'`
- * en el SDK NO es la solución: la respuesta de cada get() quedaría cacheada en el Data Cache de
- * Next indefinidamente (sin `revalidate`), un caché-dentro-del-caché sin invalidación — exactamente
- * el bug que este puerto existe para cerrar. `node:https` no pasa por el `fetch` parcheado por
- * Next (es una API completamente distinta) — invisible al rastreo, cero efecto colateral en la
- * clasificación estática/dinámica de las rutas.
+ * CommonJS (.cjs) por la misma razón que el handler anterior: package.json tiene
+ * "type":"module", next.config.mjs resuelve este archivo con `require.resolve()` fuera del
+ * pipeline de transpilación de la app.
  *
- * Conexión: mismas env vars que src/lib/redis/client.ts (UPSTASH_REDIS_REST_URL/TOKEN) —
- * fuente única de CONFIGURACIÓN de conexión. Mismo Redis, mismas env vars, implementación de
- * transporte distinta por la razón de arriba — no dos fuentes de configuración.
+ * Transporte: `redis` (node-redis, TCP/RESP vía `createClient`), NO `@upstash/redis` (SDK REST
+ * sobre `fetch`). Next parchea el `fetch()` global durante el render estático para rastrear
+ * "dynamic server usage" — cualquier SDK que llame fetch() dentro de get()/set() dispara
+ * `DynamicServerError`. `redis` usa sockets TCP crudos, invisible a ese parcheo. Conexión nueva
+ * y distinta a `src/lib/redis/client.ts` (SDK REST, usado por rate-limit) — mismo Redis físico
+ * (Upstash), credencial TCP separada (`rediss://`), NUNCA se toca ese cliente REST.
  *
- * Gate defensivo: si UPSTASH_REDIS_REST_URL/TOKEN faltan, o si Redis no responde, el handler
- * degrada a cache-miss permanente (get() devuelve null, set()/revalidateTag() son no-op) — el
- * sitio sigue arrancando y sirviendo, solo sin Data Cache persistente. Mismo principio que el
- * gate de STORAGE_PROVIDER (R2 ausente no tumba el build).
+ * Serialización Buffer (resuelve `a.pipeTo`): el sub-handler `redis-strings` del fork convierte
+ * `rscData`/`segmentData` (APP_PAGE) y `body` (APP_ROUTE) a base64 antes de `JSON.stringify` y
+ * los revierte a Buffer al leer — verificado en su código fuente (`parseBuffersToStrings` /
+ * `convertStringsToBuffers`). El handler propio no hacía esta conversión: `JSON.stringify` sobre
+ * un Buffer produce `{type:'Buffer',data:[...]}`, que `JSON.parse` no revive — de ahí el crash
+ * en el prefetch RSC del CTA `/contacto`.
+ *
+ * Tags implícitos de path (absorbe el fix de PR#14): la clase `CacheHandler` del fork lee
+ * `x-next-cache-tags` de las cabeceras del valor cacheado en su propio `set()` (mismo mecanismo
+ * que PR#14 añadió a mano) y propaga `ctx.softTags` como `implicitTags` a `get()` — el
+ * sub-handler compara esos tags contra un registro de revalidación (`_N_T_<path>`) para
+ * invalidar. PR#14 (`fix/r-cache-invalidacion`) se cierra sin merge: su lógica queda absorbida
+ * nativamente por este handler.
+ *
+ * No usa `instrumentation.ts`/`registerInitialCache` — es opcional (solo pre-calienta el cache
+ * con artefactos de build), no lo requiere el ciclo get/set/revalidateTag. `instrumentation.ts`
+ * ya se eliminó una vez de este repo por no correr en `output:standalone`; no se reintroduce
+ * para una función que no hace falta.
+ *
+ * Gate defensivo: si UPSTASH_REDIS_TCP_URL falta, o si la conexión Redis falla, resuelve a
+ * `{ handlers: [] }` — el propio fork trata una lista de handlers vacía como no-op seguro
+ * (`handlers.filter(Boolean)`, bucles sobre 0 elementos): get() nunca encuentra nada,
+ * set()/revalidateTag() no hacen nada. Nunca lanza. Mismo principio que el gate de
+ * STORAGE_PROVIDER (R2 ausente no tumba el build) y que el handler anterior (Redis caído no
+ * tumba el sitio).
+ *
+ * `keyPrefix` en v2 (vs. `nextcache:v1:` del handler anterior) — formato de entrada distinto
+ * (el fork no es compatible con las keys que escribía el handler propio), separa el namespace
+ * a propósito. Las keys v1 quedan huérfanas en Redis (nunca se leen, no bloquean) hasta que
+ * expiren o se purguen manualmente — cache frío esperado en el primer deploy, no un bug.
  */
-const https = require('node:https');
+const { CacheHandler } = require('@fortedigital/nextjs-cache-handler');
+const createRedisHandler = require('@fortedigital/nextjs-cache-handler/redis-strings').default;
+const { createClient } = require('redis');
+const { PHASE_PRODUCTION_BUILD } = require('next/constants.js');
 
-const KEY_PREFIX = 'nextcache:v1:';
-const TAG_PREFIX = 'nextcache:tag:v1:';
-const REQUEST_TIMEOUT_MS = 5000;
+CacheHandler.onCreation(() => {
+  if (global.cacheHandlerConfig) {
+    return global.cacheHandlerConfig;
+  }
+  if (global.cacheHandlerConfigPromise) {
+    return global.cacheHandlerConfigPromise;
+  }
 
-const restUrl = process.env.UPSTASH_REDIS_REST_URL;
-const restToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-const enabled = Boolean(restUrl && restToken);
+  global.cacheHandlerConfigPromise = (async () => {
+    const tcpUrl = process.env.UPSTASH_REDIS_TCP_URL;
+    let redisClient = null;
 
-if (!enabled) {
-  console.warn(
-    '[cache-handler] UPSTASH_REDIS_REST_URL/TOKEN ausentes — degradando a cache-miss permanente (sin Data Cache persistente).',
-  );
-}
-
-/** POST {baseUrl}/pipeline — protocolo REST de Upstash a mano, sin pasar por fetch(). */
-function pipeline(commands) {
-  return new Promise((resolve, reject) => {
-    const body = JSON.stringify(commands);
-    const req = https.request(
-      `${restUrl}/pipeline`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${restToken}`,
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(body),
-        },
-        timeout: REQUEST_TIMEOUT_MS,
-      },
-      (res) => {
-        let raw = '';
-        res.on('data', (chunk) => {
-          raw += chunk;
+    // No conectar durante `next build` — la fase de build no necesita Data Cache persistente
+    // y evita depender de red/credencial en el paso de build (mismo patrón que el ejemplo
+    // oficial del fork).
+    if (tcpUrl && PHASE_PRODUCTION_BUILD !== process.env.NEXT_PHASE) {
+      try {
+        redisClient = createClient({ url: tcpUrl, pingInterval: 10000 });
+        redisClient.on('error', (error) => {
+          console.warn('[cache-handler] Redis error, degradando:', error);
+          global.cacheHandlerConfig = null;
+          global.cacheHandlerConfigPromise = null;
         });
-        res.on('end', () => {
-          if (res.statusCode < 200 || res.statusCode >= 300) {
-            reject(new Error(`Upstash REST ${res.statusCode}: ${raw}`));
-            return;
-          }
-          try {
-            resolve(JSON.parse(raw));
-          } catch (error) {
-            reject(error);
-          }
-        });
-      },
-    );
-    req.on('timeout', () => req.destroy(new Error('Upstash REST timeout')));
-    req.on('error', reject);
-    req.write(body);
-    req.end();
-  });
-}
-
-module.exports = class CacheHandler {
-  constructor(ctx) {
-    this.ctx = ctx;
-  }
-
-  async get(cacheKey) {
-    if (!enabled) return null;
-    try {
-      const [{ result }] = await pipeline([['GET', KEY_PREFIX + cacheKey]]);
-      return result ? JSON.parse(result) : null;
-    } catch (error) {
-      console.warn('[cache-handler] get() falló, degradando a cache-miss:', error);
-      return null;
-    }
-  }
-
-  async set(cacheKey, data, ctx) {
-    if (!enabled) return;
-    const tags = (ctx && ctx.tags) || [];
-    const entry = { value: data, lastModified: Date.now(), tags };
-    try {
-      const commands = [['SET', KEY_PREFIX + cacheKey, JSON.stringify(entry)]];
-      for (const tag of tags) {
-        commands.push(['SADD', TAG_PREFIX + tag, cacheKey]);
+      } catch (error) {
+        console.warn('[cache-handler] Falló crear el cliente Redis:', error);
+        redisClient = null;
       }
-      await pipeline(commands);
-    } catch (error) {
-      console.warn('[cache-handler] set() falló, entrada no persistida:', error);
+    } else if (!tcpUrl) {
+      console.warn(
+        '[cache-handler] UPSTASH_REDIS_TCP_URL ausente — degradando a cache-miss permanente (sin Data Cache persistente).',
+      );
     }
-  }
 
-  async revalidateTag(tagsArg) {
-    if (!enabled) return;
-    const tags = [tagsArg].flat();
-    try {
-      for (const tag of tags) {
-        const [{ result: keys }] = await pipeline([['SMEMBERS', TAG_PREFIX + tag]]);
-        const commands = (keys || []).map((key) => ['DEL', KEY_PREFIX + key]);
-        commands.push(['DEL', TAG_PREFIX + tag]);
-        await pipeline(commands);
+    if (redisClient) {
+      try {
+        await redisClient.connect();
+      } catch (error) {
+        console.warn('[cache-handler] Falló conectar a Redis, degradando:', error);
+        await redisClient.disconnect().catch(() => {});
+        redisClient = null;
       }
-    } catch (error) {
-      console.warn('[cache-handler] revalidateTag() falló:', error);
     }
-  }
 
-  resetRequestCache() {}
-};
+    global.cacheHandlerConfigPromise = null;
+
+    if (!redisClient?.isReady) {
+      global.cacheHandlerConfig = { handlers: [] };
+      return global.cacheHandlerConfig;
+    }
+
+    const redisHandler = createRedisHandler({
+      client: redisClient,
+      keyPrefix: 'nextcache:v2:',
+    });
+
+    global.cacheHandlerConfig = { handlers: [redisHandler] };
+    return global.cacheHandlerConfig;
+  })();
+
+  return global.cacheHandlerConfigPromise;
+});
+
+module.exports = CacheHandler;
