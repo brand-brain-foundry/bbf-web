@@ -1,9 +1,15 @@
+import { createRequire } from 'module';
+
 import { withPayload } from '@payloadcms/next/withPayload';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 import { STORAGE_PROVIDERS } from './src/lib/storage/providers.mjs';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+
+// package.json tiene "type":"module" — require.resolve() vía createRequire, no require nativo
+// (ESM no lo expone). Ver comentario de cabecera en cache-handler.cjs para el porqué de .cjs.
+const require = createRequire(import.meta.url);
 
 // P-STORAGE (HAL-SBWEB-PROVIDER-COUPLING-01): fallback 'r2' coincide con el proveedor activo
 // hoy en producción — si STORAGE_PROVIDER no está seteado en build, el CSP no cambia.
@@ -13,6 +19,11 @@ const storageHostname = STORAGE_PROVIDERS[process.env.STORAGE_PROVIDER ?? 'r2'].
 const nextConfig = {
   output: 'standalone', // requerido por Railway/Docker — Vercel lo ignora, aditivo y seguro (B-BBF-WEB-RAILWAY-PREP-01)
   reactStrictMode: true,
+  // P-CACHE (HAL-SBWEB-ISR-STALE-NO-ONDEMAND-01): sin esto, revalidateTag() no purga el Data
+  // Cache en standalone self-hosted — el tag se marca pero la entrada cacheada persiste.
+  // cacheMaxMemorySize:0 fuerza el uso del handler externo (Redis) en vez del in-memory default.
+  cacheHandler: require.resolve('./src/lib/cache/cache-handler.cjs'),
+  cacheMaxMemorySize: 0,
   experimental: {
     reactCompiler: false,
   },
