@@ -31,6 +31,7 @@
     "@payloadcms/plugin-seo": "^3.84.1",
     "@payloadcms/richtext-lexical": "^3.84.1",
     "@payloadcms/storage-s3": "3.84.1",
+    "@payloadcms/storage-vercel-blob": "3.84.1",
     "@radix-ui/react-slot": "^1.2.4",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",

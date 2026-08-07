@@ -1,7 +1,13 @@
 import { withPayload } from '@payloadcms/next/withPayload';
 import createNextIntlPlugin from 'next-intl/plugin';
 
+import { STORAGE_PROVIDERS } from './src/lib/storage/providers.mjs';
+
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+
+// P-STORAGE (HAL-SBWEB-PROVIDER-COUPLING-01): fallback 'r2' coincide con el proveedor activo
+// hoy en producción — si STORAGE_PROVIDER no está seteado en build, el CSP no cambia.
+const storageHostname = STORAGE_PROVIDERS[process.env.STORAGE_PROVIDER ?? 'r2'].hostname;
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -12,10 +18,9 @@ const nextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
-    // B-BBF-WEB-RAILWAY-EJECUCION-01: Cloudflare R2 reemplaza Vercel Blob.
-    // *.r2.dev cubre el dominio público default de un bucket R2; si se conecta
-    // un dominio custom al bucket, agregarlo aquí también.
-    remotePatterns: [{ protocol: 'https', hostname: '*.r2.dev' }],
+    // P-STORAGE: hostname derivado de STORAGE_PROVIDERS (src/lib/storage/providers.mjs),
+    // no hardcodeado — si se conecta un dominio custom al bucket, agregarlo en ese archivo.
+    remotePatterns: [{ protocol: 'https', hostname: storageHostname }],
     // H-BBF-521: default de Next es 'attachment' (image-config.js) — sin esto
     // /_next/image fuerza descarga en vez de mostrar la imagen inline.
     contentDispositionType: 'inline',
@@ -36,14 +41,14 @@ const nextConfig = {
       scriptSrc,
       // Inline styles via React style prop + Tailwind utilities
       "style-src 'self' 'unsafe-inline'",
-      // Imágenes: self + data URIs + Cloudflare R2 + Turnstile widget
-      "img-src 'self' data: blob: https://*.r2.dev https://challenges.cloudflare.com",
+      // Imágenes: self + data URIs + storage activo (P-STORAGE) + Turnstile widget
+      `img-src 'self' data: blob: https://${storageHostname} https://challenges.cloudflare.com`,
       // Fuentes: next/font/google las sirve self-hosted desde _next/static/
       "font-src 'self'",
-      // Fetch/XHR: Turnstile verify + GA4 + R2 (media directo si aplica)
-      "connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://*.r2.dev",
-      // Video: self cubre el hero (ahora en /public); R2 cubre videos de Media collection
-      "media-src 'self' https://*.r2.dev",
+      // Fetch/XHR: Turnstile verify + GA4 + storage activo (media directo si aplica)
+      `connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://${storageHostname}`,
+      // Video: self cubre el hero (ahora en /public); storage activo cubre videos de Media collection
+      `media-src 'self' https://${storageHostname}`,
       // Turnstile widget iframe
       'frame-src https://challenges.cloudflare.com',
       "frame-ancestors 'none'",

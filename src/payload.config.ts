@@ -1,10 +1,11 @@
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
-import { s3Storage } from '@payloadcms/storage-s3';
 import { seoPlugin } from '@payloadcms/plugin-seo';
 import path from 'path';
 import { buildConfig } from 'payload';
 import { fileURLToPath } from 'url';
+
+import { getStorageAdapter } from './lib/storage';
 
 import { Users } from './payload/collections/users';
 import { Media } from './payload/collections/media';
@@ -40,38 +41,6 @@ const dirname = path.dirname(filename);
 const payloadSecret = process.env.PAYLOAD_SECRET;
 if (!payloadSecret || payloadSecret.length < 32) {
   throw new Error('PAYLOAD_SECRET ausente o < 32 chars — el server no arranca por seguridad');
-}
-
-// B-BBF-WEB-FIX-R2-RUNTIME-FINAL: chequeo + log explícito de R2, evaluado siempre que
-// payload.config.ts se importa (build Y runtime) — a diferencia de instrumentation.ts
-// (removido), que Next.js NO garantiza ejecutar de forma confiable con output:'standalone'
-// (bug conocido, ver reporte B-BBF-WEB-FIX-CASO-VIDEO-Y-R2-RUNTIME). Log en vez de throw:
-// un storage mal configurado no debe crashear el sitio entero (crash-loop en prod sería
-// peor que degradar a storage local) — pero SÍ debe quedar clarísimo en los logs por qué.
-const r2Bucket = process.env.R2_BUCKET;
-const r2Endpoint = process.env.R2_ENDPOINT;
-const r2AccessKeyId = process.env.R2_ACCESS_KEY_ID;
-const r2SecretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
-
-const r2Vars = {
-  R2_BUCKET: r2Bucket,
-  R2_ENDPOINT: r2Endpoint,
-  R2_ACCESS_KEY_ID: r2AccessKeyId,
-  R2_SECRET_ACCESS_KEY: r2SecretAccessKey,
-};
-const r2Missing = Object.entries(r2Vars)
-  .filter(([, value]) => !value)
-  .map(([key]) => key);
-const r2Active = r2Missing.length === 0;
-
-if (r2Active) {
-  console.log('[storage] R2 (Cloudflare) ACTIVO — collection media usa s3Storage.');
-} else {
-  console.warn(
-    `[storage] R2 SKIPPED — faltan env vars: ${r2Missing.join(', ')}. ` +
-      'Media collection cae a storage local (efímero en contenedores). ' +
-      'Si esto aparece en producción, confirmar las 4 vars en el panel del host (runtime, no solo build).',
-  );
 }
 
 export default buildConfig({
@@ -182,25 +151,8 @@ export default buildConfig({
         return `${siteUrl}/${locale}/${typeof path === 'string' ? path : ''}`;
       },
     }),
-    // B-BBF-WEB-RAILWAY-EJECUCION-01: Cloudflare R2 (S3-compatible) via adapter oficial @payloadcms/storage-s3.
-    // R2 usa region 'auto' (no es región AWS real) + forcePathStyle:true (requisito R2 — sin esto
-    // el SDK intenta virtual-hosted-style addressing, que R2 no siempre tolera). B-BBF-WEB-FIX-R2-STORAGE.
-    ...(r2Bucket && r2Endpoint && r2AccessKeyId && r2SecretAccessKey
-      ? [
-          s3Storage({
-            collections: { media: true },
-            bucket: r2Bucket,
-            config: {
-              credentials: {
-                accessKeyId: r2AccessKeyId,
-                secretAccessKey: r2SecretAccessKey,
-              },
-              region: 'auto',
-              endpoint: r2Endpoint,
-              forcePathStyle: true,
-            },
-          }),
-        ]
-      : []),
+    // P-STORAGE (HAL-SBWEB-PROVIDER-COUPLING-01): proveedor seleccionado por STORAGE_PROVIDER,
+    // no por bifurcación de rama — ver src/lib/storage/index.ts.
+    ...getStorageAdapter(),
   ],
 });
