@@ -107,7 +107,16 @@ module.exports = class CacheHandler {
 
   async set(cacheKey, data, ctx) {
     if (!enabled) return;
-    const tags = (ctx && ctx.tags) || [];
+    // Next NO pasa tags por `ctx` para entradas PAGE/ROUTE (solo para FETCH) — ver
+    // response-cache/index.js. Para páginas, Next embebe los tags (incluido el tag
+    // implícito de path `_N_T_/<path>` que revalidatePath necesita) en la cabecera
+    // `x-next-cache-tags` del propio valor cacheado (misma fuente que lee el handler
+    // de referencia de Next, file-system-cache.js). Sin este merge, revalidatePath()
+    // nunca encuentra la key bajo su tag implícito y la invalidación no purga nada.
+    const headerTags = (data && data.headers && data.headers['x-next-cache-tags']) || '';
+    const tags = [
+      ...new Set([...((ctx && ctx.tags) || []), ...headerTags.split(',').filter(Boolean)]),
+    ];
     const entry = { value: data, lastModified: Date.now(), tags };
     try {
       const commands = [['SET', KEY_PREFIX + cacheKey, JSON.stringify(entry)]];
