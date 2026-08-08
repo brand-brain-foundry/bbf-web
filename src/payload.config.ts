@@ -6,6 +6,7 @@ import { buildConfig } from 'payload';
 import { fileURLToPath } from 'url';
 
 import { getStorageAdapter } from './lib/storage';
+import { withPropagation } from './lib/cache/withPropagation';
 
 import { Users } from './payload/collections/users';
 import { Media } from './payload/collections/media';
@@ -60,18 +61,23 @@ export default buildConfig({
     },
   },
 
+  // Users excluida a propósito: auth/admin sin consumidor de render público,
+  // el contrato de propagación no le aplica por definición (F1 del diagnóstico,
+  // OUTPUT-SBWEB-2026-08-07-DIAGNOSTICO-CONTRATO-PROPAGACION.md:70).
   collections: [
     Users,
-    Media,
-    Pages,
-    Entities,
-    Topics,
-    Clusters,
-    ContentItems,
-    Surfaces,
-    Signals,
-    Redirects,
-    VideoPackages,
+    ...[
+      Media,
+      Pages,
+      Entities,
+      Topics,
+      Clusters,
+      ContentItems,
+      Surfaces,
+      Signals,
+      Redirects,
+      VideoPackages,
+    ].map((c) => withPropagation(c, 'collection')),
   ],
 
   globals: [
@@ -85,7 +91,7 @@ export default buildConfig({
     SiteHomepage,
     SiteCtaLibrary,
     SiteContactPage,
-  ],
+  ].map((g) => withPropagation(g, 'global')),
 
   // D-BBF-WEB-05: ES default, EN con prefijo /en
   localization: {
