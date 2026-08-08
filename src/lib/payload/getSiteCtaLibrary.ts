@@ -1,6 +1,4 @@
-import { getPayload } from 'payload';
-
-import config from '@/payload-config';
+import { getGlobalContent } from '@/lib/data/globals';
 
 /**
  * Helpers para SiteCtaLibrary (D-DS-18, D-NAV-11).
@@ -10,8 +8,7 @@ import config from '@/payload-config';
  * del caller (contexto-específico).
  */
 export async function getSiteCtaLibrary(locale: 'es' | 'en' = 'es') {
-  const payload = await getPayload({ config });
-  return payload.findGlobal({ slug: 'site-cta-library', locale, depth: 0 });
+  return getGlobalContent('site-cta-library', locale, { depth: 0 });
 }
 
 export async function getCtaByKey(key: string, locale: 'es' | 'en' = 'es') {

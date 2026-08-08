@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { getPayload } from 'payload';
 import config from '@/payload-config';
 import { SITE_NAME_FALLBACK } from '@/lib/brand';
+import { getGlobalContent } from '@/lib/data/globals';
 
 interface GenerateMetadataOptions {
   locale: 'es' | 'en';
@@ -32,11 +33,9 @@ export async function generatePageMetadata({
       depth: 1,
     });
     // D-FASE-B-08: slug canonical del global SEO.ts es camelCase, no kebab
-    const seoDefaults = await (payload.findGlobal as Function)({
-      slug: 'seoDefaults',
-      locale,
-      depth: 1,
-    }).catch(() => null);
+    const seoDefaults = await getGlobalContent('seoDefaults', locale, { depth: 1 }).catch(
+      () => null,
+    );
 
     const page = (pagesResult as { docs: unknown[] }).docs[0] as
       | Record<string, unknown>

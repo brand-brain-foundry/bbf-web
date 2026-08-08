@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { getPayload } from 'payload';
-import config from '@/payload-config';
 import { ContactSection } from '@/components/sections/ContactSection';
 import { ContactForm } from '@/components/molecules/ContactForm';
 import { StepsBlock } from '@/components/molecules/StepsBlock';
@@ -10,6 +8,7 @@ import { Text } from '@/components/atoms/Text';
 import { Reveal } from '@/components/atoms/Reveal';
 import { buildHreflangBySlugMap } from '@/lib/seo/hreflang';
 import { getSiteIdentity } from '@/config/site';
+import { getGlobalContent } from '@/lib/data/globals';
 
 type Props = {
   params: Promise<{ locale: 'es' | 'en' }>;
@@ -20,9 +19,8 @@ export const revalidate = 3600;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const l = locale === 'en' ? 'en' : 'es';
-  const payload = await getPayload({ config });
   const [contactPage, siteId, t] = await Promise.all([
-    payload.findGlobal({ slug: 'site-contact-page', locale: l, depth: 0 }),
+    getGlobalContent('site-contact-page', l, { depth: 0 }),
     getSiteIdentity(l),
     getTranslations({ locale, namespace: 'contact' }),
   ]);
@@ -65,10 +63,9 @@ export default async function ContactoPage({ params }: Props) {
 
   const l = locale === 'en' ? 'en' : 'es';
 
-  const payload = await getPayload({ config });
   const [contactPage, siteContact, siteId, t] = await Promise.all([
-    payload.findGlobal({ slug: 'site-contact-page', locale: l, depth: 0 }),
-    payload.findGlobal({ slug: 'site-contact', locale: l, depth: 0 }),
+    getGlobalContent('site-contact-page', l, { depth: 0 }),
+    getGlobalContent('site-contact', l, { depth: 0 }),
     getSiteIdentity(l),
     getTranslations({ locale, namespace: 'contact' }),
   ]);

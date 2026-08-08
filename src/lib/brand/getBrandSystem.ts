@@ -17,8 +17,7 @@
  *   bs.logoVariant es el tipo exacto de BrandLogoVariant.
  *   Pásalo directamente como variant prop de <BrandLogo>.
  */
-import { getPayload } from 'payload';
-import config from '@/payload-config';
+import { getGlobalContent } from '@/lib/data/globals';
 
 export type PrimaryPalette = 'red' | 'blue';
 export type ThemeMode = 'light' | 'dark' | 'auto';
@@ -45,8 +44,7 @@ const GRADIENT_CLASS_MAP: Record<AccentGradient, string> = {
 };
 
 export async function getBrandSystem(): Promise<BrandSystemSelections> {
-  const payload = await getPayload({ config });
-  const data = await payload.findGlobal({ slug: 'brandSystem' });
+  const data = await getGlobalContent('brandSystem');
 
   const primaryPalette: PrimaryPalette = data.colors?.primaryPalette ?? 'blue';
   const themeMode: ThemeMode = data.colors?.themeMode ?? 'light';

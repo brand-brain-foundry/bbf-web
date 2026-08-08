@@ -1,8 +1,7 @@
 import { getLocale, getTranslations } from 'next-intl/server';
-import { getPayload } from 'payload';
-import config from '@/payload-config';
 import Link from 'next/link';
 import { getSiteIdentity } from '@/config/site';
+import { getGlobalContent } from '@/lib/data/globals';
 import { SkipLink } from '@/components/atoms/SkipLink';
 import { LanguageSwitcher } from '@/components/molecules/LanguageSwitcher';
 import { BrandLogoLink } from '@/components/molecules/BrandLogoLink';
@@ -30,10 +29,9 @@ export async function Header({ className }: HeaderProps) {
   const [locale, t] = await Promise.all([getLocale(), getTranslations('Header')]);
   const localeKey = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
 
-  const payload = await getPayload({ config });
   const [identity, navigation] = await Promise.all([
     getSiteIdentity(localeKey),
-    payload.findGlobal({ slug: 'site-navigation', locale: localeKey, depth: 2 }),
+    getGlobalContent('site-navigation', localeKey, { depth: 2 }),
   ]);
 
   const siteName = identity.siteName ?? 'Sivar Brains';
