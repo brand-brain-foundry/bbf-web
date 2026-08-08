@@ -1,5 +1,28 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionAfterChangeHook, CollectionConfig } from 'payload';
 import { isAdminOrEditor, publicRead } from '@/payload/lib/access';
+import { invalidateContent, pageScope } from '@/lib/cache/invalidate';
+import { contentCacheTag } from '@/lib/cache/contentCacheTag';
+import { purgeCloudflareCache } from '@/lib/cloudflare/purge-cache';
+
+// EXEC-2 contrato de propagación, Patrón A: video-packages no tenía ningún
+// afterChange — un paquete vive embebido en site-homepage.method/.capabilities
+// (relationship, depth:2) y editarlo nunca invalidaba el home. Tag desde
+// `contentCacheTag('global','site-homepage')`, NO desde
+// `SITE_HOMEPAGE_CACHE_TAG` en `config/site.ts` — ese módulo importa
+// `payload-config` (getPayload) y crearía un ciclo
+// payload.config.ts → collections/videoPackages → config/site.ts →
+// payload-config. `contentCacheTag` es el módulo puro sin ciclo (mismo
+// patrón que `lib/data/cacheTags.ts`); produce el mismo string
+// (`global_site-homepage`) que consume `getSiteHomepageCapabilities`.
+// site-homepage es page-scoped (cacheScopeMap.ts fila `site-homepage` →
+// `pageScope()`), no layout — el home no cascadea a todas las páginas.
+const revalidateVideoPackage: CollectionAfterChangeHook = async ({ req }) => {
+  invalidateContent(
+    { paths: pageScope(), tags: [contentCacheTag('global', 'site-homepage')] },
+    req.payload.logger,
+  );
+  await purgeCloudflareCache();
+};
 
 // D-BBF-MEDIA-PACKAGE (Opción A, firmada): un video es un paquete de
 // entregas (primary/fallback/mobile/poster), no N Media docs sueltos
@@ -18,6 +41,9 @@ export const VideoPackages: CollectionConfig = {
     read: publicRead,
     update: isAdminOrEditor,
     delete: isAdminOrEditor,
+  },
+  hooks: {
+    afterChange: [revalidateVideoPackage],
   },
   fields: [
     {

@@ -1,6 +1,20 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionAfterChangeHook, CollectionConfig } from 'payload';
 import { isAdminOrEditor, publicRead } from '@/payload/lib/access';
 import { slugRegex } from '@/payload/lib/utils/ulid';
+import { invalidateContent, layoutScope } from '@/lib/cache/invalidate';
+import { ENTITY_CACHE_TAG } from '@/lib/data/cacheTags';
+import { purgeCloudflareCache } from '@/lib/cloudflare/purge-cache';
+
+// EXEC-2 contrato de propagación, Patrón A: topics no tenía ningún
+// afterChange — un Topic vive embebido en entities.*.knowsAbout
+// (relationship, depth:1) y alimenta el JSON-LD knowsAbout que
+// StructuredData.tsx renderiza en el layout raíz (TODAS las páginas).
+// Editarlo sin este hook nunca invalidaba `ENTITY_CACHE_TAG`, el mismo tag
+// que ya consume `getEntityBySlug` — mismo molde que `revalidateEntity`.
+const revalidateTopic: CollectionAfterChangeHook = async ({ req }) => {
+  invalidateContent({ paths: layoutScope(), tags: [ENTITY_CACHE_TAG] }, req.payload.logger);
+  await purgeCloudflareCache();
+};
 
 export const Topics: CollectionConfig = {
   slug: 'topics',
@@ -14,6 +28,9 @@ export const Topics: CollectionConfig = {
     read: publicRead,
     update: isAdminOrEditor,
     delete: isAdminOrEditor,
+  },
+  hooks: {
+    afterChange: [revalidateTopic],
   },
   fields: [
     {
