@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { getPayload } from 'payload';
-import config from '@/payload-config';
 import { getSiteIdentity } from '@/config/site';
+import { getGlobalContent } from '@/lib/data/globals';
 import { interpolate } from '@/lib/content-interpolation';
 import { resolveLinkHref } from '@/lib/nav/resolveLinkHref';
 import { Container } from '@/components/atoms/Container';
@@ -43,11 +42,10 @@ export async function Footer({ className }: FooterProps) {
   const localeKey = (locale === 'en' ? 'en' : 'es') as 'es' | 'en';
   const t = await getTranslations('footer');
 
-  const payload = await getPayload({ config });
   const [identity, navigation, newsletter] = await Promise.all([
     getSiteIdentity(localeKey),
-    payload.findGlobal({ slug: 'site-navigation', locale: localeKey, depth: 2 }),
-    payload.findGlobal({ slug: 'site-newsletter', locale: localeKey }),
+    getGlobalContent('site-navigation', localeKey, { depth: 2 }),
+    getGlobalContent('site-newsletter', localeKey),
   ]);
 
   const siteName = identity.siteName ?? 'Sivar Brains';
