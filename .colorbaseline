@@ -1,0 +1,293 @@
+# .colorbaseline — GUARDIA DE COLOR (D-COLOR-SPACE forma B). Generado por
+# scripts/lint/check-color-tokens.ts --write-baseline
+# Cada línea = un HEX crudo CONOCIDO hoy (día-1 verde). Una regresión NUEVA
+# no listada aquí rompe el build. Una migración futura QUEMA (elimina) su línea.
+#
+# class:
+#   third-party  → colores de terceros en las 5 "pieles" (D-COLOR-TERCEROS) —
+#                  deuda TRANSITORIA, se elimina cuando la familia llegue a 0.
+#   deferred-fix → hardcode de marca a migrar a un token semantic/-oklch
+#                  en un EXEC por-directorio futuro (contract, no este turno).
+#
+# Formato TSV: class <TAB> relpath <TAB> ruleId <TAB> token <TAB> normLine
+deferred-fix	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	raw-hex	#0a0a0a	backgroundColor: '#0a0a0a',
+deferred-fix	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	raw-hex	#ffffff	color: '#ffffff',
+deferred-fix	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	raw-hex	#0057ff	color: '#0057ff',
+deferred-fix	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	raw-hex	#6b6b6b	color: '#6b6b6b',
+deferred-fix	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	raw-hex	#0057ff	backgroundColor: '#0057ff',
+deferred-fix	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	raw-hex	#3a3a3a	<span style={{ color: '#3a3a3a', fontSize: 18, letterSpacing: 1 }}>sivarbrains.com</span>
+deferred-fix	src/app/(frontend)/[locale]/layout.tsx	raw-hex	#0a0a0a	themeColor: '#0a0a0a',
+deferred-fix	src/app/not-found.tsx	raw-hex	#0a0a0a	<body style={{ margin: 0, background: '#0a0a0a', color: '#fff' }}>
+deferred-fix	src/app/not-found.tsx	raw-hex	#fff	<body style={{ margin: 0, background: '#0a0a0a', color: '#fff' }}>
+deferred-fix	src/app/not-found.tsx	raw-hex	#3a7bff	<a href="/" style={{ color: '#3a7bff' }}>
+deferred-fix	src/components/atoms/BlobBackground/BlobBackground.tsx	raw-hex	#000000	backgroundColor: '#000000',
+deferred-fix	src/components/atoms/PulpoPixel/PulpoPixel.tsx	raw-hex	#255ff1	const PULPO_ACCENT = '#255ff1';
+deferred-fix	src/components/atoms/PulpoPixel/PulpoPixel.tsx	raw-hex	#ebe3d4	const PULPO_EYE = '#ebe3d4';
+deferred-fix	src/components/atoms/PulpoPixel/PulpoPixel.tsx	raw-hex	#1a1a1a	const PULPO_INK = '#1a1a1a';
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#feda75	<stop offset="0" stopColor="#feda75" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fa7e1e	<stop offset="0.4" stopColor="#fa7e1e" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#d62976	<stop offset="0.7" stopColor="#d62976" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#962fbf	<stop offset="1" stopColor="#962fbf" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fff	<rect x="6" y="6" width="12" height="12" rx="4" fill="none" stroke="#fff" strokeWidth="1.8" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fff	<circle cx="12" cy="12" r="3" fill="none" stroke="#fff" strokeWidth="1.8" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fff	<circle cx="16.4" cy="7.6" r="1.1" fill="#fff" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fff	<rect x="3" y="3" width="18" height="18" rx="5" stroke="#fff" strokeWidth="1.4" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fff	<circle cx="12" cy="12" r="3" fill="#fff" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fff	<circle cx="6.5" cy="6.5" r="1" fill="#fff" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fff	<circle cx="17.5" cy="6.5" r="1" fill="#fff" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fff	<circle cx="6.5" cy="17.5" r="1" fill="#fff" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fff	<circle cx="17.5" cy="17.5" r="1" fill="#fff" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fff	<circle key={a} cx={16 + Math.cos(r) * 8.5} cy={16 + Math.sin(r) * 8.5} r="3" fill="#fff" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#fff	<circle cx="16" cy="16" r="4" fill="#fff" />
+deferred-fix	src/components/molecules/Aprendizaje/AprendizajePlayer.tsx	raw-hex	#1e8e3e	stroke="#1e8e3e"
+deferred-fix	src/components/molecules/HubDiagram/HubDiagram.tsx	raw-hex	#bbf	<circle cx={CX} cy={CY} r="45" fill="url(#bbf-spoke-fade)" />
+deferred-fix	src/components/molecules/HubDiagram/HubDiagram.tsx	raw-hex	#bbf	<circle cx={CX} cy={CY} r="44" fill="url(#bbf-hub-glow)" />
+deferred-fix	src/components/molecules/HubDiagram/HubDiagram.tsx	raw-hex	#bbf	<g mask="url(#bbf-spoke-mask)">
+deferred-fix	src/components/molecules/HubDiagram/HubDiagram.tsx	raw-hex	#bbf	<circle cx={CX} cy={CY} r={HUB_R} fill="url(#bbf-hub-blue-gradient)" />
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#00832d	<path fill="#00832d" d="M49 36l8.3 9.5 11.2 7.1 2-16.6-2-16.3-11.4 6.3z" />
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#0066da	<path fill="#0066da" d="M0 51.5V66c0 3.3 2.7 6 6 6h14.5l3-11-3-9.5-9.9-3z" />
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#e94235	<path fill="#e94235" d="M20.5 0L0 20.5l10.6 3 9.9-3 3-9.4z" />
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#2684fc	<path fill="#2684fc" d="M20.5 20.5H0v31h20.5z" />
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#00ac47	fill="#00ac47"
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#ffba00	<path fill="#ffba00" d="M63.7 0H20.5v20.5H49V36l20.7-17.2V6c0-3.3-2.7-6-6-6z" />
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#5b6ef0	const AVATAR_COLORS = ['#5b6ef0', '#e8714a', '#34a853', '#fbbc04'];
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#e8714a	const AVATAR_COLORS = ['#5b6ef0', '#e8714a', '#34a853', '#fbbc04'];
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#34a853	const AVATAR_COLORS = ['#5b6ef0', '#e8714a', '#34a853', '#fbbc04'];
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#fbbc04	const AVATAR_COLORS = ['#5b6ef0', '#e8714a', '#34a853', '#fbbc04'];
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#fff	<rect x="3" y="3" width="18" height="18" rx="5" stroke="#fff" strokeWidth="1.4" />
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#fff	<circle cx="12" cy="12" r="3" fill="#fff" />
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#fff	<circle cx="6.5" cy="6.5" r="1" fill="#fff" />
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#fff	<circle cx="17.5" cy="6.5" r="1" fill="#fff" />
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#fff	<circle cx="6.5" cy="17.5" r="1" fill="#fff" />
+deferred-fix	src/components/molecules/WAAgenda/WAAgendaSequence.tsx	raw-hex	#fff	<circle cx="17.5" cy="17.5" r="1" fill="#fff" />
+deferred-fix	src/components/molecules/WAChat/WASequence.tsx	raw-hex	#fff	<rect x="3" y="3" width="18" height="18" rx="5" stroke="#fff" strokeWidth="1.4" />
+deferred-fix	src/components/molecules/WAChat/WASequence.tsx	raw-hex	#fff	<circle cx="12" cy="12" r="3" fill="#fff" />
+deferred-fix	src/components/molecules/WAChat/WASequence.tsx	raw-hex	#fff	<circle cx="6.5" cy="6.5" r="1" fill="#fff" />
+deferred-fix	src/components/molecules/WAChat/WASequence.tsx	raw-hex	#fff	<circle cx="17.5" cy="6.5" r="1" fill="#fff" />
+deferred-fix	src/components/molecules/WAChat/WASequence.tsx	raw-hex	#fff	<circle cx="6.5" cy="17.5" r="1" fill="#fff" />
+deferred-fix	src/components/molecules/WAChat/WASequence.tsx	raw-hex	#fff	<circle cx="17.5" cy="17.5" r="1" fill="#fff" />
+deferred-fix	src/lib/actions/newsletter.ts	raw-hex	#111	style="display: inline-block; padding: 12px 24px; background: #111; color: #fff; text-decoration: none; border-radius: 6px;">
+deferred-fix	src/lib/actions/newsletter.ts	raw-hex	#fff	style="display: inline-block; padding: 12px 24px; background: #111; color: #fff; text-decoration: none; border-radius: 6px;">
+deferred-fix	src/lib/actions/newsletter.ts	raw-hex	#666	<p style="font-size: 12px; color: #666; margin-top: 32px;">
+deferred-fix	src/lib/blob/blob-intents.ts	raw-hex	#000000	bgColor: '#000000',
+deferred-fix	src/lib/blob/blob-intents.ts	raw-hex	#fdf5ed	glowColor: '#fdf5ed',
+deferred-fix	src/payload/globals/SiteIdentity.ts	raw-hex	#0a0a0a	defaultValue: '#0a0a0a',
+deferred-fix	src/payload/globals/SiteIdentity.ts	raw-hex	#3b82f6	defaultValue: '#3b82f6',
+deferred-fix	src/payload/migrations/20260515_175435.ts	raw-hex	#000000	"colors_primary" varchar DEFAULT '#000000',
+deferred-fix	src/payload/migrations/20260515_175435.ts	raw-hex	#FFFFFF	"colors_background" varchar DEFAULT '#FFFFFF',
+deferred-fix	src/payload/migrations/20260605_090223_add_site_config_global.ts	raw-hex	#0a0a0a	"seo_theme_color" varchar DEFAULT '#0a0a0a',
+deferred-fix	src/payload/migrations/20260605_191000_merge_site_identity_into_site_config_then_rename.ts	raw-hex	#0a0a0a	ALTER TABLE "site_identity" ADD COLUMN IF NOT EXISTS "seo_theme_color" varchar DEFAULT '#0a0a0a';
+deferred-fix	src/payload/migrations/20260612_000300_brand_system_selectors.ts	raw-hex	#000000	ADD COLUMN IF NOT EXISTS "colors_primary" varchar DEFAULT '#000000',
+deferred-fix	src/payload/migrations/20260612_000300_brand_system_selectors.ts	raw-hex	#FFFFFF	ADD COLUMN IF NOT EXISTS "colors_background" varchar DEFAULT '#FFFFFF',
+deferred-fix	src/scripts/generate-hero-poster.ts	raw-hex	#255FF1	<stop offset="0%" stop-color="#255FF1" stop-opacity="0.25"/>
+deferred-fix	src/scripts/generate-hero-poster.ts	raw-hex	#255FF1	<stop offset="100%" stop-color="#255FF1" stop-opacity="0"/>
+deferred-fix	src/scripts/generate-hero-poster.ts	raw-hex	#ffffff	<path d="M 80 0 L 0 0 0 80" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.04"/>
+deferred-fix	src/scripts/generate-hero-poster.ts	raw-hex	#0a0a0a	<rect width="${WIDTH}" height="${HEIGHT}" fill="#0a0a0a"/>
+deferred-fix	src/scripts/generate-hero-poster.ts	raw-hex	#ffffff	fill="#ffffff"
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#255FF1	<!-- Blue radial glow — BBF accent (#255FF1) -->
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#255FF1	<stop offset="0%" stop-color="#255FF1" stop-opacity="0.35"/>
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#255FF1	<stop offset="100%" stop-color="#255FF1" stop-opacity="0"/>
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#ffffff	<path d="M 60 0 L 0 0 0 60" fill="none" stroke="#ffffff" stroke-width="0.4" opacity="0.04"/>
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#1a1a2e	<stop offset="0%" stop-color="#1a1a2e" stop-opacity="0.6"/>
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#0a0a0a	<stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#0a0a0a	<rect width="${WIDTH}" height="${HEIGHT}" fill="#0a0a0a"/>
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#255FF1	<rect x="80" y="398" width="100" height="3" fill="#255FF1" rx="1.5"/>
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#ffffff	fill="#ffffff"
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#ebe3d4	fill="#ebe3d4"
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#255FF1	fill="#255FF1"
+deferred-fix	src/scripts/generate-og-image.ts	raw-hex	#255FF1	`<circle cx="${1060 + col * 28}" cy="${200 + row * 28}" r="3" fill="#255FF1" opacity="${0.15 + (row + col) * 0.05}"/>`,
+deferred-fix	src/scripts/seed-site-identity.ts	raw-hex	#255FF1	themeColor: '#255FF1',
+deferred-fix	src/scripts/seed-site-identity.ts	raw-hex	#3b82f6	dotColor: '#3b82f6',
+deferred-fix	src/scripts/seed-site-identity.ts	raw-hex	#255FF1	console.log(' ✅ seo.themeColor: #255FF1 (corrige #fef9e8)');
+deferred-fix	src/scripts/seed-site-identity.ts	raw-hex	#fef9e8	console.log(' ✅ seo.themeColor: #255FF1 (corrige #fef9e8)');
+deferred-fix	src/styles/tokens/components/button.css	raw-hex	#fff	linear-gradient(#fff 0 0) content-box,
+deferred-fix	src/styles/tokens/components/button.css	raw-hex	#fff	linear-gradient(#fff 0 0);
+deferred-fix	src/styles/tokens/components/button.css	raw-hex	#c0341d	); /* #c0341d — sync con borde rojo (5.2:1 on sand — WCAG AA) */
+deferred-fix	src/styles/tokens/components/button.css	raw-hex	#ebe3d4	color: var(--bbf-color-sand-deep-shade); /* #ebe3d4 — sync con borde (ghost sobre sand) */
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#fff	background: var(--app-bg, #fff);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#e9eaec	border-bottom: 1px solid var(--app-line, #e9eaec);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#eef4ff	background: var(--bbf-color-blue-50, #eef4ff);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#255ff1	color: var(--bbf-accent-blue, #255ff1);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#1c1d1f	color: var(--app-ink, #1c1d1f);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#6c7075	color: var(--app-ink-muted, #6c7075);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#9aa0a6	color: var(--app-ink-faint, #9aa0a6);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#e9eaec	background: var(--app-line, #e9eaec);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#255ff1	background: var(--bbf-accent-gradient, linear-gradient(90deg, #255ff1, #93b4f8));
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#93b4f8	background: var(--bbf-accent-gradient, linear-gradient(90deg, #255ff1, #93b4f8));
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#f1f2f4	border-bottom: 1px solid var(--app-line-soft, #f1f2f4);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#f6f7f9	background: var(--app-bg-soft, #f6f7f9);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#f5f9ff	background: #f5f9ff;
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#fff	background: #fff;
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#e9eaec	border: 1px solid var(--app-line, #e9eaec);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#1e8e3e	color: #1e8e3e;
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#1e8e3e	background: #1e8e3e;
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#b9cdf5	border: 1.6px solid #b9cdf5;
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#255ff1	border-right-color: var(--bbf-accent-blue, #255ff1);
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#cdd2d8	background: #cdd2d8;
+third-party	src/styles/tokens/components/capabilities-app-integraciones.css	raw-hex	#255ff1	background: var(--bbf-accent-blue, #255ff1);
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#2f6bdf	--app-blue: #2f6bdf;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#1f5bd0	--app-blue-deep: #1f5bd0;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#1c1d1f	--app-ink: #1c1d1f;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#3a3c40	--app-ink-soft: #3a3c40;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#6c7075	--app-ink-muted: #6c7075;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#9aa0a6	--app-ink-faint: #9aa0a6;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#e9eaec	--app-line: #e9eaec;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#f1f2f4	--app-line-soft: #f1f2f4;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#ffffff	--app-bg: #ffffff;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#f6f7f9	--app-bg-soft: #f6f7f9;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#fbfbfc	--app-bg-tab: #fbfbfc;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#0a0a0a	background: #0a0a0a;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#2a2a2c	0 0 0 2px #2a2a2c,
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#fff	color: #fff;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#fff	border-right-color: #fff;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#fff	background: #fff;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#eaf1fe	background: #eaf1fe;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#cfe0fd	border-color: #cfe0fd;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#34d27b	background: #34d27b;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#eafaf1	background: #eafaf1;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#1c7a48	color: #1c7a48;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#2bbf6e	background: #2bbf6e;
+third-party	src/styles/tokens/components/capabilities-app-screen.css	raw-hex	#000	background: #000;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#e9eaec	border: 1px solid var(--app-line, #e9eaec);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#fff	background: #fff;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#2f6bdf	border-color: var(--app-blue, #2f6bdf);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#f6f7f9	background: var(--app-bg-soft, #f6f7f9);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#9aa0a6	color: var(--app-ink-faint, #9aa0a6);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#2f6bdf	background: var(--app-blue, #2f6bdf);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#fff	color: #fff;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#1c1d1f	color: var(--app-ink, #1c1d1f);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#fff	background: var(--app-bg, #fff);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#f6f7f9	var(--app-bg-soft, #f6f7f9) 0%,
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#e9eaec	var(--app-line, #e9eaec) 100%
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#34d27b	background: #34d27b;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#3a3c40	color: var(--app-ink-soft, #3a3c40);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#2f6bdf	color: var(--app-blue, #2f6bdf);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#6c7075	color: var(--app-ink-muted, #6c7075);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#1e8e3e	color: #1e8e3e;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#eafaf1	background: linear-gradient(100deg, #eafaf1, #e8f3ff);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#e8f3ff	background: linear-gradient(100deg, #eafaf1, #e8f3ff);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#cdefd9	border: 1px solid #cdefd9;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#11704a	color: #11704a;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#3f7a5e	color: #3f7a5e;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#f3f8ff	background: linear-gradient(120deg, #f3f8ff, #fff);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#fff	background: linear-gradient(120deg, #f3f8ff, #fff);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#d6e4fb	border-color: #d6e4fb;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#cdefd9	border-color: #cdefd9;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#f6fcf8	background: #f6fcf8;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#e3f6ea	background: #e3f6ea;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#5b8cf0	background: linear-gradient(180deg, #5b8cf0, #2f6bdf);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#2f6bdf	background: linear-gradient(180deg, #5b8cf0, #2f6bdf);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#34d27b	background: linear-gradient(180deg, #34d27b, #1e8e3e);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#1e8e3e	background: linear-gradient(180deg, #34d27b, #1e8e3e);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#e9eaec	background: var(--app-line, #e9eaec);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#2f6bdf	background: linear-gradient(90deg, #2f6bdf, #5b8cf0);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#5b8cf0	background: linear-gradient(90deg, #2f6bdf, #5b8cf0);
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#0f1115	background: #0f1115;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#8fb4ff	color: #8fb4ff;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#9aa3b2	color: #9aa3b2;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#fff	background: #fff !important;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#eef0f2	border-bottom: 1px solid #eef0f2;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#2f6bdf	background: #2f6bdf;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#111b21	color: #111b21;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#1e8e3e	background: #1e8e3e;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#f3f4f6	border-bottom: 1px solid #f3f4f6;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#eef3fe	background: #eef3fe;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#2f6bdf	color: #2f6bdf;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#8a8f98	color: #8a8f98;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#eafaf1	background: #eafaf1;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#075e54	color: #075e54;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#075e54	background: #075e54;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#54656f	color: #54656f;
+third-party	src/styles/tokens/components/capabilities-aprendizaje.css	raw-hex	#8696a0	color: #8696a0;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#5f6368	color: #5f6368;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#202124	color: #202124;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#f1f6fe	background: #f1f6fe;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#1a73e8	color: #1a73e8;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#dadce0	border: 1px solid #dadce0;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#f8fbff	background: #f8fbff;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#e8f0fe	background: #e8f0fe;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#fff	color: #fff;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#9aa0a6	color: #9aa0a6;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#1e8e3e	color: #1e8e3e;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#c8ccd1	border: 1.6px solid #c8ccd1;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#1a73e8	background: #1a73e8;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#1765cc	background: #1765cc;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#667781	color: #667781;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#fff	background: #fff;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#075e54	color: #075e54;
+third-party	src/styles/tokens/components/capabilities-wa-agenda.css	raw-hex	#075e54	background: #075e54;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#0b141a	--wa-screen-bg: #0b141a;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#075e54	--wa-chrome-bg: #075e54; /* status bar + header */
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#128c7e	--wa-avatar-bg: #128c7e;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#e5ddd5	--wa-body-bg: #e5ddd5;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#f0f0f0	--wa-inputbar-bg: #f0f0f0;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#ffffff	--wa-input-bg: #ffffff;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#dcf8c6	--wa-bubble-user: #dcf8c6;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#ffffff	--wa-bubble-brain: #ffffff;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#e1f2fb	--wa-daystamp-bg: #e1f2fb;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#5b7083	--wa-daystamp-color: #5b7083;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#fdf4c8	--wa-encrypt-bg: #fdf4c8;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#111b21	--wa-text-primary: #111b21;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#667781	--wa-text-muted: #667781;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#8696a0	--wa-text-placeholder: #8696a0;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#54656f	--wa-text-input-icons: #54656f;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#00a884	--wa-send-bg: #00a884;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#25d366	--wa-caret-color: #25d366;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#53bdeb	--wa-checks-color: #53bdeb;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#9aa6ad	--wa-typing-dot: #9aa6ad;
+third-party	src/styles/tokens/components/capabilities-wa.css	raw-hex	#fff	color: #fff;
+deferred-fix	src/styles/tokens/components/capabilities.css	raw-hex	#f7e8d2	); /* sand-deep #f7e8d2 — warm island in dark chrome */
+deferred-fix	src/styles/tokens/components/capabilities.css	raw-hex	#fdf5ed	background-color: var(--bbf-surface-sand); /* #fdf5ed — warm contra gradiente azul */
+deferred-fix	src/styles/tokens/components/capabilities.css	raw-hex	#000000	color: var(--bbf-text-on-sand); /* #000000 — negro, máximo contraste */
+deferred-fix	src/styles/tokens/components/cierre-section.css	raw-hex	#255ff1	); /* Tier-2 semantic — #255ff1 (≈ blue-accent #3b82f6, reduced-motion fallback) */
+deferred-fix	src/styles/tokens/components/cierre-section.css	raw-hex	#3b82f6	); /* Tier-2 semantic — #255ff1 (≈ blue-accent #3b82f6, reduced-motion fallback) */
+deferred-fix	src/styles/tokens/components/hero-media-frame.css	raw-hex	#255ff1	background: var(--bbf-accent-blue); /* #255ff1 — blue madre D-BBF-KB-104 */
+deferred-fix	src/styles/tokens/components/hero.css	raw-hex	#0a0a0a	background: var(--bbf-on-surface-bg); /* --bbf-surface-dark-base #0a0a0a */
+deferred-fix	src/styles/tokens/components/hero.css	raw-hex	#f5f3ed	--bbf-hero-text: var(--bbf-on-surface-title); /* #f5f3ed cream */
+deferred-fix	src/styles/tokens/components/hero.css	raw-hex	#a8a59f	--bbf-hero-text-muted: var(--bbf-on-surface-body); /* #a8a59f muted */
+deferred-fix	src/styles/tokens/components/hero.css	raw-hex	#2a2a2a	--bbf-hero-border: var(--bbf-on-surface-border); /* #2a2a2a */
+deferred-fix	src/styles/tokens/components/hero.css	raw-hex	#1a1a1a	--bbf-hero-surface-chrome: var(--bbf-on-surface-hover-bg); /* #1a1a1a elevated */
+deferred-fix	src/styles/tokens/components/hero.css	raw-hex	#0a0a0a	--bbf-hero-surface-deep: var(--bbf-on-surface-bg); /* #0a0a0a deepest */
+deferred-fix	src/styles/tokens/components/porque-section.css	raw-hex	#ebe3d4	background-color: var(--bbf-surface-sand-shade); /* #ebe3d4 — Tier-2, D-S4-01 */
+deferred-fix	src/styles/tokens/components/porque-section.css	raw-hex	#255ff1	background-color: var(--bbf-accent-blue); /* #255ff1 — piel firmada */
+deferred-fix	src/styles/tokens/components/porque-section.css	raw-hex	#0a0a0a	background-color: var(--bbf-surface-dark-base); /* #0a0a0a */
+deferred-fix	src/styles/tokens/components/porque-section.css	raw-hex	#ebe3d4	color: var(--bbf-text-on-dark-surface-sand); /* #ebe3d4 — 15.6:1 ✅ */
+deferred-fix	src/styles/tokens/components/porque-section.css	raw-hex	#fdf5ed	background-color: var(--bbf-on-surface-bg); /* sand normal #fdf5ed — sin !important */
+deferred-fix	src/styles/tokens/components/porque-section.css	raw-hex	#000000	color: var(--bbf-on-surface-title); /* cascade sand → #000000 */
+deferred-fix	src/styles/tokens/components/timeline.css	raw-hex	#255ff1	color: var(--bbf-on-surface-bright); /* blanco en dark: 5.8:1 sobre #255ff1 ✅ WCAG AA */
+deferred-fix	src/styles/tokens/semantic/colors-dark.css	raw-hex	#0a0a0a	--bbf-surface-dark-base: var(--bbf-color-dark-bg); /* #0a0a0a */
+deferred-fix	src/styles/tokens/semantic/colors-dark.css	raw-hex	#1a1a1a	--bbf-surface-dark-elevated: var(--bbf-color-dark-bg-elevated); /* #1a1a1a */
+deferred-fix	src/styles/tokens/semantic/colors-dark.css	raw-hex	#f5f3ed	--bbf-text-on-dark-surface: var(--bbf-color-dark-ink); /* #f5f3ed */
+deferred-fix	src/styles/tokens/semantic/colors-dark.css	raw-hex	#a8a59f	--bbf-text-on-dark-surface-muted: var(--bbf-color-dark-ink-muted); /* #a8a59f */
+deferred-fix	src/styles/tokens/semantic/colors-dark.css	raw-hex	#4a4844	); /* #4a4844 — ghost, debajo de muted */
+deferred-fix	src/styles/tokens/semantic/colors-dark.css	raw-hex	#3b82f6	--bbf-text-on-dark-surface-accent: var(--bbf-color-blue-accent); /* #3b82f6 */
+deferred-fix	src/styles/tokens/semantic/colors-dark.css	raw-hex	#ebe3d4	--bbf-text-on-dark-surface-sand: var(--bbf-color-sand-deep-shade); /* #ebe3d4 — existente */
+deferred-fix	src/styles/tokens/semantic/colors-dark.css	raw-hex	#2a2a2a	--bbf-border-on-dark-surface: var(--bbf-color-dark-line); /* #2a2a2a */
+deferred-fix	src/styles/tokens/semantic/colors-dark.css	raw-hex	#3b82f6	--bbf-focus-ring-on-dark-surface: var(--bbf-color-blue-accent); /* #3b82f6 */
+deferred-fix	src/styles/tokens/semantic/colors-dark.css	raw-hex	#5587fb	--bbf-link-hover-on-dark-surface: var(--bbf-color-blue-400); /* #5587fb */
+deferred-fix	src/styles/tokens/semantic/colors-dark.css	raw-hex	#1a1a1a	--bbf-highlight-on-dark-surface: var(--bbf-surface-dark-elevated); /* #1a1a1a */
+deferred-fix	src/styles/tokens/semantic/colors-warm.css	raw-hex	#f6f5f1	--bbf-surface-warm-hover: #f6f5f1;
+deferred-fix	src/styles/tokens/semantic/colors-warm.css	raw-hex	#efede8	--bbf-surface-warm-elevated-hover: #efede8;
+deferred-fix	src/styles/tokens/semantic/colors-warm.css	raw-hex	#fdfcf9	--bbf-surface-warm-input: #fdfcf9;
+deferred-fix	src/styles/tokens/semantic/colors-warm.css	raw-hex	#908d86	--bbf-border-on-warm-strong: #908d86;
+deferred-fix	src/styles/tokens/semantic/colors.css	raw-hex	#f7e8d2	); /* #f7e8d2 — video shell bg, frame recessed (D-FASE3-Q2) */
+deferred-fix	src/styles/tokens/semantic/colors.css	raw-hex	#ebe3d4	); /* #ebe3d4 — Hero section bg (Q1-Op-A T6.7) */
+deferred-fix	src/styles/tokens/semantic/colors.css	raw-hex	#ebe3d4	); /* #ebe3d4 — sand oscuro canónico §4 bg (D-S4-01) */
+deferred-fix	src/styles/tokens/semantic/colors.css	raw-hex	#cccccc	); /* warm amber — #cccccc eliminado (D-LINE-SYSTEM) */
+deferred-fix	src/styles/tokens/semantic/colors.css	raw-hex	#997535	); /* #997535 — 3.96:1 WCAG 1.4.11 (D-LINE-SYSTEM) */
+deferred-fix	src/styles/tokens/semantic/line-roles.css	raw-hex	#d9b87c	--bbf-line-color-divider: var(--bbf-color-sand-400); /* #d9b87c — 1.70:1 vs sand-100 */
+deferred-fix	src/styles/tokens/semantic/line-roles.css	raw-hex	#997535	--bbf-line-color-border: var(--bbf-color-sand-600); /* #997535 — 3.96:1 vs sand-100 ✓ */
+deferred-fix	src/styles/tokens/semantic/line-roles.css	raw-hex	#000000	--bbf-line-color-focus: var(--bbf-color-black-900); /* #000000 — 21:1 vs sand-100 */
+deferred-fix	src/styles/tokens/semantic/line-roles.css	raw-hex	#255ff1	--bbf-line-color-accent: var(--bbf-accent-blue); /* #255ff1 — accent blue */
+deferred-fix	src/styles/tokens/semantic/line-roles.css	raw-hex	#fdf5ed	--bbf-line-color-light: var(--bbf-color-sand-100); /* #fdf5ed — sobre black surface */
+deferred-fix	src/styles/tokens/semantic/surface-roles.css	raw-hex	#999999	); /* D-TIMELINE-01: ghost #999999, debajo de muted */
+deferred-fix	src/styles/tokens/semantic/surface-roles.css	raw-hex	#999999	--bbf-on-surface-faint: var(--bbf-color-black-300); /* D-TIMELINE-01: ghost #999999 */
+deferred-fix	src/styles/tokens/semantic/surface-roles.css	raw-hex	#a8a59f	--bbf-on-surface-faint: var(--bbf-color-warm-ink-faint); /* D-TIMELINE-01: ghost #a8a59f */
+deferred-fix	src/styles/tokens/semantic/surface-roles.css	raw-hex	#4a4844	--bbf-on-surface-faint: var(--bbf-text-on-dark-surface-faint); /* D-TIMELINE-01: ghost #4a4844 */
+deferred-fix	src/styles/tokens/semantic/surface-roles.css	raw-hex	#ffffff	); /* D-E2-06: dark = #ffffff (máxima luminosidad) */
+deferred-fix	src/styles/tokens/semantic/surface-roles.css	raw-hex	#a8a59f	); /* #a8a59f — WCAG 3:1 (P3) */
+deferred-fix	src/styles/tokens/semantic/surface-roles.css	raw-hex	#ebe3d4	); /* D-S3-ICON: #ebe3d4 — levemente más oscuro que title #f5f3ed */
+deferred-fix	src/styles/tokens/semantic/surface-roles.css	raw-hex	#f5f3ed	); /* D-S3-ICON: #ebe3d4 — levemente más oscuro que title #f5f3ed */
+deferred-fix	src/styles/tokens/semantic/surface-roles.css	raw-hex	#ebe3d4	--bbf-on-surface-bg: var(--bbf-surface-sand-shade); /* #ebe3d4 — único override */
+deferred-fix	src/styles/utilities/gradient-animations.css	raw-hex	#fff	linear-gradient(#fff 0 0) content-box,
+deferred-fix	src/styles/utilities/gradient-animations.css	raw-hex	#fff	linear-gradient(#fff 0 0);

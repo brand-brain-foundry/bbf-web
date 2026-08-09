@@ -24,4 +24,30 @@ elif [ "$GL_STATUS" -ne 0 ]; then
   exit 1
 fi
 
-exit 0
+# ─── GUARDIA DE COLOR (D-COLOR-SPACE forma B) ────────────────────────────────
+# Mismo molde fail-closed que gitleaks: escanea staged en scope y rompe el
+# commit si aparece un HEX crudo NUEVO fuera de primitives/colors*.css (no en
+# .colorbaseline). Escape hatch por línea: // COLOR-ALLOW: <razón> (TS/TSX) o
+# /* COLOR-ALLOW: <razón> */ (CSS). Silent-pass si pnpm/tsx no está (problema
+# de entorno dev, no de la guardia).
+if ! command -v pnpm &>/dev/null; then
+  echo "[pre-commit] pnpm no encontrado — skip guardia de color" >&2
+  exit 0
+fi
+
+pnpm exec tsx scripts/lint/check-color-tokens.ts --staged
+COLOR_STATUS=$?
+
+if [ "$COLOR_STATUS" -eq 0 ]; then
+  exit 0
+elif [ "$COLOR_STATUS" -eq 1 ]; then
+  echo "" >&2
+  echo "[pre-commit] S-4: guardia de color detectó HEX nuevo en staged files — commit cancelado" >&2
+  echo "  Usar un token existente, o // COLOR-ALLOW: <razón> si es legítimo." >&2
+  exit 1
+else
+  echo "" >&2
+  echo "[pre-commit] S-4 FAIL-CLOSED: error de la guardia de color (exit $COLOR_STATUS) — commit cancelado" >&2
+  echo "  Verificar: pnpm exec tsx scripts/lint/check-color-tokens.ts" >&2
+  exit 1
+fi

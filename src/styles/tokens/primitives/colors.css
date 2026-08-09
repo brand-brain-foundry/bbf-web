@@ -2,15 +2,40 @@
  * BBF Design System — TIER 1 PRIMITIVE: Colors
  *
  * Capa 1 del 3-tier token system
- * Decisiones: D-BBF-WEB-55 (3-tier DTCG), D-BBF-KB-104 (paleta canon hex firmada)
+ * Decisiones: D-BBF-WEB-55 (3-tier DTCG), D-BBF-KB-104 (paleta canon hex firmada — histórica),
+ * D-COLOR-SPACE (forma B pura, un ancla + fórmula uniforme, RE-REFINADA 2026-08-09
+ * sobre canon corregido — sin guías de proximidad), D-DS-AXIOMA-AGNOSTICO (FIRMADA 2026-08-09)
  *
- * Paleta canon BBF (D-BBF-KB-104):
+ * Paleta canon HISTÓRICA (D-BBF-KB-104 — preservada solo como origen de las rampas
+ * HEX @deprecated de abajo, NO es la fuente de verdad activa):
  *   - black:  #000000 (superficie oscura principal)
  *   - sand:   #fdf5ed (superficie cálida principal)
- *   - red:    #ff5949 (accent primary)
+ *   - red:    #ff5949 (accent primary) — RETIRADO del canon activo (ver abajo)
  *   - white:  #ffffff (utility highlight)
  *   - blue:   #255ff1 (auxiliar — uso restringido)
- *   - orange: #ff7b49 (solo para gradiente con red, NO standalone)
+ *   - orange: #ff7b49 (solo para gradiente con red, NO standalone) — RETIRADO
+ *
+ * Paleta canon CORREGIDA (D-COLOR-SPACE refinada 2026-08-09 — FUENTE DE VERDAD ACTIVA,
+ * 4 primitivos, NO derivables):
+ *   - sand:  #fdf5ed — light base (mismo valor que D-BBF-KB-104, re-anclado)
+ *   - black: #000000 — puro (mismo valor, re-anclado)
+ *   - blue:  #255ff1 — acento 1 (mismo valor, re-anclado)
+ *   - green: #2dd881 — acento 2 (NUEVO — reemplaza a red como acento de marca)
+ *   `red` (#ff5949) y `orange` (#ff7b49) SE RETIRAN del canon de 4 primitivos.
+ *   NO se borran de golpe (hay consumidores reales — ver `.colorbaseline`, class
+ *   `deferred-fix`) — quedan @deprecated con destino de retiro a contract cuando
+ *   sus consumidores migren a green/status. `--bbf-gradient-red` migra a green
+ *   en un EXEC por-directorio futuro (NO este turno).
+ *
+ * ── EXPAND EN CURSO (D-COLOR-SPACE — canon corregido, desde 2026-08-09) ──────
+ * Las rampas HEX de esta sección (BLACK/SAND/RED/WHITE/ORANGE/BLUE) están
+ * @deprecated. La fuente de verdad para código NUEVO es la sección
+ * "BASE OKLCH POR FÓRMULA" más abajo — cubre SOLO sand/black/blue/green (los
+ * 4 primitivos del canon corregido). `red`/`orange` NO tienen equivalente
+ * `-oklch`: se retiran, no se re-derivan. Ambas fuentes CONVIVEN — ningún
+ * consumidor existente fue migrado este turno (ver guardia
+ * scripts/lint/check-color-tokens.ts + .colorbaseline). Se retiran cuando el
+ * baseline de cada familia llegue a 0 consumidores (contract, EXECs futuros).
  *
  * Rampas de escala para cada color canon.
  * Compatible con dark mode futuro (cambia solo primitives via :root.dark).
@@ -22,6 +47,7 @@
 @theme {
   /* ============================================================
      BBF BLACK RAMP
+     @deprecated (D-COLOR-SPACE canon corregido) — usar --bbf-color-black-{step}-oklch
      ============================================================ */
   --bbf-color-black-50: #f5f5f5;
   --bbf-color-black-100: #e6e6e6;
@@ -37,6 +63,7 @@
 
   /* ============================================================
      BBF SAND RAMP (warm cream — superficie cálida principal)
+     @deprecated (D-COLOR-SPACE canon corregido) — usar --bbf-color-sand-{step}-oklch
      ============================================================ */
   --bbf-color-sand-50: #fffcf6;
   --bbf-color-sand-100: #fdf5ed; /* canon sand D-BBF-KB-104 */
@@ -49,6 +76,10 @@
 
   /* ============================================================
      BBF RED RAMP (accent primary)
+     @deprecated — RETIRADO del canon corregido (D-COLOR-SPACE 2026-08-09).
+     Reemplazado por green como acento 2. Retiro a contract cuando sus
+     consumidores migren (ver .colorbaseline class deferred-fix). SIN
+     equivalente -oklch — no se re-deriva, se retira.
      ============================================================ */
   --bbf-color-red-50: #fff0ed;
   --bbf-color-red-100: #ffd9d1;
@@ -63,16 +94,23 @@
 
   /* ============================================================
      BBF WHITE
+     @deprecated (D-COLOR-SPACE canon corregido) — white no es uno de los 4
+     primitivos activos (sand/black/blue/green). Sin equivalente -oklch este
+     turno (fuera de scope F2, ver despacho §F2).
      ============================================================ */
   --bbf-color-white: #ffffff; /* canon white D-BBF-KB-104 */
 
   /* ============================================================
      BBF ORANGE (solo para gradiente con red, NO standalone)
+     @deprecated — RETIRADO del canon corregido junto con red (D-COLOR-SPACE
+     2026-08-09). --bbf-gradient-red migra a green en contract futuro. SIN
+     equivalente -oklch — no se re-deriva, se retira.
      ============================================================ */
   --bbf-color-orange-500: #ff7b49; /* canon gradient end D-BBF-KB-104 */
 
   /* ============================================================
      BBF BLUE RAMP (auxiliar — uso restringido)
+     @deprecated (D-COLOR-SPACE canon corregido) — usar --bbf-color-blue-{step}-oklch
      ============================================================ */
   --bbf-color-blue-50: #eef4ff;
   --bbf-color-blue-100: #d9e7ff;
@@ -84,6 +122,104 @@
   --bbf-color-blue-700: #1440b0;
   --bbf-color-blue-800: #0f3289;
   --bbf-color-blue-900: #0a2466;
+
+  /* ============================================================================
+   * BASE OKLCH POR FÓRMULA — CANON CORREGIDO (D-COLOR-SPACE, RE-REFINADA 2026-08-09)
+   * ============================================================================
+   *
+   * EXPAND — convive con las rampas HEX de arriba (@deprecated, no se tocan).
+   * Ningún consumidor fue migrado este turno. Cubre SOLO los 4 primitivos del
+   * canon corregido: sand / black / blue / green. red/orange NO tienen
+   * equivalente aquí (retirados, ver header del archivo).
+   *
+   * MÉTODO — FÓRMULA ÚNICA, UN ANCLA (axioma D-DS-AXIOMA-AGNOSTICO en su forma
+   * más estricta: un solo primitivo por familia, una sola fórmula UNIFORME
+   * para las 4 familias, nada calibrado por-familia a mano). Sin guías de
+   * proximidad — una calibración previa contra 2 puntos externos (`#ebe3d4`,
+   * `#1e40af`) fue DESCARTADA por decisión de Zavala: introducía una fórmula
+   * curva no-uniforme (`k_c`/`k_h` distintos por familia) que dejaba de ser
+   * agnóstica. Reemplazada por FORMA B PURA:
+   *   1. H (hue) y C (chroma) FIJOS = los del canon, convertido a OKLCH.
+   *      Nunca se editan a mano por step.
+   *   2. L (lightness) por FÓRMULA: interpolación lineal a trozos anclada
+   *      EXACTO en el step canon de cada familia (comentario `canon`).
+   *      Extremos (L @ step 50 / L @ step 900) consistentes entre las 4
+   *      familias (L≈0.97 en el extremo claro, L≈0.29-0.33 en el oscuro) —
+   *      mismo criterio para todas, sand/black/blue heredan el extremo de su
+   *      rampa HEX legada (el valor no cambió), green (primitivo nuevo, sin
+   *      legado) usa el mismo criterio por consistencia, no por coincidencia.
+   *   3. Naming: sufijo `-oklch` mientras conviven ambas fuentes (C-01, no hay
+   *      2ª fuente de verdad bajo el mismo nombre). Se retira cuando el HEX
+   *      legado llegue a 0 consumidores (contract, F4).
+   *   Cambiar el primitivo (H/C/anchor-L) regenera TODA la rampa de su familia
+   *   por la MISMA fórmula que las otras 3 — cumple D-DS-AXIOMA-AGNOSTICO sin
+   *   excepción por-familia.
+   *
+   * DESVIACIONES NOMBRADAS Y ACEPTADAS (decisión explícita de Zavala — el
+   * artefacto es el resultado NATURAL de la fórmula uniforme, no se corrige a
+   * mano ni con una capa extra por-familia):
+   *   - blue-50-oklch (L≈0.97, chroma constante del canon) se percibe
+   *     desplazado hacia cian — chroma alta a L extremo es un artefacto
+   *     conocido de OKLCH con C constante, no un bug.
+   *   - sand-600-oklch (L≈0.58, chroma constante muy baja del canon sand,
+   *     0.0137) se percibe desaturado/grisáceo — pierde el matiz dorado al
+   *     oscurecer, esperado con C tan baja.
+   *   Ambos se ACEPTAN explícitamente — "no importa que blue-50 derive a cian
+   *   ni que los extremos coincidan con ningún valor previo, es el resultado
+   *   natural del sistema autogenerado" (Zavala, EXEC-CAPA1-COLOR-CANON-CORREGIDO
+   *   refinamiento 2026-08-09).
+   *
+   * Verificación 4 canon (sand/black/blue/green): IDÉNTICOS al HEX canon en
+   * su step ancla (round-trip verificado byte-idéntico).
+   * ============================================================================ */
+
+  /* BLACK — achromatic (C=0), canon @ 900 (L=0). Misma fórmula, H/C=0 por ser acromático. */
+  --bbf-color-black-50-oklch: oklch(0.97 0 0);
+  --bbf-color-black-100-oklch: oklch(0.8622 0 0);
+  --bbf-color-black-200-oklch: oklch(0.7544 0 0);
+  --bbf-color-black-300-oklch: oklch(0.6467 0 0);
+  --bbf-color-black-400-oklch: oklch(0.5389 0 0);
+  --bbf-color-black-500-oklch: oklch(0.4311 0 0);
+  --bbf-color-black-600-oklch: oklch(0.3233 0 0);
+  --bbf-color-black-700-oklch: oklch(0.2156 0 0);
+  --bbf-color-black-800-oklch: oklch(0.1078 0 0);
+  --bbf-color-black-900-oklch: oklch(0 0 0); /* canon black D-COLOR-SPACE */
+  --bbf-color-black-950-oklch: oklch(0 0 0); /* = 900, piso del canon */
+
+  /* SAND — canon @ 100 (L=0.9742 C=0.0137 H=67.67). Forma B pura, ver DESVIACIÓN sand-600 */
+  --bbf-color-sand-50-oklch: oklch(0.9917 0.0137 67.67);
+  --bbf-color-sand-100-oklch: oklch(0.9742 0.0137 67.67); /* canon sand D-COLOR-SPACE */
+  --bbf-color-sand-200-oklch: oklch(0.8963 0.0137 67.67);
+  --bbf-color-sand-300-oklch: oklch(0.8185 0.0137 67.67);
+  --bbf-color-sand-400-oklch: oklch(0.7406 0.0137 67.67);
+  --bbf-color-sand-500-oklch: oklch(0.6628 0.0137 67.67);
+  --bbf-color-sand-600-oklch: oklch(0.5849 0.0137 67.67);
+
+  /* GREEN — canon @ 500 (L=0.7794 C=0.1822 H=154.77). Forma B pura, reemplaza red */
+  --bbf-color-green-50-oklch: oklch(0.97 0.1822 154.77);
+  --bbf-color-green-100-oklch: oklch(0.9319 0.1822 154.77);
+  --bbf-color-green-200-oklch: oklch(0.8938 0.1822 154.77);
+  --bbf-color-green-300-oklch: oklch(0.8557 0.1822 154.77);
+  --bbf-color-green-400-oklch: oklch(0.8175 0.1822 154.77);
+  --bbf-color-green-500-oklch: oklch(
+    0.7794 0.1822 154.77
+  ); /* canon green D-COLOR-SPACE — reemplaza red */
+  --bbf-color-green-600-oklch: oklch(0.6671 0.1822 154.77);
+  --bbf-color-green-700-oklch: oklch(0.5547 0.1822 154.77);
+  --bbf-color-green-800-oklch: oklch(0.4424 0.1822 154.77);
+  --bbf-color-green-900-oklch: oklch(0.33 0.1822 154.77);
+
+  /* BLUE — canon @ 500 (L=0.5437 C=0.2273 H=263.83). Forma B pura, ver DESVIACIÓN blue-50 */
+  --bbf-color-blue-50-oklch: oklch(0.9658 0.2273 263.83);
+  --bbf-color-blue-100-oklch: oklch(0.8814 0.2273 263.83);
+  --bbf-color-blue-200-oklch: oklch(0.797 0.2273 263.83);
+  --bbf-color-blue-300-oklch: oklch(0.7125 0.2273 263.83);
+  --bbf-color-blue-400-oklch: oklch(0.6281 0.2273 263.83);
+  --bbf-color-blue-500-oklch: oklch(0.5437 0.2273 263.83); /* canon blue D-COLOR-SPACE */
+  --bbf-color-blue-600-oklch: oklch(0.4804 0.2273 263.83);
+  --bbf-color-blue-700-oklch: oklch(0.4172 0.2273 263.83);
+  --bbf-color-blue-800-oklch: oklch(0.3539 0.2273 263.83);
+  --bbf-color-blue-900-oklch: oklch(0.2907 0.2273 263.83);
 
   /* ============================================================
      GRADIENT TOKENS (D-BBF-KB-104)
