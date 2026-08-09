@@ -104,7 +104,7 @@ export const SiteHomepage: GlobalConfig = {
                 {
                   name: 'chromeLabel',
                   type: 'text',
-                  defaultValue: '// brand-brain.foundry · live feed',
+                  defaultValue: '// sivarbrains.com · live feed',
                   admin: {
                     description:
                       'Etiqueta decorativa del chrome superior del frame (sintético, hardcoded canon).',

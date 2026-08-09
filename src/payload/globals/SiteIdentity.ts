@@ -230,7 +230,10 @@ export const SiteIdentity: GlobalConfig = {
         {
           name: 'name',
           type: 'text',
-          defaultValue: 'Brand Brain Foundry',
+          // No deriva de siteName:52 — Payload defaultValue (función o literal) no tiene acceso
+          // limpio a sibling data de otro field en creación de documento (limitación de Payload,
+          // no decisión de diseño). Literal correcto, sin indirección forzada (A-01).
+          defaultValue: 'Sivar Brains',
           admin: { description: 'Placeholder: {{producerName}}' },
         },
         {

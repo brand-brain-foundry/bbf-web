@@ -98,7 +98,7 @@ export const SiteNewsletter: GlobalConfig = {
       type: 'text',
       localized: true,
       required: true,
-      defaultValue: 'Confirmá tu suscripción a BBF Newsletter',
+      defaultValue: 'Confirmá tu suscripción a Sivar Brains Newsletter',
     },
     {
       name: 'confirmationEmailBody',
