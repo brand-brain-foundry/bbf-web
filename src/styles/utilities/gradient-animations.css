@@ -4,12 +4,13 @@
  * D-DS-13 (2026-06-13): valores → semantic/gradients.css (--bbf-gradient-{alias})
  *                        duraciones → semantic/motion.css (--bbf-motion-duration-gradient-*)
  *
- * SET CERRADO — 5 gradientes canónicos:
- *   G-01  .bbf-gradient-red-animated       CTA primario, accent sobre sand
+ * SET — 6 gradientes canónicos:
+ *   G-01  .bbf-gradient-red-animated       @deprecated (D-SBWEB-BRAND) — retiro a contract
  *   G-02  .bbf-gradient-blue-animated      Accent text sobre dark/ink surfaces
  *   G-03  .bbf-gradient-dark-animated      Button/CTA sobre dark surfaces
  *   G-04  .bbf-gradient-warm-text-animated Text gradient sobre warm surfaces
  *   G-05  .bbf-gradient-border-animated    Border animado (button dark)
+ *   G-06  .bbf-gradient-brand-animated     Accent text de marca (blue+green, D-SBWEB-BRAND)
  *
  * ELIMINADOS (0 consumers): .bbf-gradient-red-hover, .bbf-btn-gradient-primary,
  *   .bbf-text-gradient-red-animated (D-DS-05 + A-01 Simplicidad).
@@ -46,7 +47,10 @@
   }
 }
 
-/* G-01 — Red animated background (CTA primario, accent sobre sand) */
+/* G-01 — Red animated background (CTA primario, accent sobre sand)
+   @deprecated (D-SBWEB-BRAND, 2026-08-09): 0 consumidores, supersedido por G-06
+   (blue+green de marca). NO se borra en este EXEC — retiro junto con la migración
+   de los 9 consumidores de G-02 en el contract (un solo punto de cambio). */
 .bbf-gradient-red-animated {
   background: var(--bbf-gradient-accent); /* D-DS-13 */
   background-size: 200% 200%;
@@ -70,12 +74,36 @@
   -webkit-text-fill-color: transparent;
 }
 
+/* G-06 — Brand text gradient (blue dominante + green luz, D-SBWEB-BRAND — SIEMPRE
+   animado por definición). Mismo patrón de background-clip:text que G-02: es el
+   accentGradient candidato del puente BrandSystem (no construido aquí). */
+.bbf-gradient-brand-animated {
+  background-image: var(--bbf-gradient-brand); /* D-SBWEB-BRAND */
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite; /* D-DS-13 */
+}
+
+/* Specificity override — hero.css [data-component][data-tone='soft'] = (0,0,2,0) */
+[data-component='bbf-hero-section'] .bbf-gradient-brand-animated {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bbf-gradient-red-animated {
     animation: none;
   }
 
   .bbf-gradient-blue-animated {
+    animation: none;
+    background-position: 0% 50%;
+  }
+
+  .bbf-gradient-brand-animated {
     animation: none;
     background-position: 0% 50%;
   }
