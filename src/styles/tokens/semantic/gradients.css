@@ -1,8 +1,8 @@
 /**
  * BBF Design System — TIER 2 SEMANTIC: Gradient Aliases
  *
- * D-DS-13 (2026-06-13): aliases semánticos por intención para los 5
- * gradientes canon (G-01..G-05). Separa la INTENCIÓN del VALOR.
+ * D-DS-13 (2026-06-13): aliases semánticos por intención para los 6
+ * gradientes canon (G-01..G-06). Separa la INTENCIÓN del VALOR.
  * Consumers: utilities/gradient-animations.css
  *
  * accent   = red CTA / énfasis primario sobre sand
@@ -10,8 +10,9 @@
  * dark     = dark sweep / button fills oscuros
  * secondary= warm/sand text shimmer
  * border   = animated border line (mask pseudo-element)
+ * brand    = blue+green — accentGradient de marca (D-SBWEB-BRAND, 2026-08-09)
  *
- * Refs: D-DS-05 (nombres de clases), D-DS-13 (aliases)
+ * Refs: D-DS-05 (nombres de clases), D-DS-13 (aliases), D-SBWEB-BRAND (G-06)
  */
 
 :root {
@@ -53,5 +54,37 @@
     var(--bbf-color-black-400) 50%,
     var(--bbf-color-black-500) 60%,
     var(--bbf-color-black-900) 100%
+  );
+
+  /*
+   * G-06 — brand (D-SBWEB-BRAND, 2026-08-09): blue de marca DOMINANTE al centro,
+   * green como luz/detalle al extremo derecho (no 50/50). COMPOSICIÓN semántica de
+   * primitivos -oklch en producción (blue hue 263.83 + green hue 154.77) — nunca HEX
+   * a mano. Cumple D-DS-AXIOMA-AGNOSTICO: si el primitivo blue/green cambia, este
+   * gradiente se regenera solo.
+   *
+   * Fórmula de composición: 0%→55% sostiene blue (centro dominante), 55%→85%
+   * transiciona a un blue más claro, 85%→100% resuelve a green (luz/detalle,
+   * confinada al extremo — nunca ocupa más de un cuarto del recorrido).
+   *
+   * Interpolación: SIN hint `in oklch` explícito — ningún gradiente canon existente
+   * en este archivo lo usa (G-01..G-05), y el soporte de target no está confirmado
+   * en config del repo (sin browserslist). Se nombra la limitación por §5 del
+   * despacho en vez de introducir sintaxis no verificada; interpolación por defecto
+   * del navegador entre stops -oklch ya evita el punto-medio apagado típico de RGB.
+   *
+   * NO es el mismo rol que --bbf-gradient-primary (blue puro, alias de UI amplio:
+   * botones/logo/scrollbar/texto — G-02). --bbf-gradient-brand es la composición de
+   * IDENTIDAD de marca (blue+green) — token distinto a propósito, para no fusionar
+   * ni romper los consumidores actuales de -primary (cero cambio visual este turno).
+   * Es el accentGradient que BrandSystem gestionará cuando su puente exista
+   * (D-SBWEB-BRAND, tercera-vía firmada) — este EXEC solo siembra el token.
+   */
+  --bbf-gradient-brand: linear-gradient(
+    110deg,
+    var(--bbf-color-blue-600-oklch) 0%,
+    var(--bbf-color-blue-500-oklch) 55%,
+    var(--bbf-color-blue-400-oklch) 85%,
+    var(--bbf-color-green-400-oklch) 100%
   );
 }
