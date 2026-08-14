@@ -1,0 +1,84 @@
+# .typographybaseline — GUARDIA DE TIPOGRAFÍA (D-TYPO-RATIO-FIX). Generado por
+# scripts/lint/check-typography-tokens.ts --write-baseline
+# Cada línea = un font-size/font-weight crudo CONOCIDO hoy (día-1 verde). Una
+# regresión NUEVA no listada aquí rompe el build. Una migración futura QUEMA
+# (elimina) su línea.
+#
+# class:
+#   raster-literal    → generación de imágenes OG (Satori/next/og) que solo
+#                       acepta números literales, no CSS custom properties —
+#                       deuda estructural, no bypass evitable.
+#   html-email-literal → HTML de email (Resend) — clientes de correo no
+#                       soportan CSS custom properties de forma confiable —
+#                       deuda estructural, no bypass evitable.
+#   deferred-fix      → hardcode a migrar a un token --bbf-text-*/--bbf-weight-*
+#                       en un EXEC por-directorio futuro (contract, no este turno).
+#
+# Formato TSV: class <TAB> relpath <TAB> ruleId <TAB> token <TAB> normLine
+raster-literal	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	font-size	20	fontSize: 20,
+raster-literal	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	font-weight	600	fontWeight: 600,
+raster-literal	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	font-size	14	fontSize: 14,
+raster-literal	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	font-weight	500	fontWeight: 500,
+raster-literal	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	font-size	76	fontSize: 76,
+raster-literal	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	font-weight	700	fontWeight: 700,
+raster-literal	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	font-size	26	fontSize: 26,
+raster-literal	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	font-weight	400	fontWeight: 400,
+raster-literal	src/app/(frontend)/[locale]/contacto/opengraph-image.tsx	font-size	18	<span style={{ color: '#3a3a3a', fontSize: 18, letterSpacing: 1 }}>sivarbrains.com</span>
+html-email-literal	src/lib/actions/newsletter.ts	font-size	20px	<h1 style="font-size: 20px; margin-bottom: 16px;">${newsletter.title ?? 'BBF Newsletter'}</h1>
+html-email-literal	src/lib/actions/newsletter.ts	font-size	12px	<p style="font-size: 12px; color: #666; margin-top: 32px;">
+deferred-fix	src/styles/base/reset.css	font-weight	400	font-weight: 400;
+deferred-fix	src/styles/tokens/components/capabilities-app-integraciones.css	font-size	15px	font-size: 15px;
+deferred-fix	src/styles/tokens/components/capabilities-app-integraciones.css	font-weight	600	font-weight: 600;
+deferred-fix	src/styles/tokens/components/capabilities-app-integraciones.css	font-size	12px	font-size: 12px;
+deferred-fix	src/styles/tokens/components/capabilities-app-integraciones.css	font-size	17px	font-size: 17px;
+deferred-fix	src/styles/tokens/components/capabilities-app-integraciones.css	font-weight	400	font-weight: 400;
+deferred-fix	src/styles/tokens/components/capabilities-app-integraciones.css	font-size	16px	font-size: 16px;
+deferred-fix	src/styles/tokens/components/capabilities-app-integraciones.css	font-size	14.5px	font-size: 14.5px;
+deferred-fix	src/styles/tokens/components/capabilities-app-integraciones.css	font-weight	500	font-weight: 500;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	13px	font-size: 13px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-weight	600	font-weight: 600;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	9px	font-size: 9px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	10px	font-size: 10px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-weight	700	font-weight: 700;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	19px	font-size: 19px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-weight	500	font-weight: 500;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	12px	font-size: 12px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	11px	font-size: 11px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	16px	font-size: 16px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	12.5px	font-size: 12.5px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	13.5px	font-size: 13.5px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	15.5px	font-size: 15.5px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	10.5px	font-size: 10.5px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	14px	font-size: 14px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	15px	font-size: 15px;
+deferred-fix	src/styles/tokens/components/capabilities-app-screen.css	font-size	26px	font-size: 26px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	12px	font-size: 12px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-weight	700	font-weight: 700;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	13px	font-size: 13px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-weight	600	font-weight: 600;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	14px	font-size: 14px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	9px	font-size: 9px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-weight	500	font-weight: 500;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	11.5px	font-size: 11.5px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	28px	font-size: 28px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	10.5px	font-size: 10.5px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	22px	font-size: 22px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	26px	font-size: 26px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	38px	font-size: 38px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-weight	400	font-weight: 400;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	11px	font-size: 11px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	9.5px	font-size: 9.5px;
+deferred-fix	src/styles/tokens/components/capabilities-aprendizaje.css	font-size	12.5px	font-size: 12.5px;
+deferred-fix	src/styles/tokens/components/capabilities-wa-agenda.css	font-size	11px	font-size: 11px;
+deferred-fix	src/styles/tokens/components/capabilities-wa-agenda.css	font-weight	600	font-weight: 600;
+deferred-fix	src/styles/tokens/components/capabilities-wa-agenda.css	font-size	15px	font-size: 15px;
+deferred-fix	src/styles/tokens/components/capabilities-wa-agenda.css	font-size	13.5px	font-size: 13.5px;
+deferred-fix	src/styles/tokens/components/capabilities-wa-agenda.css	font-size	12px	font-size: 12px;
+deferred-fix	src/styles/tokens/components/capabilities-wa-agenda.css	font-size	12.5px	font-size: 12.5px;
+deferred-fix	src/styles/tokens/components/capabilities-wa-agenda.css	font-weight	500	font-weight: 500;
+deferred-fix	src/styles/tokens/components/capabilities-wa-agenda.css	font-size	13px	font-size: 13px;
+deferred-fix	src/styles/tokens/components/capabilities-wa-agenda.css	font-size	10.5px	font-size: 10.5px;
+deferred-fix	src/styles/tokens/components/capabilities-wa-agenda.css	font-size	14px	font-size: 14px;
+deferred-fix	src/styles/tokens/components/capabilities-wa.css	font-weight	600	font-weight: 600;
+deferred-fix	src/styles/tokens/components/quote-block.css	font-weight	400	font-weight: 400;
+deferred-fix	src/styles/utilities/text-utilities.css	font-size	clamp(16px, 1.4vw, 18px)	font-size: clamp(16px, 1.4vw, 18px);
