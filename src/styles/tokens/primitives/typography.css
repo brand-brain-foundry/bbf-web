@@ -3,7 +3,9 @@
  *
  * Tier: 1 (PRIMITIVE)
  * Decisiones: D-BBF-WEB-55 (3-tier), D-BBF-WEB-68 (Inter), D-BBF-WEB-68b (Mulish),
- *             D-BBF-KB-105 (golden ratio φ=1.618 + minor third para tamaños menores)
+ *             D-BBF-KB-105 (golden ratio φ=1.618 + minor third para tamaños menores),
+ *             D-TYPO-RATIO-FIX (FIRMADA 2026-08-09 — corrige 2 etiquetas φ, cero
+ *             cambio de valor renderizado)
  *
  * Sistema tipográfico canon BBF:
  *   - Display/Headings: Inter (variable font, weights 400-900)
@@ -15,6 +17,26 @@
  *
  * Display tokens usan valores fijos (D-BBF-KB-105).
  * Mobile tokens reducen a perfect fourth (1.333).
+ *
+ * ── FÓRMULA-MÉTODO (D-DS-AXIOMA-AGNOSTICO aplicado a tipografía) ─────────────
+ * Un ancla (16px, body — D-BBF-KB-105), el resto es fórmula: escala = 16px × φⁿ,
+ * φ=1.618 (proporción áurea). A diferencia del color (D-COLOR-SPACE), esta
+ * fórmula NO se recalcula en runtime (`calc()`) — la tabla se congela como
+ * tokens rem, que es el patrón CORRECTO de industria (una escala modular se
+ * calcula una vez y se congela; CSS no tiene `pow()` universal). El axioma se
+ * cumple porque el MÉTODO queda documentado y VERIFICABLE: cada token de la
+ * cadena φ lleva su exponente exacto en comentario (ver tabla abajo) — cambiar
+ * el ancla o φ regenera la tabla POR ESTE MÉTODO (al generar, no en runtime).
+ *
+ * Cadena φ verificada (16 × φⁿ, redondeo a rem estándar):
+ *   φ³ = 16 × 4.236 = 67.8px ≈ 68px  → display-1
+ *   φ² = 16 × 2.618 = 41.9px ≈ 42px  → display-2
+ *   φ¹ = 16 × 1.618 = 25.9px ≈ 26px  → h1
+ *   φ⁰ = 16 × 1     = 16px           → body-md (ancla)
+ * h3 y menores (h3/h4/h5/h6/micro) usan minor third (no φ) — escala
+ * independiente para tamaños pequeños, documentada aparte, sin exponente φ.
+ * h2 es un override consciente fuera de ambas cadenas (ver su propio
+ * comentario) — excepción nombrada, no error.
  *
  * NO USAR estos tokens directamente en componentes.
  * Usar tokens semantic de tokens/semantic/typography.css.
@@ -32,14 +54,14 @@
 
   /* ============================================================
      TYPE SCALE — Golden Ratio φ=1.618 (desktop)
-     Base: 16px × φ⁴/φ³/φ²/φ/1 / minor third para menores
-     D-BBF-KB-105
+     Base: 16px × φ³/φ²/φ¹/φ⁰ / minor third para menores
+     D-BBF-KB-105, D-TYPO-RATIO-FIX (exponentes corregidos 2026-08-09)
      ============================================================ */
 
   /* Golden ratio canonical scale (desktop) */
-  --bbf-text-display-1: 4.25rem; /* 68px — Display hero (16 × φ⁴) */
-  --bbf-text-display-2: 2.625rem; /* 42px — Section hero (16 × φ³) */
-  --bbf-text-h1: 1.625rem; /* 26px — H1 (16 × φ²) */
+  --bbf-text-display-1: 4.25rem; /* 68px — Display hero (16 × φ³, D-TYPO-RATIO-FIX) */
+  --bbf-text-display-2: 2.625rem; /* 42px — Section hero (16 × φ², corregido junto con D-TYPO-RATIO-FIX) */
+  --bbf-text-h1: 1.625rem; /* 26px — H1 (16 × φ¹, D-TYPO-RATIO-FIX) */
   --bbf-text-h2: 1.375rem; /* 22px — Major Third 1.1 desde h3 (20px).
                               Alineado Material 3 Title Large (22px).
                               R-BBF-12 §1.1 + D-145 §3.1 sub-jerarquía áurea. */
@@ -72,7 +94,7 @@
 
   /* Body */
   --bbf-text-body-lg: 1.125rem; /* 18px lead paragraphs */
-  --bbf-text-body-md: 1rem; /* 16px default */
+  --bbf-text-body-md: 1rem; /* 16px default — ancla φ⁰ de la cadena áurea (16 × φ⁰ = 16px) */
   --bbf-text-body-sm: 0.875rem; /* 14px secondary */
 
   /* Meta */

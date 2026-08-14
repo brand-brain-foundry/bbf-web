@@ -38,16 +38,36 @@ fi
 pnpm exec tsx scripts/lint/check-color-tokens.ts --staged
 COLOR_STATUS=$?
 
-if [ "$COLOR_STATUS" -eq 0 ]; then
-  exit 0
-elif [ "$COLOR_STATUS" -eq 1 ]; then
+if [ "$COLOR_STATUS" -eq 1 ]; then
   echo "" >&2
   echo "[pre-commit] S-4: guardia de color detectó HEX nuevo en staged files — commit cancelado" >&2
   echo "  Usar un token existente, o // COLOR-ALLOW: <razón> si es legítimo." >&2
   exit 1
-else
+elif [ "$COLOR_STATUS" -ne 0 ]; then
   echo "" >&2
   echo "[pre-commit] S-4 FAIL-CLOSED: error de la guardia de color (exit $COLOR_STATUS) — commit cancelado" >&2
   echo "  Verificar: pnpm exec tsx scripts/lint/check-color-tokens.ts" >&2
+  exit 1
+fi
+
+# ─── GUARDIA DE TIPOGRAFÍA (D-TYPO-RATIO-FIX) ────────────────────────────────
+# Mismo molde fail-closed, corre DESPUÉS de la guardia de color. Rompe el
+# commit si aparece un font-size/font-weight crudo NUEVO fuera de
+# primitives/typography.css (no en .typographybaseline). Escape hatch por
+# línea: // TYPO-ALLOW: <razón> (TS/TSX) o /* TYPO-ALLOW: <razón> */ (CSS).
+pnpm exec tsx scripts/lint/check-typography-tokens.ts --staged
+TYPO_STATUS=$?
+
+if [ "$TYPO_STATUS" -eq 0 ]; then
+  exit 0
+elif [ "$TYPO_STATUS" -eq 1 ]; then
+  echo "" >&2
+  echo "[pre-commit] S-4: guardia de tipografía detectó font-size/font-weight nuevo en staged files — commit cancelado" >&2
+  echo "  Usar un token existente, o // TYPO-ALLOW: <razón> si es legítimo." >&2
+  exit 1
+else
+  echo "" >&2
+  echo "[pre-commit] S-4 FAIL-CLOSED: error de la guardia de tipografía (exit $TYPO_STATUS) — commit cancelado" >&2
+  echo "  Verificar: pnpm exec tsx scripts/lint/check-typography-tokens.ts" >&2
   exit 1
 fi
