@@ -56,7 +56,17 @@ export function createBrandGradientEngine(
   canvas: HTMLCanvasElement,
   config: BrandGradientConfig = BRAND_GRADIENT_DEFAULTS,
 ): BrandGradientEngine | null {
-  const glOrNull = canvas.getContext('webgl2', { antialias: false, alpha: false });
+  // El blob es decorativo — nunca debe lanzar hacia arriba (incidente de
+  // producción 2026-09-04: navegadores reales con WebGL2 bloqueado/roto —
+  // Safari, móviles, GPU con política de bloqueo — pueden LANZAR aquí en
+  // vez de devolver null, a diferencia de Chrome desktop donde nunca se
+  // reprodujo). try/catch defensivo antes de tocar la API.
+  let glOrNull: WebGL2RenderingContext | null;
+  try {
+    glOrNull = canvas.getContext('webgl2', { antialias: false, alpha: false });
+  } catch {
+    return null;
+  }
   if (!glOrNull) return null;
   // Re-bind: el narrowing de control-flow de `if (!x) return` no cruza closures
   // anidadas (`compile`/`resize`/`renderFrame` abajo) — `gl` declarado aquí ya
@@ -83,10 +93,18 @@ export function createBrandGradientEngine(
     return p;
   }
 
-  const pBase = program(buildBaseFragmentGLSL(config));
-  const pBlur = program(buildBlurFragmentGLSL());
-  const pFinal = program(buildFinalFragmentGLSL(config));
-  const vao = gl.createVertexArray();
+  let pBase: WebGLProgram;
+  let pBlur: WebGLProgram;
+  let pFinal: WebGLProgram;
+  let vao: WebGLVertexArrayObject | null;
+  try {
+    pBase = program(buildBaseFragmentGLSL(config));
+    pBlur = program(buildBlurFragmentGLSL());
+    pFinal = program(buildFinalFragmentGLSL(config));
+    vao = gl.createVertexArray();
+  } catch {
+    return null;
+  }
 
   function makeTarget(): RenderTarget {
     const tex = gl.createTexture() as WebGLTexture;
@@ -108,8 +126,14 @@ export function createBrandGradientEngine(
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t.tex, 0);
   }
 
-  const A = makeTarget();
-  const B = makeTarget();
+  let A: RenderTarget;
+  let B: RenderTarget;
+  try {
+    A = makeTarget();
+    B = makeTarget();
+  } catch {
+    return null;
+  }
 
   const CW = config.comp.width;
   const CH = config.comp.height;
@@ -120,16 +144,21 @@ export function createBrandGradientEngine(
   let bh = 0;
 
   function resize(): void {
-    const rect = canvas.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, config.dprClamp);
-    W = Math.max(1, Math.round(rect.width * dpr));
-    H = Math.max(1, Math.round(rect.height * dpr));
-    canvas.width = W;
-    canvas.height = H;
-    bw = Math.max(2, Math.round(W * SCALE));
-    bh = Math.max(2, Math.round(H * SCALE));
-    sizeTarget(A, bw, bh);
-    sizeTarget(B, bw, bh);
+    try {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, config.dprClamp);
+      W = Math.max(1, Math.round(rect.width * dpr));
+      H = Math.max(1, Math.round(rect.height * dpr));
+      canvas.width = W;
+      canvas.height = H;
+      bw = Math.max(2, Math.round(W * SCALE));
+      bh = Math.max(2, Math.round(H * SCALE));
+      sizeTarget(A, bw, bh);
+      sizeTarget(B, bw, bh);
+    } catch {
+      // no-op: decorativo, nunca lanza hacia arriba — resize() también se
+      // llama desde el listener de window 'resize', fuera del stack de React.
+    }
   }
   resize();
 
@@ -188,7 +217,16 @@ export function createBrandGradientEngine(
   }
 
   function tick(): void {
-    renderFrame();
+    try {
+      renderFrame();
+    } catch {
+      // Decorativo: si el render falla en runtime (contexto perdido real en
+      // el dispositivo — backgrounding agresivo de móvil, presión de
+      // memoria GPU), detener el loop en silencio en vez de seguir
+      // lanzando cada frame.
+      stop();
+      return;
+    }
     rafId = requestAnimationFrame(tick);
   }
   function start(): void {

@@ -61,7 +61,16 @@ export function BrandGradientBackground({
       return;
     }
 
-    const engine: BrandGradientEngine | null = createBrandGradientEngine(canvas);
+    // Defensa en profundidad post-incidente (2026-09-04): engine.ts ya no
+    // lanza hacia arriba (try/catch en cada punto de contacto con la API),
+    // pero el punto de llamada se guarda igual — el blob es decorativo,
+    // nunca debe tumbar el render de React si algo se escapa igual.
+    let engine: BrandGradientEngine | null;
+    try {
+      engine = createBrandGradientEngine(canvas);
+    } catch {
+      engine = null;
+    }
     if (!engine) {
       setUseFallback(true);
       return;
