@@ -201,7 +201,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               >
                 {hero.h1Line1 ?? ''}
                 <br />
-                <span>{hero.h1Line2Soft ?? ''}</span>
+                <span data-tone="soft" className="bbf-gradient-blue-animated">
+                  {hero.h1Line2Soft ?? ''}
+                </span>
               </Heading>
             </div>
 

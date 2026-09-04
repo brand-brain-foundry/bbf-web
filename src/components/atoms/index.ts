@@ -12,7 +12,6 @@ export * from './Heading';
 export * from './Link';
 export * from './Text';
 export * from './BlobBackground';
-export * from './BrandGradientBackground';
 export * from './BrandLogo';
 export * from './MenuIcon';
 export * from './NavLink';
