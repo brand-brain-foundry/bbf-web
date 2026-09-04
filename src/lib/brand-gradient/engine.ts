@@ -207,8 +207,15 @@ export function createBrandGradientEngine(
     pause: stop,
     resume: start,
     destroy() {
+      // No `WEBGL_lose_context.loseContext()` aquí: un <canvas> solo puede
+      // bindear UN contexto en su vida entera — `getContext('webgl2')`
+      // siempre devuelve el MISMO objeto, incluso ya perdido. React
+      // StrictMode (dev) monta→limpia→monta sobre el mismo nodo canvas (no
+      // lo recrea); forzar loseContext() aquí deja ese contexto muerto para
+      // el remount siguiente → getShaderInfoLog=null en todos los shaders
+      // (contexto perdido, no error de GLSL). Detener el rAF loop basta: el
+      // contexto real se libera solo cuando el canvas se remueve del DOM.
       stop();
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
     },
   };
 }
