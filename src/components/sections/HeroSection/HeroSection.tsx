@@ -25,7 +25,7 @@
 
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { BrandGradientBackground } from '@/components/atoms/BrandGradientBackground';
+import { BrandGradientBackgroundLazy } from '@/components/atoms/BrandGradientBackground';
 import {
   heroSectionVariants,
   heroSectionContentVariants,
@@ -62,8 +62,11 @@ function HeroSectionRoot({ surface, height, className, children }: HeroSectionPr
       className={cn(heroSectionVariants({ surface, height }), className)}
     >
       {/* PREVIEW blob-hero (DESPACHO-SBWEB-2026-08-09-EXEC-BLOB-HERO-PREVIEW) — fondo,
-          NO surface nuevo (§0.2). Patrón CierreSection.tsx:54 (BlobBackground). */}
-      <BrandGradientBackground />
+          NO surface nuevo (§0.2). Patrón CierreSection.tsx:54 (BlobBackground).
+          Lazy (DESPACHO-SBWEB-2026-08-09-EXEC-HERO-BOTONES-GRADIENTE-Y-HEADING §0.3):
+          ssr:false defiere el motor WebGL2 del First Load JS — el fondo dark base
+          ya pinta vía CSS en hero.css, sin flash sin-fondo. */}
+      <BrandGradientBackgroundLazy />
       <div className="relative z-10">{children}</div>
     </main>
   );
