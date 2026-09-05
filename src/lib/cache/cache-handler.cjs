@@ -52,11 +52,53 @@
  * (el fork no es compatible con las keys que escribía el handler propio), separa el namespace
  * a propósito. Las keys v1 quedan huérfanas en Redis (nunca se leen, no bloquean) hasta que
  * expiren o se purguen manualmente — cache frío esperado en el primer deploy, no un bug.
+ *
+ * `keyPrefix` incluye build-ID (HAL-SBWEB-CACHE-NO-BUILDID-01, ver `resolveBuildId()` abajo):
+ * hasta este fix, `nextcache:v2:` era estático — las keys de HTML prerenderizado eran
+ * idénticas entre builds, así que tras un rollback el CacheHandler seguía sirviendo el HTML
+ * de un build muerto (el fantasma del incidente PR#24, resuelto entonces con flush manual de
+ * Redis). Con build-ID en el prefijo cada build/rollback tiene su propio namespace — el
+ * fantasma es imposible por construcción. Trade-off nombrado: caché frío en cada deploy
+ * (nada cacheado hasta el primer visitante de cada página tras el build) — precio correcto
+ * frente a servir HTML fantasma. Las keys `nextcache:v2:<buildId-viejo>:*` quedan huérfanas
+ * igual que las v1 — expiran por TTL o se purgan manualmente una vez ([ZAVALA-MANUAL], no
+ * crítico). El protocolo de "flush manual post-rollback" queda SUPERSEDIDO por este fix — se
+ * mantiene solo como procedimiento de emergencia, no como paso rutinario de deploy.
  */
 const { CacheHandler } = require('@fortedigital/nextjs-cache-handler');
 const createRedisHandler = require('@fortedigital/nextjs-cache-handler/redis-strings').default;
 const { createClient } = require('redis');
 const { PHASE_PRODUCTION_BUILD } = require('next/constants.js');
+const fs = require('node:fs');
+const path = require('node:path');
+
+/**
+ * Build-ID del proceso en curso — namespace aislado por build en Redis, cierra
+ * HAL-SBWEB-CACHE-NO-BUILDID-01 (el fantasma de HTML de un build muerto tras rollback).
+ * Fuente: `.next/BUILD_ID`, el mismo archivo que `next-server.js#getBuildId()` lee en
+ * runtime — garantizado presente en `output:standalone` (Next lo incluye en
+ * `requiredServerFiles.files` al armar el standalone) y `process.cwd()` apunta al
+ * distDir correcto porque el `server.js` generado hace `process.chdir(__dirname)` antes
+ * de arrancar. `GIT_COMMIT_HASH` se descartó: el Dockerfile solo lo declara `ENV` en el
+ * stage `builder` (scope BUILD_TIME en DO), nunca en `runner` — no llega al proceso vivo,
+ * y no tiene consumidores en `src/`.
+ *
+ * Fallback si `.next/BUILD_ID` no es legible (no debería ocurrir en un build real):
+ * aísla por arranque de proceso — NUNCA vuelve al prefijo compartido viejo (eso
+ * reintroduciría el fantasma).
+ */
+function resolveBuildId() {
+  try {
+    const buildId = fs.readFileSync(path.join(process.cwd(), '.next', 'BUILD_ID'), 'utf8').trim();
+    if (buildId) return buildId;
+  } catch (error) {
+    console.warn(
+      '[cache-handler] No se pudo leer .next/BUILD_ID, degradando a namespace por instancia:',
+      error,
+    );
+  }
+  return `boot-${Date.now()}`;
+}
 
 CacheHandler.onCreation(() => {
   if (global.cacheHandlerConfig) {
@@ -110,7 +152,7 @@ CacheHandler.onCreation(() => {
 
     const redisHandler = createRedisHandler({
       client: redisClient,
-      keyPrefix: 'nextcache:v2:',
+      keyPrefix: `nextcache:v2:${resolveBuildId()}:`,
     });
 
     global.cacheHandlerConfig = { handlers: [redisHandler] };
