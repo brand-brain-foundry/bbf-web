@@ -101,14 +101,16 @@ echo "▶ [4/6] copiando .env.verify → .next/standalone/.env"
 cp "$ENV_FILE" "$STANDALONE_DIR/.env"
 
 # ── Paso 5/6: levantar el runtime REAL de producción (mismo CMD del Dockerfile) ──
+# Hijo DIRECTO del shell principal (sin subshell) — si se lanza en un
+# subshell `( ... & )`, el PID pertenece al subshell, que termina en
+# cuanto backgroundea el job; el proceso queda huérfano de este shell y
+# `wait "$SERVER_PID"` (paso final) falla con "pid is not a child of
+# this shell", matando el server justo después del OK.
 echo "▶ [5/6] node server.js (PORT=${PORT})"
-(
-  cd "$STANDALONE_DIR"
-  PORT="$PORT" NODE_ENV=production HOSTNAME=0.0.0.0 node server.js >"$LOG_FILE" 2>&1 &
-  echo $! >"$REPO_ROOT/.verify-prod-build.pid"
-)
-SERVER_PID="$(cat "$REPO_ROOT/.verify-prod-build.pid")"
-rm -f "$REPO_ROOT/.verify-prod-build.pid"
+cd "$STANDALONE_DIR"
+PORT="$PORT" NODE_ENV=production HOSTNAME=0.0.0.0 node server.js >"$LOG_FILE" 2>&1 &
+SERVER_PID=$!
+cd "$REPO_ROOT"
 
 echo "  server PID: ${SERVER_PID} — esperando arranque (/api/health, no toca DB/Payload)..."
 ATTEMPTS=0
