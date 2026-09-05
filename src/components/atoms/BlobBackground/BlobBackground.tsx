@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { BLOB_INTENTS } from '@/lib/blob/blob-intents';
+import { BlobBackgroundBoundary } from './BlobBackgroundBoundary';
 
 // ── Engine singleton (IIFE — one global BlobScene per page) ──────────────────
 declare global {
@@ -83,7 +84,7 @@ interface BlobBackgroundProps {
   overlays?: boolean;
 }
 
-export function BlobBackground({
+function BlobBackgroundInner({
   surface: surfaceProp,
   className,
   disabled = false,
@@ -137,15 +138,25 @@ export function BlobBackground({
       .then(() => {
         if (!active || !canvas || !window.BlobScene) return;
 
-        // Apply intent + mobile degradation + reduced-motion before init
-        window.BlobScene.setTweaks({
-          ...intent,
-          assetBase: BLOB_ASSET_BASE,
-          bindInput: false, // React owns pointer events
-          ...(mobile ? { maxDpr: 1.0, speed: Math.round(intent.speed * 0.7) } : {}),
-          ...(reducedMotion ? { speed: 0, camera: false } : {}),
-        });
-        window.BlobScene.init(canvas);
+        // Defensa explícita en el punto de contacto con el motor (post-incidente
+        // PR#24): un throw síncrono aquí queda dentro de la promesa y ya lo
+        // captura el .catch() de abajo, pero se guarda explícito — mismo
+        // patrón que engine.ts usa para BrandGradientBackground — para que la
+        // degradación no dependa de la propagación implícita del rechazo.
+        try {
+          // Apply intent + mobile degradation + reduced-motion before init
+          window.BlobScene.setTweaks({
+            ...intent,
+            assetBase: BLOB_ASSET_BASE,
+            bindInput: false, // React owns pointer events
+            ...(mobile ? { maxDpr: 1.0, speed: Math.round(intent.speed * 0.7) } : {}),
+            ...(reducedMotion ? { speed: 0, camera: false } : {}),
+          });
+          window.BlobScene.init(canvas);
+        } catch {
+          setUseFallback(true);
+          return;
+        }
 
         // ── Fase 4: MutationObserver — data-surface changes → setTweaks (no re-init) ──
         if (!surfaceProp && domHost) {
@@ -285,5 +296,17 @@ export function BlobBackground({
         </>
       )}
     </div>
+  );
+}
+
+// Boundary envuelto aquí (protección por construcción, HAL-SBWEB-CLIENT-
+// COMPONENT-NO-BOUNDARY-01): cualquier consumidor de `BlobBackground` queda
+// protegido automáticamente, sin tener que recordar envolverlo en el call
+// site (ver BlobBackgroundBoundary.tsx para el porqué).
+export function BlobBackground(props: BlobBackgroundProps) {
+  return (
+    <BlobBackgroundBoundary>
+      <BlobBackgroundInner {...props} />
+    </BlobBackgroundBoundary>
   );
 }
