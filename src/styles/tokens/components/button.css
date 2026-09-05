@@ -36,7 +36,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: var(--bbf-gradient-primary); /* blue — normal state */
+  background: var(--bbf-gradient-brand); /* blue+green marca — normal state (D-SBWEB-BRAND) */
   background-size: 200% 100%;
   animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   z-index: -1;
@@ -48,7 +48,7 @@
 /* Black: NORMAL=dark-grad-anim, HOVER=blue-grad-anim, FOCUS=black-flat */
 .bbf-btn-solid-black {
   isolation: isolate;
-  background: var(--bbf-gradient-primary); /* blue — hover target */
+  background: var(--bbf-gradient-brand); /* blue+green marca — hover target (D-SBWEB-BRAND) */
   background-size: 200% 100%;
   animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   color: var(--bbf-text-on-gradient-blue);
@@ -224,7 +224,7 @@
 }
 
 .bbf-btn-outline-primary::before {
-  background: var(--bbf-gradient-primary); /* blue — normal border */
+  background: var(--bbf-gradient-brand); /* blue+green marca — normal border (D-SBWEB-BRAND) */
   background-size: 200% 100%;
   animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   opacity: 1;
@@ -250,7 +250,7 @@
 }
 
 .bbf-btn-outline-black::after {
-  background: var(--bbf-gradient-primary); /* blue — hover border */
+  background: var(--bbf-gradient-brand); /* blue+green marca — hover border (D-SBWEB-BRAND) */
   background-size: 200% 100%;
   animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   opacity: 0;
@@ -271,7 +271,7 @@
 }
 
 .bbf-btn-outline-red::after {
-  background: var(--bbf-gradient-primary); /* blue — hover border */
+  background: var(--bbf-gradient-brand); /* blue+green marca — hover border (D-SBWEB-BRAND) */
   background-size: 200% 100%;
   animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   opacity: 0;
@@ -293,7 +293,9 @@
 
   .bbf-btn-outline-black:hover,
   .bbf-btn-outline-red:hover {
-    color: var(--bbf-accent-blue); /* sincroniza con --bbf-gradient-primary hover border */
+    color: var(
+      --bbf-accent-blue
+    ); /* sincroniza con --bbf-gradient-brand hover border (D-SBWEB-BRAND) */
   }
 
   .bbf-btn-outline-primary:hover::before,
@@ -387,7 +389,9 @@
    ============================================================ */
 .bbf-btn-solid-secondary-dark {
   isolation: isolate;
-  background: var(--bbf-gradient-primary); /* blue — hover target (always running) */
+  background: var(
+    --bbf-gradient-brand
+  ); /* blue+green marca — hover target (D-SBWEB-BRAND, always running) */
   background-size: 200% 100%;
   animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
 }
@@ -493,7 +497,7 @@
   inset: 0;
   border-radius: inherit;
   padding: var(--bbf-line-gradient-inset);
-  background: var(--bbf-gradient-primary);
+  background: var(--bbf-gradient-brand); /* blue+green marca — hover border (D-SBWEB-BRAND) */
   background-size: 200% 100%;
   animation: bbf-gradient-shift var(--bbf-motion-duration-gradient-slow) ease-in-out infinite;
   -webkit-mask:
@@ -518,7 +522,7 @@
     opacity: 1;
   }
   .bbf-btn-outline-secondary-dark:hover {
-    background: var(--bbf-gradient-primary);
+    background: var(--bbf-gradient-brand); /* blue+green marca — hover text-fill (D-SBWEB-BRAND) */
     background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
