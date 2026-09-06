@@ -1,0 +1,23 @@
+/**
+ * BBF Design System — TIER 1 PRIMITIVE: Gradient Structure
+ *
+ * Decisión: D-GRADIENT-STRUCTURE (Gate 1, 2026-09-06)
+ * Tier: 1 (PRIMITIVE)
+ *
+ * Los stops de color de cada gradiente ya son `var()` (semantic/gradients.css).
+ * El ÁNGULO quedaba literal embebido en cada `linear-gradient()` — este archivo
+ * lo tokeniza como la madre que faltaba.
+ *
+ * --bbf-gradient-angle-base: 110deg — el ángulo que ya usan 4/6 gradientes
+ *   canon (primary/dark/border/brand).
+ * --bbf-gradient-angle-alt: 90deg — ancla secundaria usada por `secondary`
+ *   (decisión de diseño distinta, no derivable de la base).
+ *
+ * Los % de stop NO se tokenizan (enum de diseño, cada gradiente tiene razón
+ * visual propia — ver D-GRADIENT-STRUCTURE).
+ */
+
+@theme {
+  --bbf-gradient-angle-base: 110deg;
+  --bbf-gradient-angle-alt: 90deg;
+}

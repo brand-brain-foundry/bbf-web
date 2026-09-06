@@ -3,13 +3,47 @@
  *
  * Subordinado a: BBF_M5_Framework_Plan.md §2
  * Tier: 1 (PRIMITIVE)
- * Decisión: D-BBF-WEB-55 (3-tier)
+ * Decisión: D-BBF-WEB-55 (3-tier), D-SHADOW-PRIMITIVE (Gate 1, 2026-09-06)
  *
- * NOTA M5-A: archivo NUEVO (no existía en globals.css actual).
- * Placeholder vacío preparado para M5-D componentes que necesiten elevation.
- * NO agregar valores arbitrarios. Strategic firmará en M5-D si se necesita.
+ * MADRE — D-SHADOW-PRIMITIVE
+ * --bbf-shadow-offset-base = 1px. Razón geométrica 2 (dobla por paso) —
+ * reproduce el y-offset real de D-93 (1/2/4/8/16px) sin desviación, mismo
+ * patrón madre+calc() que D-RADIUS-SCALE.
+ *
+ * Blur (2/8/16/30/48px) NO sigue una razón blur/offset constante en el valor
+ * canon D-93 (2×/4×/4×/3.75×/3× — no es una razón limpia real, forzarla
+ * cambiaría la elevación percibida). Se deriva de la misma madre por
+ * multiplicador explícito documentado por paso — mismo tratamiento que
+ * D-RADIUS-SCALE ya aplica a `2xs`/`section-card` (madre + multiplicador
+ * nombrado, no una razón geométrica única donde el dato real no la tiene).
+ *
+ * Alpha: interpolación lineal 0.04→0.20 en 5 pasos (mismo criterio que
+ * status colors D-111).
+ *
+ * Valores resultantes idénticos a los de semantic/shadows.css pre-Gate-1 —
+ * cero cambio visual, cero cambio de elevación percibida.
  */
 
 @theme {
-  /* Empty — populated on-demand in M5-D when components need elevation */
+  /* MADRE — y-offset xs, ratio 2 por paso */
+  --bbf-shadow-offset-base: 1px;
+  --bbf-shadow-offset-xs: var(--bbf-shadow-offset-base); /* 1px */
+  --bbf-shadow-offset-sm: calc(var(--bbf-shadow-offset-base) * 2); /* 2px */
+  --bbf-shadow-offset-md: calc(var(--bbf-shadow-offset-base) * 4); /* 4px */
+  --bbf-shadow-offset-lg: calc(var(--bbf-shadow-offset-base) * 8); /* 8px */
+  --bbf-shadow-offset-xl: calc(var(--bbf-shadow-offset-base) * 16); /* 16px */
+
+  /* Blur — multiplicador por paso sobre la misma madre (valor exacto D-93) */
+  --bbf-shadow-blur-xs: calc(var(--bbf-shadow-offset-base) * 2); /* 2px */
+  --bbf-shadow-blur-sm: calc(var(--bbf-shadow-offset-base) * 8); /* 8px */
+  --bbf-shadow-blur-md: calc(var(--bbf-shadow-offset-base) * 16); /* 16px */
+  --bbf-shadow-blur-lg: calc(var(--bbf-shadow-offset-base) * 30); /* 30px */
+  --bbf-shadow-blur-xl: calc(var(--bbf-shadow-offset-base) * 48); /* 48px */
+
+  /* Alpha — interpolación lineal 0.04→0.20 en 5 pasos */
+  --bbf-shadow-alpha-xs: 0.04;
+  --bbf-shadow-alpha-sm: 0.06;
+  --bbf-shadow-alpha-md: 0.1;
+  --bbf-shadow-alpha-lg: 0.15;
+  --bbf-shadow-alpha-xl: 0.2;
 }

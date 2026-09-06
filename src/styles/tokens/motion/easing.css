@@ -29,4 +29,28 @@
 
   /* Organic — curve canon BBF default para reveals scroll */
   --bbf-motion-ease-organic: cubic-bezier(0.42, 0, 0.05, 1);
+
+  /* ============================================================
+   * D-EASING-DEDUP (Gate 1, 2026-09-06) — movidas desde semantic/motion.css
+   * (única fuente ahora, semantic solo referencia por var())
+   * ============================================================ */
+
+  /* In — standard CSS ease-in. Sin consumidor real en src/ hoy (arrastra desde
+     D-98); movida aquí para que semantic no la mantenga como literal. */
+  --bbf-motion-ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Out — standard CSS ease-out. Consumidor: utilities/motion-patterns.css */
+  --bbf-motion-ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* In-out — standard CSS ease-in-out. Consumidores: hero.css, home-hero.css,
+     capabilities.css. Mismo valor que semantic --bbf-easing-hover (legacy) —
+     hover referencia esta misma entrada en vez de duplicarla. */
+  --bbf-motion-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Entrance — BBF signature, premium ease-out. Consumidores: hero.css,
+     header.css, utilities/motion-patterns.css. */
+  --bbf-motion-ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Exit — BBF signature, ease-in rápido. Sin consumidor real en src/ hoy. */
+  --bbf-motion-ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
 }
