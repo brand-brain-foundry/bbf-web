@@ -169,6 +169,39 @@ preferred entry point.
 - Semantic: `text-on-*`, `surface-*`, `accent-*`
 - Surface-based: tokens cambian según contexto de superficie (`[data-surface]`)
 
+### Matriz semántica de color — 3 niveles (D-SBWEB-SEMANTIC-MATRIX)
+
+**`surface` NO es un rol de color — es un CONTEXTO/MODO transversal que coordina un SET completo de
+roles.** Firmado 2026-09-06 tras corrección de Zavala en revisión: un borrador previo de la matriz
+mezclaba `surface` como si fuera un concepto de la categoría `color`, junto a `text`/`border`/`accent`.
+El código real (`semantic/surface-roles.css`, D-DS-12) ya implementaba la distinción correcta — la
+matriz solo la nombraba mal.
+
+1. **Categoría `color` → roles de aplicación** (una propiedad CSS cada uno): `bg` (fondo — el token real
+   sigue siendo `--bbf-surface-{sand|white|black|red}`, el prefijo histórico se preserva por A-01; `bg`
+   es el nombre del CONCEPTO en la matriz, no un rename del token), `text`, `border`, `accent`, `focus`
+   (`--bbf-color-focus-ring`), `feedback` (`semantic/feedback.css`: success/warning/error/info).
+
+2. **Eje `surface` → contexto/modo transversal** (NO un rol de color), activado vía
+   `[data-surface="..."]` en `semantic/surface-roles.css`. Cada valor activa el SET COMPLETO de roles
+   `on-surface-*` coordinados para ese fondo — equivalente conceptual a "modo" (light/dark) en Material
+   3/Spectrum. Valores reales verificados @ `b422e0e`:
+   - **Consumidos hoy en componentes** (`grep data-surface= src/components/**`): `sand`, `warm`, `dark`,
+     `sand-elevated`.
+   - **Definido en `surface-roles.css`, sin consumidor real todavía:** `white` (hereda tabla `sand`).
+   - **NO existe `data-surface="black"`** — `black` es un TOKEN de la categoría `color`/concepto `bg`
+     (`--bbf-surface-black`), no un valor del eje `surface`. No confundir los dos niveles.
+
+3. **Concepto `on-surface-{rol}` → el puente** — lo que los componentes consumen, agnóstico del contexto
+   activo. Ejemplo real (`surface-roles.css`):
+   ```css
+   [data-surface='sand'] { --bbf-on-surface-title: var(--bbf-text-on-sand); }
+   [data-surface='dark'] { --bbf-on-surface-title: var(--bbf-text-on-dark-surface); }
+   ```
+   Un componente pide `var(--bbf-on-surface-title)` sin saber si está sobre `sand` o `dark` — la cascada
+   `[data-surface]` resuelve. 17+ roles por surface (title/body/muted/faint/bright/link/border/bg/
+   hover-bg/input-bg/focus-ring/divider/icon...).
+
 ### Typography
 
 - Family: Inter (display) + Mulish (body) — D-BBF-WEB-68/68b
@@ -231,7 +264,9 @@ preferred entry point.
 - **D-98** Motion system · **D-MOTION-SCALE** madre reveal 240ms
 - **D-SPACING-SCALE** madre 4px · **D-DS-14** line weight madre 1px
 - **D-DS-03** SSOT motion → `motion/` (deprecated `primitives/motion.css`)
-- **D-SBWEB-TOKENS** (este despacho) — separación en 2 ejes, Eje A = este documento
+- **D-SBWEB-TOKENS** — separación en 2 ejes, Eje A = este documento
+- **D-SBWEB-SEMANTIC-MATRIX** (2026-09-06) — matriz de niveles del tier semántico: categoría `color`
+  =roles de aplicación / eje `surface`=contexto / `on-surface`=puente (ver sección Color arriba)
 
 ---
 
