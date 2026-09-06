@@ -1,40 +1,56 @@
-# CLAUDE.md — src/components/templates/
+# CLAUDE.md — src/components/templates/ · EJE B (Atomic Design)
 
-**Templates Tier 4 canon BBF — Composition de sections**
+**Templates canon BBF/Sivar Brains — parte del Eje B de composición de UI**
 
-> Tier: template (Nivel 4, entre sections y pages)
-> Decisiones: D-88, D-89, D-106
+> Vocabulario unificado con `src/components/CLAUDE.md` (léelo primero — este
+> archivo es el detalle del tier Template, no una taxonomía paralela).
+> Decisiones: D-88, D-89, D-106, D-SBWEB-TOKENS.
 
 ---
 
 ## Qué es un Template BBF
 
-Un template es una **composición de sections** que define el layout de una categoría de página, sin datos reales. Templates reciben slots (sections como children) y definen estructura visual + espaciado entre sections.
+Un template es un layout que orquesta contenido dinámico **sin datos hardcoded
+en el componente** — recibe los datos reales por props. En BBF, el caso real
+implementado (`CornerstoneTemplate.tsx`) orquesta `blocks[]` de Payload
+(`contentItems`, ver `blocks/` en `src/components/CLAUDE.md`), no Sections.
 
 ```
-Atomic Design BBF (6 tiers):
-Tokens → Atoms → Molecules → Sections → Templates → Pages
-                                          ↑
-                                       ESTE NIVEL
+Eje B (Atomic Design BBF):
+Atom → Molecule → Organism → Section → Template → Page
+                              (contenido    (orquesta    (template/sections
+                               de página)    blocks[])    + datos reales)
 ```
 
-**Diferencia clave:**
-- Section = bloque UI autónomo (HeroSection, FeaturesSection, CTASection)
-- Template = layout que orquesta sections (qué sections aparecen + en qué orden)
-- Page = template + data de Payload CMS
+**Diferencia clave (vocabulario unificado — cierra la discrepancia de
+`HAL-SBWEB-TAXONOMY-DOC-DRIFT-01` entre este documento y `components/CLAUDE.md`):**
+- **Section** = bloque de contenido de página, compound pattern, consumido
+  directo por `page.tsx` con datos reales (HeroSection, CapabilitiesSection...)
+- **Template** = orquestador de `blocks[]` dinámicos (array de Payload), SIN
+  Sections dentro — son dos rutas de ensamblaje ALTERNATIVAS, no anidadas (ver
+  nota de vocabulario en `components/CLAUDE.md` para la evidencia de código)
+- **Page** = `page.tsx`, compone Sections a mano O pasa un `ContentItem` a un
+  Template — nunca ambos a la vez hoy
+
+**Corrección de esta versión:** el ejemplo anterior (`hero`/`main`/`cta` como
+slots `ReactNode` recibiendo Sections) era hipotético y nunca se implementó así
+— `CornerstoneTemplate.tsx`, la única implementación real, no importa ningún
+`sections/*`. Se corrige contra el código.
 
 ---
 
 ## Cuándo usar Templates
 
 Templates son necesarios cuando:
-- Múltiples pages comparten la misma estructura de sections (ej: todas las blog posts pages)
-- El layout de sections varía entre categorías de páginas (ej: Case layout ≠ Blog layout)
-- La composition de sections es compleja y reutilizable
+- El contenido viene de un array dinámico de Payload (`contentItems.blocks`,
+  `kind: cornerstone-page`) y no se conoce la composición exacta en build-time
+- Múltiples pages comparten el mismo layout de blocks (ej: todas las
+  cornerstone pages: `/cerebro-marca`, `/como-trabajamos`, `/casos`)
 
 **NO usar templates si:**
-- Una page tiene composición única (se puede hacer directo en `page.tsx`)
-- Solo hay una página de ese tipo
+- Una page tiene composición fija y conocida — usar Sections directo en
+  `page.tsx` (ruta Section, ver `components/CLAUDE.md`; ejemplo real: home, contacto)
+- Solo hay una página de ese tipo con contenido hardcoded
 
 ---
 
@@ -48,36 +64,47 @@ components/templates/
 └── index.ts                   Barrel export templates
 ```
 
-> Templates NO tienen `.variants.ts` (son thin wrappers de sections).
+> Templates NO tienen `.variants.ts` (son thin wrappers, no definen appearance).
 > Templates NO tienen `CLAUDE.md` por folder (este archivo cubre todos).
 
 ---
 
-## Pattern canon
+## Pattern canon (real — `CornerstoneTemplate.tsx`)
 
 ```tsx
 /**
  * BBF Design System — {Name}Template
  *
- * Composition de sections para {tipo de página}.
- * Decisiones: D-88, D-89, D-106
+ * Orquesta blocks[] dinámicos de un ContentItem de Payload.
+ * Decisiones: D-106
  */
 
-import type { ReactNode } from 'react';
+import type { ContentItem } from '@/payload/payload-types';
+import { Container } from '@/components/atoms/Container';
+import { Heading } from '@/components/atoms/Heading';
+import { Text } from '@/components/atoms/Text';
+import { BlockRenderer } from '@/components/blocks/BlockRenderer';
 
-interface {Name}TemplateProps {
-  hero: ReactNode;
-  main: ReactNode;
-  cta?: ReactNode;
-}
+type {Name}TemplateProps = {
+  contentItem: ContentItem;
+  locale: 'es' | 'en';
+};
 
-export function {Name}Template({ hero, main, cta }: {Name}TemplateProps) {
+export function {Name}Template({ contentItem }: {Name}TemplateProps) {
+  const blocks = contentItem.blocks ?? [];
   return (
-    <>
-      {hero}
-      {main}
-      {cta}
-    </>
+    <article data-component="bbf-{name}-template">
+      <header>
+        <Container size="prose">
+          <Heading level="display-1" as="h1">{contentItem.title}</Heading>
+        </Container>
+      </header>
+      <Container size="prose">
+        {blocks.map((block, idx) => (
+          <BlockRenderer key={idx} block={block} />
+        ))}
+      </Container>
+    </article>
   );
 }
 ```
@@ -85,41 +112,41 @@ export function {Name}Template({ hero, main, cta }: {Name}TemplateProps) {
 **Templates son:**
 - Server Components (no interactividad propia)
 - Thin wrappers — NUNCA lógica de negocio
-- Slots via `ReactNode` props (no composition fija)
-- Sin tokens directos (spacing entre sections va en cada section)
+- Reciben datos reales por props (`ContentItem`), no slots `ReactNode` fijos
+- Orquestan `blocks[]` vía `BlockRenderer`, NO Sections (ver nota de vocabulario arriba)
+- Sin tokens directos (spacing va en cada block/atom que consumen)
 
 ---
 
-## Relación con Pages
+## Relación con Pages (real)
 
 ```tsx
-// app/(frontend)/[locale]/casos/[slug]/page.tsx
-import { CaseTemplate } from '@/components/templates/CaseTemplate';
-import { HeroSection } from '@/components/sections/HeroSection';
-import { CaseContentSection } from '@/components/sections/CaseContentSection';
-import { CTASection } from '@/components/sections/CTASection';
+// app/(frontend)/[locale]/cerebro-marca/page.tsx (real, resumido)
+import { fetchCornerstoneBySlug } from '@/lib/payload/fetchContent';
+import { CornerstoneTemplate } from '@/components/templates/CornerstoneTemplate';
 
-export default function CasePage({ data }) {
-  return (
-    <CaseTemplate
-      hero={<HeroSection>...</HeroSection>}
-      main={<CaseContentSection data={data} />}
-      cta={<CTASection />}
-    />
-  );
+export default async function Page({ params }) {
+  const { locale } = await params;
+  const item = await fetchCornerstoneBySlug('cerebro-marca', locale);
+  if (!item || !item.blocks?.length) notFound();
+  return <CornerstoneTemplate contentItem={item} locale={locale} />;
 }
 ```
 
 ---
 
-## Estado actual (M5-ADMIN-1)
+## Estado actual
 
-Templates Tier 4 está DOCUMENTADO pero NO hay templates implementados aún.
+`CornerstoneTemplate.tsx` está **implementado y en uso real** — consumido por
+`/cerebro-marca`, `/como-trabajamos`, `/casos` (ver `ESTADO_CANONICO.md` §2:
+estas 3 rutas ES devuelven 404 hoy porque `contentItems` está vacío en
+producción, no porque el Template no exista — el gap es de contenido/seed, no
+de código). Corrige la afirmación anterior de este documento ("NO hay templates
+implementados aún"), stale desde antes de M5-ADMIN-1.
 
-Las primeras templates se crearán cuando se construyan:
-- `CaseTemplate` — para páginas de casos
-- `BlogTemplate` — para páginas de posts
-- `HomeTemplate` — si la home requiere composition compleja
+Templates futuros se crean cuando aparezca otro `kind` de `contentItems` que
+necesite un layout de blocks distinto (ej. si `Case`/`Blog` dejan de compartir
+schema con cornerstone-page — decisión pendiente de Zavala, ver §7 ESTADO_CANONICO).
 
 ---
 
@@ -131,9 +158,11 @@ Las primeras templates se crearán cuando se construyan:
 
 ## Decisiones aplicables
 
-- **D-88** Sections folder canon (base para templates)
-- **D-89** Section compound API (lo que templates orquestan)
-- **D-106** Templates Tier 4 canon BBF
+- **D-88** Organisms + Sections folder canon (tier hermano, no anidado — ver
+  nota de vocabulario arriba)
+- **D-89** Section compound API (usado en la ruta Section, no en Templates)
+- **D-106** Templates canon BBF
+- **D-SBWEB-TOKENS** (este despacho) — vocabulario unificado con `components/CLAUDE.md`
 
 ---
 
