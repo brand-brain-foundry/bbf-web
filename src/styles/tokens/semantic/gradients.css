@@ -12,7 +12,13 @@
  * border   = animated border line (mask pseudo-element)
  * brand    = blue+green — accentGradient de marca (D-SBWEB-BRAND, 2026-08-09)
  *
- * Refs: D-DS-05 (nombres de clases), D-DS-13 (aliases), D-SBWEB-BRAND (G-06)
+ * Ángulo tokenizado (D-GRADIENT-STRUCTURE, Gate 1 2026-09-06): primary/dark/
+ * border/brand → var(--bbf-gradient-angle-base) (110deg); secondary →
+ * var(--bbf-gradient-angle-alt) (90deg). Primitivo en primitives/gradients.css.
+ * % de stop NO tokenizados (enum de diseño).
+ *
+ * Refs: D-DS-05 (nombres de clases), D-DS-13 (aliases), D-SBWEB-BRAND (G-06),
+ *       D-GRADIENT-STRUCTURE (ángulo)
  */
 
 :root {
@@ -21,7 +27,7 @@
 
   /* G-02 — primary (blue text, sobre dark) */
   --bbf-gradient-primary: linear-gradient(
-    110deg,
+    var(--bbf-gradient-angle-base),
     var(--bbf-color-blue-accent) 0%,
     var(--bbf-color-blue-accent-deep) 50%,
     var(--bbf-color-blue-accent) 100%
@@ -30,7 +36,7 @@
   /* G-03 — dark / black (button dark sweep — alias --bbf-gradient-black para CTAs) */
   --bbf-gradient-black: var(--bbf-gradient-dark); /* CTA black intent hover/normal (D-STATE-04) */
   --bbf-gradient-dark: linear-gradient(
-    110deg,
+    var(--bbf-gradient-angle-base),
     var(--bbf-color-black-900) 0%,
     var(--bbf-color-black-900) 30%,
     var(--bbf-color-black-500) 50%,
@@ -40,7 +46,7 @@
 
   /* G-04 — secondary (warm text shimmer, sobre warm surfaces) */
   --bbf-gradient-secondary: linear-gradient(
-    90deg,
+    var(--bbf-gradient-angle-alt),
     var(--bbf-text-on-warm) 0%,
     var(--bbf-text-on-warm-muted) 50%,
     var(--bbf-text-on-warm) 100%
@@ -48,7 +54,7 @@
 
   /* G-05 — border (animated border mask, pseudo-element) */
   --bbf-gradient-border: linear-gradient(
-    110deg,
+    var(--bbf-gradient-angle-base),
     var(--bbf-color-black-900) 0%,
     var(--bbf-color-black-500) 40%,
     var(--bbf-color-black-400) 50%,
@@ -81,7 +87,7 @@
    * (D-SBWEB-BRAND, tercera-vía firmada) — este EXEC solo siembra el token.
    */
   --bbf-gradient-brand: linear-gradient(
-    110deg,
+    var(--bbf-gradient-angle-base),
     var(--bbf-color-blue-600-oklch) 0%,
     var(--bbf-color-blue-500-oklch) 55%,
     var(--bbf-color-blue-400-oklch) 85%,

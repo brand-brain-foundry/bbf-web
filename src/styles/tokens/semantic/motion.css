@@ -34,17 +34,21 @@
 
   /* ============================================================
      EASINGS canon (4 curves estándar + custom BBF)
+     D-EASING-DEDUP (Gate 1, 2026-09-06) — SSOT real: motion/easing.css.
+     Solo referencias, cero cubic-bezier() literal propio.
      ============================================================ */
-  --bbf-easing-linear: linear;
-  --bbf-easing-in: cubic-bezier(0.4, 0, 1, 1);
-  --bbf-easing-out: cubic-bezier(0, 0, 0.2, 1);
-  --bbf-easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --bbf-easing-linear: var(--bbf-motion-ease-linear);
+  --bbf-easing-in: var(--bbf-motion-ease-in);
+  --bbf-easing-out: var(--bbf-motion-ease-out);
+  --bbf-easing-in-out: var(--bbf-motion-ease-in-out);
 
   /* BBF signature curves (premium feel) */
-  --bbf-easing-entrance: cubic-bezier(0.16, 1, 0.3, 1); /* smooth ease-out premium */
-  --bbf-easing-exit: cubic-bezier(0.7, 0, 0.84, 0); /* ease-in quick */
-  --bbf-easing-hover: cubic-bezier(0.4, 0, 0.2, 1); /* feedback responsivo */
-  --bbf-easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1); /* sutil spring */
+  --bbf-easing-entrance: var(--bbf-motion-ease-entrance); /* smooth ease-out premium */
+  --bbf-easing-exit: var(--bbf-motion-ease-exit); /* ease-in quick */
+  --bbf-easing-hover: var(
+    --bbf-motion-ease-in-out
+  ); /* mismo valor que in-out en el legacy — no duplicar curva */
+  --bbf-easing-bounce: var(--bbf-motion-ease-spring-soft); /* sutil spring — mismo valor exacto */
 
   /* ============================================================
      DELAYS canon (stagger pattern)

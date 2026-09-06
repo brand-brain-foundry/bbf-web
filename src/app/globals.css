@@ -35,6 +35,7 @@
 @import '../styles/tokens/primitives/motion.css';
 @import '../styles/tokens/primitives/radius.css';
 @import '../styles/tokens/primitives/shadows.css';
+@import '../styles/tokens/primitives/gradients.css'; /* D-GRADIENT-STRUCTURE: madre ángulo */
 @import '../styles/tokens/primitives/breakpoints.css';
 @import '../styles/tokens/primitives/z-index.css';
 @import '../styles/tokens/primitives/line.css'; /* D-DS-14: madre→variante line thickness */

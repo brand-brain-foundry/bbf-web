@@ -2,10 +2,13 @@
  * BBF Design System — SEMANTIC TOKEN: Shadows
  *
  * Subordinado a: B-BBF-WEB-M5-D5-SHADOW-TOKENS
- * Decisiones: D-69 (OKLCH paleta), D-93 (shadow tokens semantic)
+ * Decisiones: D-69 (OKLCH paleta), D-93 (shadow tokens semantic),
+ *              D-SHADOW-PRIMITIVE (Gate 1, 2026-09-06 — deriva de la madre)
  *
  * Sistema canon de elevación BBF: 5 niveles de profundidad.
  * Color base OKLCH alineado con paleta canon (D-69).
+ * offset/blur/alpha derivan de la madre en primitives/shadows.css — valores
+ * idénticos a los literales previos, cero cambio de elevación percibida.
  *
  * Pattern canon Tailwind v4:
  *   - Usar var(--bbf-shadow-{size}) directamente en CSS
@@ -23,11 +26,16 @@
   /* ============================================================
      ELEVATION SCALE (5 niveles canon BBF)
      ============================================================ */
-  --bbf-shadow-xs: 0 1px 2px 0 oklch(0 0 0 / 0.04);
-  --bbf-shadow-sm: 0 2px 8px 0 oklch(0 0 0 / 0.06);
-  --bbf-shadow-md: 0 4px 16px 0 oklch(0 0 0 / 0.1);
-  --bbf-shadow-lg: 0 8px 30px 0 oklch(0 0 0 / 0.15);
-  --bbf-shadow-xl: 0 16px 48px 0 oklch(0 0 0 / 0.2);
+  --bbf-shadow-xs: 0 var(--bbf-shadow-offset-xs) var(--bbf-shadow-blur-xs) 0
+    oklch(0 0 0 / var(--bbf-shadow-alpha-xs));
+  --bbf-shadow-sm: 0 var(--bbf-shadow-offset-sm) var(--bbf-shadow-blur-sm) 0
+    oklch(0 0 0 / var(--bbf-shadow-alpha-sm));
+  --bbf-shadow-md: 0 var(--bbf-shadow-offset-md) var(--bbf-shadow-blur-md) 0
+    oklch(0 0 0 / var(--bbf-shadow-alpha-md));
+  --bbf-shadow-lg: 0 var(--bbf-shadow-offset-lg) var(--bbf-shadow-blur-lg) 0
+    oklch(0 0 0 / var(--bbf-shadow-alpha-lg));
+  --bbf-shadow-xl: 0 var(--bbf-shadow-offset-xl) var(--bbf-shadow-blur-xl) 0
+    oklch(0 0 0 / var(--bbf-shadow-alpha-xl));
 
   /* ============================================================
      SEMANTIC ALIASES (uso contextual)
