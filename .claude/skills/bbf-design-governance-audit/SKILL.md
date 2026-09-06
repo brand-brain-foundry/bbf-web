@@ -23,7 +23,8 @@ reference files before judging — never judge from memory of a previous session
 
 ## STEP 0 — Load context (always, before anything)
 
-1. Read `reference/governance-model.md` — the 8 levels + the golden rule.
+1. Read `reference/governance-model.md` — the 2 axes (token derivation + UI
+   composition), how the 8 audit layers below map to them, + the golden rule.
 2. Read `reference/bbf-system-context.md` — the current presets, intents,
    surfaces, mother-tokens that already exist.
 3. Read `reference/admin-contract.md` — how content must come from admin.
